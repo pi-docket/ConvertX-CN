@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout（一定要用 PAT）
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
@@ -21,6 +22,7 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
+      # 2️⃣ 抓 Docker Hub 下載數
       - name: Fetch Docker Hub pull count
         run: |
           set -e
@@ -37,6 +39,7 @@ jobs:
             echo "$DATE,$PULLS" >> metrics/docker-pulls.csv
           fi
 
+      # 3️⃣ 產生 SVG 圖表
       - name: Generate SVG chart (star-history style)
         run: |
           node <<'EOF'
@@ -110,13 +113,24 @@ jobs:
           fs.writeFileSync(outPath, svg.trim());
           EOF
 
+      # 4️⃣ 檢查「到底有沒有變更」（重點）
+      - name: Check if there are changes
+        id: changes
+        run: |
+          if git status --porcelain | grep .; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 5️⃣ 只有有變更才建立 PR
       - name: Create Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.PAT_TOKEN }}
           branch: chore/update-docker-pulls-metrics
           delete-branch: true
-          skip-no-changes: true
           commit-message: "chore(metrics): update docker pull history"
           title: "chore(metrics): update docker pull history"
           body: |
