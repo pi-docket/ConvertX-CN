@@ -2,6 +2,11 @@ import { Cookie } from "elysia";
 import db from "../db/db";
 import { MAX_CONVERT_PROCESS } from "../helpers/env";
 import { normalizeFiletype, normalizeOutputFiletype } from "../helpers/normalizeFiletype";
+import {
+  isMultiOutputTask,
+  autoPackageMultiOutput,
+  TRA_FORMAT,
+} from "../transfer";
 import { convert as convertassimp, properties as propertiesassimp } from "./assimp";
 import { convert as convertCalibre, properties as propertiesCalibre } from "./calibre";
 import { convert as convertDasel, properties as propertiesDasel } from "./dasel";
@@ -34,6 +39,7 @@ import {
 import { convert as convertBabelDoc, properties as propertiesBabelDoc } from "./babeldoc";
 import { convert as convertOcrMyPdf, properties as propertiesOcrMyPdf } from "./ocrmypdf";
 import { convert as convertPdfPackager, properties as propertiesPdfPackager } from "./pdfpackager";
+import { dirname } from "node:path";
 
 // This should probably be reconstructed so that the functions are not imported instead the functions hook into this to make the converters more modular
 
@@ -280,6 +286,32 @@ async function mainConverter(
       `Converted ${inputFilePath} from ${fileType} to ${convertTo} successfully using ${converterName}.`,
       result,
     );
+
+    // ========== ConvertX-CN TRA 封裝治理 ==========
+    // 檢查是否為多輸出任務，如果是則自動封裝為 .tra
+    const outputDir = dirname(targetPath);
+    const { isMulti, reason, fileCount } = isMultiOutputTask(outputDir, convertTo);
+
+    if (isMulti && converterName) {
+      console.log(`[TRA Governance] Multi-output detected: ${reason} (${fileCount} files)`);
+
+      try {
+        const traResult = await autoPackageMultiOutput(outputDir, {
+          jobId: `${Date.now()}`,
+          engine: converterName,
+          sourceFormat: fileType,
+          outputFormat: convertTo,
+        });
+
+        if (traResult) {
+          console.log(`[TRA Governance] Packaged as: ${traResult.packagePath}`);
+          return `Done (TRA: ${traResult.manifest.artifact_count} files)`;
+        }
+      } catch (traError) {
+        console.warn("[TRA Governance] Failed to package:", traError);
+        // 繼續返回原始結果，不中斷流程
+      }
+    }
 
     if (typeof result === "string") {
       return result;

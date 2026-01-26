@@ -1,6 +1,15 @@
 import { execFile as execFileOriginal } from "node:child_process";
 import { ExecFileFn } from "./types";
 
+/**
+ * ConvertX-CN ImageMagick 輸出治理
+ *
+ * 多輸出處理規則：
+ * - PDF/多頁 TIFF 轉圖片時，預設輸出多張圖片
+ * - 使用 -adjoin（預設）保持單檔輸出
+ * - 使用 +adjoin 時會產生多檔輸出，需要 TRA 封裝
+ */
+
 // declare possible conversions
 export const properties = {
   from: {
@@ -452,6 +461,23 @@ export function convert(
   let outputArgs: string[] = [];
   let inputArgs: string[] = [];
 
+  // ========== ConvertX-CN 輸出治理 ==========
+
+  // 多頁輸入（PDF、多頁 TIFF）的處理
+  // 預設使用 -adjoin 保持單檔輸出，避免產生多檔
+  const multiPageInputFormats = ["pdf", "tiff", "tif", "gif", "mng", "ico"];
+  if (multiPageInputFormats.includes(fileType.toLowerCase())) {
+    // 對於單頁輸出格式，只取第一頁
+    const singlePageOutputFormats = ["jpg", "jpeg", "png", "bmp", "webp"];
+    if (singlePageOutputFormats.includes(convertTo.toLowerCase())) {
+      // 只轉換第一頁，避免產生多檔
+      inputArgs.push("-[0]".replace("-", filePath.endsWith("]") ? "" : ""));
+      console.log("[ImageMagick Governance] Multi-page input detected, extracting first page only");
+    }
+  }
+
+  // ========== 原有邏輯 ==========
+
   if (convertTo === "ico") {
     outputArgs = ["-define", "icon:auto-resize=256,128,64,48,32,16", "-background", "none"];
 
@@ -472,10 +498,20 @@ export function convert(
   // ImageMagick 7.x 使用 magick，但 Debian bookworm 只有 6.x
   const imCommand = process.env.IMAGEMAGICK_COMMAND || "convert";
 
+  // 組合輸入路徑（處理多頁輸入）
+  let inputPath = filePath;
+  if (multiPageInputFormats.includes(fileType.toLowerCase()) && !filePath.includes("[")) {
+    // 對於多頁格式，預設只取第一頁
+    const singlePageOutputFormats = ["jpg", "jpeg", "png", "bmp", "webp"];
+    if (singlePageOutputFormats.includes(convertTo.toLowerCase())) {
+      inputPath = `${filePath}[0]`;
+    }
+  }
+
   return new Promise((resolve, reject) => {
     execFile(
       imCommand,
-      [...inputArgs, filePath, ...outputArgs, targetPath],
+      [...inputArgs, inputPath, ...outputArgs, targetPath],
       (error, stdout, stderr) => {
         if (error) {
           reject(`error: ${error}`);
