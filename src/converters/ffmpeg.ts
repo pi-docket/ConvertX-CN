@@ -1,5 +1,12 @@
 import { execFile as execFileOriginal } from "node:child_process";
 import { ExecFileFn } from "./types";
+import {
+  isImageOutput,
+  isSequenceOutput,
+  needsSingleFrameLimit,
+  getPixelFormatArgs,
+  validateFFmpegArgs,
+} from "../transfer";
 
 // This could be done dynamically by running `ffmpeg -formats` and parsing the output
 export const properties = {
@@ -699,11 +706,36 @@ export async function convert(
   let extraArgs: string[] = [];
   let message = "Done";
 
+  // ========== ConvertX-CN 輸出治理 ==========
+
+  // 1️⃣ 像素格式治理：禁止 deprecated yuvj420p
+  // 對於圖片輸出，強制使用 yuv420p + color_range pc
+  const outputExt = targetPath.split(".").pop()?.toLowerCase() ?? convertTo;
+  if (isImageOutput(targetPath) || ["jpg", "jpeg", "png", "bmp", "webp"].includes(outputExt)) {
+    const pixelFormatArgs = getPixelFormatArgs({
+      outputFormat: outputExt,
+      hasScale: false,
+    });
+    extraArgs.push(...pixelFormatArgs);
+  }
+
+  // 2️⃣ 單張 vs 多張輸出判斷
+  // 若輸出檔名是「單一檔名」且為圖片格式：加入 -frames:v 1
+  if (needsSingleFrameLimit(targetPath) && !isSequenceOutput(targetPath)) {
+    extraArgs.push("-frames:v", "1");
+  }
+
+  // ========== 原有邏輯 ==========
+
   if (convertTo === "ico") {
     // Make sure image is 256x256 or smaller
+    // 使用治理後的 scale 參數
     extraArgs = [
       "-filter:v",
-      "scale='min(256,iw)':min'(256,ih)':force_original_aspect_ratio=decrease",
+      "scale='min(256,iw)':min'(256,ih)':force_original_aspect_ratio=decrease:in_range=pc:out_range=pc",
+      "-pix_fmt", "yuv420p",
+      "-color_range", "pc",
+      "-frames:v", "1",
     ];
     message = "Done: resized to 256x256";
   }
@@ -735,10 +767,22 @@ export async function convert(
     ? process.env.FFMPEG_OUTPUT_ARGS.split(/\s+/)
     : [];
 
+  // 組合最終參數
+  const finalArgs = [...ffmpegArgs, "-i", filePath, ...ffmpegOutputArgs, ...extraArgs, targetPath];
+
+  // 驗證參數是否符合治理規則
+  const validation = validateFFmpegArgs(finalArgs);
+  if (validation.warnings.length > 0) {
+    console.warn("[FFmpeg Governance] Warnings:", validation.warnings);
+  }
+  if (!validation.valid) {
+    console.error("[FFmpeg Governance] Errors:", validation.errors);
+  }
+
   return new Promise((resolve, reject) => {
     execFile(
       "ffmpeg",
-      [...ffmpegArgs, "-i", filePath, ...ffmpegOutputArgs, ...extraArgs, targetPath],
+      finalArgs,
       (error, stdout, stderr) => {
         if (error) {
           reject(`error: ${error}`);
@@ -749,7 +793,14 @@ export async function convert(
         }
 
         if (stderr) {
-          console.error(`stderr: ${stderr}`);
+          // 過濾已知的 deprecated warning
+          const filteredStderr = stderr
+            .split("\n")
+            .filter((line) => !line.includes("deprecated pixel format"))
+            .join("\n");
+          if (filteredStderr.trim()) {
+            console.error(`stderr: ${filteredStderr}`);
+          }
         }
 
         resolve(message);

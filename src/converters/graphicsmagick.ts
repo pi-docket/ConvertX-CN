@@ -1,6 +1,15 @@
 import { execFile as execFileOriginal } from "node:child_process";
 import { ExecFileFn } from "./types";
 
+/**
+ * ConvertX-CN GraphicsMagick 輸出治理
+ *
+ * 多輸出處理規則：
+ * - PDF/多頁 TIFF 轉圖片時，預設輸出多張圖片
+ * - 使用 -adjoin（預設）保持單檔輸出
+ * - 使用 +adjoin 時會產生多檔輸出，需要 TRA 封裝
+ */
+
 export const properties = {
   from: {
     image: [
@@ -317,8 +326,26 @@ export function convert(
   options?: unknown,
   execFile: ExecFileFn = execFileOriginal, // to make it mockable
 ): Promise<string> {
+  // ========== ConvertX-CN 輸出治理 ==========
+
+  // 多頁輸入（PDF、多頁 TIFF）的處理
+  const multiPageInputFormats = ["pdf", "tiff", "tif", "gif", "mng", "ico"];
+  const singlePageOutputFormats = ["jpg", "jpeg", "png", "bmp", "webp"];
+
+  // 組合輸入路徑（處理多頁輸入）
+  let inputPath = filePath;
+  if (
+    multiPageInputFormats.includes(fileType.toLowerCase()) &&
+    singlePageOutputFormats.includes(convertTo.toLowerCase()) &&
+    !filePath.includes("[")
+  ) {
+    // 對於多頁格式，預設只取第一頁
+    inputPath = `${filePath}[0]`;
+    console.log("[GraphicsMagick Governance] Multi-page input detected, extracting first page only");
+  }
+
   return new Promise((resolve, reject) => {
-    execFile("gm", ["convert", filePath, targetPath], (error, stdout, stderr) => {
+    execFile("gm", ["convert", inputPath, targetPath], (error, stdout, stderr) => {
       if (error) {
         reject(`error: ${error}`);
       }

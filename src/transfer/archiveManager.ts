@@ -1,15 +1,23 @@
 /**
- * Contents.CN 封裝管理器
+ * ConvertX-CN 封裝管理器
  *
  * 統一處理多檔輸出的封裝：
- * - 唯一允許格式：.tar
+ * - 唯一允許格式：.tar（傳統封裝）
+ * - TRA 格式：.tra（ConvertX-CN 標準多輸出封裝）
  * - 禁止：.tar.gz, .tgz, .zip 等
+ *
+ * TRA 封裝流程：
+ * 1. 偵測多輸出任務
+ * 2. 選擇 preview 檔案
+ * 3. 整理 artifacts 目錄
+ * 4. 生成 manifest.json
+ * 5. 封裝成 .tra 檔案
  */
 
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import * as tar from "tar";
-import { ALLOWED_ARCHIVE_FORMAT, FORBIDDEN_ARCHIVE_FORMATS } from "./constants";
+import { ALLOWED_ARCHIVE_FORMAT, FORBIDDEN_ARCHIVE_FORMATS, TRA_FORMAT, TRA_STRUCTURE } from "./constants";
 
 /**
  * 驗證封裝格式是否合法
@@ -103,13 +111,14 @@ export async function createTarArchive(
  *
  * @param outputDir - 輸出目錄（包含多個轉換結果）
  * @param jobId - 任務 ID
+ * @deprecated 請使用 TRA 封裝流程（traPackager.ts）
  */
 export async function createJobArchive(outputDir: string, jobId: string): Promise<string> {
   const archiveName = `converted_files_${jobId}.tar`;
   const archivePath = join(outputDir, archiveName);
 
   await createTarArchive(outputDir, archivePath, {
-    filter: (path) => !path.endsWith(".tar"), // 排除其他 tar 檔案
+    filter: (path) => !path.endsWith(".tar") && !path.endsWith(TRA_FORMAT), // 排除 tar 和 tra 檔案
   });
 
   return archivePath;
