@@ -18,24 +18,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 0
 
       - name: Fetch Docker Hub pull count
         run: |
           set -e
-
-          # 1️⃣ 確保 metrics 資料夾存在（runner 是全新的）
           mkdir -p metrics
 
-          # 2️⃣ 若 CSV 不存在，建立並寫入 header
           if [ ! -f metrics/docker-pulls.csv ]; then
             echo "date,pulls" > metrics/docker-pulls.csv
           fi
 
-          # 3️⃣ 抓 Docker Hub 總下載數（不限版本）
           DATE=$(date -u +"%Y-%m-%d")
           PULLS=$(curl -s https://hub.docker.com/v2/repositories/convertx/convertx-cn/ | jq '.pull_count')
 
-          # 4️⃣ 避免同一天重複寫入
           if ! grep -q "^$DATE," metrics/docker-pulls.csv; then
             echo "$DATE,$PULLS" >> metrics/docker-pulls.csv
           fi
@@ -90,21 +87,16 @@ jobs:
               Docker Pull History · convertx/convertx-cn
             </text>
 
-            <!-- grid -->
             <line x1="${padX}" y1="${h-padY}" x2="${w-padX}" y2="${h-padY}"
                   stroke="#d0d7de"/>
             <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${h-padY}"
                   stroke="#d0d7de"/>
 
-            <!-- line -->
             <polyline fill="none" stroke="#2f81f7"
                       stroke-width="2"
                       points="${points}" />
 
-            <!-- labels -->
-            <text x="${padX}" y="${h-20}" font-size="12">
-              ${dates[0]}
-            </text>
+            <text x="${padX}" y="${h-20}" font-size="12">${dates[0]}</text>
             <text x="${w-padX}" y="${h-20}" font-size="12" text-anchor="end">
               ${dates[dates.length - 1]}
             </text>
@@ -121,7 +113,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           branch: chore/update-docker-pulls-metrics
           delete-branch: true
           commit-message: "chore(metrics): update docker pull history"
