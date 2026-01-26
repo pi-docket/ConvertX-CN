@@ -120,6 +120,16 @@ export async function convert(
           if (useTableMode && errorStr.includes("table_mode")) {
             console.warn(`[MinerU] ⚠️ table_mode 與 vLLM 不相容，重試不帶此參數...`);
             reject(new Error("RETRY_WITHOUT_TABLE_MODE"));
+          } else if (errorStr.includes("torch") || errorStr.includes("NameError")) {
+            // PyTorch 未安裝或版本不兼容錯誤
+            console.error(`[MinerU] ❌ PyTorch 未安裝或版本不相容`);
+            console.error(`[MinerU] 💡 請確保 Docker Image 中已安裝 PyTorch`);
+            console.error(`[MinerU] 💡 對於 GPU 加速，請使用 Dockerfile.full 並啟用 PyTorch CUDA`);
+            reject(
+              new Error(
+                "MINERU_PYTORCH_ERROR: PyTorch 未正確安裝，請重新 build Docker Image 或使用 Dockerfile.full",
+              ),
+            );
           } else {
             reject(new Error(`mineru error: ${error}`));
           }
