@@ -2,7 +2,7 @@ name: Docker Pulls History
 
 on:
   schedule:
-    - cron: "0 0 * * *" # 每天 UTC 00:00（台灣 08:00）
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout（一定要用 PAT）
+      # 1️⃣ Checkout（⚠️ 不要保留 checkout 的 credentials）
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           ref: main
-          token: ${{ secrets.PAT_TOKEN }}
+          persist-credentials: false # ⭐⭐⭐ 關鍵
           fetch-depth: 0
 
       # 2️⃣ 抓 Docker Hub 下載數
@@ -39,19 +39,16 @@ jobs:
             echo "$DATE,$PULLS" >> metrics/docker-pulls.csv
           fi
 
-      # 3️⃣ 產生 SVG 圖表
+      # 3️⃣ 產生 SVG
       - name: Generate SVG chart (star-history style)
         run: |
           node <<'EOF'
           const fs = require('fs');
-
           const csvPath = 'metrics/docker-pulls.csv';
           const outPath = 'metrics/docker-pulls-history.svg';
 
           const rows = fs.readFileSync(csvPath, 'utf8')
-            .trim()
-            .split('\n')
-            .slice(1)
+            .trim().split('\n').slice(1)
             .map(r => {
               const [d, p] = r.split(',');
               return { date: d, pulls: Number(p) };
@@ -75,45 +72,18 @@ jobs:
           const svg = `
           <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"
                xmlns="http://www.w3.org/2000/svg">
-            <style>
-              text {
-                font-family: -apple-system, BlinkMacSystemFont,
-                             Segoe UI, Helvetica, Arial;
-                fill: #24292f;
-              }
-            </style>
-
-            <rect width="100%" height="100%" fill="#ffffff"/>
-
+            <rect width="100%" height="100%" fill="#fff"/>
             <text x="${w/2}" y="28" text-anchor="middle"
                   font-size="18" font-weight="600">
               Docker Pull History · convertx/convertx-cn
             </text>
-
-            <line x1="${padX}" y1="${h-padY}" x2="${w-padX}" y2="${h-padY}"
-                  stroke="#d0d7de"/>
-            <line x1="${padX}" y1="${padY}" x2="${padX}" y2="${h-padY}"
-                  stroke="#d0d7de"/>
-
             <polyline fill="none" stroke="#2f81f7"
-                      stroke-width="2"
-                      points="${points}" />
-
-            <text x="${padX}" y="${h-20}" font-size="12">${dates[0]}</text>
-            <text x="${w-padX}" y="${h-20}" font-size="12" text-anchor="end">
-              ${dates[dates.length - 1]}
-            </text>
-
-            <text x="${padX}" y="${padY-10}" font-size="12">
-              ${max.toLocaleString()}
-            </text>
-          </svg>
-          `;
-
+                      stroke-width="2" points="${points}" />
+          </svg>`;
           fs.writeFileSync(outPath, svg.trim());
           EOF
 
-      # 4️⃣ 檢查「到底有沒有變更」（重點）
+      # 4️⃣ 檢查是否有變更
       - name: Check if there are changes
         id: changes
         run: |
@@ -123,12 +93,13 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
 
-      # 5️⃣ 只有有變更才建立 PR
+      # 5️⃣ 建立 PR（⭐ 同時指定 token + branch-token）
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }} # API 用
+          branch-token: ${{ secrets.PAT_TOKEN }} # git push 用 ⭐⭐⭐
           branch: chore/update-docker-pulls-metrics
           delete-branch: true
           commit-message: "chore(metrics): update docker pull history"
@@ -136,6 +107,6 @@ jobs:
           body: |
             自動更新 Docker Pull 統計資料
 
-            - 更新 `metrics/docker-pulls.csv`
-            - 更新 `metrics/docker-pulls-history.svg`
+            - 更新 metrics/docker-pulls.csv
+            - 更新 metrics/docker-pulls-history.svg
           labels: automated,metrics
