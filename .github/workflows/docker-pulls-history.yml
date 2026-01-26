@@ -121,7 +121,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           branch: chore/update-docker-pulls-metrics
           delete-branch: true
           commit-message: "chore(metrics): update docker pull history"
