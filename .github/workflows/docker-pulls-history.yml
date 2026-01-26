@@ -116,6 +116,7 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
           branch: chore/update-docker-pulls-metrics
           delete-branch: true
+          skip-no-changes: true
           commit-message: "chore(metrics): update docker pull history"
           title: "chore(metrics): update docker pull history"
           body: |
