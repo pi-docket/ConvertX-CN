@@ -299,19 +299,20 @@ RUN uv pip install --system --break-system-packages --no-cache "markitdown[all]"
 # 注意：不從 apt 安裝，避免與其他 Python 套件的 pikepdf 衝突
 RUN uv pip install --system --break-system-packages --no-cache ocrmypdf
 
-# 6.7 pdf2zh（PDFMathTranslate）
-# 💡 固定 pdfminer.six<20251229 以避免 scs AttributeError
-# 💡 使用穩定版 pdf2zh==1.9.11，避免 2.0 破壞性變更
-RUN uv pip install --system --break-system-packages --no-cache "pdfminer.six<20251229" && \
-  uv pip install --system --break-system-packages --no-cache "pdf2zh==1.9.11"
+# 6.7 pdf2zh-next（PDFMathTranslate 2.0）
+# 💡 使用新版 pdf2zh-next，基於 BabelDOC 後端
+# 💡 命令格式：pdf2zh_next <file> --lang-out <lang> --output <dir> --<service>
+# 📦 套件名稱：pdf2zh-next（不是 pdf2zh）
+RUN uv pip install --system --break-system-packages --no-cache pdf2zh-next
 
-# 6.8 babeldoc
+# 6.8 babeldoc（pdf2zh-next 依賴，但可能需要獨立安裝）
 RUN uv pip install --system --break-system-packages --no-cache babeldoc || \
   echo "⚠️ babeldoc 安裝可能有警告"
 
 # 6.9 MinerU（僅 AMD64，CPU-only 模式）
 # 💡 使用 mineru（不含 [all]）避免安裝 PyTorch CUDA（節省 ~5-8GB）
 # 💡 MinerU 會自動使用 pipeline backend 在純 CPU 環境運行
+# 💡 設置 CUDA_VISIBLE_DEVICES="" 強制使用 CPU
 RUN set -ex && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
@@ -319,6 +320,10 @@ RUN set -ex && \
   else \
   uv pip install --system --break-system-packages --no-cache -U mineru; \
   fi
+
+# MinerU CPU-only 環境變數
+ENV CUDA_VISIBLE_DEVICES=""
+ENV MINERU_USE_CPU="1"
 
 # 6.10 tiktoken
 RUN uv pip install --system --break-system-packages --no-cache tiktoken

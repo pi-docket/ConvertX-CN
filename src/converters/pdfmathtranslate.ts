@@ -14,13 +14,16 @@ type TranslationService = (typeof TRANSLATION_SERVICES)[number];
  *
  * 用於翻譯 PDF 文件同時保留數學公式的引擎。
  *
- * 使用 pdf2zh CLI 工具進行翻譯，支援多種目標語言。
+ * 使用 pdf2zh_next CLI 工具進行翻譯（2.0 版本），支援多種目標語言。
  * 所有輸出一律打包為 .tar 檔案，包含：
- *   - original.pdf（原始 PDF）
  *   - translated-<lang>.pdf（翻譯後的 PDF）
+ *   - bilingual-<lang>.pdf（雙語對照版本）
+ *
+ * CLI 格式（2.0 版本）：
+ *   pdf2zh_next <file> --lang-out <lang> --output <dir> --<service>
  *
  * 模型路徑說明：
- *   - pdf2zh 使用 babeldoc.assets 內部載入 ONNX 模型
+ *   - pdf2zh_next 使用 babeldoc.assets 內部載入 ONNX 模型
  *   - 模型預先下載到 /root/.cache/babeldoc/models/ 目錄
  *   - Runtime 不會再下載任何模型（由 Docker build 預下載）
  */
@@ -44,8 +47,8 @@ const SUPPORTED_LANGUAGES = [
   "th", // Thai
 ] as const;
 
-// 模型路徑（BabelDOC cache 目錄，由 pdf2zh 內部使用）
-// 注意：pdf2zh 會自動從 babeldoc.assets 載入模型，此路徑僅供參考
+// 模型路徑（BabelDOC cache 目錄，由 pdf2zh_next 內部使用）
+// 注意：pdf2zh_next 會自動從 babeldoc.assets 載入模型，此路徑僅供參考
 const BABELDOC_CACHE_PATH = process.env.BABELDOC_CACHE_PATH || "/root/.cache/babeldoc";
 const MODELS_PATH = `${BABELDOC_CACHE_PATH}/models`;
 
@@ -86,15 +89,15 @@ function extractTargetLanguage(convertTo: string): string {
 }
 
 /**
- * 標準化語言代碼為 pdf2zh 支援的格式
- * pdf2zh 使用 Google Translate 的語言代碼
+ * 標準化語言代碼為 pdf2zh_next 支援的格式
+ * pdf2zh_next 使用 Google Translate 的語言代碼
  * @param lang 輸入語言代碼
  * @returns 標準化後的語言代碼
  */
 function normalizeLanguageCode(lang: string): string {
-  // pdf2zh / Google Translate 語言代碼映射
+  // pdf2zh_next / Google Translate 語言代碼映射
   const langMap: Record<string, string> = {
-    // 繁體中文：pdf2zh 使用 "zh-TW" 或 "zh-Hant"
+    // 繁體中文：pdf2zh_next 使用 "zh-TW" 或 "zh-Hant"
     "zh-tw": "zh-TW",
     "zh-hant": "zh-TW",
     zht: "zh-TW",
@@ -182,7 +185,14 @@ function removeDir(dirPath: string): void {
 }
 
 /**
- * 執行 pdf2zh 命令進行 PDF 翻譯（單一服務）
+ * 執行 pdf2zh_next 命令進行 PDF 翻譯（單一服務）
+ *
+ * pdf2zh_next 2.0 CLI 格式：
+ *   pdf2zh_next <file> --lang-out <lang> --output <dir> --<service>
+ *
+ * 輸出檔案：
+ *   - <filename>-mono.pdf: 純翻譯版本
+ *   - <filename>-dual.pdf: 雙語對照版本
  *
  * @param inputPath 輸入 PDF 路徑
  * @param outputDir 輸出目錄
@@ -198,26 +208,26 @@ function runPdf2zhWithService(
   execFile: ExecFileFn = execFileOriginal,
 ): Promise<{ monoPath: string; dualPath: string }> {
   return new Promise((resolve, reject) => {
-    // pdf2zh CLI 參數：
-    // -lo <lang>: 目標語言
-    // -o <dir>: 輸出目錄
-    // -s <service>: 翻譯服務（google, bing, deepl, ollama 等）
+    // pdf2zh_next 2.0 CLI 參數：
+    // --lang-out <lang>: 目標語言
+    // --output <dir>: 輸出目錄
+    // --<service>: 翻譯服務標誌（--google, --bing, --openai 等）
     //
     // 輸出檔案：
     // - <filename>-mono.pdf: 純翻譯版本
     // - <filename>-dual.pdf: 雙語對照版本
 
-    const args = [inputPath, "-lo", targetLang, "-o", outputDir, "-s", service];
+    const args = [inputPath, "--lang-out", targetLang, "--output", outputDir, `--${service}`];
 
-    // pdf2zh 使用 babeldoc.assets 內部載入模型，不需要手動指定 --onnx 參數
+    // pdf2zh_next 使用 babeldoc.assets 內部載入模型，不需要手動指定 --onnx 參數
     // 模型路徑：/root/.cache/babeldoc/models/doclayout_yolo_docstructbench_imgsz1024.onnx
 
-    console.log(`[PDFMathTranslate] Running: pdf2zh ${args.join(" ")} (service: ${service})`);
+    console.log(`[PDFMathTranslate] Running: pdf2zh_next ${args.join(" ")} (service: ${service})`);
 
     // 使用注入的 execFile 函數
-    execFile("pdf2zh", args, (error, stdout, stderr) => {
+    execFile("pdf2zh_next", args, (error, stdout, stderr) => {
       if (error) {
-        reject(new Error(`pdf2zh error (${service}): ${error}\nstderr: ${stderr}`));
+        reject(new Error(`pdf2zh_next error (${service}): ${error}\nstderr: ${stderr}`));
         return;
       }
 
@@ -253,7 +263,7 @@ function runPdf2zhWithService(
 }
 
 /**
- * 執行 pdf2zh 命令進行 PDF 翻譯（自動 fallback）
+ * 執行 pdf2zh_next 命令進行 PDF 翻譯（自動 fallback）
  *
  * 嘗試順序：
  * 1. 環境變數 PDFMATHTRANSLATE_SERVICE（如果設定）
