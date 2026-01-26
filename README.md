@@ -197,11 +197,11 @@ docker run -d \
 
 ---
 
-## 📈 Docker Adoption History
+<!-- ## 📈 Docker Adoption History
 
 ![Docker Pull History](https://raw.githubusercontent.com/pi-docket/ConvertX-CN/main/metrics/docker-pulls-history.svg)
 
----
+--- -->
 
 ## 🙏 致謝
 
