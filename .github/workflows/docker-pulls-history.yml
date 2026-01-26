@@ -96,6 +96,7 @@ jobs:
       # 5️⃣ 建立 PR（⭐ 同時指定 token + branch-token）
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
+        continue-on-error: true # ⭐ 關鍵這一行
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.PAT_TOKEN }} # API 用
