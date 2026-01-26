@@ -733,9 +733,12 @@ export async function convert(
     extraArgs = [
       "-filter:v",
       "scale='min(256,iw)':min'(256,ih)':force_original_aspect_ratio=decrease:in_range=pc:out_range=pc",
-      "-pix_fmt", "yuv420p",
-      "-color_range", "pc",
-      "-frames:v", "1",
+      "-pix_fmt",
+      "yuv420p",
+      "-color_range",
+      "pc",
+      "-frames:v",
+      "1",
     ];
     message = "Done: resized to 256x256";
   }
@@ -780,31 +783,27 @@ export async function convert(
   }
 
   return new Promise((resolve, reject) => {
-    execFile(
-      "ffmpeg",
-      finalArgs,
-      (error, stdout, stderr) => {
-        if (error) {
-          reject(`error: ${error}`);
-        }
+    execFile("ffmpeg", finalArgs, (error, stdout, stderr) => {
+      if (error) {
+        reject(`error: ${error}`);
+      }
 
-        if (stdout) {
-          console.log(`stdout: ${stdout}`);
-        }
+      if (stdout) {
+        console.log(`stdout: ${stdout}`);
+      }
 
-        if (stderr) {
-          // 過濾已知的 deprecated warning
-          const filteredStderr = stderr
-            .split("\n")
-            .filter((line) => !line.includes("deprecated pixel format"))
-            .join("\n");
-          if (filteredStderr.trim()) {
-            console.error(`stderr: ${filteredStderr}`);
-          }
+      if (stderr) {
+        // 過濾已知的 deprecated warning
+        const filteredStderr = stderr
+          .split("\n")
+          .filter((line) => !line.includes("deprecated pixel format"))
+          .join("\n");
+        if (filteredStderr.trim()) {
+          console.error(`stderr: ${filteredStderr}`);
         }
+      }
 
-        resolve(message);
-      },
-    );
+      resolve(message);
+    });
   });
 }

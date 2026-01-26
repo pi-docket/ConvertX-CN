@@ -17,7 +17,7 @@
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import * as tar from "tar";
-import { ALLOWED_ARCHIVE_FORMAT, FORBIDDEN_ARCHIVE_FORMATS, TRA_FORMAT, TRA_STRUCTURE } from "./constants";
+import { ALLOWED_ARCHIVE_FORMAT, FORBIDDEN_ARCHIVE_FORMATS, TRA_FORMAT } from "./constants";
 
 /**
  * 驗證封裝格式是否合法

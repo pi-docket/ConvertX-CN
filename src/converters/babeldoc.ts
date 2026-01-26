@@ -208,28 +208,29 @@ function runBabelDoc(
   execFile: ExecFileFn,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    // babeldoc CLI 參數：
-    // -i <input>: 輸入 PDF（縮寫不衝突，可以使用）
-    // -o <output>: 輸出檔案（縮寫不衝突，可以使用）
-    // --lang-out <lang>: 目標語言（注意：-l 是模糊的，會匹配 -li 和 -lo）
-    // --output-format <format>: 輸出格式（pdf/md/html）
-    // --service <service>: 翻譯服務（預設 google）
+    // babeldoc CLI 參數（2026 版本）：
+    // --files <input>: 輸入 PDF（注意：不是 -i）
+    // --output <output>: 輸出目錄（注意：不是 -o）
+    // --lang-out <lang>: 目標語言
+    // 注意：新版 babeldoc 不支援 --output-format 和 --service 參數
 
     const babelLang = toBabelDocLang(targetLang);
-    const service = process.env.BABELDOC_SERVICE || "google";
+    const outputDir = dirname(outputPath);
 
-    const args = [
-      "-i",
-      inputPath,
-      "-o",
-      outputPath,
-      "--lang-out",
-      babelLang,
-      "--output-format",
-      outputFormat,
-      "--service",
-      service,
-    ];
+    // 新版 babeldoc 只接受 --files 和 --output（目錄）
+    const args = ["--files", inputPath, "--output", outputDir, "--lang-out", babelLang];
+
+    // 如果有設定 OpenAI，則使用 OpenAI
+    if (process.env.OPENAI_API_KEY) {
+      args.push("--openai");
+      if (process.env.OPENAI_MODEL) {
+        args.push("--openai-model", process.env.OPENAI_MODEL);
+      }
+      if (process.env.OPENAI_BASE_URL) {
+        args.push("--openai-base-url", process.env.OPENAI_BASE_URL);
+      }
+      args.push("--openai-api-key", process.env.OPENAI_API_KEY);
+    }
 
     console.log(`[BabelDOC] Running: babeldoc ${args.join(" ")}`);
 
@@ -247,13 +248,40 @@ function runBabelDoc(
         console.log(`[BabelDOC] stderr: ${stderr}`);
       }
 
-      // 檢查輸出檔案是否存在
-      if (!existsSync(outputPath)) {
-        reject(`BabelDOC output file not found: ${outputPath}`);
+      // 新版 babeldoc 輸出到目錄，需要找到輸出檔案
+      // 輸出檔案可能是 <input>-mono.pdf 或 <input>-dual.pdf
+      const inputBasename = basename(inputPath, ".pdf");
+      const possibleOutputs = [
+        join(outputDir, `${inputBasename}-mono.pdf`),
+        join(outputDir, `${inputBasename}-dual.pdf`),
+        join(outputDir, `${inputBasename}.pdf`),
+        outputPath,
+      ];
+
+      for (const possibleOutput of possibleOutputs) {
+        if (existsSync(possibleOutput)) {
+          // 如果找到的不是預期的輸出路徑，複製過去
+          if (possibleOutput !== outputPath && existsSync(possibleOutput)) {
+            copyFileSync(possibleOutput, outputPath);
+          }
+          resolve(outputPath);
+          return;
+        }
+      }
+
+      // 如果都找不到，嘗試找任何 PDF 檔案
+      const files = readdirSync(outputDir);
+      const pdfFile = files.find((f) => f.endsWith(".pdf") && f.includes(inputBasename));
+      if (pdfFile) {
+        const foundPath = join(outputDir, pdfFile);
+        if (foundPath !== outputPath) {
+          copyFileSync(foundPath, outputPath);
+        }
+        resolve(outputPath);
         return;
       }
 
-      resolve(outputPath);
+      reject(`BabelDOC output file not found in: ${outputDir}`);
     });
   });
 }

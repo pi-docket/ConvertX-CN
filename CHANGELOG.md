@@ -1,5 +1,53 @@
 # Changelog
 
+## [0.1.18](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.18) (2026-01-26)
+
+輸出治理系統與轉換器修復版本。
+
+### ✨ Features
+
+- **TRA 封裝系統**：新增 Transfer Result Archive (TRA) 封裝機制
+  - 規則：單一輸出直接交付，多輸出自動封裝為 `.tra` 檔案
+  - TRA 使用 tar 格式（無壓縮），包含 preview + artifacts/ + manifest.json
+  - 完整的 manifest 結構，記錄任務類型、引擎、輸出數量等資訊
+
+- **FFmpeg 輸出治理**：強制禁止 deprecated pixel format
+  - 禁止 `yuvj420p`（deprecated），強制使用 `yuv420p` + `-color_range pc`
+  - 圖片輸出自動加入 `-frames:v 1` 限制單張輸出
+  - 新增 `validateFFmpegArgs()` 驗證函式
+
+- **PDF Packager 下載修復**：修復輸出檔名與下載路徑不匹配問題
+  - PDF Packager 輸出 `pack_<chip>.tar`，正確記錄到資料庫
+
+### 🐛 Bug Fixes
+
+- **OCRmyPDF Ghostscript 修復**：修復 Ghostscript 10.0.0-10.02.0 regression
+  - 加入 `--output-type pdf` 參數避免 `--skip-text` 失效問題
+
+- **BabelDOC CLI 修復**：更新 CLI 參數以符合新版 babeldoc
+  - 使用 `--files`, `--output`, `--lang-out` 替代舊參數
+  - 新增輸出檔案自動探索（支援 -mono.pdf, -dual.pdf 命名）
+
+- **PDFMathTranslate 版本鎖定**：修復 scs AttributeError
+  - 固定 `pdf2zh==1.9.11`，避免 2.0 版破壞性變更
+  - 固定 `pdfminer.six<20251229`，避免新版 API 不兼容
+
+### 📦 Build
+
+- **版本號更新**：v0.1.18
+- **Dockerfile 改進**：
+  - 新增 pdf2zh 和 pdfminer.six 版本鎖定
+  - 更新注釋說明版本固定原因
+
+### 📝 Documentation
+
+- **新增輸出治理文件**：`docs/功能說明/輸出治理.md`
+  - 完整說明 TRA 封裝格式與設計理念
+  - FFmpeg 像素格式治理規則
+  - 單輸出 vs 多輸出判斷邏輯
+
+---
+
 ## [0.1.17](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.17) (2026-01-25)
 
 CPU-only 輕量版，大幅減小 Docker Image 大小。
