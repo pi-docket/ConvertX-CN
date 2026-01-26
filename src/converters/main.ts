@@ -2,11 +2,7 @@ import { Cookie } from "elysia";
 import db from "../db/db";
 import { MAX_CONVERT_PROCESS } from "../helpers/env";
 import { normalizeFiletype, normalizeOutputFiletype } from "../helpers/normalizeFiletype";
-import {
-  isMultiOutputTask,
-  autoPackageMultiOutput,
-  TRA_FORMAT,
-} from "../transfer";
+import { isMultiOutputTask, autoPackageMultiOutput } from "../transfer";
 import { convert as convertassimp, properties as propertiesassimp } from "./assimp";
 import { convert as convertCalibre, properties as propertiesCalibre } from "./calibre";
 import { convert as convertDasel, properties as propertiesDasel } from "./dasel";
@@ -38,7 +34,11 @@ import {
 } from "./pdfmathtranslate";
 import { convert as convertBabelDoc, properties as propertiesBabelDoc } from "./babeldoc";
 import { convert as convertOcrMyPdf, properties as propertiesOcrMyPdf } from "./ocrmypdf";
-import { convert as convertPdfPackager, properties as propertiesPdfPackager } from "./pdfpackager";
+import {
+  convert as convertPdfPackager,
+  properties as propertiesPdfPackager,
+  getOutputFileName as getPdfPackagerOutputFileName,
+} from "./pdfpackager";
 import { dirname } from "node:path";
 
 // This should probably be reconstructed so that the functions are not imported instead the functions hook into this to make the converters more modular
@@ -204,6 +204,9 @@ export async function handleConvert(
   const converterProps = properties[converterName]?.properties;
   const isArchiveOutput = converterProps?.outputMode === "archive";
 
+  // Special handling for PDF Packager - uses custom output filename
+  const isPdfPackager = converterName === "PDF Packager";
+
   for (const chunk of chunks(fileNames, MAX_CONVERT_PROCESS)) {
     const toProcess: Promise<string>[] = [];
     for (const fileName of chunk) {
@@ -211,14 +214,21 @@ export async function handleConvert(
       const fileTypeOrig = fileName.split(".").pop() ?? "";
       const fileType = normalizeFiletype(fileTypeOrig);
       const newFileExt = normalizeOutputFiletype(convertTo);
-      let newFileName = fileName.replace(
-        new RegExp(`${fileTypeOrig}(?!.*${fileTypeOrig})`),
-        newFileExt,
-      );
+      let newFileName: string;
 
-      // For archive output converters, the actual file will have .tar extension
-      if (isArchiveOutput) {
-        newFileName = `${newFileName}.tar`;
+      // PDF Packager uses its own output filename format: pack_<chip>.tar or pack_<chip>.pdf
+      if (isPdfPackager) {
+        newFileName = getPdfPackagerOutputFileName(convertTo);
+      } else {
+        newFileName = fileName.replace(
+          new RegExp(`${fileTypeOrig}(?!.*${fileTypeOrig})`),
+          newFileExt,
+        );
+
+        // For archive output converters, the actual file will have .tar extension
+        if (isArchiveOutput) {
+          newFileName = `${newFileName}.tar`;
+        }
       }
 
       const targetPath = `${userOutputDir}${newFileName.replace(/\.tar$/, "")}`;

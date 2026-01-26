@@ -10,10 +10,19 @@
  * - 結構化、可理解、不可誤用
  */
 
-import { existsSync, mkdirSync, readdirSync, copyFileSync, writeFileSync, statSync } from "node:fs";
-import { join, basename, extname, dirname } from "node:path";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  copyFileSync,
+  writeFileSync,
+  statSync,
+  readFileSync,
+} from "node:fs";
+import { join, extname, dirname } from "node:path";
 import * as tar from "tar";
 import { TRAManifest, MultiOutputResult, OutputArtifact, TaskType } from "./traTypes";
+import { TRA_STRUCTURE } from "./constants";
 
 /**
  * TRA 封裝選項
@@ -39,15 +48,6 @@ export interface TRAPackageOptions {
 export const TRA_EXTENSION = ".tra";
 
 /**
- * 標準輸出目錄結構
- */
-export const TRA_STRUCTURE = {
-  PREVIEW_PREFIX: "preview",
-  ARTIFACTS_DIR: "artifacts",
-  MANIFEST_FILE: "manifest.json",
-} as const;
-
-/**
  * 判斷是否為多輸出任務
  *
  * 符合以下任一條件即視為多輸出任務：
@@ -60,7 +60,8 @@ export const TRA_STRUCTURE = {
  */
 export function isMultiOutputTask(
   outputDir: string,
-  outputFormat: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _outputFormat: string,
 ): { isMulti: boolean; reason?: string; fileCount: number } {
   if (!existsSync(outputDir)) {
     return { isMulti: false, fileCount: 0 };
@@ -71,9 +72,7 @@ export function isMultiOutputTask(
     .map((f) => f.name);
 
   // 排除 manifest.json 和已封裝的 .tra 檔案
-  const outputFiles = files.filter(
-    (f) => !f.endsWith(".tra") && f !== TRA_STRUCTURE.MANIFEST_FILE,
-  );
+  const outputFiles = files.filter((f) => !f.endsWith(".tra") && f !== TRA_STRUCTURE.MANIFEST_FILE);
 
   // ========== 唯一判斷標準：只看數量 ==========
   // = 1 → 單檔輸出
@@ -322,7 +321,7 @@ export async function autoPackageMultiOutput(
   // 讀取 manifest
   const manifestPath = join(outputDir, TRA_STRUCTURE.MANIFEST_FILE);
   const manifest = existsSync(manifestPath)
-    ? (JSON.parse(require("fs").readFileSync(manifestPath, "utf-8")) as TRAManifest)
+    ? (JSON.parse(readFileSync(manifestPath, "utf-8")) as TRAManifest)
     : ({
         platform: "ConvertX-CN",
         task_type: "multi-output",

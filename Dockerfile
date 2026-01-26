@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN 官方 Docker Image
-# 版本：v0.1.17 - CPU-only 輕量版
+# 版本：v0.1.18 - CPU-only 輕量版
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -48,7 +48,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN - 完全離線化檔案轉換服務"
-LABEL org.opencontainers.image.version="v0.1.17"
+LABEL org.opencontainers.image.version="v0.1.18"
 WORKDIR /app
 
 # 設定非互動模式
@@ -300,7 +300,10 @@ RUN uv pip install --system --break-system-packages --no-cache "markitdown[all]"
 RUN uv pip install --system --break-system-packages --no-cache ocrmypdf
 
 # 6.7 pdf2zh（PDFMathTranslate）
-RUN uv pip install --system --break-system-packages --no-cache pdf2zh
+# 💡 固定 pdfminer.six<20251229 以避免 scs AttributeError
+# 💡 使用穩定版 pdf2zh==1.9.11，避免 2.0 破壞性變更
+RUN uv pip install --system --break-system-packages --no-cache "pdfminer.six<20251229" && \
+  uv pip install --system --break-system-packages --no-cache "pdf2zh==1.9.11"
 
 # 6.8 babeldoc
 RUN uv pip install --system --break-system-packages --no-cache babeldoc || \

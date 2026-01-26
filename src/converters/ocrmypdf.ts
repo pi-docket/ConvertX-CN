@@ -142,12 +142,16 @@ function runOcrMyPdf(
       "1", // 輕度優化
       "--deskew", // 自動校正傾斜
       "--rotate-pages", // 自動偵測頁面方向
+      "--output-type",
+      "pdf", // 避開 Ghostscript 10.0.0-10.02.0 的 bug
       "--jobs",
       "2", // 使用 2 個並行處理
       inputPath,
       outputPath,
     ];
-    console.log(`[OCRmyPDF]    ✅ 參數: --skip-text --optimize 1 --deskew --rotate-pages`);
+    console.log(
+      `[OCRmyPDF]    ✅ 參數: --skip-text --optimize 1 --deskew --rotate-pages --output-type pdf`,
+    );
 
     // 階段 3：執行 OCR
     console.log(`[OCRmyPDF] 📋 階段 3/5：執行 Tesseract OCR...`);

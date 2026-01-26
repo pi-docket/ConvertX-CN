@@ -53,8 +53,3 @@ export const TRA_STRUCTURE = {
   /** Manifest 檔案名稱 */
   MANIFEST_FILE: "manifest.json",
 } as const;
-
-/**
- * 多輸出任務觸發門檻
- */
-export const MULTI_OUTPUT_THRESHOLD = 1;

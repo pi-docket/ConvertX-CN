@@ -341,7 +341,9 @@ export function convert(
   ) {
     // 對於多頁格式，預設只取第一頁
     inputPath = `${filePath}[0]`;
-    console.log("[GraphicsMagick Governance] Multi-page input detected, extracting first page only");
+    console.log(
+      "[GraphicsMagick Governance] Multi-page input detected, extracting first page only",
+    );
   }
 
   return new Promise((resolve, reject) => {

@@ -111,120 +111,13 @@ export interface MultiOutputResult {
 }
 
 /**
- * TRA 封裝結果
- */
-export interface TRAPackageResult {
-  /** 是否成功 */
-  success: boolean;
-  /** .tra 檔案路徑 */
-  traPath: string;
-  /** manifest 內容 */
-  manifest: TRAManifest;
-  /** 錯誤訊息（如果失敗） */
-  error?: string;
-}
-
-/**
- * 多輸出任務偵測模式
- */
-export const MULTI_OUTPUT_PATTERNS = {
-  /** 序列命名模式 */
-  SEQUENCE: [
-    /%\d*d/, // printf 格式（如 %03d）
-    /_\d{2,4}\./, // _0001.jpg
-    /-\d{2,4}\./, // -0001.jpg
-  ],
-  /** 頁面命名模式 */
-  PAGES: [/page[-_]?\d+/i, /p[-_]?\d+/i],
-  /** 影格命名模式 */
-  FRAMES: [/frame[-_]?\d+/i, /f[-_]?\d+/i],
-  /** 分割命名模式 */
-  SPLIT: [/chunk[-_]?\d+/i, /part[-_]?\d+/i, /shard[-_]?\d+/i, /segment[-_]?\d+/i],
-  /** 圖塊命名模式 */
-  TILES: [/tile[-_]?\d+/i, /block[-_]?\d+/i],
-} as const;
-
-/**
- * 引擎多輸出特性
- */
-export interface EngineMultiOutputConfig {
-  /** 引擎名稱 */
-  name: string;
-  /** 是否可能產生多輸出 */
-  canProduceMultiOutput: boolean;
-  /** 多輸出觸發條件 */
-  triggers?: string[];
-  /** 預設輸出命名模式 */
-  outputPattern?: string;
-}
-
-/**
- * 各引擎的多輸出配置
- */
-export const ENGINE_MULTI_OUTPUT_CONFIG: Record<string, EngineMultiOutputConfig> = {
-  ffmpeg: {
-    name: "FFmpeg",
-    canProduceMultiOutput: true,
-    triggers: ["image2", "sequence", "%d", "fps", "frame", "-r"],
-    outputPattern: "%04d",
-  },
-  imagemagick: {
-    name: "ImageMagick",
-    canProduceMultiOutput: true,
-    triggers: ["[", "]", "-scene", "-adjoin"],
-    outputPattern: "-%04d",
-  },
-  graphicsmagick: {
-    name: "GraphicsMagick",
-    canProduceMultiOutput: true,
-    triggers: ["[", "]", "-scene", "+adjoin"],
-    outputPattern: "-%04d",
-  },
-  libreoffice: {
-    name: "LibreOffice",
-    canProduceMultiOutput: true,
-    triggers: ["pdf", "pages"],
-    outputPattern: "_page_%04d",
-  },
-  pandoc: {
-    name: "Pandoc",
-    canProduceMultiOutput: true,
-    triggers: ["--split-level", "--epub-chapter"],
-    outputPattern: "chapter_%03d",
-  },
-  pdfpackager: {
-    name: "PDF Packager",
-    canProduceMultiOutput: true,
-    triggers: ["png-*", "jpg-*", "jpeg-*", "all-*"],
-    outputPattern: "page_%04d",
-  },
-  mineru: {
-    name: "MinerU",
-    canProduceMultiOutput: true,
-    triggers: ["md-t", "md-i"],
-    // outputPattern 省略，因為 MinerU 已使用 tar 封裝
-  },
-  assimp: {
-    name: "Assimp",
-    canProduceMultiOutput: true,
-    triggers: ["multi-mesh", "scene"],
-    outputPattern: "mesh_%03d",
-  },
-};
-
-/**
  * FFmpeg 像素格式治理
  *
  * 禁止使用 deprecated 格式，強制使用正確替代方案
  */
 export const PIXEL_FORMAT_GOVERNANCE = {
   /** 禁止使用的格式 */
-  DEPRECATED: [
-    "yuvj420p",
-    "yuvj422p",
-    "yuvj444p",
-    "yuvj440p",
-  ],
+  DEPRECATED: ["yuvj420p", "yuvj422p", "yuvj444p", "yuvj440p"],
   /** 正確的替代格式 */
   REPLACEMENT: {
     yuvj420p: { pixFmt: "yuv420p", colorRange: "pc" },
