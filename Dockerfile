@@ -140,12 +140,12 @@ RUN apt-get update --fix-missing && \
 # 4.3.1 編譯安裝 Ghostscript 10.06.0（解決 OCRmyPDF 與舊版 GS 的相容性問題）
 # ⚠️ 重要：Ghostscript 10.0.0-10.02.0 有嚴重 regression，會導致 OCRmyPDF 失敗
 # 📦 從官方源碼編譯，確保使用最新穩定版
+# 📝 使用 Ghostscript 內建庫避免 "Mixing local libtiff with shared libjpeg" 錯誤
 ARG GHOSTSCRIPT_VERSION=10.06.0
 RUN set -ex && \
   apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  build-essential pkg-config libpng-dev libjpeg-dev \
-  libtiff-dev libfreetype-dev libfontconfig1-dev zlib1g-dev && \
+  build-essential pkg-config libfreetype-dev libfontconfig1-dev zlib1g-dev && \
   cd /tmp && \
   curl -fsSL --retry 3 --retry-delay 5 \
   "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10060/ghostscript-${GHOSTSCRIPT_VERSION}.tar.gz" \
@@ -154,7 +154,6 @@ RUN set -ex && \
   cd ghostscript-${GHOSTSCRIPT_VERSION} && \
   ./configure --prefix=/usr/local \
   --disable-cups \
-  --with-system-libtiff \
   --without-x && \
   make -j$(nproc) && \
   make install && \
