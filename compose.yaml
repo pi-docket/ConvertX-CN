@@ -212,7 +212,7 @@ services:
       # - FFMPEG_ARGS=-hwaccel vaapi
 
       # 最大同時轉換數（0 = 無限制）
-      # - MAX_CONVERT_PROCESS=4
+      # - MAX_CONVERT_PROCESS=0
 
   # ===========================================================================
   # ConvertX API Server（選用服務）
