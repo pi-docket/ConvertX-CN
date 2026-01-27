@@ -100,20 +100,17 @@ function formatFileSize(bytes: number): string {
  * 使用 pdftotext 檢測 PDF 中的文字數量
  *
  * @param filePath PDF 檔案路徑
- * @param execFile execFile 函數
  * @returns true 如果是純圖片型 PDF
  */
-function checkIfImageOnlyPdf(
-  filePath: string,
-  execFile: ExecFileFn = execFileOriginal,
-): Promise<boolean> {
+function checkIfImageOnlyPdf(filePath: string): Promise<boolean> {
   return new Promise((resolve) => {
     // 使用 pdftotext 提取文字，檢查是否為空或僅有極少量文字
-    execFile(
+    // 直接使用 execFileOriginal 以支援 maxBuffer 選項
+    execFileOriginal(
       "pdftotext",
       ["-q", filePath, "-"],
       { maxBuffer: 1024 * 1024 }, // 1MB buffer
-      (error: Error | null, stdout: string) => {
+      (error, stdout) => {
         if (error) {
           // pdftotext 失敗，假設為圖片型 PDF
           console.log(`[OCRmyPDF] ⚠️ pdftotext 執行失敗，假設為圖片型 PDF`);
@@ -182,7 +179,9 @@ function runOcrMyPdf(
     // - 圖片型 PDF（無文字層）→ 使用 --force-ocr
     // - 文字型 PDF（有文字層）→ 使用 --skip-text
     const ocrMode = forceOcr ? "--force-ocr" : "--skip-text";
-    console.log(`[OCRmyPDF]    ✅ OCR 策略: ${forceOcr ? "強制 OCR (圖片型 PDF)" : "跳過已有文字 (文字型 PDF)"}`);
+    console.log(
+      `[OCRmyPDF]    ✅ OCR 策略: ${forceOcr ? "強制 OCR (圖片型 PDF)" : "跳過已有文字 (文字型 PDF)"}`,
+    );
 
     const args = [
       "-l",
@@ -328,7 +327,7 @@ export async function convert(
 
     // 步驟 3：檢測 PDF 類型（圖片型或文字型）
     console.log(`[OCRmyPDF] 🔍 檢測 PDF 類型...`);
-    const isImageOnly = await checkIfImageOnlyPdf(filePath, execFile);
+    const isImageOnly = await checkIfImageOnlyPdf(filePath);
     console.log(
       `[OCRmyPDF]    PDF 類型: ${isImageOnly ? "圖片型（將使用 --force-ocr）" : "文字型（將使用 --skip-text）"}`,
     );
