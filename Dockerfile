@@ -130,12 +130,43 @@ RUN apt-get update --fix-missing && \
   locales ca-certificates curl wget unzip openssl git xz-utils && \
   rm -rf /var/lib/apt/lists/*
 
-# 4.3 核心轉換工具
+# 4.3 核心轉換工具（不包含 Ghostscript，稍後從源碼編譯）
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  assimp-utils dcraw dvisvgm ghostscript graphicsmagick \
+  assimp-utils dcraw dvisvgm graphicsmagick \
   mupdf-tools poppler-utils potrace qpdf && \
   rm -rf /var/lib/apt/lists/*
+
+# 4.3.1 編譯安裝 Ghostscript 10.06.0（解決 OCRmyPDF 與舊版 GS 的相容性問題）
+# ⚠️ 重要：Ghostscript 10.0.0-10.02.0 有嚴重 regression，會導致 OCRmyPDF 失敗
+# 📦 從官方源碼編譯，確保使用最新穩定版
+ARG GHOSTSCRIPT_VERSION=10.06.0
+RUN set -ex && \
+  apt-get update --fix-missing && \
+  apt-get install -y --no-install-recommends \
+  build-essential pkg-config libpng-dev libjpeg-dev \
+  libtiff-dev libfreetype-dev libfontconfig1-dev zlib1g-dev && \
+  cd /tmp && \
+  curl -fsSL --retry 3 --retry-delay 5 \
+  "https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10060/ghostscript-${GHOSTSCRIPT_VERSION}.tar.gz" \
+  -o ghostscript.tar.gz && \
+  tar -xzf ghostscript.tar.gz && \
+  cd ghostscript-${GHOSTSCRIPT_VERSION} && \
+  ./configure --prefix=/usr/local \
+  --disable-cups \
+  --with-system-libtiff \
+  --without-x && \
+  make -j$(nproc) && \
+  make install && \
+  ldconfig && \
+  cd / && rm -rf /tmp/ghostscript* && \
+  apt-get remove -y build-essential pkg-config && \
+  apt-get autoremove -y && \
+  rm -rf /var/lib/apt/lists/* && \
+  echo "✅ Ghostscript $(gs --version) 編譯安裝完成"
+
+# 確保新的 gs 在 PATH 最前面
+ENV PATH="/usr/local/bin:${PATH}"
 
 # 4.4 dasel（JSON/YAML/TOML 轉換）
 RUN set -ex && \
@@ -310,20 +341,27 @@ RUN uv pip install --system --break-system-packages --no-cache babeldoc || \
   echo "⚠️ babeldoc 安裝可能有警告"
 
 # 6.9 MinerU（僅 AMD64，CPU-only 模式）
-# 💡 使用 mineru（不含 [all]）避免安裝 PyTorch CUDA（節省 ~5-8GB）
-# 💡 MinerU 會自動使用 pipeline backend 在純 CPU 環境運行
+# 💡 明確安裝 PyTorch CPU 版本，避免 torch 未定義錯誤
+# 💡 使用官方 PyTorch CPU wheel（不含 CUDA）
 # 💡 設置 CUDA_VISIBLE_DEVICES="" 強制使用 CPU
 RUN set -ex && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
   echo "⚠️ ARM64：MinerU 不支援，跳過安裝"; \
   else \
-  uv pip install --system --break-system-packages --no-cache -U mineru; \
+  echo "📦 安裝 PyTorch CPU 版本..." && \
+  uv pip install --system --break-system-packages --no-cache \
+    torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
+  echo "📦 安裝 MinerU..." && \
+  uv pip install --system --break-system-packages --no-cache -U mineru && \
+  echo "✅ PyTorch + MinerU 安裝完成"; \
   fi
 
-# MinerU CPU-only 環境變數
+# MinerU CPU-only 環境變數（強制 CPU 模式）
 ENV CUDA_VISIBLE_DEVICES=""
 ENV MINERU_USE_CPU="1"
+ENV MINERU_DEVICE_MODE="cpu"
+ENV TORCH_DEVICE="cpu"
 
 # 6.10 tiktoken
 RUN uv pip install --system --break-system-packages --no-cache tiktoken

@@ -22,7 +22,7 @@
   },
   "nav": {
     "history": "History",
-    "account": "Settings",
+    "account": "Account",
     "logout": "Logout",
     "login": "Login",
     "register": "Register",

@@ -96,17 +96,61 @@ function formatFileSize(bytes: number): string {
 }
 
 /**
+ * 檢查 PDF 是否為純圖片型（無文字層）
+ * 使用 pdftotext 檢測 PDF 中的文字數量
+ *
+ * @param filePath PDF 檔案路徑
+ * @param execFile execFile 函數
+ * @returns true 如果是純圖片型 PDF
+ */
+function checkIfImageOnlyPdf(
+  filePath: string,
+  execFile: ExecFileFn = execFileOriginal,
+): Promise<boolean> {
+  return new Promise((resolve) => {
+    // 使用 pdftotext 提取文字，檢查是否為空或僅有極少量文字
+    execFile(
+      "pdftotext",
+      ["-q", filePath, "-"],
+      { maxBuffer: 1024 * 1024 }, // 1MB buffer
+      (error: Error | null, stdout: string) => {
+        if (error) {
+          // pdftotext 失敗，假設為圖片型 PDF
+          console.log(`[OCRmyPDF] ⚠️ pdftotext 執行失敗，假設為圖片型 PDF`);
+          resolve(true);
+          return;
+        }
+
+        // 統計非空白字元數量
+        const textContent = stdout.replace(/\s+/g, "");
+        const charCount = textContent.length;
+
+        // 如果提取的文字少於 50 個字元，認為是圖片型 PDF
+        // 這個閾值可以過濾掉頁碼、浮水印等少量文字
+        const isImageOnly = charCount < 50;
+        console.log(
+          `[OCRmyPDF]    文字字元數: ${charCount}，判斷: ${isImageOnly ? "圖片型 PDF" : "文字型 PDF"}`,
+        );
+        resolve(isImageOnly);
+      },
+    );
+  });
+}
+
+/**
  * 執行 ocrmypdf 進行 PDF OCR 處理
  *
  * @param inputPath 輸入 PDF 路徑
  * @param outputPath 輸出 PDF 路徑
  * @param lang OCR 語言
+ * @param forceOcr 是否強制 OCR（用於圖片型 PDF）
  * @param execFile execFile 函數
  */
 function runOcrMyPdf(
   inputPath: string,
   outputPath: string,
   lang: string,
+  forceOcr: boolean,
   execFile: ExecFileFn = execFileOriginal,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -115,7 +159,7 @@ function runOcrMyPdf(
     console.log(`[OCRmyPDF] ========================================`);
 
     // 階段 1：驗證輸入檔案
-    console.log(`[OCRmyPDF] 📋 階段 1/5：驗證輸入檔案`);
+    console.log(`[OCRmyPDF] 📋 階段 1/6：驗證輸入檔案`);
     if (!existsSync(inputPath)) {
       reject(new Error(`Input file not found: ${inputPath}`));
       return;
@@ -125,7 +169,7 @@ function runOcrMyPdf(
     console.log(`[OCRmyPDF]    ✅ 檔案大小: ${formatFileSize(inputStats.size)}`);
 
     // 階段 2：準備 OCR 參數
-    console.log(`[OCRmyPDF] 📋 階段 2/5：準備 OCR 參數`);
+    console.log(`[OCRmyPDF] 📋 階段 2/6：準備 OCR 參數`);
     const isMultiLang = lang.includes("+");
     if (isMultiLang) {
       console.log(`[OCRmyPDF]    ✅ OCR 模式: 多語言自動檢測`);
@@ -134,16 +178,22 @@ function runOcrMyPdf(
       console.log(`[OCRmyPDF]    ✅ OCR 語言: ${lang}`);
     }
 
+    // 根據 PDF 類型選擇正確的 OCR 策略
+    // - 圖片型 PDF（無文字層）→ 使用 --force-ocr
+    // - 文字型 PDF（有文字層）→ 使用 --skip-text
+    const ocrMode = forceOcr ? "--force-ocr" : "--skip-text";
+    console.log(`[OCRmyPDF]    ✅ OCR 策略: ${forceOcr ? "強制 OCR (圖片型 PDF)" : "跳過已有文字 (文字型 PDF)"}`);
+
     const args = [
       "-l",
       lang,
-      "--skip-text", // 跳過已有文字的頁面
+      ocrMode, // 根據 PDF 類型動態選擇
       "--optimize",
       "1", // 輕度優化
       "--deskew", // 自動校正傾斜
       "--rotate-pages", // 自動偵測頁面方向
       "--output-type",
-      "pdf", // 避開 Ghostscript 10.0.0-10.02.0 的 bug
+      "pdf", // 輸出 PDF 格式
       "--jobs",
       "2", // 使用 2 個並行處理
       inputPath,
@@ -154,7 +204,7 @@ function runOcrMyPdf(
     );
 
     // 階段 3：執行 OCR
-    console.log(`[OCRmyPDF] 📋 階段 3/5：執行 Tesseract OCR...`);
+    console.log(`[OCRmyPDF] 📋 階段 3/6：執行 Tesseract OCR...`);
     console.log(`[OCRmyPDF]    ⏳ 處理中（大型 PDF 可能需要數分鐘）...`);
     const startTime = Date.now();
 
@@ -162,16 +212,16 @@ function runOcrMyPdf(
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 
       if (error) {
-        // 階段 3 失敗處理
+        // 階段 3 失敗處理（OCR 執行錯誤）
         console.log(`[OCRmyPDF]    ❌ OCR 處理失敗（耗時 ${elapsed}s）`);
 
         // 檢查特定錯誤類型
         if (stderr && stderr.includes("PriorOcrFoundError")) {
-          console.log(`[OCRmyPDF] 📋 階段 4/5：PDF 已有文字層，跳過 OCR`);
+          console.log(`[OCRmyPDF] 📋 階段 4/6：PDF 已有文字層，跳過 OCR`);
           console.log(`[OCRmyPDF]    ✅ 複製原始檔案...`);
           try {
             copyFileSync(inputPath, outputPath);
-            console.log(`[OCRmyPDF] 📋 階段 5/5：完成`);
+            console.log(`[OCRmyPDF] 📋 階段 6/6：完成`);
             console.log(`[OCRmyPDF]    ✅ 輸出: ${basename(outputPath)}`);
             console.log(`[OCRmyPDF] ========================================`);
             console.log(`[OCRmyPDF] ✅ OCR 完成（PDF 已有文字層）`);
@@ -208,8 +258,8 @@ function runOcrMyPdf(
         console.log(`[OCRmyPDF]    stdout: ${stdout}`);
       }
 
-      // 階段 4：驗證輸出
-      console.log(`[OCRmyPDF] 📋 階段 4/5：驗證輸出檔案`);
+      // 階段 5：驗證輸出
+      console.log(`[OCRmyPDF] 📋 階段 5/6：驗證輸出檔案`);
       if (!existsSync(outputPath)) {
         console.log(`[OCRmyPDF]    ❌ 輸出檔案未生成`);
         reject(new Error(`OCR output file not found: ${outputPath}`));
@@ -220,8 +270,8 @@ function runOcrMyPdf(
       console.log(`[OCRmyPDF]    ✅ 輸出檔案: ${basename(outputPath)}`);
       console.log(`[OCRmyPDF]    ✅ 檔案大小: ${formatFileSize(outputStats.size)}`);
 
-      // 階段 5：完成
-      console.log(`[OCRmyPDF] 📋 階段 5/5：處理完成`);
+      // 階段 6：完成
+      console.log(`[OCRmyPDF] 📋 階段 6/6：處理完成`);
       console.log(`[OCRmyPDF] ========================================`);
       console.log(`[OCRmyPDF] ✅ OCR 處理成功完成！`);
       console.log(`[OCRmyPDF]    📥 輸入: ${formatFileSize(inputStats.size)}`);
@@ -276,9 +326,16 @@ export async function convert(
       console.log(`[OCRmyPDF]    ✅ 目錄已存在`);
     }
 
-    // 步驟 3：執行 OCR
+    // 步驟 3：檢測 PDF 類型（圖片型或文字型）
+    console.log(`[OCRmyPDF] 🔍 檢測 PDF 類型...`);
+    const isImageOnly = await checkIfImageOnlyPdf(filePath, execFile);
+    console.log(
+      `[OCRmyPDF]    PDF 類型: ${isImageOnly ? "圖片型（將使用 --force-ocr）" : "文字型（將使用 --skip-text）"}`,
+    );
+
+    // 步驟 4：執行 OCR
     console.log(`[OCRmyPDF] 🚀 開始 OCR 處理...`);
-    await runOcrMyPdf(filePath, targetPath, ocrLang, execFile);
+    await runOcrMyPdf(filePath, targetPath, ocrLang, isImageOnly, execFile);
 
     console.log(``);
     console.log(`[OCRmyPDF] ╔════════════════════════════════════════╗`);
