@@ -351,7 +351,7 @@ RUN set -ex && \
   else \
   echo "📦 安裝 PyTorch CPU 版本..." && \
   uv pip install --system --break-system-packages --no-cache \
-    torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
+  torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
   echo "📦 安裝 MinerU..." && \
   uv pip install --system --break-system-packages --no-cache -U mineru && \
   echo "✅ PyTorch + MinerU 安裝完成"; \
