@@ -70,6 +70,33 @@ export const BaseHtml = ({
         name="twitter:description"
         content="支援 PDF、Word、Excel、圖片、影片等 100+ 種格式互轉"
       />
+      <meta name="twitter:site" content="@ConvertXCN" />
+
+      {/* JSON-LD 結構化資料 - 網站識別 */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "ConvertX-CN",
+          alternateName: "ConvertX 中文版",
+          url: "https://convertx-cn.bioailab.qzz.io",
+          description:
+            "ConvertX-CN 是免費的線上檔案轉換工具，支援 PDF、Word、Excel、圖片、影片等 100+ 種格式互轉。",
+          publisher: {
+            "@type": "Organization",
+            name: "ConvertX-CN",
+            url: "https://convertx-cn.bioailab.qzz.io",
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: "https://convertx-cn.bioailab.qzz.io/?q={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
+          },
+        })}
+      </script>
 
       <meta name="theme-color" content="#a5d601" />
       <title safe>{title}</title>
