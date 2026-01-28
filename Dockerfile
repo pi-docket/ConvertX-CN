@@ -291,6 +291,13 @@ RUN apt-get update --fix-missing && \
 ARG IMAGEMAGICK_VERSION=7.1.2-13
 RUN set -ex && \
   apt-get update --fix-missing && \
+  # 運行時依賴（不會被 autoremove）
+  apt-get install -y --no-install-recommends \
+  libpng16-16 libjpeg62-turbo libtiff6 libwebp7 libwebpmux3 libwebpdemux2 \
+  libheif1 libjxl0.7 libraw23 libopenjp2-7 \
+  libfreetype6 libfontconfig1 libxml2 \
+  liblcms2-2 libzip4 libbz2-1.0 libzstd1 libgomp1 && \
+  # 編譯時依賴
   apt-get install -y --no-install-recommends \
   build-essential pkg-config \
   libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
@@ -322,14 +329,19 @@ RUN set -ex && \
   # 📦 縮小 binary 大小
   find /usr/local/bin -name 'magick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
   find /usr/local/lib -name 'libMagick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
-  # 🧹 清理編譯檔案
+  # 🧹 清理編譯檔案（只移除 -dev 包和編譯工具）
   cd / && rm -rf /tmp/imagemagick* /tmp/ImageMagick* && \
   rm -rf /usr/local/share/doc/ImageMagick* && \
   rm -rf /usr/local/share/ImageMagick*/www && \
-  apt-get remove -y build-essential pkg-config && \
+  apt-get remove -y build-essential pkg-config \
+  libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
+  libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
+  libfreetype-dev libfontconfig1-dev libxml2-dev \
+  liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
   apt-get autoremove -y && \
   rm -rf /var/lib/apt/lists/* && \
   # ✅ 驗證安裝（使用 magick 命令）
+  /usr/local/bin/magick --version && \
   echo "✅ ImageMagick $(magick --version 2>&1 | head -1) 編譯安裝完成"
 
 # 4.9.2 libvips 8.18.0 - 從源碼編譯安裝
@@ -567,17 +579,24 @@ RUN uv pip install --system --break-system-packages --no-cache babeldoc || \
 # 💡 明確安裝 PyTorch CPU 版本，避免 torch 未定義錯誤
 # 💡 使用官方 PyTorch CPU wheel（不含 CUDA）
 # 💡 設置 CUDA_VISIBLE_DEVICES="" 強制使用 CPU
+# 💡 同時安裝 doclayout-yolo（MinerU hybrid/layout pipeline 必需）
 RUN set -ex && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
-  echo "⚠️ ARM64：MinerU 不支援，跳過安裝"; \
+  echo "⚠️ ARM64：MinerU 不支援，跳過安裝" && \
+  echo "MINERU_DISABLED=1" >> /etc/environment && \
+  mkdir -p /opt/convertx/disabled-engines && \
+  echo "mineru" > /opt/convertx/disabled-engines/mineru; \
   else \
   echo "📦 安裝 PyTorch CPU 版本..." && \
   uv pip install --system --break-system-packages --no-cache \
   torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
   echo "📦 安裝 MinerU..." && \
   uv pip install --system --break-system-packages --no-cache -U mineru && \
-  echo "✅ PyTorch + MinerU 安裝完成"; \
+  echo "📦 安裝 doclayout-yolo（MinerU hybrid pipeline 必需）..." && \
+  uv pip install --system --break-system-packages --no-cache doclayout-yolo && \
+  echo "✅ PyTorch + MinerU + doclayout-yolo 安裝完成" && \
+  python3 -c "from doclayout_yolo import YOLOv10; print('✅ doclayout_yolo 模組驗證成功')"; \
   fi
 
 # MinerU CPU-only 環境變數（強制 CPU 模式）
