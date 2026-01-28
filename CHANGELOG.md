@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.1.19](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.19) (2026-01-28)
+
+Docker 構建修復與 SEO 優化版本。
+
+### 🐛 Bug Fixes
+
+- **ImageMagick 運行時庫修復**：修復 Docker build 時 `magick` 命令找不到的問題
+  - 問題原因：`apt-get autoremove` 意外移除運行時共享庫（libpng、libjpeg 等）
+  - 修復方案：分離運行時庫（-16、-62 等）與編譯依賴（-dev），只移除 -dev 包
+
+- **MinerU doclayout_yolo 模組修復**：修復 `mineru -m auto` 出現 `ModuleNotFoundError: No module named 'doclayout_yolo'` 錯誤
+  - 問題原因：`doclayout-yolo` 不是 MinerU 的直接依賴，但 hybrid/layout pipeline 需要它
+  - 修復方案：在 Dockerfile 中額外安裝 `doclayout-yolo` 並驗證模組載入
+
+### ✨ Features
+
+- **版本公告靜態檔**：新增 `public/version.json` 作為官方網站版本公告
+  - 用於 Cloudflare Pages 部署，供客戶端查詢最新版本
+  - 包含 app、version、updatedAt 欄位
+
+### 🎨 SEO 優化
+
+- **JSON-LD 結構化資料**：添加 WebSite schema 結構化資料
+  - 修正 Google 搜尋結果顯示「DigitalPlat」而非「ConvertX-CN」的問題
+  - 添加 publisher、potentialAction 等 schema.org 屬性
+- **Twitter Card 增強**：添加 `twitter:site` meta 標籤
+
+### 📦 Build
+
+- **ARM64 MinerU 標記**：ARM64 平台添加 disabled 標記檔案
+  - 創建 `/opt/convertx/disabled-engines/mineru`
+  - 設置 `MINERU_DISABLED=1` 環境變數
+
+---
+
 ## [0.1.18](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.18) (2026-01-26)
 
 輸出治理系統與轉換器修復版本。
