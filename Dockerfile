@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN 官方 Docker Image
-# 版本：v0.1.18 - CPU-only 輕量版
+# 版本：v0.1.19 - CPU-only 輕量版
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -48,7 +48,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN - 完全離線化檔案轉換服務"
-LABEL org.opencontainers.image.version="v0.1.18"
+LABEL org.opencontainers.image.version="v0.1.19"
 WORKDIR /app
 
 # 設定非互動模式
@@ -189,38 +189,38 @@ RUN set -ex && \
   mkdir -p /opt/convertx/disabled-engines && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
-    echo "🔧 [ARM64] 嘗試從源碼編譯 resvg..." && \
-    apt-get update --fix-missing && \
-    apt-get install -y --no-install-recommends build-essential curl && \
-    if command -v rustc >/dev/null 2>&1; then \
-      echo "✅ Rust 已安裝"; \
-    else \
-      echo "📦 安裝 Rust..." && \
-      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal && \
-      export PATH="$HOME/.cargo/bin:$PATH"; \
-    fi && \
-    export PATH="$HOME/.cargo/bin:$PATH" && \
-    if cargo install resvg --version ${RESVG_VERSION} --locked 2>/dev/null; then \
-      cp "$HOME/.cargo/bin/resvg" /usr/local/bin/resvg && \
-      chmod +x /usr/local/bin/resvg && \
-      echo "✅ [ARM64] resvg v${RESVG_VERSION} 源碼編譯完成"; \
-    else \
-      echo "⚠️ [ARM64] resvg source build failed, feature disabled" && \
-      echo "resvg" > /opt/convertx/disabled-engines/resvg && \
-      echo "RESVG_DISABLED=1" >> /etc/environment; \
-    fi && \
-    rm -rf "$HOME/.cargo" "$HOME/.rustup" && \
-    apt-get remove -y build-essential && apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*; \
+  echo "🔧 [ARM64] 嘗試從源碼編譯 resvg..." && \
+  apt-get update --fix-missing && \
+  apt-get install -y --no-install-recommends build-essential curl && \
+  if command -v rustc >/dev/null 2>&1; then \
+  echo "✅ Rust 已安裝"; \
   else \
-    curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
-      "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-linux-x86_64.tar.gz" \
-      -o /tmp/resvg.tar.gz && \
-    tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
-    mv /tmp/resvg /usr/local/bin/resvg && \
-    chmod +x /usr/local/bin/resvg && \
-    rm -rf /tmp/resvg.tar.gz && \
-    echo "✅ [AMD64] resvg v${RESVG_VERSION} 官方 binary 安裝完成"; \
+  echo "📦 安裝 Rust..." && \
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal && \
+  export PATH="$HOME/.cargo/bin:$PATH"; \
+  fi && \
+  export PATH="$HOME/.cargo/bin:$PATH" && \
+  if cargo install resvg --version ${RESVG_VERSION} --locked 2>/dev/null; then \
+  cp "$HOME/.cargo/bin/resvg" /usr/local/bin/resvg && \
+  chmod +x /usr/local/bin/resvg && \
+  echo "✅ [ARM64] resvg v${RESVG_VERSION} 源碼編譯完成"; \
+  else \
+  echo "⚠️ [ARM64] resvg source build failed, feature disabled" && \
+  echo "resvg" > /opt/convertx/disabled-engines/resvg && \
+  echo "RESVG_DISABLED=1" >> /etc/environment; \
+  fi && \
+  rm -rf "$HOME/.cargo" "$HOME/.rustup" && \
+  apt-get remove -y build-essential && apt-get autoremove -y && \
+  rm -rf /var/lib/apt/lists/*; \
+  else \
+  curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
+  "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-linux-x86_64.tar.gz" \
+  -o /tmp/resvg.tar.gz && \
+  tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
+  mv /tmp/resvg /usr/local/bin/resvg && \
+  chmod +x /usr/local/bin/resvg && \
+  rm -rf /tmp/resvg.tar.gz && \
+  echo "✅ [AMD64] resvg v${RESVG_VERSION} 官方 binary 安裝完成"; \
   fi
 
 # 4.6 deark（編譯安裝）
