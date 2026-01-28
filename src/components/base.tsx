@@ -81,7 +81,7 @@ export const BaseHtml = ({
           alternateName: "ConvertX 中文版",
           url: "https://convertx-cn.bioailab.qzz.io",
           description:
-            "ConvertX-CN 是免費的線上檔案轉換工具，支援 PDF、Word、Excel、圖片、影片等 100+ 種格式互轉。",
+            "ConvertX-CN 是免費的線上檔案轉換工具，支援 PDF、Word、Excel、圖片、影片等 1000+ 種格式互轉。",
           publisher: {
             "@type": "Organization",
             name: "ConvertX-CN",
