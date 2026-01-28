@@ -297,6 +297,12 @@ RUN set -ex && \
   libheif1 libjxl0.7 libraw23 libopenjp2-7 \
   libfreetype6 libfontconfig1 libxml2 \
   liblcms2-2 libzip4 libbz2-1.0 libzstd1 libgomp1 && \
+  # 🔒 標記運行時依賴為手動安裝，防止 autoremove 移除
+  apt-mark manual \
+  libpng16-16 libjpeg62-turbo libtiff6 libwebp7 libwebpmux3 libwebpdemux2 \
+  libheif1 libjxl0.7 libraw23 libopenjp2-7 \
+  libfreetype6 libfontconfig1 libxml2 \
+  liblcms2-2 libzip4 libbz2-1.0 libzstd1 libgomp1 && \
   # 編譯時依賴
   apt-get install -y --no-install-recommends \
   build-essential pkg-config \
