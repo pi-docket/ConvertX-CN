@@ -252,9 +252,9 @@ RUN set -ex && \
   rm -rf /var/lib/apt/lists/* && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
-    CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-arm64.txz"; \
+  CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-arm64.txz"; \
   else \
-    CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz"; \
+  CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz"; \
   fi && \
   echo "📦 下載 Calibre ${CALIBRE_VERSION}..." && \
   curl -fsSL --retry 3 --retry-delay 5 "${CALIBRE_URL}" -o /tmp/calibre.txz && \
