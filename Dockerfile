@@ -281,24 +281,19 @@ RUN apt-get update --fix-missing && \
   inkscape libheif-examples libjxl-tools xauth xvfb && \
   rm -rf /var/lib/apt/lists/*
 
-# 4.9.1 ImageMagick 7.1.1-47 - 從源碼編譯安裝
-# 📦 版本 7.1.1-47 - 2025-01 官方最新穩定版
+# 4.9.1 ImageMagick 7 - 從源碼編譯安裝
+# 📦 版本 7.1.1-47 - 官方最新穩定版
 # 💡 v7.x 新功能：HEIF/AVIF 支援增強、JXL 改進、更好的色彩管理
 # 💡 命令工具：`magick`（取代 v6.x 的 `convert`）
-# ⚠️ apt 版本為 6.x，缺少許多新格式支援
 # 🔗 https://github.com/ImageMagick/ImageMagick/releases
 # 🌍 跨架構：AMD64/ARM64 均從源碼編譯
+# ⚠️ 使用兩個 RUN 層：第一層編譯安裝，第二層清理（避免依賴被誤刪）
 ARG IMAGEMAGICK_VERSION=7.1.1-47
+# 第一層：安裝依賴 + 編譯 + 安裝
 RUN set -ex && \
   apt-get update --fix-missing && \
-  # 運行時依賴（不會被 autoremove）
+  # 運行時依賴
   apt-get install -y --no-install-recommends \
-  libpng16-16 libjpeg62-turbo libtiff6 libwebp7 libwebpmux3 libwebpdemux2 \
-  libheif1 libjxl0.7 libraw23 libopenjp2-7 \
-  libfreetype6 libfontconfig1 libxml2 \
-  liblcms2-2 libzip4 libbz2-1.0 libzstd1 libgomp1 && \
-  # 🔒 標記運行時依賴為手動安裝，防止 autoremove 移除
-  apt-mark manual \
   libpng16-16 libjpeg62-turbo libtiff6 libwebp7 libwebpmux3 libwebpdemux2 \
   libheif1 libjxl0.7 libraw23 libopenjp2-7 \
   libfreetype6 libfontconfig1 libxml2 \
@@ -310,18 +305,20 @@ RUN set -ex && \
   libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
   libfreetype-dev libfontconfig1-dev libxml2-dev \
   liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
-  # 下載並驗證
+  # 下載源碼
   cd /tmp && \
   echo "📦 下載 ImageMagick ${IMAGEMAGICK_VERSION}..." && \
   curl -fsSL --retry 3 --retry-delay 5 \
   "https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${IMAGEMAGICK_VERSION}.tar.gz" \
   -o imagemagick.tar.gz && \
-  ls -la imagemagick.tar.gz && \
   tar -xzf imagemagick.tar.gz && \
   cd ImageMagick-${IMAGEMAGICK_VERSION} && \
+  # 配置（使用 LDFLAGS 確保運行時能找到庫）
   echo "🔧 配置 ImageMagick..." && \
   ./configure --prefix=/usr/local \
+  LDFLAGS="-Wl,-rpath,/usr/local/lib" \
   --with-modules \
+  --enable-shared \
   --enable-hdri \
   --with-quantum-depth=16 \
   --with-heic \
@@ -333,48 +330,48 @@ RUN set -ex && \
   --with-fontconfig \
   --without-x \
   --disable-docs && \
+  # 編譯安裝
   echo "🔨 編譯 ImageMagick..." && \
   make -j$(nproc) && \
   make install && \
-  ldconfig && \
-  # ✅ 驗證安裝（在清理前）
+  # 更新動態連結庫快取
+  ldconfig /usr/local/lib && \
+  # 驗證安裝
   echo "🔍 驗證 ImageMagick 安裝..." && \
   ls -la /usr/local/bin/magick && \
   /usr/local/bin/magick --version && \
-  # 📦 縮小 binary 大小
-  find /usr/local/bin -name 'magick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
-  find /usr/local/lib -name 'libMagick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
-  # 🧹 清理編譯檔案（只移除 -dev 包和編譯工具，不使用 autoremove）
+  # 清理源碼
   cd / && rm -rf /tmp/imagemagick* /tmp/ImageMagick* && \
   rm -rf /usr/local/share/doc/ImageMagick* && \
   rm -rf /usr/local/share/ImageMagick*/www && \
-  apt-get remove -y --purge build-essential pkg-config \
+  echo "✅ ImageMagick 編譯安裝完成"
+
+# 第二層：清理編譯依賴（獨立的 RUN 層，不會影響已編譯的二進制）
+RUN set -ex && \
+  apt-get remove -y --purge \
+  build-essential pkg-config \
   libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
   libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
   libfreetype-dev libfontconfig1-dev libxml2-dev \
   liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
+  apt-get autoremove -y && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
-  # ✅ 重新載入動態庫並最終驗證
+  # 最終驗證（確保清理後仍可運行）
   ldconfig && \
   /usr/local/bin/magick --version && \
-  echo "✅ ImageMagick $(magick --version 2>&1 | head -1) 編譯安裝完成"
+  echo "✅ ImageMagick 清理完成，仍可正常運行"
 
-# 4.9.2 libvips 8.18.0 - 從源碼編譯安裝
-# 📦 版本 8.18.0 - 2025-12 官方最新穩定版
-# 💡 v8.18 新功能：UltraHDR 支援、RAW 相機檔案載入、Oklab 色彩空間
-# ⚠️ apt 版本為 8.14.x，缺少新格式和效能改進
+# 4.9.2 libvips 8.16.0 - 從源碼編譯安裝
+# 📦 版本 8.16.0 - 官方穩定版（比 apt 的 8.14.x 新）
+# 💡 v8.16 新功能：效能改進、更好的格式支援
 # 🔗 https://github.com/libvips/libvips/releases
-# 🌍 跨架構：AMD64/ARM64 均從源碼編譯
-ARG LIBVIPS_VERSION=8.18.0
+ARG LIBVIPS_VERSION=8.16.0
+# 第一層：安裝依賴 + 編譯 + 安裝
 RUN set -ex && \
   apt-get update --fix-missing && \
-  # 🔒 安裝並標記運行時依賴（防止被移除）
+  # 運行時依賴
   apt-get install -y --no-install-recommends \
-  libglib2.0-0 libexpat1 libpoppler-glib8 librsvg2-2 \
-  libexif12 libgsf-1-114 liborc-0.4-0 \
-  libcfitsio10 libopenslide0 libfftw3-3 && \
-  apt-mark manual \
   libglib2.0-0 libexpat1 libpoppler-glib8 librsvg2-2 \
   libexif12 libgsf-1-114 liborc-0.4-0 \
   libcfitsio10 libopenslide0 libfftw3-3 && \
@@ -387,33 +384,43 @@ RUN set -ex && \
   libpoppler-glib-dev librsvg2-dev liblcms2-dev \
   libexif-dev libgsf-1-dev liborc-0.4-dev \
   libcfitsio-dev libopenslide-dev libfftw3-dev && \
+  # 下載源碼
   cd /tmp && \
+  echo "📦 下載 libvips ${LIBVIPS_VERSION}..." && \
   curl -fsSL --retry 3 --retry-delay 5 \
   "https://github.com/libvips/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.xz" \
   -o vips.tar.xz && \
   tar -xJf vips.tar.xz && \
   cd vips-${LIBVIPS_VERSION} && \
-  meson setup build --prefix=/usr/local --buildtype=release && \
+  # 配置編譯
+  meson setup build --prefix=/usr/local --buildtype=release \
+  -Dc_link_args="-Wl,-rpath,/usr/local/lib" && \
   ninja -C build && \
   ninja -C build install && \
-  ldconfig && \
-  # 📦 縮小 binary 大小
-  find /usr/local/bin -name 'vips*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
-  find /usr/local/lib -name 'libvips*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
-  # 🧹 清理編譯檔案（不使用 autoremove）
+  ldconfig /usr/local/lib && \
+  # 驗證
+  vips --version && \
+  # 清理源碼
   cd / && rm -rf /tmp/vips* && \
   rm -rf /usr/local/share/doc/vips && \
-  apt-get remove -y --purge build-essential pkg-config meson ninja-build \
+  echo "✅ libvips 編譯安裝完成"
+
+# 第二層：清理編譯依賴
+RUN set -ex && \
+  apt-get remove -y --purge \
+  build-essential pkg-config meson ninja-build \
   libglib2.0-dev libexpat1-dev \
   libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
   libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
   libpoppler-glib-dev librsvg2-dev liblcms2-dev \
   libexif-dev libgsf-1-dev liborc-0.4-dev \
   libcfitsio-dev libopenslide-dev libfftw3-dev && \
+  apt-get autoremove -y && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
   ldconfig && \
-  echo "✅ libvips $(vips --version 2>&1 | head -1) 編譯安裝完成"
+  vips --version && \
+  echo "✅ libvips 清理完成，仍可正常運行"
 
 # 4.10 文件處理工具（Pandoc）
 # 📦 Pandoc v3.8.3 - 從官方 GitHub 安裝最新穩定版
