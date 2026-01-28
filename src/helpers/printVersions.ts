@@ -44,7 +44,7 @@ const tools = [
     formatter: (s: string) => s.split("\n")[0],
   },
   {
-    cmd: "convert --version",
+    cmd: "magick --version",
     name: "ImageMagick",
     errorMsg: "ImageMagick is not installed.",
     formatter: (s: string) => s.split("\n")[0]?.replace("Version: ", ""),

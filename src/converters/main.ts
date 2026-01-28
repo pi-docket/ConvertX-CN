@@ -21,7 +21,7 @@ import { convert as convertLibreOffice, properties as propertiesLibreOffice } fr
 import { convert as convertMsgconvert, properties as propertiesMsgconvert } from "./msgconvert";
 import { convert as convertPandoc, properties as propertiesPandoc } from "./pandoc";
 import { convert as convertPotrace, properties as propertiesPotrace } from "./potrace";
-import { convert as convertresvg, properties as propertiesresvg } from "./resvg";
+import { convert as convertresvg, properties as propertiesresvg, isResvgAvailable } from "./resvg";
 import { convert as convertImage, properties as propertiesImage } from "./vips";
 import { convert as convertVtracer, properties as propertiesVtracer } from "./vtracer";
 import { convert as convertVcf, properties as propertiesVcf } from "./vcf";
@@ -43,6 +43,20 @@ import { dirname } from "node:path";
 
 // This should probably be reconstructed so that the functions are not imported instead the functions hook into this to make the converters more modular
 
+// 🌍 跨架構引擎可用性檢查
+const disabledEngines: string[] = [];
+
+// 檢查 resvg 可用性（ARM64 可能禁用）
+if (!isResvgAvailable()) {
+  console.warn("⚠️ [Engine] resvg is disabled on this platform (ARM64 build failed)");
+  disabledEngines.push("resvg");
+}
+
+// 導出禁用引擎列表供 UI 使用
+export function getDisabledEngines(): string[] {
+  return [...disabledEngines];
+}
+
 const properties: Record<
   string,
   {
@@ -57,7 +71,7 @@ const properties: Record<
           {
             description: string;
             type: string;
-            default: number;
+            default: number | string | boolean;
           }
         >
       >;

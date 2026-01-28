@@ -1,9 +1,31 @@
 import { execFile as execFileOriginal } from "node:child_process";
 import { ExecFileFn } from "./types";
 
+/**
+ * Pandoc 3.8.3 轉換器
+ *
+ * 📦 版本更新：3.8.3 (2025-12)
+ *
+ * 🆕 v3.8.3 新增格式：
+ *   - 輸入：asciidoc, pptx, xlsx（新增！）
+ *   - 輸出：bbcode, bbcode_steam, bbcode_fluxbb, bbcode_phpbb,
+ *           bbcode_hubzilla, bbcode_xenforo, vimdoc（新增！）
+ *
+ * 📝 API 變更說明：
+ *   - 新增 --syntax-highlighting 選項（取代廢棄的 --no-highlighting 和 --highlight-style）
+ *   - 新增 xml 格式（輸入/輸出）用於 AST 表示
+ *   - 移除 compact_definition_lists 擴展
+ *   - 新增 table_attributes 擴展（預設啟用）
+ */
 export const properties = {
   from: {
     text: [
+      // v3.8.3 新增輸入格式
+      "asciidoc", // 🆕 v3.8.3 新增
+      "pptx", // 🆕 v3.8.3 新增
+      "xlsx", // 🆕 v3.8.3 新增
+      "xml", // 🆕 v3.8 新增（AST 表示）
+      // 原有格式
       "textile",
       "tikiwiki",
       "tsv",
@@ -51,6 +73,16 @@ export const properties = {
   },
   to: {
     text: [
+      // v3.8.3 新增輸出格式 - BBCode 變體
+      "bbcode", // 🆕 v3.8.3 基本 BBCode
+      "bbcode_steam", // 🆕 v3.8.3 Steam 論壇格式
+      "bbcode_fluxbb", // 🆕 v3.8.3 FluxBB 論壇格式
+      "bbcode_phpbb", // 🆕 v3.8.3 phpBB 論壇格式
+      "bbcode_hubzilla", // 🆕 v3.8.3 Hubzilla 格式
+      "bbcode_xenforo", // 🆕 v3.8.3 XenForo 論壇格式
+      "vimdoc", // 🆕 v3.8.1 Vim 文件格式
+      "xml", // 🆕 v3.8 AST 表示
+      // 原有格式
       "tei",
       "texinfo",
       "textile",

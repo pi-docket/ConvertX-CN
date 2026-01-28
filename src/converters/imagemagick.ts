@@ -2,6 +2,26 @@ import { execFile as execFileOriginal } from "node:child_process";
 import { ExecFileFn } from "./types";
 
 /**
+ * ImageMagick 7.1.2-13 轉換器
+ *
+ * 📦 版本更新：7.1.2-13 (2026-01)
+ *
+ * 🆕 v7.x 主要功能：
+ *   - HEIF/AVIF 格式完整支援
+ *   - JXL (JPEG XL) 編解碼改進
+ *   - 更好的色彩管理和 ICC 支援
+ *   - OpenCL 加速支援
+ *   - 新增 HDRI (High Dynamic Range Imaging)
+ *
+ * ⚠️ 從 v6.x 升級注意事項：
+ *   - 命令行工具從 `convert` 改為 `magick`
+ *   - 預設使用 HDRI（16-bit quantum）
+ *   - 部分選項語法有變化
+ *
+ * 📝 相容性處理：
+ *   - 本專案使用 `magick` 命令（v7 官方建議）
+ *   - 環境變數 IMAGEMAGICK_COMMAND 可覆蓋
+ *
  * ConvertX-CN ImageMagick 輸出治理
  *
  * 多輸出處理規則：
@@ -494,9 +514,9 @@ export function convert(
     outputArgs.push("-background", "white", "-alpha", "remove");
   }
 
-  // 使用 convert（ImageMagick 6.x，Debian bookworm）
-  // ImageMagick 7.x 使用 magick，但 Debian bookworm 只有 6.x
-  const imCommand = process.env.IMAGEMAGICK_COMMAND || "convert";
+  // 使用 magick（ImageMagick 7.x 官方建議）
+  // ImageMagick 6.x 使用 convert，但 7.x 改用 magick
+  const imCommand = process.env.IMAGEMAGICK_COMMAND || "magick";
 
   // 組合輸入路徑（處理多頁輸入）
   let inputPath = filePath;
