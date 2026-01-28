@@ -231,11 +231,40 @@ RUN apt-get update --fix-missing && \
   libvips-tools xauth xvfb && \
   rm -rf /var/lib/apt/lists/*
 
-# 4.10 文件處理工具（Calibre, Pandoc）
+# 4.10 文件處理工具（Pandoc）
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  calibre libemail-outlook-message-perl pandoc && \
+  libemail-outlook-message-perl pandoc && \
   rm -rf /var/lib/apt/lists/*
+
+# 4.10.1 Calibre 官方安裝（解決 libxml2 版本衝突）
+# ⚠️ 重要：apt 版本 Calibre 會導致 html5-parser/lxml libxml2 ABI 衝突
+# 📦 使用官方 binary installer，自帶獨立 runtime，版本 8.16.2
+# 📝 官方 installer 包含所有依賴，不會污染系統 Python
+ARG CALIBRE_VERSION=8.16.2
+RUN set -ex && \
+  apt-get update --fix-missing && \
+  apt-get install -y --no-install-recommends \
+  libgl1 libegl1 libxkbcommon0 libxcb-cursor0 \
+  libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+  libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
+  libopengl0 libxcb-xinerama0 libxcb-xkb1 xz-utils && \
+  rm -rf /var/lib/apt/lists/* && \
+  ARCH=$(uname -m) && \
+  if [ "$ARCH" = "aarch64" ]; then \
+    CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-arm64.txz"; \
+  else \
+    CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz"; \
+  fi && \
+  echo "📦 下載 Calibre ${CALIBRE_VERSION}..." && \
+  curl -fsSL --retry 3 --retry-delay 5 "${CALIBRE_URL}" -o /tmp/calibre.txz && \
+  mkdir -p /opt/calibre && \
+  tar -xJf /tmp/calibre.txz -C /opt/calibre && \
+  rm -f /tmp/calibre.txz && \
+  ln -sf /opt/calibre/ebook-convert /usr/local/bin/ebook-convert && \
+  ln -sf /opt/calibre/ebook-meta /usr/local/bin/ebook-meta && \
+  ln -sf /opt/calibre/calibre /usr/local/bin/calibre && \
+  echo "✅ Calibre $(ebook-convert --version 2>&1 | head -1) 安裝完成"
 
 # 4.11 LibreOffice
 RUN apt-get update --fix-missing && \
@@ -300,15 +329,29 @@ RUN fc-cache -fv
 # ==============================================================================
 FROM fonts AS python-tools
 
-# 6.1 Python 基礎環境
+# 6.1 Python 基礎環境 + libxml2/lxml 編譯依賴
+# ⚠️ 重要：安裝 libxml2-dev 和 libxslt-dev 用於從源碼編譯 lxml
+# 📝 這解決了 html5-parser 與 lxml 使用不同 libxml2 版本的衝突
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
   python3 python3-pip python3-venv python3-numpy \
-  python3-tinycss2 python3-opencv python3-img2pdf && \
+  python3-tinycss2 python3-opencv python3-img2pdf \
+  libxml2-dev libxslt-dev python3-dev build-essential && \
   rm -rf /var/lib/apt/lists/*
 
 # 6.2 uv 套件管理器
 RUN pip3 install --no-cache-dir --break-system-packages uv
+
+# 6.2.1 修復 lxml libxml2 衝突
+# ⚠️ 關鍵修復：強制從源碼編譯 lxml，使用系統 libxml2
+# 📝 這確保 html5-parser 和 lxml 使用相同的 libxml2 版本
+# 📝 解決 Calibre HTML → EPUB 轉換的 RuntimeError
+RUN set -ex && \
+  echo "🔧 移除預編譯的 lxml（如果存在）..." && \
+  pip3 uninstall -y lxml 2>/dev/null || true && \
+  echo "🔧 從源碼編譯安裝 lxml..." && \
+  pip3 install --no-cache-dir --break-system-packages --no-binary lxml lxml && \
+  echo "✅ lxml 安裝完成，使用系統 libxml2"
 
 # 6.3 huggingface_hub
 RUN uv pip install --system --break-system-packages --no-cache huggingface_hub

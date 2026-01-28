@@ -111,37 +111,64 @@ jobs:
     needs: build-test-image
     timeout-minutes: 30
 
-    services:
-      # Run the test image as a service
-      convertx:
-        image: ${{ needs.build-test-image.outputs.image }}
-        credentials:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-        ports:
-          - 3000:3000
-        options: >-
-          --health-cmd "curl -f http://localhost:3000/healthcheck || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-          --health-start-period 30s
-
     steps:
+      # 🧹 磁碟空間清理（必須在 docker pull 之前執行）
+      - name: Free disk space (aggressive)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Additional disk cleanup
+        run: |
+          echo "🧹 Additional disk cleanup..."
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/share/swift || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          docker system prune -af --volumes || true
+          echo "📊 Available space after cleanup:"
+          df -h /
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull test image
+        run: docker pull ${{ needs.build-test-image.outputs.image }}
+
+      - name: Start ConvertX service
+        run: |
+          docker run -d --name convertx-service \
+            -p 3000:3000 \
+            ${{ needs.build-test-image.outputs.image }}
+          echo "⏳ Waiting for service to start..."
+          sleep 10
 
       - name: Wait for service to be healthy
         run: |
           echo "⏳ Waiting for ConvertX service..."
-          for i in {1..30}; do
+          for i in {1..60}; do
             if curl -f http://localhost:3000/healthcheck 2>/dev/null; then
               echo "✅ Service is healthy!"
-              break
+              exit 0
             fi
-            echo "Waiting... ($i/30)"
+            echo "Waiting... ($i/60)"
             sleep 5
           done
+          echo "❌ Service failed to become healthy"
+          docker logs convertx-service
+          exit 1
 
       - name: Run API health check
         run: |
