@@ -344,18 +344,19 @@ RUN set -ex && \
   # 📦 縮小 binary 大小
   find /usr/local/bin -name 'magick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
   find /usr/local/lib -name 'libMagick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
-  # 🧹 清理編譯檔案（只移除 -dev 包和編譯工具）
+  # 🧹 清理編譯檔案（只移除 -dev 包和編譯工具，不使用 autoremove）
   cd / && rm -rf /tmp/imagemagick* /tmp/ImageMagick* && \
   rm -rf /usr/local/share/doc/ImageMagick* && \
   rm -rf /usr/local/share/ImageMagick*/www && \
-  apt-get remove -y build-essential pkg-config \
+  apt-get remove -y --purge build-essential pkg-config \
   libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
   libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
   libfreetype-dev libfontconfig1-dev libxml2-dev \
   liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
-  apt-get autoremove -y && \
+  apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
-  # ✅ 最終驗證
+  # ✅ 重新載入動態庫並最終驗證
+  ldconfig && \
   /usr/local/bin/magick --version && \
   echo "✅ ImageMagick $(magick --version 2>&1 | head -1) 編譯安裝完成"
 
@@ -368,6 +369,16 @@ RUN set -ex && \
 ARG LIBVIPS_VERSION=8.18.0
 RUN set -ex && \
   apt-get update --fix-missing && \
+  # 🔒 安裝並標記運行時依賴（防止被移除）
+  apt-get install -y --no-install-recommends \
+  libglib2.0-0 libexpat1 libpoppler-glib8 librsvg2-2 \
+  libexif12 libgsf-1-114 liborc-0.4-0 \
+  libcfitsio10 libopenslide0 libfftw3-3 && \
+  apt-mark manual \
+  libglib2.0-0 libexpat1 libpoppler-glib8 librsvg2-2 \
+  libexif12 libgsf-1-114 liborc-0.4-0 \
+  libcfitsio10 libopenslide0 libfftw3-3 && \
+  # 編譯時依賴
   apt-get install -y --no-install-recommends \
   build-essential pkg-config meson ninja-build \
   libglib2.0-dev libexpat1-dev \
@@ -389,12 +400,19 @@ RUN set -ex && \
   # 📦 縮小 binary 大小
   find /usr/local/bin -name 'vips*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
   find /usr/local/lib -name 'libvips*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
-  # 🧹 清理編譯檔案
+  # 🧹 清理編譯檔案（不使用 autoremove）
   cd / && rm -rf /tmp/vips* && \
   rm -rf /usr/local/share/doc/vips && \
-  apt-get remove -y build-essential pkg-config meson ninja-build && \
-  apt-get autoremove -y && \
+  apt-get remove -y --purge build-essential pkg-config meson ninja-build \
+  libglib2.0-dev libexpat1-dev \
+  libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
+  libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
+  libpoppler-glib-dev librsvg2-dev liblcms2-dev \
+  libexif-dev libgsf-1-dev liborc-0.4-dev \
+  libcfitsio-dev libopenslide-dev libfftw3-dev && \
+  apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
+  ldconfig && \
   echo "✅ libvips $(vips --version 2>&1 | head -1) 編譯安裝完成"
 
 # 4.10 文件處理工具（Pandoc）
