@@ -281,14 +281,14 @@ RUN apt-get update --fix-missing && \
   inkscape libheif-examples libjxl-tools xauth xvfb && \
   rm -rf /var/lib/apt/lists/*
 
-# 4.9.1 ImageMagick 7.1.2-13 - 從源碼編譯安裝
-# 📦 版本 7.1.2-13 - 2026-01 官方最新穩定版
+# 4.9.1 ImageMagick 7.1.1-47 - 從源碼編譯安裝
+# 📦 版本 7.1.1-47 - 2025-01 官方最新穩定版
 # 💡 v7.x 新功能：HEIF/AVIF 支援增強、JXL 改進、更好的色彩管理
 # 💡 命令工具：`magick`（取代 v6.x 的 `convert`）
 # ⚠️ apt 版本為 6.x，缺少許多新格式支援
 # 🔗 https://github.com/ImageMagick/ImageMagick/releases
 # 🌍 跨架構：AMD64/ARM64 均從源碼編譯
-ARG IMAGEMAGICK_VERSION=7.1.2-13
+ARG IMAGEMAGICK_VERSION=7.1.1-47
 RUN set -ex && \
   apt-get update --fix-missing && \
   # 運行時依賴（不會被 autoremove）
@@ -304,12 +304,16 @@ RUN set -ex && \
   libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
   libfreetype-dev libfontconfig1-dev libxml2-dev \
   liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
+  # 下載並驗證
   cd /tmp && \
+  echo "📦 下載 ImageMagick ${IMAGEMAGICK_VERSION}..." && \
   curl -fsSL --retry 3 --retry-delay 5 \
   "https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${IMAGEMAGICK_VERSION}.tar.gz" \
   -o imagemagick.tar.gz && \
+  ls -la imagemagick.tar.gz && \
   tar -xzf imagemagick.tar.gz && \
   cd ImageMagick-${IMAGEMAGICK_VERSION} && \
+  echo "🔧 配置 ImageMagick..." && \
   ./configure --prefix=/usr/local \
   --with-modules \
   --enable-hdri \
@@ -323,9 +327,14 @@ RUN set -ex && \
   --with-fontconfig \
   --without-x \
   --disable-docs && \
+  echo "🔨 編譯 ImageMagick..." && \
   make -j$(nproc) && \
   make install && \
   ldconfig && \
+  # ✅ 驗證安裝（在清理前）
+  echo "🔍 驗證 ImageMagick 安裝..." && \
+  ls -la /usr/local/bin/magick && \
+  /usr/local/bin/magick --version && \
   # 📦 縮小 binary 大小
   find /usr/local/bin -name 'magick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
   find /usr/local/lib -name 'libMagick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
@@ -340,7 +349,7 @@ RUN set -ex && \
   liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
   apt-get autoremove -y && \
   rm -rf /var/lib/apt/lists/* && \
-  # ✅ 驗證安裝（使用 magick 命令）
+  # ✅ 最終驗證
   /usr/local/bin/magick --version && \
   echo "✅ ImageMagick $(magick --version 2>&1 | head -1) 編譯安裝完成"
 
