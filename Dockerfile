@@ -177,19 +177,50 @@ RUN set -ex && \
   -o /usr/local/bin/dasel && \
   chmod +x /usr/local/bin/dasel
 
-# 4.5 resvg（僅 AMD64）
+# 4.5 resvg（跨架構支援）
+# 📦 版本 v0.46.0 - 2026-01 官方最新穩定版
+# 💡 v0.46.0 新功能：改進 SVG 渲染、更好的文字處理
+# 🔗 https://github.com/linebender/resvg/releases/tag/v0.46.0
+# 🌍 跨架構策略：
+#   - AMD64: 官方預編譯 binary
+#   - ARM64: 嘗試 source build，失敗則跳過並警告
+ARG RESVG_VERSION=0.46.0
 RUN set -ex && \
+  mkdir -p /opt/convertx/disabled-engines && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
-  echo "⚠️ resvg 無 ARM64 版本，跳過"; \
+    echo "🔧 [ARM64] 嘗試從源碼編譯 resvg..." && \
+    apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends build-essential curl && \
+    if command -v rustc >/dev/null 2>&1; then \
+      echo "✅ Rust 已安裝"; \
+    else \
+      echo "📦 安裝 Rust..." && \
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal && \
+      export PATH="$HOME/.cargo/bin:$PATH"; \
+    fi && \
+    export PATH="$HOME/.cargo/bin:$PATH" && \
+    if cargo install resvg --version ${RESVG_VERSION} --locked 2>/dev/null; then \
+      cp "$HOME/.cargo/bin/resvg" /usr/local/bin/resvg && \
+      chmod +x /usr/local/bin/resvg && \
+      echo "✅ [ARM64] resvg v${RESVG_VERSION} 源碼編譯完成"; \
+    else \
+      echo "⚠️ [ARM64] resvg source build failed, feature disabled" && \
+      echo "resvg" > /opt/convertx/disabled-engines/resvg && \
+      echo "RESVG_DISABLED=1" >> /etc/environment; \
+    fi && \
+    rm -rf "$HOME/.cargo" "$HOME/.rustup" && \
+    apt-get remove -y build-essential && apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*; \
   else \
-  curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
-  "https://github.com/linebender/resvg/releases/download/v0.44.0/resvg-linux-x86_64.tar.gz" \
-  -o /tmp/resvg.tar.gz && \
-  tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
-  mv /tmp/resvg /usr/local/bin/resvg && \
-  chmod +x /usr/local/bin/resvg && \
-  rm -rf /tmp/resvg.tar.gz; \
+    curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
+      "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-linux-x86_64.tar.gz" \
+      -o /tmp/resvg.tar.gz && \
+    tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
+    mv /tmp/resvg /usr/local/bin/resvg && \
+    chmod +x /usr/local/bin/resvg && \
+    rm -rf /tmp/resvg.tar.gz && \
+    echo "✅ [AMD64] resvg v${RESVG_VERSION} 官方 binary 安裝完成"; \
   fi
 
 # 4.6 deark（編譯安裝）
@@ -218,24 +249,149 @@ RUN set -ex && \
   chmod +x /usr/local/bin/vtracer && \
   rm -rf /tmp/vtracer.tar.gz
 
-# 4.8 FFmpeg
+# 4.8 FFmpeg 7.1.1 - 官方靜態編譯版
+# 📦 版本 7.1.1 - 2025-03 官方最新穩定版
+# 💡 v7.x 新功能：VVC (H.266) 解碼支援、改進 AV1 編碼、新濾鏡
+# ⚠️ apt 版本過舊（約 5.x），改用官方靜態編譯確保最新功能
+# 🔗 https://ffmpeg.org/releases/
+ARG FFMPEG_VERSION=7.1.1
+RUN set -ex && \
+  apt-get update --fix-missing && \
+  apt-get install -y --no-install-recommends libva2 xz-utils && \
+  rm -rf /var/lib/apt/lists/* && \
+  ARCH=$(uname -m) && \
+  if [ "$ARCH" = "aarch64" ]; then \
+  FFMPEG_URL="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz"; \
+  else \
+  FFMPEG_URL="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz"; \
+  fi && \
+  echo "📦 下載 FFmpeg ${FFMPEG_VERSION} 靜態編譯版..." && \
+  curl -fsSL --retry 3 --retry-delay 5 "${FFMPEG_URL}" -o /tmp/ffmpeg.tar.xz && \
+  mkdir -p /tmp/ffmpeg && \
+  tar -xJf /tmp/ffmpeg.tar.xz -C /tmp/ffmpeg --strip-components=1 && \
+  cp /tmp/ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
+  cp /tmp/ffmpeg/ffprobe /usr/local/bin/ffprobe && \
+  chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe && \
+  rm -rf /tmp/ffmpeg* && \
+  echo "✅ FFmpeg $(ffmpeg -version 2>&1 | head -1) 安裝完成"
+
+# 4.9 圖像處理工具（Inkscape, libheif, libjxl 等 - ImageMagick 和 vips 獨立安裝）
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  ffmpeg libavcodec-extra libva2 && \
+  inkscape libheif-examples libjxl-tools xauth xvfb && \
   rm -rf /var/lib/apt/lists/*
 
-# 4.9 圖像處理工具（ImageMagick, Inkscape, vips 等）
-RUN apt-get update --fix-missing && \
+# 4.9.1 ImageMagick 7.1.2-13 - 從源碼編譯安裝
+# 📦 版本 7.1.2-13 - 2026-01 官方最新穩定版
+# 💡 v7.x 新功能：HEIF/AVIF 支援增強、JXL 改進、更好的色彩管理
+# 💡 命令工具：`magick`（取代 v6.x 的 `convert`）
+# ⚠️ apt 版本為 6.x，缺少許多新格式支援
+# 🔗 https://github.com/ImageMagick/ImageMagick/releases
+# 🌍 跨架構：AMD64/ARM64 均從源碼編譯
+ARG IMAGEMAGICK_VERSION=7.1.2-13
+RUN set -ex && \
+  apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  imagemagick inkscape libheif-examples libjxl-tools \
-  libvips-tools xauth xvfb && \
-  rm -rf /var/lib/apt/lists/*
+  build-essential pkg-config \
+  libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
+  libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
+  libfreetype-dev libfontconfig1-dev libxml2-dev \
+  liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
+  cd /tmp && \
+  curl -fsSL --retry 3 --retry-delay 5 \
+  "https://github.com/ImageMagick/ImageMagick/archive/refs/tags/${IMAGEMAGICK_VERSION}.tar.gz" \
+  -o imagemagick.tar.gz && \
+  tar -xzf imagemagick.tar.gz && \
+  cd ImageMagick-${IMAGEMAGICK_VERSION} && \
+  ./configure --prefix=/usr/local \
+  --with-modules \
+  --enable-hdri \
+  --with-quantum-depth=16 \
+  --with-heic \
+  --with-jxl \
+  --with-raw \
+  --with-webp \
+  --with-openjp2 \
+  --with-freetype \
+  --with-fontconfig \
+  --without-x \
+  --disable-docs && \
+  make -j$(nproc) && \
+  make install && \
+  ldconfig && \
+  # 📦 縮小 binary 大小
+  find /usr/local/bin -name 'magick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
+  find /usr/local/lib -name 'libMagick*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
+  # 🧹 清理編譯檔案
+  cd / && rm -rf /tmp/imagemagick* /tmp/ImageMagick* && \
+  rm -rf /usr/local/share/doc/ImageMagick* && \
+  rm -rf /usr/local/share/ImageMagick*/www && \
+  apt-get remove -y build-essential pkg-config && \
+  apt-get autoremove -y && \
+  rm -rf /var/lib/apt/lists/* && \
+  # ✅ 驗證安裝（使用 magick 命令）
+  echo "✅ ImageMagick $(magick --version 2>&1 | head -1) 編譯安裝完成"
+
+# 4.9.2 libvips 8.18.0 - 從源碼編譯安裝
+# 📦 版本 8.18.0 - 2025-12 官方最新穩定版
+# 💡 v8.18 新功能：UltraHDR 支援、RAW 相機檔案載入、Oklab 色彩空間
+# ⚠️ apt 版本為 8.14.x，缺少新格式和效能改進
+# 🔗 https://github.com/libvips/libvips/releases
+# 🌍 跨架構：AMD64/ARM64 均從源碼編譯
+ARG LIBVIPS_VERSION=8.18.0
+RUN set -ex && \
+  apt-get update --fix-missing && \
+  apt-get install -y --no-install-recommends \
+  build-essential pkg-config meson ninja-build \
+  libglib2.0-dev libexpat1-dev \
+  libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
+  libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
+  libpoppler-glib-dev librsvg2-dev liblcms2-dev \
+  libexif-dev libgsf-1-dev liborc-0.4-dev \
+  libcfitsio-dev libopenslide-dev libfftw3-dev && \
+  cd /tmp && \
+  curl -fsSL --retry 3 --retry-delay 5 \
+  "https://github.com/libvips/libvips/releases/download/v${LIBVIPS_VERSION}/vips-${LIBVIPS_VERSION}.tar.xz" \
+  -o vips.tar.xz && \
+  tar -xJf vips.tar.xz && \
+  cd vips-${LIBVIPS_VERSION} && \
+  meson setup build --prefix=/usr/local --buildtype=release && \
+  ninja -C build && \
+  ninja -C build install && \
+  ldconfig && \
+  # 📦 縮小 binary 大小
+  find /usr/local/bin -name 'vips*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
+  find /usr/local/lib -name 'libvips*' -exec strip --strip-unneeded {} \; 2>/dev/null || true && \
+  # 🧹 清理編譯檔案
+  cd / && rm -rf /tmp/vips* && \
+  rm -rf /usr/local/share/doc/vips && \
+  apt-get remove -y build-essential pkg-config meson ninja-build && \
+  apt-get autoremove -y && \
+  rm -rf /var/lib/apt/lists/* && \
+  echo "✅ libvips $(vips --version 2>&1 | head -1) 編譯安裝完成"
 
 # 4.10 文件處理工具（Pandoc）
-RUN apt-get update --fix-missing && \
-  apt-get install -y --no-install-recommends \
-  libemail-outlook-message-perl pandoc && \
-  rm -rf /var/lib/apt/lists/*
+# 📦 Pandoc v3.8.3 - 從官方 GitHub 安裝最新穩定版
+# 💡 新功能：asciidoc/pptx/xlsx 輸入支援、bbcode 輸出支援
+ARG PANDOC_VERSION=3.8.3
+RUN set -ex && \
+  apt-get update --fix-missing && \
+  apt-get install -y --no-install-recommends libemail-outlook-message-perl && \
+  rm -rf /var/lib/apt/lists/* && \
+  ARCH=$(uname -m) && \
+  if [ "$ARCH" = "aarch64" ]; then \
+  PANDOC_ARCH="arm64"; \
+  else \
+  PANDOC_ARCH="amd64"; \
+  fi && \
+  curl -fsSL --retry 3 --retry-delay 5 \
+  "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-linux-${PANDOC_ARCH}.tar.gz" \
+  -o /tmp/pandoc.tar.gz && \
+  tar -xzf /tmp/pandoc.tar.gz -C /tmp/ && \
+  cp /tmp/pandoc-${PANDOC_VERSION}/bin/pandoc /usr/local/bin/pandoc && \
+  chmod +x /usr/local/bin/pandoc && \
+  rm -rf /tmp/pandoc* && \
+  echo "✅ Pandoc v${PANDOC_VERSION} 安裝完成"
 
 # 4.10.1 Calibre 官方安裝（解決 libxml2 版本衝突）
 # ⚠️ 重要：apt 版本 Calibre 會導致 html5-parser/lxml libxml2 ABI 衝突
@@ -266,10 +422,35 @@ RUN set -ex && \
   ln -sf /opt/calibre/calibre /usr/local/bin/calibre && \
   echo "✅ Calibre $(ebook-convert --version 2>&1 | head -1) 安裝完成"
 
-# 4.11 LibreOffice
-RUN apt-get update --fix-missing && \
-  apt-get install -y --no-install-recommends libreoffice && \
-  rm -rf /var/lib/apt/lists/*
+# 4.11 LibreOffice 25.8.4 - 官方 deb 安裝
+# 📦 版本 25.8.4 - 2026-01 官方最新穩定版
+# 💡 v25.8 新功能：改進的 PDF 匯出、更好的 DOCX 相容性、新試算表函數
+# ⚠️ apt 版本為 7.x/24.x，落後多個大版本
+# 🔗 https://www.libreoffice.org/download/download-libreoffice/
+ARG LIBREOFFICE_VERSION=25.8.4
+RUN set -ex && \
+  apt-get update --fix-missing && \
+  apt-get install -y --no-install-recommends \
+  libcairo2 libcups2 libdbus-glib-1-2 libglu1-mesa \
+  libsm6 libxinerama1 libxrandr2 libxtst6 \
+  procps fontconfig && \
+  rm -rf /var/lib/apt/lists/* && \
+  ARCH=$(uname -m) && \
+  if [ "$ARCH" = "aarch64" ]; then \
+  LO_ARCH="aarch64"; \
+  LO_URL="https://download.documentfoundation.org/libreoffice/stable/${LIBREOFFICE_VERSION}/deb/aarch64/LibreOffice_${LIBREOFFICE_VERSION}_Linux_aarch64_deb.tar.gz"; \
+  else \
+  LO_ARCH="x86_64"; \
+  LO_URL="https://download.documentfoundation.org/libreoffice/stable/${LIBREOFFICE_VERSION}/deb/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_deb.tar.gz"; \
+  fi && \
+  echo "📦 下載 LibreOffice ${LIBREOFFICE_VERSION} (${LO_ARCH})..." && \
+  curl -fsSL --retry 3 --retry-delay 5 "${LO_URL}" -o /tmp/libreoffice.tar.gz && \
+  mkdir -p /tmp/libreoffice && \
+  tar -xzf /tmp/libreoffice.tar.gz -C /tmp/libreoffice --strip-components=1 && \
+  dpkg -i /tmp/libreoffice/DEBS/*.deb || apt-get -f install -y && \
+  rm -rf /tmp/libreoffice* && \
+  ln -sf /opt/libreoffice*/program/soffice /usr/local/bin/soffice 2>/dev/null || true && \
+  echo "✅ LibreOffice $(soffice --version 2>&1 | head -1) 安裝完成"
 
 # 4.12 TexLive 基礎
 RUN apt-get update --fix-missing && \
@@ -537,7 +718,7 @@ RUN echo "======================================" && \
   \
   # 驗證核心工具
   echo "🔍 驗證核心工具..." && \
-  for cmd in ffmpeg convert gm vips inkscape pandoc soffice; do \
+  for cmd in ffmpeg magick gm vips inkscape pandoc soffice; do \
   if command -v ${cmd} >/dev/null 2>&1; then \
   echo "  ✅ ${cmd}: $(which ${cmd})"; \
   else \
@@ -585,8 +766,10 @@ RUN echo "======================================" && \
   \
   # 驗證 ImageMagick
   echo "🔍 驗證 ImageMagick..." && \
-  if command -v convert >/dev/null 2>&1; then \
-  echo "  ✅ ImageMagick: $(convert --version | head -1)"; \
+  if command -v magick >/dev/null 2>&1; then \
+  echo "  ✅ ImageMagick: $(magick --version | head -1)"; \
+  elif command -v convert >/dev/null 2>&1; then \
+  echo "  ⚠️ ImageMagick (legacy): $(convert --version | head -1)"; \
   else \
   echo "  ❌ ImageMagick 未安裝" && VALIDATION_PASSED=false; \
   fi && \

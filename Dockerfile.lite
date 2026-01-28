@@ -171,19 +171,20 @@ RUN echo "" && \
     chmod +x /usr/local/bin/dasel && \
     echo "   ✅ dasel 安裝完成"
 
-# 階段 2.2：安裝 resvg（從 GitHub 下載二進位檔案）
+# 階段 2.2：安裝 resvg v0.46.0（從 GitHub 下載二進位檔案）
+# 📦 版本 v0.46.0 - 2026-01 官方最新穩定版
 RUN echo "" && \
     echo "   🔧 階段 2.2：安裝 resvg..." && \
     ARCH=$(uname -m) && \
     if [ "$ARCH" = "aarch64" ]; then \
     echo "   ⚠️ resvg 沒有 ARM64 預編譯版本，跳過安裝"; \
     else \
-    curl -sSLf "https://github.com/linebender/resvg/releases/download/v0.44.0/resvg-linux-x86_64.tar.gz" -o /tmp/resvg.tar.gz && \
+    curl -sSLf "https://github.com/linebender/resvg/releases/download/v0.46.0/resvg-linux-x86_64.tar.gz" -o /tmp/resvg.tar.gz && \
     tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
     mv /tmp/resvg /usr/local/bin/resvg && \
     chmod +x /usr/local/bin/resvg && \
     rm -rf /tmp/resvg.tar.gz && \
-    echo "   ✅ resvg 安裝完成"; \
+    echo "   ✅ resvg v0.46.0 安裝完成"; \
     fi
 
 # 階段 3：影音處理工具（FFmpeg 精簡版）
@@ -209,16 +210,31 @@ RUN echo "" && \
     && rm -rf /var/lib/apt/lists/* && \
     echo "✅ 階段 4/6 完成：Headless 支援已安裝"
 
-# 階段 5：文件處理工具（Pandoc）
+# 階段 5：文件處理工具（Pandoc 3.8.3 官方 binary）
+# 📦 版本 v3.8.3 - 2025-12 官方最新穩定版
+# 💡 v3.8 新功能：asciidoc/pptx/xlsx 輸入、bbcode 輸出、vimdoc 格式
+ARG PANDOC_VERSION=3.8.3
 RUN echo "" && \
     echo "========================================" && \
     echo "📦 階段 5/6：安裝文件處理工具" && \
     echo "========================================" && \
     apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     libemail-outlook-message-perl \
-    pandoc \
     && rm -rf /var/lib/apt/lists/* && \
-    echo "✅ 階段 5/6 完成：Pandoc 已安裝"
+    ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ]; then \
+    PANDOC_ARCH="arm64"; \
+    else \
+    PANDOC_ARCH="amd64"; \
+    fi && \
+    curl -fsSL --retry 3 --retry-delay 5 \
+    "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-linux-${PANDOC_ARCH}.tar.gz" \
+    -o /tmp/pandoc.tar.gz && \
+    tar -xzf /tmp/pandoc.tar.gz -C /tmp/ && \
+    cp /tmp/pandoc-${PANDOC_VERSION}/bin/pandoc /usr/local/bin/pandoc && \
+    chmod +x /usr/local/bin/pandoc && \
+    rm -rf /tmp/pandoc* && \
+    echo "✅ 階段 5/6 完成：Pandoc ${PANDOC_VERSION} 已安裝"
 
 # 階段 6：LibreOffice（核心文件轉檔引擎 + 基本字型）
 # 使用完整 libreoffice 以確保所有轉檔功能正常
