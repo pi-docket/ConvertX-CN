@@ -292,19 +292,19 @@ ARG IMAGEMAGICK_VERSION=7.1.1-47
 # 第一層：安裝依賴 + 編譯 + 安裝
 RUN set -ex && \
   apt-get update --fix-missing && \
-  # 運行時依賴（libraw20 是 Debian Bookworm 的版本）
+  # 運行時依賴（libraw20 是 Debian Bookworm 的版本，libltdl7 是模塊支援必需）
   apt-get install -y --no-install-recommends \
   libpng16-16 libjpeg62-turbo libtiff6 libwebp7 libwebpmux3 libwebpdemux2 \
   libheif1 libjxl0.7 libraw20 libopenjp2-7 \
   libfreetype6 libfontconfig1 libxml2 \
-  liblcms2-2 libzip4 libbz2-1.0 libzstd1 libgomp1 && \
-  # 編譯時依賴
+  liblcms2-2 libzip4 libbz2-1.0 libzstd1 libgomp1 libltdl7 && \
+  # 編譯時依賴（libltdl-dev 是 ImageMagick 模塊支援必需）
   apt-get install -y --no-install-recommends \
   build-essential pkg-config \
   libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
   libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
   libfreetype-dev libfontconfig1-dev libxml2-dev \
-  liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
+  liblcms2-dev libzip-dev libbz2-dev libzstd-dev libltdl-dev && \
   # 下載源碼
   cd /tmp && \
   echo "📦 下載 ImageMagick ${IMAGEMAGICK_VERSION}..." && \
@@ -353,7 +353,7 @@ RUN set -ex && \
   libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
   libheif-dev libjxl-dev libraw-dev libopenjp2-7-dev \
   libfreetype-dev libfontconfig1-dev libxml2-dev \
-  liblcms2-dev libzip-dev libbz2-dev libzstd-dev && \
+  liblcms2-dev libzip-dev libbz2-dev libzstd-dev libltdl-dev && \
   apt-get autoremove -y && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
