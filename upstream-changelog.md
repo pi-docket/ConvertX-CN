@@ -1,5 +1,32 @@
 ## 📋 Upstream 變更摘要
 
+**同步時間:** 2026-01-29 18:59:32 UTC
+**Upstream 分支:** main
+**新 Commits 數量:** 1
+
+### 📝 Commit 列表
+
+```
+52af8d5 PDF to DOCX using LibreOffice, fixes #425 (#510)
+```
+
+### 📊 變更統計
+
+```
+ src/converters/libreoffice.ts        |  8 +++++---
+ tests/converters/libreoffice.test.ts | 13 ++++++++++---
+ 2 files changed, 15 insertions(+), 6 deletions(-)
+```
+
+### 🔍 變更的檔案
+
+- ✏️ **修改** `src/converters/libreoffice.ts`
+- ✏️ **修改** `tests/converters/libreoffice.test.ts`
+
+---
+
+## 📋 Upstream 變更摘要
+
 **同步時間:** 2026-01-27 02:27:50 UTC
 **Upstream 分支:** main
 **新 Commits 數量:** 1
