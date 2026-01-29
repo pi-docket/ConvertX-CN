@@ -292,10 +292,10 @@ ARG IMAGEMAGICK_VERSION=7.1.1-47
 # 第一層：安裝依賴 + 編譯 + 安裝
 RUN set -ex && \
   apt-get update --fix-missing && \
-  # 運行時依賴
+  # 運行時依賴（libraw20 是 Debian Bookworm 的版本）
   apt-get install -y --no-install-recommends \
   libpng16-16 libjpeg62-turbo libtiff6 libwebp7 libwebpmux3 libwebpdemux2 \
-  libheif1 libjxl0.7 libraw23 libopenjp2-7 \
+  libheif1 libjxl0.7 libraw20 libopenjp2-7 \
   libfreetype6 libfontconfig1 libxml2 \
   liblcms2-2 libzip4 libbz2-1.0 libzstd1 libgomp1 && \
   # 編譯時依賴
