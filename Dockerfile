@@ -370,11 +370,11 @@ ARG LIBVIPS_VERSION=8.16.0
 # 第一層：安裝依賴 + 編譯 + 安裝
 RUN set -ex && \
   apt-get update --fix-missing && \
-  # 運行時依賴
+  # 運行時依賴（libfftw3-double3 是 Debian Bookworm 的正確套件名）
   apt-get install -y --no-install-recommends \
   libglib2.0-0 libexpat1 libpoppler-glib8 librsvg2-2 \
   libexif12 libgsf-1-114 liborc-0.4-0 \
-  libcfitsio10 libopenslide0 libfftw3-3 && \
+  libcfitsio10 libopenslide0 libfftw3-double3 && \
   # 編譯時依賴
   apt-get install -y --no-install-recommends \
   build-essential pkg-config meson ninja-build \
