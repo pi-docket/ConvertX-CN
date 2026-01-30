@@ -635,8 +635,11 @@ RUN set -ex && \
   uv pip install --system --break-system-packages --no-cache -U mineru && \
   echo "📦 安裝 doclayout-yolo（MinerU hybrid pipeline 必需）..." && \
   uv pip install --system --break-system-packages --no-cache doclayout-yolo && \
-  echo "✅ PyTorch + MinerU + doclayout-yolo 安裝完成" && \
-  python3 -c "from doclayout_yolo import YOLOv10; print('✅ doclayout_yolo 模組驗證成功')"; \
+  echo "📦 安裝 ultralytics（MinerU YOLOv8 MFD 模型必需）..." && \
+  uv pip install --system --break-system-packages --no-cache ultralytics && \
+  echo "✅ PyTorch + MinerU + doclayout-yolo + ultralytics 安裝完成" && \
+  python3 -c "from doclayout_yolo import YOLOv10; print('✅ doclayout_yolo 模組驗證成功')" && \
+  python3 -c "from ultralytics import YOLO; print('✅ ultralytics 模組驗證成功')"; \
   fi
 
 # MinerU CPU-only 環境變數（強制 CPU 模式）
