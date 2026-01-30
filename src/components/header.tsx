@@ -5,6 +5,7 @@ import {
   defaultLocale,
 } from "../i18n/index";
 import { LanguageSelector } from "./languageSelector";
+import { SettingsButton } from "./settingsButton";
 import { ThemeToggle } from "./themeToggle";
 
 export const Header = ({
@@ -65,6 +66,11 @@ export const Header = ({
             >
               {t("nav", "logout")}
             </a>
+          </li>
+        ) : null}
+        {!allowUnauthenticated ? (
+          <li>
+            <SettingsButton webroot={webroot} locale={locale} t={t} />
           </li>
         ) : null}
         <li>

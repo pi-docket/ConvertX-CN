@@ -27,7 +27,8 @@
     "login": "Login",
     "register": "Register",
     "language": "Language",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "settings": "Settings"
   },
   "convert": {
     "title": "Convert",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Settings",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "passwordHint": "Leave blank if you don't want to change your password.",
+    "updateSuccess": "Settings updated successfully.",
+    "updateFailed": "Failed to update settings. Please try again.",
+    "jwtSecretTitle": "JWT Secret Settings",
+    "currentJwtSecret": "Current JWT Secret",
+    "newJwtSecret": "New JWT Secret",
+    "newJwtSecretPlaceholder": "Enter new JWT secret (at least 32 characters)",
+    "toggleVisibility": "Toggle visibility",
+    "generateRandom": "Generate random secret",
+    "jwtSecretHint": "This secret is used to sign login tokens. After changing, all users will need to log in again.",
+    "jwtSecretLengthHint": "Secret must be at least 32 characters. 64 random characters recommended.",
+    "jwtSecretWarning": "After changing JWT secret, you need to restart the service for it to take effect. All users will be logged out.",
+    "updateJwtSecret": "Update JWT Secret"
   }
 }

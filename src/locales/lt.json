@@ -27,7 +27,8 @@
     "login": "Prisijungti",
     "register": "Registruotis",
     "language": "Kalba",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Pakeisti temą",
+    "settings": "Nustatymai"
   },
   "convert": {
     "title": "Konvertuoti",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Nustatymai",
+    "newPassword": "Naujas slaptažodis",
+    "newPasswordPlaceholder": "Įveskite naują slaptažodį",
+    "passwordHint": "Palikite tuščią, jei nenorite keisti slaptažodžio.",
+    "updateSuccess": "Nustatymai sėkmingai atnaujinti.",
+    "updateFailed": "Nepavyko atnaujinti nustatymų. Bandykite dar kartą.",
+    "jwtSecretTitle": "JWT paslapties nustatymai",
+    "currentJwtSecret": "Dabartinė JWT paslaptis",
+    "newJwtSecret": "Nauja JWT paslaptis",
+    "newJwtSecretPlaceholder": "Įveskite naują JWT paslaptį (mažiausiai 32 simboliai)",
+    "toggleVisibility": "Perjungti matomumą",
+    "generateRandom": "Generuoti atsitiktinę paslaptį",
+    "jwtSecretHint": "Ši paslaptis naudojama prisijungimo žetonams pasirašyti. Po pakeitimo visi vartotojai turės prisijungti iš naujo.",
+    "jwtSecretLengthHint": "Paslaptis turi būti mažiausiai 32 simbolių. Rekomenduojama 64 atsitiktiniai simboliai.",
+    "jwtSecretWarning": "Pakeitę JWT paslaptį, turite paleisti paslaugą iš naujo, kad pakeitimai įsigaliotų. Visi vartotojai bus atjungti.",
+    "updateJwtSecret": "Atnaujinti JWT paslaptį"
   }
 }

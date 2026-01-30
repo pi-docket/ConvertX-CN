@@ -27,7 +27,8 @@
     "login": "Entrar",
     "register": "Registrar",
     "language": "Idioma",
-    "toggleTheme": "Alternar tema"
+    "toggleTheme": "Alternar tema",
+    "settings": "Configurações"
   },
   "convert": {
     "title": "Converter",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Configurações",
+    "newPassword": "Nova senha",
+    "newPasswordPlaceholder": "Digite a nova senha",
+    "passwordHint": "Deixe em branco se não quiser alterar sua senha.",
+    "updateSuccess": "Configurações atualizadas com sucesso.",
+    "updateFailed": "Falha ao atualizar as configurações. Por favor, tente novamente.",
+    "jwtSecretTitle": "Configurações do segredo JWT",
+    "currentJwtSecret": "Segredo JWT atual",
+    "newJwtSecret": "Novo segredo JWT",
+    "newJwtSecretPlaceholder": "Digite o novo segredo JWT (pelo menos 32 caracteres)",
+    "toggleVisibility": "Alternar visibilidade",
+    "generateRandom": "Gerar segredo aleatório",
+    "jwtSecretHint": "Este segredo é usado para assinar tokens de login. Após a alteração, todos os usuários precisarão fazer login novamente.",
+    "jwtSecretLengthHint": "O segredo deve ter pelo menos 32 caracteres. 64 caracteres aleatórios são recomendados.",
+    "jwtSecretWarning": "Após alterar o segredo JWT, você precisa reiniciar o serviço para que as alterações entrem em vigor. Todos os usuários serão desconectados.",
+    "updateJwtSecret": "Atualizar segredo JWT"
   }
 }

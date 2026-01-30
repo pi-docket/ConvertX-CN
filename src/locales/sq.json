@@ -27,7 +27,8 @@
     "login": "Hyni",
     "register": "Regjistrohu",
     "language": "Gjuha",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Ndrysho temën",
+    "settings": "Cilësimet"
   },
   "convert": {
     "title": "Konverto",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Cilësimet",
+    "newPassword": "Fjalëkalim i ri",
+    "newPasswordPlaceholder": "Shkruani fjalëkalimin e ri",
+    "passwordHint": "Lëreni bosh nëse nuk doni të ndryshoni fjalëkalimin.",
+    "updateSuccess": "Cilësimet u përditësuan me sukses.",
+    "updateFailed": "Përditësimi i cilësimeve dështoi. Ju lutemi provoni përsëri.",
+    "jwtSecretTitle": "Cilësimet e sekretit JWT",
+    "currentJwtSecret": "Sekreti aktual JWT",
+    "newJwtSecret": "Sekreti i ri JWT",
+    "newJwtSecretPlaceholder": "Shkruani sekretin e ri JWT (të paktën 32 karaktere)",
+    "toggleVisibility": "Ndërro dukshmërinë",
+    "generateRandom": "Gjenero sekret të rastësishëm",
+    "jwtSecretHint": "Ky sekret përdoret për të nënshkruar tokenat e hyrjes. Pas ndryshimit, të gjithë përdoruesit do të duhet të hyjnë përsëri.",
+    "jwtSecretLengthHint": "Sekreti duhet të jetë të paktën 32 karaktere. Rekomandohen 64 karaktere të rastësishme.",
+    "jwtSecretWarning": "Pas ndryshimit të sekretit JWT, duhet të rinisni shërbimin që ndryshimet të hyjnë në fuqi. Të gjithë përdoruesit do të dalin.",
+    "updateJwtSecret": "Përditëso sekretin JWT"
   }
 }

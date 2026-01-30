@@ -27,7 +27,8 @@
     "login": "登入",
     "register": "註冊",
     "language": "語言",
-    "toggleTheme": "切換主題"
+    "toggleTheme": "切換主題",
+    "settings": "設定"
   },
   "convert": {
     "title": "轉換",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "設定",
+    "newPassword": "新密碼",
+    "newPasswordPlaceholder": "輸入新密碼",
+    "passwordHint": "如不變更密碼請留空。",
+    "updateSuccess": "設定更新成功。",
+    "updateFailed": "設定更新失敗，請重試。",
+    "jwtSecretTitle": "JWT 密鑰設定",
+    "currentJwtSecret": "目前 JWT 密鑰",
+    "newJwtSecret": "新 JWT 密鑰",
+    "newJwtSecretPlaceholder": "輸入新的 JWT 密鑰（至少 32 字元）",
+    "toggleVisibility": "切換顯示/隱藏",
+    "generateRandom": "產生隨機密鑰",
+    "jwtSecretHint": "此密鑰用於簽署登入 Token。更改後所有使用者需要重新登入。",
+    "jwtSecretLengthHint": "密鑰必須至少 32 個字元。建議使用 64 個隨機字元。",
+    "jwtSecretWarning": "更改 JWT 密鑰後，需要重啟服務才能生效。所有使用者將被登出。",
+    "updateJwtSecret": "更新 JWT 密鑰"
   }
 }

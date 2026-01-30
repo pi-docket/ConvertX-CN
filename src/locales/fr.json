@@ -27,7 +27,8 @@
     "login": "Connexion",
     "register": "S'inscrire",
     "language": "Langue",
-    "toggleTheme": "Changer le thème"
+    "toggleTheme": "Changer le thème",
+    "settings": "Paramètres"
   },
   "convert": {
     "title": "Convertir",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} ko"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Entrez un nouveau mot de passe",
+    "passwordHint": "Laissez vide si vous ne souhaitez pas modifier votre mot de passe.",
+    "updateSuccess": "Paramètres mis à jour avec succès.",
+    "updateFailed": "Échec de la mise à jour des paramètres. Veuillez réessayer.",
+    "jwtSecretTitle": "Paramètres du secret JWT",
+    "currentJwtSecret": "Secret JWT actuel",
+    "newJwtSecret": "Nouveau secret JWT",
+    "newJwtSecretPlaceholder": "Entrez le nouveau secret JWT (au moins 32 caractères)",
+    "toggleVisibility": "Basculer la visibilité",
+    "generateRandom": "Générer un secret aléatoire",
+    "jwtSecretHint": "Ce secret est utilisé pour signer les jetons de connexion. Après modification, tous les utilisateurs devront se reconnecter.",
+    "jwtSecretLengthHint": "Le secret doit contenir au moins 32 caractères. 64 caractères aléatoires sont recommandés.",
+    "jwtSecretWarning": "Après avoir modifié le secret JWT, vous devez redémarrer le service pour que les changements prennent effet. Tous les utilisateurs seront déconnectés.",
+    "updateJwtSecret": "Mettre à jour le secret JWT"
   }
 }

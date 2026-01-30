@@ -27,7 +27,8 @@
     "login": "Ingia",
     "register": "Jisajili",
     "language": "Lugha",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Badilisha mandhari",
+    "settings": "Mipangilio"
   },
   "convert": {
     "title": "Badilisha",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Mipangilio",
+    "newPassword": "Nenosiri Jipya",
+    "newPasswordPlaceholder": "Ingiza nenosiri jipya",
+    "passwordHint": "Acha tupu ikiwa hutaki kubadilisha nenosiri lako.",
+    "updateSuccess": "Mipangilio imesasishwa kwa mafanikio.",
+    "updateFailed": "Imeshindwa kusasisha mipangilio. Tafadhali jaribu tena.",
+    "jwtSecretTitle": "Mipangilio ya Siri ya JWT",
+    "currentJwtSecret": "Siri ya JWT ya Sasa",
+    "newJwtSecret": "Siri Mpya ya JWT",
+    "newJwtSecretPlaceholder": "Ingiza siri mpya ya JWT (angalau herufi 32)",
+    "toggleVisibility": "Geuza mwonekano",
+    "generateRandom": "Unda siri ya nasibu",
+    "jwtSecretHint": "Siri hii inatumika kusaini tokeni za kuingia. Baada ya kubadilisha, watumiaji wote watahitajika kuingia tena.",
+    "jwtSecretLengthHint": "Siri lazima iwe angalau herufi 32. Herufi 64 za nasibu zinapendekezwa.",
+    "jwtSecretWarning": "Baada ya kubadilisha siri ya JWT, unahitaji kuanzisha upya huduma ili mabadiliko yaanze kutumika. Watumiaji wote watatoka.",
+    "updateJwtSecret": "Sasisha Siri ya JWT"
   }
 }

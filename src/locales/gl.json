@@ -27,7 +27,8 @@
     "login": "Iniciar sesión",
     "register": "Rexistrarse",
     "language": "Idioma",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Cambiar tema",
+    "settings": "Configuración"
   },
   "convert": {
     "title": "Converter",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Configuración",
+    "newPassword": "Novo contrasinal",
+    "newPasswordPlaceholder": "Introduce o novo contrasinal",
+    "passwordHint": "Deixa en branco se non queres cambiar o contrasinal.",
+    "updateSuccess": "Configuración actualizada correctamente.",
+    "updateFailed": "Erro ao actualizar a configuración. Por favor, téntao de novo.",
+    "jwtSecretTitle": "Configuración do segredo JWT",
+    "currentJwtSecret": "Segredo JWT actual",
+    "newJwtSecret": "Novo segredo JWT",
+    "newJwtSecretPlaceholder": "Introduce o novo segredo JWT (polo menos 32 caracteres)",
+    "toggleVisibility": "Alternar visibilidade",
+    "generateRandom": "Xerar segredo aleatorio",
+    "jwtSecretHint": "Este segredo úsase para asinar os tokens de inicio de sesión. Despois do cambio, todos os usuarios terán que iniciar sesión de novo.",
+    "jwtSecretLengthHint": "O segredo debe ter polo menos 32 caracteres. Recoméndanse 64 caracteres aleatorios.",
+    "jwtSecretWarning": "Despois de cambiar o segredo JWT, debes reiniciar o servizo para que os cambios teñan efecto. Todos os usuarios serán desconectados.",
+    "updateJwtSecret": "Actualizar segredo JWT"
   }
 }

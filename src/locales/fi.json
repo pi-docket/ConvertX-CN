@@ -27,7 +27,8 @@
     "login": "Kirjaudu sisään",
     "register": "Rekisteröidy",
     "language": "Kieli",
-    "toggleTheme": "Vaihda teemaa"
+    "toggleTheme": "Vaihda teemaa",
+    "settings": "Asetukset"
   },
   "convert": {
     "title": "Muunna",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Asetukset",
+    "newPassword": "Uusi salasana",
+    "newPasswordPlaceholder": "Syötä uusi salasana",
+    "passwordHint": "Jätä tyhjäksi, jos et halua vaihtaa salasanaa.",
+    "updateSuccess": "Asetukset päivitetty onnistuneesti.",
+    "updateFailed": "Asetusten päivitys epäonnistui. Yritä uudelleen.",
+    "jwtSecretTitle": "JWT-salaisuuden asetukset",
+    "currentJwtSecret": "Nykyinen JWT-salaisuus",
+    "newJwtSecret": "Uusi JWT-salaisuus",
+    "newJwtSecretPlaceholder": "Syötä uusi JWT-salaisuus (vähintään 32 merkkiä)",
+    "toggleVisibility": "Vaihda näkyvyyttä",
+    "generateRandom": "Luo satunnainen salaisuus",
+    "jwtSecretHint": "Tätä salaisuutta käytetään kirjautumistokenien allekirjoittamiseen. Muutoksen jälkeen kaikkien käyttäjien on kirjauduttava uudelleen.",
+    "jwtSecretLengthHint": "Salaisuuden on oltava vähintään 32 merkkiä. 64 satunnaista merkkiä suositellaan.",
+    "jwtSecretWarning": "JWT-salaisuuden muuttamisen jälkeen palvelu on käynnistettävä uudelleen, jotta muutokset tulevat voimaan. Kaikki käyttäjät kirjataan ulos.",
+    "updateJwtSecret": "Päivitä JWT-salaisuus"
   }
 }

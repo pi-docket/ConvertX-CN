@@ -120,6 +120,16 @@ export async function convert(
           if (useTableMode && errorStr.includes("table_mode")) {
             console.warn(`[MinerU] ⚠️ table_mode 與 vLLM 不相容，重試不帶此參數...`);
             reject(new Error("RETRY_WITHOUT_TABLE_MODE"));
+          } else if (errorStr.includes("vlm") && errorStr.includes("not configured")) {
+            // VLM 模型路徑未配置錯誤
+            console.error(`[MinerU] ❌ VLM 模型路徑未配置`);
+            console.error(`[MinerU] 💡 使用 -m txt 或 -m ocr 模式避免 VLM 需求`);
+            console.error(`[MinerU] 💡 或配置 mineru.json 中的 vlm 路徑`);
+            reject(
+              new Error(
+                "MINERU_VLM_ERROR: VLM 模型未配置。請使用 txt/ocr 模式或配置 VLM 模型路徑。",
+              ),
+            );
           } else if (errorStr.includes("torch") || errorStr.includes("NameError")) {
             // PyTorch 未安裝或版本不兼容錯誤
             console.error(`[MinerU] ❌ PyTorch 未安裝或版本不相容`);

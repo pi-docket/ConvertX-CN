@@ -103,5 +103,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "newPassword": "Mật khẩu mới",
+    "newPasswordPlaceholder": "Nhập mật khẩu mới",
+    "passwordHint": "Để trống nếu bạn không muốn thay đổi mật khẩu.",
+    "updateSuccess": "Cập nhật cài đặt thành công.",
+    "updateFailed": "Cập nhật cài đặt thất bại. Vui lòng thử lại.",
+    "jwtSecretTitle": "Cài đặt JWT Secret",
+    "currentJwtSecret": "JWT Secret hiện tại",
+    "newJwtSecret": "JWT Secret mới",
+    "newJwtSecretPlaceholder": "Nhập JWT secret mới (ít nhất 32 ký tự)",
+    "toggleVisibility": "Hiện/ẩn",
+    "generateRandom": "Tạo secret ngẫu nhiên",
+    "jwtSecretHint": "Secret này được sử dụng để ký token đăng nhập. Sau khi thay đổi, tất cả người dùng sẽ cần đăng nhập lại.",
+    "jwtSecretLengthHint": "Secret phải có ít nhất 32 ký tự. Khuyến nghị sử dụng 64 ký tự ngẫu nhiên.",
+    "jwtSecretWarning": "Sau khi thay đổi JWT secret, bạn cần khởi động lại dịch vụ để các thay đổi có hiệu lực. Tất cả người dùng sẽ bị đăng xuất.",
+    "updateJwtSecret": "Cập nhật JWT Secret"
   }
 }

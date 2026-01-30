@@ -103,5 +103,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "การตั้งค่า",
+    "newPassword": "รหัสผ่านใหม่",
+    "newPasswordPlaceholder": "กรอกรหัสผ่านใหม่",
+    "passwordHint": "เว้นว่างหากคุณไม่ต้องการเปลี่ยนรหัสผ่าน",
+    "updateSuccess": "อัปเดตการตั้งค่าสำเร็จแล้ว",
+    "updateFailed": "อัปเดตการตั้งค่าไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+    "jwtSecretTitle": "การตั้งค่า JWT Secret",
+    "currentJwtSecret": "JWT Secret ปัจจุบัน",
+    "newJwtSecret": "JWT Secret ใหม่",
+    "newJwtSecretPlaceholder": "กรอก JWT secret ใหม่ (อย่างน้อย 32 ตัวอักษร)",
+    "toggleVisibility": "แสดง/ซ่อน",
+    "generateRandom": "สร้าง secret แบบสุ่ม",
+    "jwtSecretHint": "Secret นี้ใช้สำหรับเซ็นโทเค็นการเข้าสู่ระบบ หลังจากเปลี่ยน ผู้ใช้ทั้งหมดจะต้องเข้าสู่ระบบใหม่",
+    "jwtSecretLengthHint": "Secret ต้องมีอย่างน้อย 32 ตัวอักษร แนะนำให้ใช้ 64 ตัวอักษรแบบสุ่ม",
+    "jwtSecretWarning": "หลังจากเปลี่ยน JWT secret คุณต้องรีสตาร์ทบริการเพื่อให้มีผล ผู้ใช้ทั้งหมดจะถูกออกจากระบบ",
+    "updateJwtSecret": "อัปเดต JWT Secret"
   }
 }

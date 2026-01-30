@@ -27,7 +27,8 @@
     "login": "Masuk",
     "register": "Daftar",
     "language": "Bahasa",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Ganti tema",
+    "settings": "Pengaturan"
   },
   "convert": {
     "title": "Konversi",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "newPassword": "Kata Sandi Baru",
+    "newPasswordPlaceholder": "Masukkan kata sandi baru",
+    "passwordHint": "Biarkan kosong jika tidak ingin mengubah kata sandi.",
+    "updateSuccess": "Pengaturan berhasil diperbarui.",
+    "updateFailed": "Gagal memperbarui pengaturan. Silakan coba lagi.",
+    "jwtSecretTitle": "Pengaturan JWT Secret",
+    "currentJwtSecret": "JWT Secret Saat Ini",
+    "newJwtSecret": "JWT Secret Baru",
+    "newJwtSecretPlaceholder": "Masukkan JWT secret baru (minimal 32 karakter)",
+    "toggleVisibility": "Tampilkan/Sembunyikan",
+    "generateRandom": "Buat secret acak",
+    "jwtSecretHint": "Secret ini digunakan untuk menandatangani token login. Setelah diubah, semua pengguna harus login ulang.",
+    "jwtSecretLengthHint": "Secret harus minimal 32 karakter. Disarankan 64 karakter acak.",
+    "jwtSecretWarning": "Setelah mengubah JWT secret, Anda perlu me-restart layanan agar perubahan berlaku. Semua pengguna akan logout.",
+    "updateJwtSecret": "Perbarui JWT Secret"
   }
 }

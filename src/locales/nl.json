@@ -27,7 +27,8 @@
     "login": "Inloggen",
     "register": "Registreren",
     "language": "Taal",
-    "toggleTheme": "Thema wisselen"
+    "toggleTheme": "Thema wisselen",
+    "settings": "Instellingen"
   },
   "convert": {
     "title": "Converteren",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "newPassword": "Nieuw wachtwoord",
+    "newPasswordPlaceholder": "Voer nieuw wachtwoord in",
+    "passwordHint": "Laat leeg als u uw wachtwoord niet wilt wijzigen.",
+    "updateSuccess": "Instellingen succesvol bijgewerkt.",
+    "updateFailed": "Bijwerken van instellingen mislukt. Probeer het opnieuw.",
+    "jwtSecretTitle": "JWT-secret instellingen",
+    "currentJwtSecret": "Huidige JWT-secret",
+    "newJwtSecret": "Nieuwe JWT-secret",
+    "newJwtSecretPlaceholder": "Voer nieuwe JWT-secret in (minimaal 32 tekens)",
+    "toggleVisibility": "Zichtbaarheid wisselen",
+    "generateRandom": "Willekeurige secret genereren",
+    "jwtSecretHint": "Deze secret wordt gebruikt om login-tokens te ondertekenen. Na wijziging moeten alle gebruikers opnieuw inloggen.",
+    "jwtSecretLengthHint": "De secret moet minimaal 32 tekens bevatten. 64 willekeurige tekens worden aanbevolen.",
+    "jwtSecretWarning": "Na het wijzigen van de JWT-secret moet u de service herstarten om de wijzigingen door te voeren. Alle gebruikers worden uitgelogd.",
+    "updateJwtSecret": "JWT-secret bijwerken"
   }
 }

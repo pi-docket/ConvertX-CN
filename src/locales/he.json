@@ -27,7 +27,8 @@
     "login": "התחבר",
     "register": "הירשם",
     "language": "שפה",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "החלף ערכת נושא",
+    "settings": "הגדרות"
   },
   "convert": {
     "title": "המר",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "הגדרות",
+    "newPassword": "סיסמה חדשה",
+    "newPasswordPlaceholder": "הזן סיסמה חדשה",
+    "passwordHint": "השאר ריק אם אינך רוצה לשנות את הסיסמה.",
+    "updateSuccess": "ההגדרות עודכנו בהצלחה.",
+    "updateFailed": "עדכון ההגדרות נכשל. נסה שוב.",
+    "jwtSecretTitle": "הגדרות סוד JWT",
+    "currentJwtSecret": "סוד JWT נוכחי",
+    "newJwtSecret": "סוד JWT חדש",
+    "newJwtSecretPlaceholder": "הזן סוד JWT חדש (32 תווים לפחות)",
+    "toggleVisibility": "הצג/הסתר",
+    "generateRandom": "צור סוד אקראי",
+    "jwtSecretHint": "סוד זה משמש לחתימת אסימוני התחברות. לאחר השינוי, כל המשתמשים יצטרכו להתחבר מחדש.",
+    "jwtSecretLengthHint": "הסוד חייב להכיל 32 תווים לפחות. מומלץ 64 תווים אקראיים.",
+    "jwtSecretWarning": "לאחר שינוי סוד JWT, עליך להפעיל מחדש את השירות כדי שהשינויים ייכנסו לתוקף. כל המשתמשים ינותקו.",
+    "updateJwtSecret": "עדכן סוד JWT"
   }
 }

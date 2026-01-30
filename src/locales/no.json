@@ -27,7 +27,8 @@
     "login": "Logg inn",
     "register": "Registrer",
     "language": "Språk",
-    "toggleTheme": "Bytt tema"
+    "toggleTheme": "Bytt tema",
+    "settings": "Innstillinger"
   },
   "convert": {
     "title": "Konverter",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Innstillinger",
+    "newPassword": "Nytt passord",
+    "newPasswordPlaceholder": "Skriv inn nytt passord",
+    "passwordHint": "La være tom hvis du ikke vil endre passordet.",
+    "updateSuccess": "Innstillinger oppdatert.",
+    "updateFailed": "Kunne ikke oppdatere innstillinger. Prøv igjen.",
+    "jwtSecretTitle": "JWT-hemmelighet innstillinger",
+    "currentJwtSecret": "Nåværende JWT-hemmelighet",
+    "newJwtSecret": "Ny JWT-hemmelighet",
+    "newJwtSecretPlaceholder": "Skriv inn ny JWT-hemmelighet (minst 32 tegn)",
+    "toggleVisibility": "Veksle synlighet",
+    "generateRandom": "Generer tilfeldig hemmelighet",
+    "jwtSecretHint": "Denne hemmeligheten brukes til å signere innloggingstokens. Etter endring må alle brukere logge inn på nytt.",
+    "jwtSecretLengthHint": "Hemmeligheten må være minst 32 tegn. 64 tilfeldige tegn anbefales.",
+    "jwtSecretWarning": "Etter å ha endret JWT-hemmeligheten, må du starte tjenesten på nytt for at endringene skal tre i kraft. Alle brukere vil bli logget ut.",
+    "updateJwtSecret": "Oppdater JWT-hemmelighet"
   }
 }

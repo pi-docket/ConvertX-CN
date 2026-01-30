@@ -27,7 +27,8 @@
     "login": "පිවිසෙන්න",
     "register": "ලියාපදිංචි වන්න",
     "language": "භාෂාව",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "තේමාව මාරු කරන්න",
+    "settings": "සැකසුම්"
   },
   "convert": {
     "title": "පරිවර්තනය",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "සැකසුම්",
+    "newPassword": "නව මුරපදය",
+    "newPasswordPlaceholder": "නව මුරපදය ඇතුළු කරන්න",
+    "passwordHint": "මුරපදය වෙනස් කිරීමට අවශ්‍ය නැති නම් හිස් තිබන්න.",
+    "updateSuccess": "සැකසුම් සාර්ෂකව නවීකරණය විය.",
+    "updateFailed": "සැකසුම් නවීකරණය අසාර්ෂක විය. කරුණාකර නැවත උත්සාහ කරන්න.",
+    "jwtSecretTitle": "JWT රහස් සැකසුම්",
+    "currentJwtSecret": "වත්මන් JWT රහස",
+    "newJwtSecret": "නව JWT රහස",
+    "newJwtSecretPlaceholder": "නව JWT රහස ඇතුළු කරන්න (අවම අක්ෂර 32ක්)",
+    "toggleVisibility": "දෘශ්‍යතාව මාරු කරන්න",
+    "generateRandom": "අහඹු රහසක් ජනනය කරන්න",
+    "jwtSecretHint": "මෙම රහස පිවිසුම් ටෝකන් අත්සන් කිරීමට භාවිතා කරයි. වෙනස් කිරීමෙන් පසු, සියලුම පරිශීලකයින්ට නැවත පිවිසීමට සිදුවේ.",
+    "jwtSecretLengthHint": "රහස අවම වශයෙන් අක්ෂර 32ක් විය යුතුය. අහඹු අක්ෂර 64ක් නිර්දේශ කෙරේ.",
+    "jwtSecretWarning": "JWT රහස වෙනස් කිරීමෙන් පසු, වෙනස්කම් ක්‍රියාත්මක වීමට සේවාව නැවත ආරම්භ කළ යුතුය. සියලුම පරිශීලකයින් ඉවත් වනු ඇත.",
+    "updateJwtSecret": "JWT රහස යාවත්කාලීන කරන්න"
   }
 }

@@ -109,12 +109,14 @@ import os
 
 mineru_models_dir = os.environ.get('MINERU_MODELS_DIR', '/opt/convertx/models/mineru')
 
+# MinerU 2.7+ 配置（含 VLM 支援）
 config = {
     'models-dir': {
         'pipeline': f'{mineru_models_dir}/PDF-Extract-Kit-1.0',
-        'vlm': ''
+        'vlm': f'{mineru_models_dir}/MinerU-VLM'
     },
-    'model-source': 'local',
+    'model-source': 'huggingface',
+    'config_version': '1.3.1',
     'latex-delimiter-config': {
         'display': {'left': '@@', 'right': '@@'},
         'inline': {'left': '@', 'right': '@'}

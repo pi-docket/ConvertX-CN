@@ -93,6 +93,22 @@ if [ "$ARCH" = "aarch64" ]; then
     ((WARN++))
 else
     check_dir "${MINERU_MODELS_DIR}/PDF-Extract-Kit-1.0" "PDF-Extract-Kit-1.0 Pipeline" "true"
+    
+    # VLM 模型檢查（支援多種模型名稱）
+    VLM_FOUND=false
+    if [ -d "${MINERU_MODELS_DIR}/MinerU2.5-2509-1.2B" ]; then
+        check_dir "${MINERU_MODELS_DIR}/MinerU2.5-2509-1.2B" "MinerU2.5 VLM 模型"
+        VLM_FOUND=true
+    elif [ -d "${MINERU_MODELS_DIR}/MinerU-VLM" ]; then
+        check_dir "${MINERU_MODELS_DIR}/MinerU-VLM" "MinerU-VLM 模型"
+        VLM_FOUND=true
+    fi
+    
+    if [ "$VLM_FOUND" = "false" ]; then
+        echo "⚠️ MinerU VLM 模型未下載（auto 模式可能降級或需線上下載）"
+        ((WARN++))
+    fi
+    
     check_file "/root/mineru.json" "MinerU 配置檔"
     check_file "/opt/convertx/mineru.json" "MinerU 配置檔（備份）"
 fi

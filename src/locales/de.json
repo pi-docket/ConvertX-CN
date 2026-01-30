@@ -27,7 +27,8 @@
     "login": "Anmelden",
     "register": "Registrieren",
     "language": "Sprache",
-    "toggleTheme": "Thema wechseln"
+    "toggleTheme": "Thema wechseln",
+    "settings": "Einstellungen"
   },
   "convert": {
     "title": "Konvertieren",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "newPassword": "Neues Passwort",
+    "newPasswordPlaceholder": "Neues Passwort eingeben",
+    "passwordHint": "Lassen Sie dieses Feld leer, wenn Sie Ihr Passwort nicht ändern möchten.",
+    "updateSuccess": "Einstellungen erfolgreich aktualisiert.",
+    "updateFailed": "Aktualisierung der Einstellungen fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "jwtSecretTitle": "JWT-Secret-Einstellungen",
+    "currentJwtSecret": "Aktuelles JWT-Secret",
+    "newJwtSecret": "Neues JWT-Secret",
+    "newJwtSecretPlaceholder": "Neues JWT-Secret eingeben (mindestens 32 Zeichen)",
+    "toggleVisibility": "Sichtbarkeit umschalten",
+    "generateRandom": "Zufälliges Secret generieren",
+    "jwtSecretHint": "Dieses Secret wird zum Signieren von Login-Tokens verwendet. Nach der Änderung müssen sich alle Benutzer erneut anmelden.",
+    "jwtSecretLengthHint": "Das Secret muss mindestens 32 Zeichen lang sein. 64 zufällige Zeichen werden empfohlen.",
+    "jwtSecretWarning": "Nach Änderung des JWT-Secrets müssen Sie den Dienst neu starten, damit die Änderung wirksam wird. Alle Benutzer werden abgemeldet.",
+    "updateJwtSecret": "JWT-Secret aktualisieren"
   }
 }

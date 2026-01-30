@@ -27,7 +27,8 @@
     "login": "Prijava",
     "register": "Registracija",
     "language": "Jezik",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Promijeni temu",
+    "settings": "Postavke"
   },
   "convert": {
     "title": "Pretvori",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Postavke",
+    "newPassword": "Nova lozinka",
+    "newPasswordPlaceholder": "Unesite novu lozinku",
+    "passwordHint": "Ostavite prazno ako ne želite promijeniti lozinku.",
+    "updateSuccess": "Postavke su uspješno ažurirane.",
+    "updateFailed": "Ažuriranje postavki nije uspjelo. Molimo pokušajte ponovo.",
+    "jwtSecretTitle": "Postavke JWT tajne",
+    "currentJwtSecret": "Trenutna JWT tajna",
+    "newJwtSecret": "Nova JWT tajna",
+    "newJwtSecretPlaceholder": "Unesite novu JWT tajnu (najmanje 32 znaka)",
+    "toggleVisibility": "Uključi/isključi vidljivost",
+    "generateRandom": "Generiraj nasumičnu tajnu",
+    "jwtSecretHint": "Ova tajna se koristi za potpisivanje tokena za prijavu. Nakon promjene, svi korisnici će se morati ponovno prijaviti.",
+    "jwtSecretLengthHint": "Tajna mora imati najmanje 32 znaka. Preporučuje se 64 nasumična znaka.",
+    "jwtSecretWarning": "Nakon promjene JWT tajne, morate ponovno pokrenuti uslugu da bi promjene stupile na snagu. Svi korisnici će biti odjavljeni.",
+    "updateJwtSecret": "Ažuriraj JWT tajnu"
   }
 }

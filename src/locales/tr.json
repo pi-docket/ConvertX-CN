@@ -27,7 +27,8 @@
     "login": "Giriş",
     "register": "Kayıt Ol",
     "language": "Dil",
-    "toggleTheme": "Tema değiştir"
+    "toggleTheme": "Tema değiştir",
+    "settings": "Ayarlar"
   },
   "convert": {
     "title": "Dönüştür",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "newPassword": "Yeni Şifre",
+    "newPasswordPlaceholder": "Yeni şifre girin",
+    "passwordHint": "Şifreinizi değiştirmek istemiyorsanız boş bırakın.",
+    "updateSuccess": "Ayarlar başarıyla güncellendi.",
+    "updateFailed": "Ayarlar güncellenemedi. Lütfen tekrar deneyin.",
+    "jwtSecretTitle": "JWT Gizli Anahtar Ayarları",
+    "currentJwtSecret": "Mevcut JWT Gizli Anahtar",
+    "newJwtSecret": "Yeni JWT Gizli Anahtar",
+    "newJwtSecretPlaceholder": "Yeni JWT gizli anahtarını girin (en az 32 karakter)",
+    "toggleVisibility": "Görünürlüğü değiştir",
+    "generateRandom": "Rastgele anahtar oluştur",
+    "jwtSecretHint": "Bu gizli anahtar, giriş tokenlarını imzalamak için kullanılır. Değiştirdikten sonra tüm kullanıcıların yeniden giriş yapması gerekecektir.",
+    "jwtSecretLengthHint": "Gizli anahtar en az 32 karakter olmalıdır. 64 rastgele karakter önerilir.",
+    "jwtSecretWarning": "JWT gizli anahtarını değiştirdikten sonra, değişikliklerin etkili olması için hizmeti yeniden başlatmanız gerekir. Tüm kullanıcılar oturumu kapatılacaktır.",
+    "updateJwtSecret": "JWT Gizli Anahtarını Güncelle"
   }
 }

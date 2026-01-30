@@ -27,7 +27,8 @@
     "login": "Bejelentkezés",
     "register": "Regisztráció",
     "language": "Nyelv",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Téma váltás",
+    "settings": "Beállítások"
   },
   "convert": {
     "title": "Konvertálás",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Beállítások",
+    "newPassword": "Új jelszó",
+    "newPasswordPlaceholder": "Adja meg az új jelszót",
+    "passwordHint": "Hagyja üresen, ha nem szeretné megváltoztatni a jelszavát.",
+    "updateSuccess": "A beállítások sikeresen frissítve.",
+    "updateFailed": "A beállítások frissítése sikertelen. Kérjük, próbálja újra.",
+    "jwtSecretTitle": "JWT titok beállítások",
+    "currentJwtSecret": "Jelenlegi JWT titok",
+    "newJwtSecret": "Új JWT titok",
+    "newJwtSecretPlaceholder": "Adja meg az új JWT titkot (legalább 32 karakter)",
+    "toggleVisibility": "Láthatóság váltása",
+    "generateRandom": "Véletlen titok generálása",
+    "jwtSecretHint": "Ez a titok a bejelentkezési tokenek aláírására szolgál. Változtatás után minden felhasználónak újra be kell jelentkeznie.",
+    "jwtSecretLengthHint": "A titoknak legalább 32 karakter hosszúságúnak kell lennie. 64 véletlen karakter ajánlott.",
+    "jwtSecretWarning": "A JWT titok megváltoztatása után újra kell indítania a szolgáltatást a változások érvényesítéséhez. Minden felhasználó kijelentkeztetik.",
+    "updateJwtSecret": "JWT titok frissítése"
   }
 }

@@ -103,5 +103,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "ቅንብሮች",
+    "newPassword": "አዲስ የይለፈ ቃል",
+    "newPasswordPlaceholder": "አዲስ የይለፈ ቃል ያስገቡ",
+    "passwordHint": "የይለፈ ቃልዎን መቀየር ካልፈለጉ ባዶ ይተዉት።",
+    "updateSuccess": "ቅንብሮች በተሳካ ሁኔታ ተዘመኑ።",
+    "updateFailed": "ቅንብሮችን መዘመን አልተሳካም። እባክዎን እንደገና ይሞክሩ።",
+    "jwtSecretTitle": "የJWT ምስጢር ቅንብሮች",
+    "currentJwtSecret": "የአሁኑ JWT ምስጢር",
+    "newJwtSecret": "አዲስ JWT ምስጢር",
+    "newJwtSecretPlaceholder": "አዲስ JWT ምስጢር ያስገቡ (ቢያንስ 32 ቁምፊዎች)",
+    "toggleVisibility": "እይታ/ድብቅ ቀይር",
+    "generateRandom": "የአክሲዶን ምስጢር ፍጠር",
+    "jwtSecretHint": "ይህ ምስጢር የመግቢያ ቶከኖችን ለመፈረም ይውላል። ከተቀየረ በኋላ፣ ሁሉም ተጠቃሚዎች እንደገና መግባት ይኖርባቸዋል።",
+    "jwtSecretLengthHint": "ምስጢሩ ቢያንስ 32 ቁምፊዎች መሆን አለበት። 64 የአክሲዶን ቁምፊዎች ይመከራል።",
+    "jwtSecretWarning": "የJWT ምስጢሩን ከቀየሩ በኋላ፣ ለውጦች እንዲጠቅሙ አገልግሎትን እንደገና ማስጀመር ይኖርብዎታል። ሁሉም ተጠቃሚዎች ይወጣሉ።",
+    "updateJwtSecret": "JWT ምስጢር አዘምን"
   }
 }

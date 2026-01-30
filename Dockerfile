@@ -801,12 +801,18 @@ RUN echo "======================================" && \
   echo "  ❌ mineru 不可執行" && VALIDATION_PASSED=false; \
   fi && \
   if [ -d "/opt/convertx/models/mineru/PDF-Extract-Kit-1.0" ]; then \
-  echo "  ✅ MinerU 模型目錄存在"; \
+  echo "  ✅ MinerU Pipeline 模型存在"; \
   else \
-  echo "  ❌ MinerU 模型目錄不存在" && VALIDATION_PASSED=false; \
+  echo "  ❌ MinerU Pipeline 模型不存在" && VALIDATION_PASSED=false; \
+  fi && \
+  if [ -d "/opt/convertx/models/mineru/MinerU2.5-2509-1.2B" ] || [ -d "/opt/convertx/models/mineru/MinerU-VLM" ]; then \
+  echo "  ✅ MinerU VLM 模型存在"; \
+  else \
+  echo "  ⚠️ MinerU VLM 模型未下載（auto 模式可能降級）"; \
   fi && \
   if [ -f "/root/mineru.json" ]; then \
   echo "  ✅ mineru.json 存在"; \
+  cat /root/mineru.json; \
   else \
   echo "  ❌ mineru.json 不存在" && VALIDATION_PASSED=false; \
   fi; \

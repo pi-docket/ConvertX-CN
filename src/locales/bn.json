@@ -27,7 +27,8 @@
     "login": "লগইন",
     "register": "নিবন্ধন",
     "language": "ভাষা",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "থিম পরিবর্তন করুন",
+    "settings": "সেটিংস"
   },
   "convert": {
     "title": "রূপান্তর করুন",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "সেটিংস",
+    "newPassword": "নতুন পাসওয়ার্ড",
+    "newPasswordPlaceholder": "নতুন পাসওয়ার্ড লিখুন",
+    "passwordHint": "আপনি যদি পাসওয়ার্ড পরিবর্তন করতে না চান তাহলে ফাঁকা রাখুন।",
+    "updateSuccess": "সেটিংস সফলভাবে আপডেট হয়েছে।",
+    "updateFailed": "সেটিংস আপডেট ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    "jwtSecretTitle": "JWT সিক্রেট সেটিংস",
+    "currentJwtSecret": "বর্তমান JWT সিক্রেট",
+    "newJwtSecret": "নতুন JWT সিক্রেট",
+    "newJwtSecretPlaceholder": "নতুন JWT সিক্রেট লিখুন (ন্যূনতম 32 অক্ষর)",
+    "toggleVisibility": "দৃশ্যমানতা টগল করুন",
+    "generateRandom": "র‍্যান্ডম সিক্রেট তৈরি করুন",
+    "jwtSecretHint": "এই সিক্রেট লগইন টোকেন সাইন করতে ব্যবহার হয়। পরিবর্তনের পরে, সব ব্যবহারকারীকে আবার লগইন করতে হবে।",
+    "jwtSecretLengthHint": "সিক্রেট অবশ্যই 32 অক্ষর হতে হবে। 64 র‍্যান্ডম অক্ষর সুপারিশ করা হয়।",
+    "jwtSecretWarning": "JWT সিক্রেট পরিবর্তন করার পরে, পরিবর্তন কার্যকর করতে সার্ভিস রিস্টার্ট করতে হবে। সব ব্যবহারকারী লগআউট হবে।",
+    "updateJwtSecret": "JWT সিক্রেট আপডেট করুন"
   }
 }

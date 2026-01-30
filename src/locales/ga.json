@@ -27,7 +27,8 @@
     "login": "Logáil isteach",
     "register": "Cláraigh",
     "language": "Teanga",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Athraigh téama",
+    "settings": "Socruithe"
   },
   "convert": {
     "title": "Tiontaigh",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Socruithe",
+    "newPassword": "Pasfhocal nua",
+    "newPasswordPlaceholder": "Cuir isteach pasfhocal nua",
+    "passwordHint": "Fág folamh mura bhfuil tú ag iarraidh do phasfhocal a athrú.",
+    "updateSuccess": "Socruithe nuashonraithe go rathúil.",
+    "updateFailed": "Theip ar nuashonrú socruithe. Bain triail eile as.",
+    "jwtSecretTitle": "Socruithe rúnda JWT",
+    "currentJwtSecret": "Rúnda JWT reatha",
+    "newJwtSecret": "Rúnda JWT nua",
+    "newJwtSecretPlaceholder": "Cuir isteach rúnda JWT nua (32 carachtar ar a laghad)",
+    "toggleVisibility": "Athraigh infheictheacht",
+    "generateRandom": "Gin rúnda randamach",
+    "jwtSecretHint": "Úsáidtear an rúnda seo chun comharthaí logáil isteach a shíniú. Tar éis athrú, beidh ar gach úsáideoir logáil isteach arís.",
+    "jwtSecretLengthHint": "Caithfidh an rúnda a bheith 32 carachtar ar a laghad. Moltar 64 carachtar randamach.",
+    "jwtSecretWarning": "Tar éis an rúnda JWT a athrú, ní mór duit an tseirbhís a atosú le go dtiocfaidh na hathruithe i bhfeidhm. Logálfar amach gach úsáideoir.",
+    "updateJwtSecret": "Nuashonraigh rúnda JWT"
   }
 }

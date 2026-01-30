@@ -27,7 +27,8 @@
     "login": "Log masuk",
     "register": "Daftar",
     "language": "Bahasa",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Tukar tema",
+    "settings": "Tetapan"
   },
   "convert": {
     "title": "Tukar",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Tetapan",
+    "newPassword": "Kata Laluan Baharu",
+    "newPasswordPlaceholder": "Masukkan kata laluan baharu",
+    "passwordHint": "Biarkan kosong jika anda tidak mahu menukar kata laluan.",
+    "updateSuccess": "Tetapan berjaya dikemas kini.",
+    "updateFailed": "Kemas kini tetapan gagal. Sila cuba lagi.",
+    "jwtSecretTitle": "Tetapan Rahsia JWT",
+    "currentJwtSecret": "Rahsia JWT Semasa",
+    "newJwtSecret": "Rahsia JWT Baharu",
+    "newJwtSecretPlaceholder": "Masukkan rahsia JWT baharu (sekurang-kurangnya 32 aksara)",
+    "toggleVisibility": "Togol keterlihatan",
+    "generateRandom": "Jana rahsia rawak",
+    "jwtSecretHint": "Rahsia ini digunakan untuk menandatangani token log masuk. Selepas perubahan, semua pengguna perlu log masuk semula.",
+    "jwtSecretLengthHint": "Rahsia mesti sekurang-kurangnya 32 aksara. 64 aksara rawak disyorkan.",
+    "jwtSecretWarning": "Selepas menukar rahsia JWT, anda perlu memulakan semula perkhidmatan untuk perubahan berkuat kuasa. Semua pengguna akan dilog keluar.",
+    "updateJwtSecret": "Kemas Kini Rahsia JWT"
   }
 }

@@ -27,7 +27,8 @@
     "login": "Prihlásiť sa",
     "register": "Registrovať",
     "language": "Jazyk",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Zmeniť tému",
+    "settings": "Nastavenia"
   },
   "convert": {
     "title": "Konvertovať",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Nastavenia",
+    "newPassword": "Nové heslo",
+    "newPasswordPlaceholder": "Zadajte nové heslo",
+    "passwordHint": "Nechajte prázdne, ak nechcete meniť heslo.",
+    "updateSuccess": "Nastavenia boli úspešne aktualizované.",
+    "updateFailed": "Aktualizácia nastavení zlyhala. Skúste to prosím znova.",
+    "jwtSecretTitle": "Nastavenia JWT tajomstva",
+    "currentJwtSecret": "Aktuálne JWT tajomstvo",
+    "newJwtSecret": "Nové JWT tajomstvo",
+    "newJwtSecretPlaceholder": "Zadajte nové JWT tajomstvo (minimálne 32 znakov)",
+    "toggleVisibility": "Prepínať viditeľnosť",
+    "generateRandom": "Vygenerovať náhodné tajomstvo",
+    "jwtSecretHint": "Toto tajomstvo sa používa na podpisovanie prihlasovacích tokenov. Po zmene sa všetci používatelia budú musieť znova prihlásiť.",
+    "jwtSecretLengthHint": "Tajomstvo musí mať aspoň 32 znakov. Odporúča sa 64 náhodných znakov.",
+    "jwtSecretWarning": "Po zmene JWT tajomstva je potrebné reštartovať službu, aby sa zmeny prejavili. Všetci používatelia budú odhlásení.",
+    "updateJwtSecret": "Aktualizovať JWT tajomstvo"
   }
 }

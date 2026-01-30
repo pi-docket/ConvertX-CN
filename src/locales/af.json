@@ -27,7 +27,8 @@
     "login": "Teken in",
     "register": "Registreer",
     "language": "Taal",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Wissel tema",
+    "settings": "Instellings"
   },
   "convert": {
     "title": "Omskakel",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Instellings",
+    "newPassword": "Nuwe Wagwoord",
+    "newPasswordPlaceholder": "Voer nuwe wagwoord in",
+    "passwordHint": "Los leeg as jy nie jou wagwoord wil verander nie.",
+    "updateSuccess": "Instellings suksesvol bygewerk.",
+    "updateFailed": "Kon nie instellings bywerk nie. Probeer asseblief weer.",
+    "jwtSecretTitle": "JWT-geheim instellings",
+    "currentJwtSecret": "Huidige JWT-geheim",
+    "newJwtSecret": "Nuwe JWT-geheim",
+    "newJwtSecretPlaceholder": "Voer nuwe JWT-geheim in (minstens 32 karakters)",
+    "toggleVisibility": "Wissel sigbaarheid",
+    "generateRandom": "Genereer ewekansige geheim",
+    "jwtSecretHint": "Hierdie geheim word gebruik om aanteken-tokens te onderteken. Na verandering moet alle gebruikers weer aanteken.",
+    "jwtSecretLengthHint": "Die geheim moet minstens 32 karakters wees. 64 ewekansige karakters word aanbeveel.",
+    "jwtSecretWarning": "Na die verandering van die JWT-geheim, moet jy die diens herbegin vir die veranderinge om effek te neem. Alle gebruikers sal afgeteken word.",
+    "updateJwtSecret": "Werk JWT-geheim by"
   }
 }

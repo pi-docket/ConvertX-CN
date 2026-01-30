@@ -27,7 +27,8 @@
     "login": "Prijava",
     "register": "Registracija",
     "language": "Jezik",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Preklopi temo",
+    "settings": "Nastavitve"
   },
   "convert": {
     "title": "Pretvori",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Nastavitve",
+    "newPassword": "Novo geslo",
+    "newPasswordPlaceholder": "Vnesite novo geslo",
+    "passwordHint": "Pustite prazno, če ne želite spremeniti gesla.",
+    "updateSuccess": "Nastavitve so bile uspešno posodobljene.",
+    "updateFailed": "Posodobitev nastavitev ni uspela. Poskusite znova.",
+    "jwtSecretTitle": "Nastavitve JWT skrivnosti",
+    "currentJwtSecret": "Trenutna JWT skrivnost",
+    "newJwtSecret": "Nova JWT skrivnost",
+    "newJwtSecretPlaceholder": "Vnesite novo JWT skrivnost (vsaj 32 znakov)",
+    "toggleVisibility": "Preklopi vidnost",
+    "generateRandom": "Ustvari naključno skrivnost",
+    "jwtSecretHint": "Ta skrivnost se uporablja za podpisovanje prijavnih žetonov. Po spremembi se bodo morali vsi uporabniki znova prijaviti.",
+    "jwtSecretLengthHint": "Skrivnost mora imeti vsaj 32 znakov. Priporočenih je 64 naključnih znakov.",
+    "jwtSecretWarning": "Po spremembi JWT skrivnosti morate znova zagnati storitev, da bodo spremembe začele veljati. Vsi uporabniki bodo odjavljeni.",
+    "updateJwtSecret": "Posodobi JWT skrivnost"
   }
 }

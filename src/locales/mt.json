@@ -27,7 +27,8 @@
     "login": "Idħol",
     "register": "Irreġistra",
     "language": "Lingwa",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Ibdel it-tema",
+    "settings": "Settings"
   },
   "convert": {
     "title": "Ikkonverti",
@@ -103,5 +104,23 @@
   },
   "file": {
     "size": "{size} kB"
+  },
+  "settings": {
+    "title": "Settings",
+    "newPassword": "Password Ġdida",
+    "newPasswordPlaceholder": "Daħħal password ġdida",
+    "passwordHint": "Ħalli vojt jekk ma tridx tbiddel il-password tiegħek.",
+    "updateSuccess": "Settings aġġornati b'suċċess.",
+    "updateFailed": "Falla l-aġġornament tas-settings. Jekk jogħġbok erġa' pprova.",
+    "jwtSecretTitle": "Settings tas-Sigriet JWT",
+    "currentJwtSecret": "Sigriet JWT Attwali",
+    "newJwtSecret": "Sigriet JWT Ġdida",
+    "newJwtSecretPlaceholder": "Daħħal sigriet JWT ġdida (mill-inqas 32 karattru)",
+    "toggleVisibility": "Ibdel il-viżibilità",
+    "generateRandom": "Iġġenera sigriet każwali",
+    "jwtSecretHint": "Din is-sigriet tintuża biex tiffirma t-tokens tal-login. Wara l-bidla, l-utenti kollha se jkollhom jerġgħu jidħlu.",
+    "jwtSecretLengthHint": "Is-sigriet għandha tkun mill-inqas 32 karattru. 64 karattru każwali huma rakkomandati.",
+    "jwtSecretWarning": "Wara li tibdel is-sigriet JWT, trid terġa' tibda s-servizz biex il-bidliet jidħlu fis-seħħ. L-utenti kollha se jiġu mniżżla.",
+    "updateJwtSecret": "Aġġorna s-Sigriet JWT"
   }
 }
