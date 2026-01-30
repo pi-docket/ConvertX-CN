@@ -128,7 +128,7 @@ verify_system_tools() {
     echo "=============================================="
     
     check_command "ffmpeg" "FFmpeg"
-    check_command "convert" "ImageMagick"
+    check_command "magick" "ImageMagick 7"
     check_command "gm" "GraphicsMagick"
     check_command "vips" "libvips"
     check_command "inkscape" "Inkscape"
@@ -180,6 +180,27 @@ verify_models() {
     # MinerU 模型
     check_dir "/opt/convertx/models/mineru/PDF-Extract-Kit-1.0" "MinerU Pipeline" "true" "x86_64"
     check_file "/root/mineru.json" "MinerU 配置檔" "true" "x86_64"
+    
+    # MinerU VLM GGUF 模型（量化版本）
+    if [ "${ARCH}" = "x86_64" ]; then
+        local gguf_model="/opt/convertx/models/mineru/MinerU-VLM-GGUF/MinerU2.5-2509-1.2B.Q8_0.gguf"
+        local mmproj_model="/opt/convertx/models/mineru/MinerU-VLM-GGUF/mmproj-MinerU2.5-2509-1.2B-f16.gguf"
+        if [ -f "${gguf_model}" ] && [ -f "${mmproj_model}" ]; then
+            local gguf_size
+            gguf_size=$(ls -lh "${gguf_model}" 2>/dev/null | awk '{print $5}')
+            echo "  ✅ VLM GGUF Q8_0: ${gguf_size}"
+            ((PASS++))
+            echo "  ✅ VLM mmproj: 已安裝"
+            ((PASS++))
+            echo "  💡 GGUF 模型需搭配 llama.cpp 服務器使用"
+        elif [ -d "/opt/convertx/models/mineru/MinerU2.5-2509-1.2B" ]; then
+            echo "  ✅ VLM 模型: transformers 版本"
+            ((PASS++))
+        else
+            echo "  ⚠️ VLM 模型: 未下載（將使用 pipeline 純 OCR 模式）"
+            ((WARN++))
+        fi
+    fi
     
     # BabelDOC 模型
     check_file "/root/.cache/babeldoc/models/doclayout_yolo_docstructbench_imgsz1024.onnx" "DocLayout-YOLO ONNX" "false"
