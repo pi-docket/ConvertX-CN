@@ -1,5 +1,34 @@
 ## 📋 Upstream 變更摘要
 
+**同步時間:** 2026-01-30 18:55:49 UTC
+**Upstream 分支:** main
+**新 Commits 數量:** 1
+
+### 📝 Commit 列表
+
+```
+f747a5b chore: update eslint config (#521)
+```
+
+### 📊 變更統計
+
+```
+ bun.lock         | 29 ++++++++++++++---------------
+ eslint.config.ts | 39 +++++++++++++++++++--------------------
+ package.json     |  1 -
+ 3 files changed, 33 insertions(+), 36 deletions(-)
+```
+
+### 🔍 變更的檔案
+
+- ✏️ **修改** `bun.lock`
+- ✏️ **修改** `eslint.config.ts`
+- ✏️ **修改** `package.json`
+
+---
+
+## 📋 Upstream 變更摘要
+
 **同步時間:** 2026-01-29 18:59:32 UTC
 **Upstream 分支:** main
 **新 Commits 數量:** 1
