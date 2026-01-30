@@ -621,6 +621,7 @@ RUN uv pip install --system --break-system-packages --no-cache babeldoc || \
 # 💡 使用官方 PyTorch CPU wheel（不含 CUDA）
 # 💡 設置 CUDA_VISIBLE_DEVICES="" 強制使用 CPU
 # 💡 同時安裝 doclayout-yolo（MinerU hybrid/layout pipeline 必需）
+# 💡 安裝 mineru[pipeline] 以包含所有必要依賴（transformers, tokenizers 等）
 RUN set -ex && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
@@ -632,15 +633,17 @@ RUN set -ex && \
   echo "📦 安裝 PyTorch CPU 版本..." && \
   uv pip install --system --break-system-packages --no-cache \
   torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
-  echo "📦 安裝 MinerU..." && \
-  uv pip install --system --break-system-packages --no-cache -U mineru && \
+  echo "📦 安裝 MinerU（含 pipeline 依賴：transformers, tokenizers 等）..." && \
+  uv pip install --system --break-system-packages --no-cache -U "mineru[pipeline]" && \
   echo "📦 安裝 doclayout-yolo（MinerU hybrid pipeline 必需）..." && \
   uv pip install --system --break-system-packages --no-cache doclayout-yolo && \
   echo "📦 安裝 ultralytics（MinerU YOLOv8 MFD 模型必需）..." && \
   uv pip install --system --break-system-packages --no-cache ultralytics && \
-  echo "✅ PyTorch + MinerU + doclayout-yolo + ultralytics 安裝完成" && \
+  echo "✅ PyTorch + MinerU[pipeline] + doclayout-yolo + ultralytics 安裝完成" && \
   python3 -c "from doclayout_yolo import YOLOv10; print('✅ doclayout_yolo 模組驗證成功')" && \
-  python3 -c "from ultralytics import YOLO; print('✅ ultralytics 模組驗證成功')"; \
+  python3 -c "from ultralytics import YOLO; print('✅ ultralytics 模組驗證成功')" && \
+  python3 -c "import tokenizers; print('✅ tokenizers 模組驗證成功')" && \
+  python3 -c "import transformers; print('✅ transformers 模組驗證成功')"; \
   fi
 
 # MinerU CPU-only 環境變數（強制 CPU 模式）
