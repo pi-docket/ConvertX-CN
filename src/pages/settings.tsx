@@ -24,11 +24,7 @@ function isAdmin(userId: string | number): boolean {
 function updateJwtSecretInEnvFile(newSecret: string): { success: boolean; message: string } {
   try {
     // 嘗試多個可能的 .env 路徑
-    const envPaths = [
-      join(process.cwd(), ".env"),
-      "/app/.env",
-      join(process.cwd(), ".env.local"),
-    ];
+    const envPaths = [join(process.cwd(), ".env"), "/app/.env", join(process.cwd(), ".env.local")];
 
     let envPath: string | null = null;
     for (const path of envPaths) {
@@ -180,7 +176,10 @@ export const settings = new Elysia()
                           <button
                             type="button"
                             id="toggle-jwt-visibility"
-                            class="rounded-sm bg-neutral-600 px-4 hover:bg-neutral-500"
+                            class={`
+                              rounded-sm bg-neutral-600 px-4
+                              hover:bg-neutral-500
+                            `}
                             title={t("settings", "toggleVisibility")}
                           >
                             👁
@@ -203,7 +202,10 @@ export const settings = new Elysia()
                           <button
                             type="button"
                             id="generate-jwt-secret"
-                            class="rounded-sm bg-blue-600 px-4 hover:bg-blue-500"
+                            class={`
+                              rounded-sm bg-blue-600 px-4
+                              hover:bg-blue-500
+                            `}
                             title={t("settings", "generateRandom")}
                           >
                             🔄

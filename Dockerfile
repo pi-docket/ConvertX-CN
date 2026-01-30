@@ -805,10 +805,16 @@ RUN echo "======================================" && \
   else \
   echo "  ❌ MinerU Pipeline 模型不存在" && VALIDATION_PASSED=false; \
   fi && \
-  if [ -d "/opt/convertx/models/mineru/MinerU2.5-2509-1.2B" ] || [ -d "/opt/convertx/models/mineru/MinerU-VLM" ]; then \
-  echo "  ✅ MinerU VLM 模型存在"; \
+  GGUF_MODEL="/opt/convertx/models/mineru/MinerU-VLM-GGUF/MinerU2.5-2509-1.2B.Q8_0.gguf" && \
+  MMPROJ_MODEL="/opt/convertx/models/mineru/MinerU-VLM-GGUF/mmproj-MinerU2.5-2509-1.2B-f16.gguf" && \
+  if [ -f "$GGUF_MODEL" ] && [ -f "$MMPROJ_MODEL" ]; then \
+  echo "  ✅ MinerU VLM GGUF 模型存在（Q8_0 量化版）"; \
+  echo "     - 主模型: $(basename $GGUF_MODEL)"; \
+  echo "     - 視覺投影器: $(basename $MMPROJ_MODEL)"; \
+  elif [ -d "/opt/convertx/models/mineru/MinerU2.5-2509-1.2B" ]; then \
+  echo "  ✅ MinerU VLM 模型存在（transformers 版）"; \
   else \
-  echo "  ⚠️ MinerU VLM 模型未下載（auto 模式可能降級）"; \
+  echo "  ⚠️ MinerU VLM 模型未下載（將使用 pipeline 純 OCR 模式）"; \
   fi && \
   if [ -f "/root/mineru.json" ]; then \
   echo "  ✅ mineru.json 存在"; \
