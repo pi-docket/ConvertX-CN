@@ -1,142 +1,92 @@
-//! ConvertX API Server - Simplified Proxy Mode
+//! ConvertX-CN API Server
 //!
-//! 這是一個輕量級的 API 代理服務器，將請求轉發到 Web UI。
+//! 提供 RESTful API 介面供第三方程式呼叫 ConvertX-CN 轉換功能。
+//!
+//! ## 功能特點
+//!
+//! - JWT 認證：所有 API 都需要有效的 JWT Token
+//! - 引擎查詢：列出和查詢可用的轉換引擎
+//! - 檔案轉換：上傳檔案並進行格式轉換
+//! - 任務管理：查詢轉換任務狀態
+//! - 結果下載：下載轉換完成的檔案
+//!
+//! ## 環境變數
+//!
+//! - `JWT_SECRET`：JWT 簽署密鑰（必須與 ConvertX-CN 主程式相同）
+//! - `API_PORT`：API 伺服器埠號（預設 7890）
+//! - `BACKEND_URL`：ConvertX-CN 後端 URL（預設 http://localhost:3000）
 
 use axum::{
-    extract::State,
-    response::{IntoResponse, Json},
-    routing::get,
+    routing::{get, post},
     Router,
 };
-use serde::Serialize;
-use std::env;
 use std::net::SocketAddr;
-use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 
-/// Application configuration
-#[derive(Clone)]
-struct AppConfig {
-    port: u16,
-    backend_url: String,
-    #[allow(dead_code)]
-    jwt_secret: String,
-}
+mod auth;
+mod config;
+mod engine;
+mod error;
+mod handlers;
+mod job;
+mod models;
 
-impl AppConfig {
-    fn from_env() -> Self {
-        Self {
-            port: env::var("RAS_API_PORT")
-                .unwrap_or_else(|_| "7890".to_string())
-                .parse()
-                .unwrap_or(7890),
-            backend_url: env::var("CONVERTX_BACKEND_URL")
-                .unwrap_or_else(|_| "http://convertx:3000".to_string()),
-            jwt_secret: env::var("JWT_SECRET")
-                .unwrap_or_else(|_| "default-secret-change-me".to_string()),
-        }
-    }
-}
-
-/// Health check response
-#[derive(Serialize)]
-struct HealthResponse {
-    status: String,
-    version: String,
-    mode: String,
-    backend_url: String,
-}
-
-/// API info response
-#[derive(Serialize)]
-struct InfoResponse {
-    name: String,
-    version: String,
-    description: String,
-    mode: String,
-    endpoints: Vec<EndpointInfo>,
-}
-
-#[derive(Serialize)]
-struct EndpointInfo {
-    path: String,
-    method: String,
-    description: String,
-}
-
-/// Health check endpoint
-async fn health_check(State(config): State<Arc<AppConfig>>) -> impl IntoResponse {
-    Json(HealthResponse {
-        status: "healthy".to_string(),
-        version: env!("CARGO_PKG_VERSION").to_string(),
-        mode: "proxy".to_string(),
-        backend_url: config.backend_url.clone(),
-    })
-}
-
-/// API info endpoint
-async fn api_info() -> impl IntoResponse {
-    Json(InfoResponse {
-        name: "ConvertX API Server".to_string(),
-        version: env!("CARGO_PKG_VERSION").to_string(),
-        description: "Lightweight API proxy for ConvertX-CN".to_string(),
-        mode: "proxy".to_string(),
-        endpoints: vec![
-            EndpointInfo {
-                path: "/api/v1/health".to_string(),
-                method: "GET".to_string(),
-                description: "Health check endpoint".to_string(),
-            },
-            EndpointInfo {
-                path: "/api/v1/info".to_string(),
-                method: "GET".to_string(),
-                description: "API information".to_string(),
-            },
-        ],
-    })
-}
-
-/// Root endpoint
-async fn root() -> impl IntoResponse {
-    Json(serde_json::json!({
-        "message": "ConvertX API Server",
-        "docs": "/api/v1/info"
-    }))
-}
+use auth::AppState;
+use config::AppConfig;
 
 #[tokio::main]
 async fn main() {
-    // Initialize logging
+    // 初始化日誌
     let subscriber = FmtSubscriber::builder()
         .with_max_level(Level::INFO)
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
 
-    // Load configuration
-    let config = Arc::new(AppConfig::from_env());
+    // 載入設定
+    let config = AppConfig::from_env();
+    let addr: SocketAddr = format!("0.0.0.0:{}", config.port)
+        .parse()
+        .expect("Invalid address");
 
     info!("========================================");
-    info!("🚀 ConvertX API Server v{}", env!("CARGO_PKG_VERSION"));
+    info!("🚀 ConvertX-CN API Server v{}", env!("CARGO_PKG_VERSION"));
     info!("========================================");
-    info!("Mode: Proxy (forwarding to Web UI)");
-    info!("Backend URL: {}", config.backend_url);
-    info!("Port: {}", config.port);
+    info!("📡 Listening on http://{}", addr);
+    info!("🔗 Backend URL: {}", config.backend_url);
     info!("========================================");
 
-    // Build router
-    let app = Router::new()
-        .route("/", get(root))
-        .route("/api/v1/health", get(health_check))
-        .route("/api/v1/info", get(api_info))
-        .layer(CorsLayer::new().allow_origin(Any).allow_methods(Any))
-        .with_state(config.clone());
+    // 建立應用程式狀態
+    let state = AppState::new(config);
 
-    // Start server
-    let addr = SocketAddr::from(([0, 0, 0, 0], config.port));
-    info!("Listening on http://{}", addr);
+    // 建立路由
+    let app = create_router(state);
 
+    // 啟動伺服器
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    info!("✅ Server started successfully");
     axum::serve(listener, app).await.unwrap();
+}
+
+/// 建立 API 路由
+fn create_router(state: AppState) -> Router {
+    // CORS 設定
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any);
+
+    Router::new()
+        // 健康檢查（無需認證）
+        .route("/api/health", get(handlers::health_check))
+        .route("/health", get(handlers::health_check))
+        // API v1 路由（需要認證）
+        .route("/api/v1/engines", get(handlers::list_engines))
+        .route("/api/v1/engines/{engine_id}", get(handlers::get_engine))
+        .route("/api/v1/convert", post(handlers::create_conversion))
+        .route("/api/v1/jobs/{job_id}", get(handlers::get_job_status))
+        .route("/api/v1/jobs/{job_id}/download", get(handlers::download_job_result))
+        .layer(cors)
+        .with_state(state)
 }
