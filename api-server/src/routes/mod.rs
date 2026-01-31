@@ -8,6 +8,7 @@ mod engines;
 mod formats;
 mod validate;
 mod jobs;
+mod admin;
 
 use axum::Router;
 use crate::AppState;
@@ -23,4 +24,6 @@ pub fn routes() -> Router<AppState> {
         .merge(validate::routes())
         // 受保護端點（需要認證）
         .merge(jobs::routes())
+        // 管理端點（需要 admin 角色）
+        .merge(admin::routes())
 }

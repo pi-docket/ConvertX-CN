@@ -144,12 +144,18 @@ RAS（Remote AI Service）API 是一套專為外部整合設計的 RESTful API �
 ├── validate/                 # 驗證轉換
 │   └── POST /                # 檢查是否可轉換（公開）
 │
-└── jobs/                     # 任務管理（需認證）
-    ├── POST /                # 建立轉換任務
-    ├── GET /                 # 列出我的任務
-    ├── GET /{job_id}         # 查詢任務狀態
-    ├── GET /{job_id}/result  # 下載轉換結果
-    └── DELETE /{job_id}      # 刪除任務
+├── jobs/                     # 任務管理（需認證）
+│   ├── POST /                # 建立轉換任務
+│   ├── GET /                 # 列出我的任務
+│   ├── GET /{job_id}         # 查詢任務狀態
+│   ├── GET /{job_id}/result  # 下載轉換結果
+│   └── DELETE /{job_id}      # 刪除任務
+│
+└── admin/                    # 管理 API（需 admin 角色）
+    ├── GET /stats            # 儲存統計
+    ├── POST /purge/all       # 清除所有資料 ⚠️
+    ├── POST /purge/users     # 清除使用者資料（保留 admin）
+    └── POST /cleanup         # 手動觸發 24h 清理
 ```
 
 ### 為什麼這樣設計？
@@ -158,23 +164,60 @@ RAS（Remote AI Service）API 是一套專為外部整合設計的 RESTful API �
 2. **公開與認證分離**：查詢類 API 不需認證，降低使用門檻
 3. **RESTful 語義**：資源導向設計，符合業界標準
 4. **版本化**：`/api/v1/` 前綴支援未來升級
+5. **管理權限分離**：`/admin` 需要特殊角色，保護高風險操作
 
 ---
 
 ## 六、端點責任說明
 
-| 端點類別                | 責任           | 認證 | 冪等性 |
-| ----------------------- | -------------- | ---- | ------ |
-| `/health`               | 服務存活檢查   | 否   | 是     |
-| `/info`                 | API 能力描述   | 否   | 是     |
-| `/engines`              | 引擎能力查詢   | 否   | 是     |
-| `/formats`              | 格式支援查詢   | 否   | 是     |
-| `/validate`             | 轉換可行性驗證 | 否   | 是     |
-| `POST /jobs`            | 建立轉換任務   | 是   | 否     |
-| `GET /jobs`             | 列出使用者任務 | 是   | 是     |
-| `GET /jobs/{id}`        | 查詢特定任務   | 是   | 是     |
-| `GET /jobs/{id}/result` | 下載結果       | 是   | 是     |
-| `DELETE /jobs/{id}`     | 刪除任務       | 是   | 是     |
+| 端點類別                | 責任           | 認證 | 角色  | 冪等性 |
+| ----------------------- | -------------- | ---- | ----- | ------ |
+| `/health`               | 服務存活檢查   | 否   | -     | 是     |
+| `/info`                 | API 能力描述   | 否   | -     | 是     |
+| `/engines`              | 引擎能力查詢   | 否   | -     | 是     |
+| `/formats`              | 格式支援查詢   | 否   | -     | 是     |
+| `/validate`             | 轉換可行性驗證 | 否   | -     | 是     |
+| `POST /jobs`            | 建立轉換任務   | 是   | user  | 否     |
+| `GET /jobs`             | 列出使用者任務 | 是   | user  | 是     |
+| `GET /jobs/{id}`        | 查詢特定任務   | 是   | user  | 是     |
+| `GET /jobs/{id}/result` | 下載結果       | 是   | user  | 是     |
+| `DELETE /jobs/{id}`     | 刪除任務       | 是   | user  | 是     |
+| `GET /admin/stats`      | 儲存統計       | 是   | admin | 是     |
+| `POST /admin/purge/*`   | 資料清除       | 是   | admin | 否     |
+| `POST /admin/cleanup`   | 手動清理       | 是   | admin | 否     |
+
+---
+
+## 六之一、JWT 統一認證（v2.0.0 新增）
+
+### 設計理念
+
+Web UI 和 RAS API Server 共用同一個 `JWT_SECRET`：
+
+```
+使用者 → Web UI 登入 → 取得 JWT Token → 使用 Token 呼叫 API
+         ↓                                    ↓
+    Cookie: auth=<token>             Authorization: Bearer <token>
+```
+
+### 配置方式
+
+```yaml
+services:
+  convertx:
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+
+  convertx-api:
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+```
+
+### 優點
+
+- ✅ 無需維護兩套認證系統
+- ✅ Web UI 登入產生的 Token 可直接用於 API
+- ✅ 部署時只需設定一次
 
 ---
 

@@ -4,6 +4,75 @@
 
 ---
 
+## 快速開始（推薦）
+
+使用完整的 `docker-compose.production.yml` 配置：
+
+```bash
+# 1. 建立資料目錄
+mkdir -p data
+
+# 2. 產生 JWT 密鑰
+echo "JWT_SECRET=$(openssl rand -hex 32)" > .env
+
+# 3. 啟動服務
+docker compose -f docker-compose.production.yml up -d
+```
+
+### Profile 選擇
+
+```bash
+# 只啟動 Web UI（預設）
+docker compose -f docker-compose.production.yml up -d
+
+# Web UI + API Server（JWT 統一認證）
+docker compose -f docker-compose.production.yml --profile api up -d
+
+# Web UI + GPU 加速
+docker compose -f docker-compose.production.yml --profile gpu up -d
+
+# Web UI + MinerU（CPU-only）
+docker compose -f docker-compose.production.yml --profile mineru up -d
+
+# Web UI + API + 24 小時自動清理（完整版）
+docker compose -f docker-compose.production.yml --profile api --profile cleanup up -d
+```
+
+---
+
+## JWT 統一認證（v2.0.0 新增）
+
+### 設計理念
+
+Web UI 和 RAS API Server 共用同一個 `JWT_SECRET`：
+
+- ✅ Web UI 登入產生的 Token 可直接用於 API 認證
+- ✅ 無需維護兩套認證系統
+- ✅ 部署時只需設定一次
+
+### 配置方式
+
+在 `.env` 檔案中設定：
+
+```bash
+JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters
+```
+
+或在 `docker-compose.yml` 中：
+
+```yaml
+services:
+  convertx:
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+
+  convertx-api:
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+```
+
+---
+
 ## Docker Image 版本
 
 ### 官方預建版（推薦）

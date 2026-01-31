@@ -7,6 +7,7 @@ use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 use crate::models::*;
+use crate::routes::admin::{AdminStatsResponse, PurgeResponse};
 use crate::AppState;
 
 /// OpenAPI documentation
@@ -15,7 +16,7 @@ use crate::AppState;
     info(
         title = "ConvertX RAS API",
         version = "2.0.0",
-        description = "ConvertX 遠端 AI 服務 API - 檔案格式轉換服務\n\n## 概述\n\nRAS (Remote AI Service) API 是 ConvertX-CN 的對外公開 API，專為外部系統整合設計。\n\n## 認證\n\n- 公開端點（/health, /info, /engines, /formats, /validate）不需要認證\n- 任務端點（/jobs/*）需要 Bearer Token 認證\n\n## 端口\n\n預設端口：**7890**",
+        description = "ConvertX 遠端 AI 服務 API - 檔案格式轉換服務\n\n## 概述\n\nRAS (Remote AI Service) API 是 ConvertX-CN 的對外公開 API，專為外部系統整合設計。\n\n## 認證\n\n- 公開端點（/health, /info, /engines, /formats, /validate）不需要認證\n- 任務端點（/jobs/*）需要 Bearer Token 認證\n- 管理端點（/admin/*）需要 admin 角色\n\n## 端口\n\n預設端口：**7890**\n\n## JWT 統一認證\n\nWeb UI 和 API Server 使用相同的 `JWT_SECRET` 環境變數。部署時只需設定一次，兩個服務會共用同一個密鑰。",
         license(
             name = "MIT",
             url = "https://opensource.org/licenses/MIT"
@@ -35,7 +36,8 @@ use crate::AppState;
         (name = "Engines", description = "引擎管理端點"),
         (name = "Formats", description = "格式查詢端點"),
         (name = "Validate", description = "轉換驗證端點"),
-        (name = "Jobs", description = "任務管理端點（需認證）")
+        (name = "Jobs", description = "任務管理端點（需認證）"),
+        (name = "Admin", description = "管理端點（需 admin 角色）⚠️ 高風險操作")
     ),
     paths(
         crate::routes::health::health_check,
@@ -51,6 +53,10 @@ use crate::AppState;
         crate::routes::jobs::get_job,
         crate::routes::jobs::delete_job,
         crate::routes::jobs::get_job_result,
+        crate::routes::admin::get_admin_stats,
+        crate::routes::admin::purge_all,
+        crate::routes::admin::purge_users,
+        crate::routes::admin::run_cleanup,
     ),
     components(
         schemas(
@@ -85,6 +91,10 @@ use crate::AppState;
             JobStatusResponse,
             ListJobsResponse,
             DeleteJobResponse,
+            
+            // 管理
+            AdminStatsResponse,
+            PurgeResponse,
         )
     ),
     modifiers(&SecurityAddon)

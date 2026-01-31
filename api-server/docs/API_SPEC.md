@@ -1,8 +1,9 @@
 # ConvertX API 規格文件
 
 > ⚠️ **注意**：此文件為舊版規格，主要保留 GraphQL Schema 參考。
-> 
+>
 > 最新的 RAS-API v2.0.0 規格請參閱：
+>
 > - [RAS-API-SPEC.md](RAS-API-SPEC.md) - 架構設計規格
 > - [RAS-API完整使用文件](../../docs/API/RAS-API完整使用文件.md) - 使用者文件
 
@@ -11,6 +12,7 @@
 ConvertX RAS-API Server（v2.0.0）是一個獨立的檔案轉換 API 服務。
 
 **主要變更（v2.0.0）**：
+
 - 端口改為 **7890**
 - 環境變數前綴改為 `RAS_API_*`
 - 新增 Swagger UI (`/swagger-ui`)

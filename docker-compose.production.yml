@@ -1,0 +1,348 @@
+# ==============================================================================
+# ConvertX-CN Docker Compose 完整部署配置
+# ==============================================================================
+#
+# 🎯 設計目標：
+#    - 一鍵部署，零配置即可運行
+#    - JWT 認證統一（Web UI 與 API 共用 JWT_SECRET）
+#    - 支援 GPU 加速（NVIDIA）
+#    - MinerU 強制 CPU-only（避免 GPU 記憶體不足）
+#    - 24 小時自動清理（防止磁碟空間耗盡）
+#
+# 🚀 快速開始：
+#
+#    # 1. 建立資料目錄
+#    mkdir -p data
+#
+#    # 2. 產生 JWT 密鑰（一次性）
+#    echo "JWT_SECRET=$(openssl rand -hex 32)" > .env
+#
+#    # 3. 啟動服務
+#    docker compose up -d
+#
+# 📖 Profile 說明：
+#
+#    # 只啟動 Web UI（預設）
+#    docker compose up -d
+#
+#    # Web UI + API Server
+#    docker compose --profile api up -d
+#
+#    # Web UI + GPU 加速
+#    docker compose --profile gpu up -d
+#
+#    # Web UI + MinerU（CPU-only）
+#    docker compose --profile mineru up -d
+#
+#    # Web UI + API + GPU + MinerU + 自動清理（完整版）
+#    docker compose --profile api --profile gpu --profile mineru --profile cleanup up -d
+#
+# ==============================================================================
+
+services:
+  # ===========================================================================
+  # ConvertX Web UI - 主服務
+  # ===========================================================================
+  convertx:
+    image: convertx/convertx-cn:latest
+    container_name: convertx-cn
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ./data:/app/data
+
+    environment:
+      # 時區
+      - TZ=Asia/Taipei
+
+      # ---------------------------------------------------------------------
+      # 🔐 JWT 統一認證（關鍵設定）
+      # ---------------------------------------------------------------------
+      # Web UI 和 API Server 共用同一個 JWT_SECRET
+      # 這樣 Web UI 產生的 Token 可以直接用於 API 認證
+      #
+      # ⚠️ 必須在 .env 檔案中設定，或在此處修改
+      - JWT_SECRET=${JWT_SECRET:-請設定你的JWT密鑰-至少32字元}
+
+      # 帳號設定
+      - ACCOUNT_REGISTRATION=true
+      - HTTP_ALLOWED=true
+      - TRUST_PROXY=false
+      - ALLOW_UNAUTHENTICATED=false
+
+      # 自動清理（小時，0=停用）
+      - AUTO_DELETE_EVERY_N_HOURS=24
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+    networks:
+      - convertx-network
+
+  # ===========================================================================
+  # ConvertX RAS API Server（選用）
+  # ===========================================================================
+  # 啟用方式：docker compose --profile api up -d
+  # ===========================================================================
+  convertx-api:
+    profiles:
+      - api
+
+    build:
+      context: ./api-server
+      dockerfile: Dockerfile
+
+    container_name: convertx-api
+    restart: unless-stopped
+
+    ports:
+      - "7890:7890"
+
+    volumes:
+      - ./data:/app/data
+
+    environment:
+      - TZ=Asia/Taipei
+      - RAS_API_HOST=0.0.0.0
+      - RAS_API_PORT=7890
+
+      # ---------------------------------------------------------------------
+      # 🔐 JWT 統一認證
+      # ---------------------------------------------------------------------
+      # 與 Web UI 使用相同的 JWT_SECRET
+      # 這樣 Web UI 登入產生的 Token 可以直接用於 API 請求
+      - JWT_SECRET=${JWT_SECRET:-請設定你的JWT密鑰-至少32字元}
+
+      # 檔案路徑（與 Web UI 共用 data 目錄）
+      - UPLOAD_DIR=/app/data/api-uploads
+      - OUTPUT_DIR=/app/data/api-output
+
+      # 其他設定
+      - MAX_FILE_SIZE=524288000
+      - RUST_LOG=convertx_ras_api=info,tower_http=info
+      - ENABLE_SWAGGER=true
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7890/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    depends_on:
+      - convertx
+
+    networks:
+      - convertx-network
+
+  # ===========================================================================
+  # ConvertX GPU 加速版（選用）
+  # ===========================================================================
+  # 啟用方式：docker compose --profile gpu up -d
+  #
+  # ⚠️ 需求：
+  #    1. NVIDIA 驅動程式
+  #    2. nvidia-container-toolkit
+  #    3. 足夠的 GPU 記憶體（建議 8GB+）
+  # ===========================================================================
+  convertx-gpu:
+    profiles:
+      - gpu
+
+    image: convertx/convertx-cn:gpu
+    container_name: convertx-cn-gpu
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ./data:/app/data
+
+    environment:
+      - TZ=Asia/Taipei
+      - JWT_SECRET=${JWT_SECRET:-請設定你的JWT密鑰-至少32字元}
+      - ACCOUNT_REGISTRATION=true
+      - HTTP_ALLOWED=true
+      - TRUST_PROXY=false
+      - ALLOW_UNAUTHENTICATED=false
+      - AUTO_DELETE_EVERY_N_HOURS=24
+
+      # GPU 加速設定
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    networks:
+      - convertx-network
+
+  # ===========================================================================
+  # MinerU PDF 處理器（選用，強制 CPU-only）
+  # ===========================================================================
+  # 啟用方式：docker compose --profile mineru up -d
+  #
+  # 📝 說明：
+  #    MinerU 是專業的 PDF 文字擷取工具
+  #    強制使用 CPU 以避免與其他 GPU 任務競爭記憶體
+  # ===========================================================================
+  mineru:
+    profiles:
+      - mineru
+
+    image: opendatalab/mineru:latest
+    container_name: convertx-mineru
+    restart: unless-stopped
+
+    volumes:
+      - ./data/mineru-input:/app/input
+      - ./data/mineru-output:/app/output
+      - ./models/mineru:/app/models
+
+    environment:
+      - TZ=Asia/Taipei
+
+      # ---------------------------------------------------------------------
+      # 🚫 強制 CPU-only
+      # ---------------------------------------------------------------------
+      # 設定 CUDA_VISIBLE_DEVICES="" 禁用 GPU
+      # 這可防止 MinerU 佔用大量 GPU 記憶體
+      - CUDA_VISIBLE_DEVICES=
+
+      # 強制使用 CPU
+      - DEVICE=cpu
+      - MINERU_DEVICE=cpu
+
+    # 不分配 GPU 資源
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices: []
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import magic_pdf; print('ok')"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+      start_period: 120s
+
+    networks:
+      - convertx-network
+
+  # ===========================================================================
+  # 24 小時自動清理排程（選用）
+  # ===========================================================================
+  # 啟用方式：docker compose --profile cleanup up -d
+  #
+  # 📝 說明：
+  #    使用 ofelia 作為輕量級 cron 排程器
+  #    每 24 小時執行一次清理任務
+  # ===========================================================================
+  cleanup-scheduler:
+    profiles:
+      - cleanup
+
+    image: mcuadros/ofelia:latest
+    container_name: convertx-cleanup
+    restart: unless-stopped
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    labels:
+      # ---------------------------------------------------------------------
+      # 24 小時清理排程
+      # ---------------------------------------------------------------------
+      # 每天凌晨 3:00 執行清理
+      ofelia.job-exec.cleanup-uploads.schedule: "0 3 * * *"
+      ofelia.job-exec.cleanup-uploads.container: "convertx-cn"
+      ofelia.job-exec.cleanup-uploads.command: >
+        sh -c "find /app/data/uploads -type f -mtime +1 -delete &&
+               find /app/data/output -type f -mtime +1 -delete &&
+               find /app/data/uploads -type d -empty -delete &&
+               find /app/data/output -type d -empty -delete &&
+               echo 'Cleanup completed at $(date)'"
+
+      # API 目錄清理（如果啟用 API）
+      ofelia.job-exec.cleanup-api.schedule: "0 4 * * *"
+      ofelia.job-exec.cleanup-api.container: "convertx-cn"
+      ofelia.job-exec.cleanup-api.command: >
+        sh -c "find /app/data/api-uploads -type f -mtime +1 -delete 2>/dev/null;
+               find /app/data/api-output -type f -mtime +1 -delete 2>/dev/null;
+               find /app/data/api-uploads -type d -empty -delete 2>/dev/null;
+               find /app/data/api-output -type d -empty -delete 2>/dev/null;
+               echo 'API cleanup completed at $(date)'"
+
+    depends_on:
+      - convertx
+
+    networks:
+      - convertx-network
+
+  # ===========================================================================
+  # 獨立清理容器（備選方案）
+  # ===========================================================================
+  # 如果不想使用 ofelia，可以使用這個簡單的 alpine cron 容器
+  # ===========================================================================
+  # cleanup-cron:
+  #   profiles:
+  #     - cleanup-simple
+  #
+  #   image: alpine:latest
+  #   container_name: convertx-cleanup-cron
+  #   restart: unless-stopped
+  #
+  #   volumes:
+  #     - ./data:/app/data
+  #
+  #   command: |
+  #     sh -c '
+  #       echo "0 3 * * * find /app/data/uploads -type f -mtime +1 -delete && \
+  #              find /app/data/output -type f -mtime +1 -delete && \
+  #              find /app/data -type d -empty -delete" | crontab -
+  #       crond -f -l 2
+  #     '
+  #
+  #   networks:
+  #     - convertx-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  convertx-network:
+    driver: bridge
+
+# =============================================================================
+# 環境變數範例（.env 檔案）
+# =============================================================================
+#
+# 建立 .env 檔案：
+#
+#   # 產生隨機 JWT 密鑰
+#   JWT_SECRET=$(openssl rand -hex 32)
+#
+#   # 或使用固定值（正式環境請更換）
+#   JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters-long
+#
+# =============================================================================

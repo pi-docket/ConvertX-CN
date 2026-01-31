@@ -122,11 +122,44 @@ const updateSearchBar = () => {
   const convertToGroups = {};
   const convertToElement = document.querySelector("select[name='convert_to']");
 
+  // =========================================================================
+  // 搜尋邏輯：同時支援目標格式和引擎名稱搜尋
+  // =========================================================================
+  // 使用者可以輸入：
+  //   - "pdf"     → 顯示所有包含 "pdf" 的目標格式
+  //   - "pandoc"  → 顯示 Pandoc 引擎的所有格式
+  //   - "md pan"  → 顯示 Pandoc 引擎中包含 "md" 的格式
+  // =========================================================================
   const showMatching = (search) => {
-    for (const [targets, groupElement] of Object.values(convertToGroups)) {
+    const searchTerms = search.toLowerCase().split(/\s+/).filter(Boolean);
+
+    for (const [groupName, [targets, groupElement]] of Object.entries(convertToGroups)) {
+      const groupNameLower = groupName.toLowerCase();
       let matchingTargetsFound = 0;
+
       for (const target of targets) {
-        if (target.dataset.target.includes(search)) {
+        const targetName = target.dataset.target.toLowerCase();
+
+        // 匹配邏輯：
+        // 1. 如果搜尋詞匹配引擎名稱，顯示該引擎的所有格式
+        // 2. 如果搜尋詞匹配目標格式名稱，顯示該格式
+        // 3. 如果有多個搜尋詞，所有詞都必須匹配（引擎或格式）
+        let isMatch = false;
+
+        if (searchTerms.length === 0) {
+          // 無搜尋詞時顯示全部
+          isMatch = true;
+        } else if (searchTerms.length === 1) {
+          // 單一搜尋詞：匹配格式或引擎
+          isMatch = targetName.includes(searchTerms[0]) || groupNameLower.includes(searchTerms[0]);
+        } else {
+          // 多個搜尋詞：全部都要匹配（可以是格式或引擎的組合）
+          isMatch = searchTerms.every(
+            (term) => targetName.includes(term) || groupNameLower.includes(term),
+          );
+        }
+
+        if (isMatch) {
           matchingTargetsFound++;
           target.classList.remove("hidden");
           target.classList.add("flex");
