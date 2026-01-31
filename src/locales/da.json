@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Indstillinger",
-    "otherLlmApiKey": "Anden LLM API-nøgle"
+    "otherLlmApiKey": "Anden LLM API-nøgle",
+    "updateButton": "Update"
   }
 }

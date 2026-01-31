@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Pengaturan",
-    "otherLlmApiKey": "Kunci API LLM Lain"
+    "otherLlmApiKey": "Kunci API LLM Lain",
+    "updateButton": "Update"
   }
 }

@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Ayarlar",
-    "otherLlmApiKey": "Diğer LLM API Anahtarı"
+    "otherLlmApiKey": "Diğer LLM API Anahtarı",
+    "updateButton": "Update"
   }
 }

@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "ការកំណត់",
-    "otherLlmApiKey": "សោ API LLM ផ្សេងទៀត"
+    "otherLlmApiKey": "សោ API LLM ផ្សេងទៀត",
+    "updateButton": "Update"
   }
 }

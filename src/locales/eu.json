@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Ezarpenak",
-    "otherLlmApiKey": "Beste LLM API gakoa"
+    "otherLlmApiKey": "Beste LLM API gakoa",
+    "updateButton": "Update"
   }
 }

@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "تنظیمات",
-    "otherLlmApiKey": "کلید API دیگر LLM"
+    "otherLlmApiKey": "کلید API دیگر LLM",
+    "updateButton": "Update"
   }
 }

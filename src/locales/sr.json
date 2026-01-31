@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Подешавања",
-    "otherLlmApiKey": "Други LLM API кључ"
+    "otherLlmApiKey": "Други LLM API кључ",
+    "updateButton": "Update"
   }
 }

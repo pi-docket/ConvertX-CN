@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Gosodiadau",
-    "otherLlmApiKey": "Allwedd API LLM arall"
+    "otherLlmApiKey": "Allwedd API LLM arall",
+    "updateButton": "Update"
   }
 }

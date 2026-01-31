@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Settings",
-    "otherLlmApiKey": "Ċavi API ta' LLM ieħor"
+    "otherLlmApiKey": "Ċavi API ta' LLM ieħor",
+    "updateButton": "Update"
   }
 }

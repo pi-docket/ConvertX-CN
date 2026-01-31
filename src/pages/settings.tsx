@@ -8,13 +8,22 @@ import { API_KEY_NAMES, getUserApiKey, getApiKeys } from "../helpers/apiKeys";
 import { localeService } from "../i18n/service";
 import { userService } from "./user";
 
-// 儲存或更新使用者的 API Key
+// 儲存、更新或刪除使用者的 API Key
 function saveUserApiKey(userId: number, keyName: string, keyValue: string): void {
-  const now = new Date().toISOString();
   const existing = db
     .query("SELECT id FROM api_keys WHERE user_id = ? AND key_name = ?")
     .get(userId, keyName);
 
+  // 如果值為空，則刪除該 API Key
+  if (!keyValue || keyValue.trim() === "") {
+    if (existing) {
+      db.query("DELETE FROM api_keys WHERE user_id = ? AND key_name = ?").run(userId, keyName);
+    }
+    return;
+  }
+
+  // 否則儲存或更新
+  const now = new Date().toISOString();
   if (existing) {
     db.query("UPDATE api_keys SET key_value = ?, updated_at = ? WHERE user_id = ? AND key_name = ?").run(
       keyValue,
@@ -119,7 +128,7 @@ export const settings = new Elysia()
                   <div role="group" class="mt-2">
                     <input
                       type="submit"
-                      value={t("common", "save")}
+                      value={t("settings", "updateButton")}
                       class="w-full btn-primary"
                     />
                   </div>

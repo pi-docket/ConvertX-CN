@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Setări",
-    "otherLlmApiKey": "Altă cheie API LLM"
+    "otherLlmApiKey": "Altă cheie API LLM",
+    "updateButton": "Update"
   }
 }

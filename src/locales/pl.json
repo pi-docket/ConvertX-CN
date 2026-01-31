@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Ustawienia",
-    "otherLlmApiKey": "Inny klucz API LLM"
+    "otherLlmApiKey": "Inny klucz API LLM",
+    "updateButton": "Update"
   }
 }

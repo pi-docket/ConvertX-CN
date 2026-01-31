@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Mga Setting",
-    "otherLlmApiKey": "Ibang LLM API Key"
+    "otherLlmApiKey": "Ibang LLM API Key",
+    "updateButton": "Update"
   }
 }

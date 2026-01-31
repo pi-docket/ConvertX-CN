@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Iestatījumi",
-    "otherLlmApiKey": "Cita LLM API atslēga"
+    "otherLlmApiKey": "Cita LLM API atslēga",
+    "updateButton": "Update"
   }
 }

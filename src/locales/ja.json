@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "設定",
-    "otherLlmApiKey": "その他のLLM APIキー"
+    "otherLlmApiKey": "その他のLLM APIキー",
+    "updateButton": "更新"
   }
 }

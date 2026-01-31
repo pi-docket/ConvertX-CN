@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Socruithe",
-    "otherLlmApiKey": "Eochair API LLM eile"
+    "otherLlmApiKey": "Eochair API LLM eile",
+    "updateButton": "Update"
   }
 }

@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Inställningar",
-    "otherLlmApiKey": "Annan LLM API-nyckel"
+    "otherLlmApiKey": "Annan LLM API-nyckel",
+    "updateButton": "Update"
   }
 }

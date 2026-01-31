@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Seaded",
-    "otherLlmApiKey": "Muu LLM API võti"
+    "otherLlmApiKey": "Muu LLM API võti",
+    "updateButton": "Update"
   }
 }

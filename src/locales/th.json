@@ -106,6 +106,7 @@
   },
   "settings": {
     "title": "การตั้งค่า",
-    "otherLlmApiKey": "คีย์ API LLM อื่น"
+    "otherLlmApiKey": "คีย์ API LLM อื่น",
+    "updateButton": "Update"
   }
 }

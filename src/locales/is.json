@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Stillingar",
-    "otherLlmApiKey": "Annar LLM API-lykil"
+    "otherLlmApiKey": "Annar LLM API-lykil",
+    "updateButton": "Update"
   }
 }

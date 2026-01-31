@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Nustatymai",
-    "otherLlmApiKey": "Kitas LLM API raktas"
+    "otherLlmApiKey": "Kitas LLM API raktas",
+    "updateButton": "Update"
   }
 }

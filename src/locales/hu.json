@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Beállítások",
-    "otherLlmApiKey": "Más LLM API-kulcs"
+    "otherLlmApiKey": "Más LLM API-kulcs",
+    "updateButton": "Update"
   }
 }

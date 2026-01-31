@@ -106,6 +106,7 @@
   },
   "settings": {
     "title": "सेटिंग्स",
-    "otherLlmApiKey": "अन्य LLM API कुंजी"
+    "otherLlmApiKey": "अन्य LLM API कुंजी",
+    "updateButton": "Update"
   }
 }

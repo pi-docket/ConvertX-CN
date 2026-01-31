@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Izilungiselelo",
-    "otherLlmApiKey": "Okunye ukhiye we-API we-LLM"
+    "otherLlmApiKey": "Okunye ukhiye we-API we-LLM",
+    "updateButton": "Update"
   }
 }

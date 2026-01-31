@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "සැකසුම්",
-    "otherLlmApiKey": "වෙනත් LLM API යතුර"
+    "otherLlmApiKey": "වෙනත් LLM API යතුර",
+    "updateButton": "Update"
   }
 }

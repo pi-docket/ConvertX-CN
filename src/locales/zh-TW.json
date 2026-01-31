@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "設定",
-    "otherLlmApiKey": "其他 LLM API Key"
+    "otherLlmApiKey": "其他 LLM API Key",
+    "updateButton": "更新"
   }
 }

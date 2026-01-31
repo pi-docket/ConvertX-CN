@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "সেটিংস",
-    "otherLlmApiKey": "অন্য LLM API কী"
+    "otherLlmApiKey": "অন্য LLM API কী",
+    "updateButton": "Update"
   }
 }

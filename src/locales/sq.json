@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Cilësimet",
-    "otherLlmApiKey": "Çelës tjetër API LLM"
+    "otherLlmApiKey": "Çelës tjetër API LLM",
+    "updateButton": "Update"
   }
 }

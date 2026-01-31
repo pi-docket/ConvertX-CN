@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "સેટિંગ્સ",
-    "otherLlmApiKey": "અન્ય LLM API કી"
+    "otherLlmApiKey": "અન્ય LLM API કી",
+    "updateButton": "Update"
   }
 }

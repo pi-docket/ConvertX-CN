@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Nastavitve",
-    "otherLlmApiKey": "Drug ključ API LLM"
+    "otherLlmApiKey": "Drug ključ API LLM",
+    "updateButton": "Update"
   }
 }

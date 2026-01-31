@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "الإعدادات",
-    "otherLlmApiKey": "مفتاح API آخر لـ LLM"
+    "otherLlmApiKey": "مفتاح API آخر لـ LLM",
+    "updateButton": "تحديث"
   }
 }

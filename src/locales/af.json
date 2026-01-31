@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Instellings",
-    "otherLlmApiKey": "Ander LLM API-sleutel"
+    "otherLlmApiKey": "Ander LLM API-sleutel",
+    "updateButton": "Update"
   }
 }

@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "அமைப்புகள்",
-    "otherLlmApiKey": "மற்ற LLM API சாவி"
+    "otherLlmApiKey": "மற்ற LLM API சாவி",
+    "updateButton": "Update"
   }
 }

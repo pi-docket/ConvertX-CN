@@ -106,6 +106,7 @@
   },
   "settings": {
     "title": "Cài đặt",
-    "otherLlmApiKey": "Khóa API LLM khác"
+    "otherLlmApiKey": "Khóa API LLM khác",
+    "updateButton": "Update"
   }
 }

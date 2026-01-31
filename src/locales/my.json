@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "ဆက်တင်များ",
-    "otherLlmApiKey": "အခြား LLM API သော့"
+    "otherLlmApiKey": "အခြား LLM API သော့",
+    "updateButton": "Update"
   }
 }

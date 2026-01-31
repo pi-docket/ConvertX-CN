@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "הגדרות",
-    "otherLlmApiKey": "מפתח API אחר של LLM"
+    "otherLlmApiKey": "מפתח API אחר של LLM",
+    "updateButton": "Update"
   }
 }

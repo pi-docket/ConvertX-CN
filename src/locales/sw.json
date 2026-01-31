@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Mipangilio",
-    "otherLlmApiKey": "Ufunguo mwingine wa API ya LLM"
+    "otherLlmApiKey": "Ufunguo mwingine wa API ya LLM",
+    "updateButton": "Update"
   }
 }

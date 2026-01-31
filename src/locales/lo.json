@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "ການຕັ້ງຄ່າ",
-    "otherLlmApiKey": "ກະແຈ API LLM ອື່ນ"
+    "otherLlmApiKey": "ກະແຈ API LLM ອື່ນ",
+    "updateButton": "Update"
   }
 }

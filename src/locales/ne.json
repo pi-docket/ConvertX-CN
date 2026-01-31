@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "सेटिङ्हरू",
-    "otherLlmApiKey": "अन्य LLM API कुञ्जी"
+    "otherLlmApiKey": "अन्य LLM API कुञ्जी",
+    "updateButton": "Update"
   }
 }

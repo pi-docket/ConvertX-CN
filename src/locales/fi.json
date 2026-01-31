@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Asetukset",
-    "otherLlmApiKey": "Muu LLM API-avain"
+    "otherLlmApiKey": "Muu LLM API-avain",
+    "updateButton": "Update"
   }
 }

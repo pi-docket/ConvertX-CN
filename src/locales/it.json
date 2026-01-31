@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Impostazioni",
-    "otherLlmApiKey": "Altra chiave API LLM"
+    "otherLlmApiKey": "Altra chiave API LLM",
+    "updateButton": "Aggiorna"
   }
 }

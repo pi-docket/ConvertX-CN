@@ -107,6 +107,7 @@
   },
   "settings": {
     "title": "Nastavenia",
-    "otherLlmApiKey": "Iný kľúč API LLM"
+    "otherLlmApiKey": "Iný kľúč API LLM",
+    "updateButton": "Update"
   }
 }
