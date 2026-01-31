@@ -447,10 +447,10 @@ RUN set -ex && \
 
 # 4.10.1 Calibre 官方安裝（解決 libxml2 版本衝突）
 # ⚠️ 重要：apt 版本 Calibre 會導致 html5-parser/lxml libxml2 ABI 衝突
-# 📦 使用官方 binary installer，自帶獨立 runtime，版本 9.0.0
+# 📦 使用官方 binary installer，自帶獨立 runtime，版本 9.1.0
 # 📝 官方 installer 包含所有依賴，不會污染系統 Python
-# 🔗 https://github.com/kovidgoyal/calibre/releases/tag/v9.0.0
-ARG CALIBRE_VERSION=9.0.0
+# 🔗 https://github.com/kovidgoyal/calibre/releases/tag/v9.1.0
+ARG CALIBRE_VERSION=9.1.0
 RUN set -ex && \
   apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
