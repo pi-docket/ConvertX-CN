@@ -6,46 +6,67 @@
 
 ## 快速開始（推薦）
 
-### 一鍵部署（CPU 版本）
+### 步驟 1：建立專案目錄
 
 ```bash
-# 1. 建立專案目錄
 mkdir -p ~/convertx-cn && cd ~/convertx-cn
-
-# 2. 建立環境變數
-cat > .env << 'EOF'
-JWT_SECRET=your-super-secret-jwt-key-change-this
-AUTO_DELETE_EVERY_N_HOURS=24
-HTTP_ALLOWED=true
-EOF
-
-# 3. 建立 docker-compose.yml
-cat > docker-compose.yml << 'EOF'
-services:
-  convertx:
-    image: convertx/convertx-cn:latest
-    container_name: convertx-cn
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./data:/app/data
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - AUTO_DELETE_EVERY_N_HOURS=24
-      - HTTP_ALLOWED=true
-EOF
-
-# 4. 啟動服務
-mkdir -p data
-docker compose pull
-docker compose up -d
 ```
 
-### 一鍵部署（GPU 版本）
+### 步驟 2：建立環境變數檔案 `.env`
 
 ```bash
-cat > docker-compose.yml << 'EOF'
+cat > .env << 'EOF'
+# ================================
+# ConvertX-CN 環境變數配置
+# ================================
+
+# 🔐 JWT 認證金鑰（必須設定，至少 32 字元）
+# ⚠️ 請務必更換為你自己的隨機字串！
+JWT_SECRET=your-super-secret-jwt-key-change-this-to-random-string
+
+# 🕐 自動清理週期（小時）
+AUTO_DELETE_EVERY_N_HOURS=24
+
+# 🌐 允許 HTTP（非 HTTPS）存取
+HTTP_ALLOWED=true
+
+# ================================
+# API Server 專用（可選）
+# ================================
+
+# API Server 後端地址（Docker Compose 內部網路）
+CONVERTX_BACKEND_URL=http://convertx:3000
+
+# API Server 監聽端口
+RAS_API_PORT=7890
+EOF
+```
+
+> ⚠️ **重要**：請務必將 `JWT_SECRET` 更換為你自己的隨機字串（至少 32 字元）！
+
+### 步驟 3：建立 docker-compose.yml
+
+**CPU 版本：**
+
+```yaml
+# docker-compose.yml
+services:
+  convertx:
+    image: convertx/convertx-cn:latest
+    container_name: convertx-cn
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # Web UI 端口
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+```
+
+**GPU 版本（NVIDIA）：**
+
+```yaml
+# docker-compose.yml
 services:
   convertx:
     image: convertx/convertx-cn:latest
@@ -55,10 +76,8 @@ services:
       - "3000:3000"
     volumes:
       - ./data:/app/data
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - AUTO_DELETE_EVERY_N_HOURS=24
-      - HTTP_ALLOWED=true
+    env_file:
+      - .env
     deploy:
       resources:
         reservations:
@@ -66,10 +85,43 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-EOF
+```
 
+### 步驟 4：啟動服務
+
+```bash
+mkdir -p data
+docker compose pull
 docker compose up -d
 ```
+
+### 步驟 5：驗證服務
+
+```bash
+# 檢查服務狀態
+docker compose ps
+
+# 檢查日誌
+docker compose logs -f
+
+# 測試連線
+curl http://localhost:3000
+```
+
+---
+
+## 🔧 修改端口
+
+如果你需要修改 Web UI 的對外端口（例如改為 7303）：
+
+**修改 docker-compose.yml：**
+
+```yaml
+ports:
+  - "7303:3000" # 左邊是對外端口，右邊是容器內部端口
+```
+
+> 📝 只需修改冒號左邊的數字。右邊的 `3000` 是容器內部端口，不要修改。
 
 ---
 
@@ -103,15 +155,15 @@ API Server 是輕量代理，轉發請求給 Web UI，不需要安裝額外工�
 
 ### 設計理念
 
-Web UI 和 RAS API Server 共用同一個 `JWT_SECRET`：
+Web UI 和 API Server 共用同一個 `JWT_SECRET`：
 
 - ✅ Web UI 登入產生的 Token 可直接用於 API 認證
 - ✅ 無需維護兩套認證系統
-- ✅ 部署時只需設定一次
+- ✅ 部署時只需在 `.env` 設定一次
 
 ### 配置方式
 
-在 `.env` 檔案中設定：
+在 `.env` 檔案中設定（已在上面步驟 2 建立）：
 
 ```bash
 JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters
@@ -121,9 +173,43 @@ JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters
 
 ## 加入 API Server（可選）
 
-如果需要 REST/GraphQL API 給外部程式呼叫：
+如果需要 REST/GraphQL API 給外部程式呼叫，有兩種方式：
 
-### 1. 下載 api-server 目錄
+### 方式 1：使用預編譯 Binary（推薦）
+
+從 [GitHub Releases](https://github.com/pi-docket/ConvertX-CN/releases) 下載預編譯的 API Server：
+
+```bash
+# 1. 下載適合你系統的版本
+# Linux AMD64
+curl -L -o convertx-api.tar.gz \
+  https://github.com/pi-docket/ConvertX-CN/releases/latest/download/convertx-api-linux-amd64.tar.gz
+
+# 2. 解壓
+tar -xzf convertx-api.tar.gz
+
+# 3. 設定環境變數（使用與 Web UI 相同的 .env）
+export $(grep -v '^#' .env | xargs)
+export CONVERTX_BACKEND_URL=http://localhost:3000
+
+# 4. 啟動 API Server
+./convertx-api
+```
+
+**🔧 修改 API Server 端口：**
+
+```bash
+# 在 .env 中設定
+RAS_API_PORT=8080
+
+# 或直接設定環境變數
+export RAS_API_PORT=8080
+./convertx-api
+```
+
+### 方式 2：使用 Docker Compose 建置
+
+**1. 下載 api-server 目錄：**
 
 ```bash
 cd ~/convertx-cn
@@ -132,7 +218,7 @@ cp -r /tmp/convertx-cn/api-server ./
 rm -rf /tmp/convertx-cn
 ```
 
-### 2. 更新 docker-compose.yml
+**2. 更新 docker-compose.yml：**
 
 ```yaml
 services:
@@ -142,13 +228,11 @@ services:
     container_name: convertx-cn
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3000:3000" # Web UI 端口
     volumes:
       - ./data:/app/data
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - AUTO_DELETE_EVERY_N_HOURS=24
-      - HTTP_ALLOWED=true
+    env_file:
+      - .env
 
   # API Server（輕量代理）
   convertx-api:
@@ -158,15 +242,28 @@ services:
     container_name: convertx-api
     restart: unless-stopped
     ports:
-      - "7890:7890"
+      - "7890:7890" # API Server 端口
+    env_file:
+      - .env
     environment:
-      - JWT_SECRET=${JWT_SECRET}
+      # 覆蓋 .env 中的設定，指向 Docker 內部網路
       - CONVERTX_BACKEND_URL=http://convertx:3000
     depends_on:
       - convertx
 ```
 
-### 3. 啟動服務
+**🔧 修改 API Server 端口：**
+
+```yaml
+# 修改 ports 和環境變數
+ports:
+  - "8080:8080" # 改為你想要的端口
+environment:
+  - RAS_API_PORT=8080 # 容器內部端口也要同步修改
+  - CONVERTX_BACKEND_URL=http://convertx:3000
+```
+
+**3. 啟動服務：**
 
 ```bash
 docker compose down
@@ -183,6 +280,21 @@ docker compose up -d --build
 | `GET /api/v1/formats` | 格式列表     |
 | `POST /api/v1/jobs`   | 建立轉換任務 |
 | `GET /swagger-ui`     | Swagger 文件 |
+
+### API 使用範例
+
+```bash
+# 健康檢查
+curl http://localhost:7890/api/v1/health
+
+# 取得支援格式（需要 JWT Token）
+TOKEN=$(curl -s -X POST http://localhost:3000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"your-password"}' | jq -r '.token')
+
+curl http://localhost:7890/api/v1/formats \
+  -H "Authorization: Bearer $TOKEN"
+```
 
 ---
 

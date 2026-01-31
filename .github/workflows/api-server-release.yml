@@ -1,0 +1,174 @@
+name: API Server Release
+
+# 當推送 api-server-v* tag 時自動編譯並發布
+on:
+  push:
+    tags:
+      - "api-server-v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g., api-server-v1.0.0)"
+        required: true
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux AMD64
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            artifact_name: convertx-api
+            asset_name: convertx-api-linux-amd64
+          # Linux ARM64
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            artifact_name: convertx-api
+            asset_name: convertx-api-linux-arm64
+          # macOS Intel
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            artifact_name: convertx-api
+            asset_name: convertx-api-darwin-amd64
+          # macOS Apple Silicon
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            artifact_name: convertx-api
+            asset_name: convertx-api-darwin-arm64
+          # Windows
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact_name: convertx-api.exe
+            asset_name: convertx-api-windows-amd64.exe
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-action@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # Linux ARM64 需要交叉編譯工具
+      - name: Install cross-compilation tools (Linux ARM64)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+
+      - name: Build release binary
+        working-directory: api-server
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Package binary (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd api-server/target/${{ matrix.target }}/release
+          tar -czvf ${{ matrix.asset_name }}.tar.gz ${{ matrix.artifact_name }}
+          mv ${{ matrix.asset_name }}.tar.gz ../../../../
+
+      - name: Package binary (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd api-server/target/${{ matrix.target }}/release
+          7z a ${{ matrix.asset_name }}.zip ${{ matrix.artifact_name }}
+          mv ${{ matrix.asset_name }}.zip ../../../../
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: |
+            ${{ matrix.asset_name }}.tar.gz
+            ${{ matrix.asset_name }}.zip
+          if-no-files-found: error
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.tag }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Version: ${VERSION}"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: |
+          echo "📦 Downloaded artifacts:"
+          find artifacts -type f
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "API Server ${{ steps.version.outputs.version }}"
+          body: |
+            ## ConvertX-CN API Server ${{ steps.version.outputs.version }}
+
+            ### 📦 下載
+
+            選擇適合你系統的版本：
+
+            | 平台 | 檔案 |
+            |------|------|
+            | Linux (x86_64) | `convertx-api-linux-amd64.tar.gz` |
+            | Linux (ARM64) | `convertx-api-linux-arm64.tar.gz` |
+            | macOS (Intel) | `convertx-api-darwin-amd64.tar.gz` |
+            | macOS (Apple Silicon) | `convertx-api-darwin-arm64.tar.gz` |
+            | Windows (x86_64) | `convertx-api-windows-amd64.zip` |
+
+            ### 🚀 使用方式
+
+            ```bash
+            # 下載並解壓
+            tar -xzf convertx-api-linux-amd64.tar.gz
+
+            # 設定環境變數
+            export JWT_SECRET=your-secret-key
+            export CONVERTX_BACKEND_URL=http://localhost:3000
+
+            # 啟動
+            ./convertx-api
+            ```
+
+            ### 🔧 環境變數
+
+            | 變數 | 說明 | 預設值 |
+            |------|------|--------|
+            | `JWT_SECRET` | JWT 認證金鑰 | 必須設定 |
+            | `CONVERTX_BACKEND_URL` | Web UI 後端地址 | `http://convertx:3000` |
+            | `RAS_API_HOST` | API 監聽地址 | `0.0.0.0` |
+            | `RAS_API_PORT` | API 監聽端口 | `7890` |
+          files: |
+            artifacts/**/*.tar.gz
+            artifacts/**/*.zip
+          draft: false
+          prerelease: false
