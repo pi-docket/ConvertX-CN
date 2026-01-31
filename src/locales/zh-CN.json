@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "设置",
-    "newPassword": "新密码",
-    "newPasswordPlaceholder": "输入新密码",
-    "passwordHint": "如不更改密码请留空。",
-    "updateSuccess": "设置更新成功。",
-    "updateFailed": "设置更新失败，请重试。",
-    "jwtSecretTitle": "JWT 密钥设置",
-    "currentJwtSecret": "当前 JWT 密钥",
-    "newJwtSecret": "新 JWT 密钥",
-    "newJwtSecretPlaceholder": "输入新的 JWT 密钥（至少 32 个字符）",
-    "toggleVisibility": "切换显示/隐藏",
-    "generateRandom": "生成随机密钥",
-    "jwtSecretHint": "此密钥用于签署登录 Token。更改后所有用户需要重新登录。",
-    "jwtSecretLengthHint": "密钥必须至少 32 个字符。建议使用 64 个随机字符。",
-    "jwtSecretWarning": "更改 JWT 密钥后，需要重启服务才能生效。所有用户将被登出。",
-    "updateJwtSecret": "更新 JWT 密钥"
+    "otherLlmApiKey": "其他 LLM API Key"
   }
 }

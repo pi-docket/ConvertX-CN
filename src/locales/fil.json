@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Mga Setting",
-    "newPassword": "Bagong Password",
-    "newPasswordPlaceholder": "Ilagay ang bagong password",
-    "passwordHint": "Iwanan itong blangko kung ayaw mong baguhin ang password.",
-    "updateSuccess": "Matagumpay na na-update ang mga setting.",
-    "updateFailed": "Nabigo ang pag-update ng mga setting. Pakisubukan muli.",
-    "jwtSecretTitle": "Mga Setting ng JWT Secret",
-    "currentJwtSecret": "Kasalukuyang JWT Secret",
-    "newJwtSecret": "Bagong JWT Secret",
-    "newJwtSecretPlaceholder": "Ilagay ang bagong JWT secret (hindi bababa sa 32 character)",
-    "toggleVisibility": "I-toggle ang visibility",
-    "generateRandom": "Bumuo ng random secret",
-    "jwtSecretHint": "Ang secret na ito ay ginagamit para sa pag-sign ng mga login token. Pagkatapos baguhin, lahat ng user ay kailangang mag-login muli.",
-    "jwtSecretLengthHint": "Ang secret ay dapat hindi bababa sa 32 character. 64 na random character ang inirerekomenda.",
-    "jwtSecretWarning": "Pagkatapos baguhin ang JWT secret, kailangan mong i-restart ang serbisyo para magkabisa ang mga pagbabago. Lahat ng user ay mala-logout.",
-    "updateJwtSecret": "I-update ang JWT Secret"
+    "otherLlmApiKey": "Ibang LLM API Key"
   }
 }

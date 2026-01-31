@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Inställningar",
-    "newPassword": "Nytt lösenord",
-    "newPasswordPlaceholder": "Ange nytt lösenord",
-    "passwordHint": "Lämna tomt om du inte vill ändra ditt lösenord.",
-    "updateSuccess": "Inställningarna har uppdaterats.",
-    "updateFailed": "Kunde inte uppdatera inställningarna. Försök igen.",
-    "jwtSecretTitle": "JWT-hemlighet inställningar",
-    "currentJwtSecret": "Nuvarande JWT-hemlighet",
-    "newJwtSecret": "Ny JWT-hemlighet",
-    "newJwtSecretPlaceholder": "Ange ny JWT-hemlighet (minst 32 tecken)",
-    "toggleVisibility": "Växla synlighet",
-    "generateRandom": "Generera slumpmässig hemlighet",
-    "jwtSecretHint": "Denna hemlighet används för att signera inloggningstoken. Efter ändring måste alla användare logga in igen.",
-    "jwtSecretLengthHint": "Hemligheten måste vara minst 32 tecken. 64 slumpmässiga tecken rekommenderas.",
-    "jwtSecretWarning": "Efter att ha ändrat JWT-hemligheten måste du starta om tjänsten för att ändringarna ska träda i kraft. Alla användare kommer att loggas ut.",
-    "updateJwtSecret": "Uppdatera JWT-hemlighet"
+    "otherLlmApiKey": "Annan LLM API-nyckel"
   }
 }

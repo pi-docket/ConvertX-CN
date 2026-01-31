@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Gosodiadau",
-    "newPassword": "Cyfrinair newydd",
-    "newPasswordPlaceholder": "Rhowch gyfrinair newydd",
-    "passwordHint": "Gadewch yn wag os nad ydych am newid eich cyfrinair.",
-    "updateSuccess": "Gosodiadau wedi'u diweddaru'n llwyddiannus.",
-    "updateFailed": "Methwyd â diweddaru gosodiadau. Rhowch gynnig arall arni.",
-    "jwtSecretTitle": "Gosodiadau cyfrinach JWT",
-    "currentJwtSecret": "Cyfrinach JWT presennol",
-    "newJwtSecret": "Cyfrinach JWT newydd",
-    "newJwtSecretPlaceholder": "Rhowch gyfrinach JWT newydd (o leiaf 32 nod)",
-    "toggleVisibility": "Toglo gwelededd",
-    "generateRandom": "Cynhyrchu cyfrinach ar hap",
-    "jwtSecretHint": "Defnyddir y gyfrinach hon i lofnodi tocynnau mewngofnodi. Ar ôl newid, bydd angen i bob defnyddiwr fewngofnodi eto.",
-    "jwtSecretLengthHint": "Rhaid i'r gyfrinach fod o leiaf 32 nod. Argymhellir 64 nod ar hap.",
-    "jwtSecretWarning": "Ar ôl newid cyfrinach JWT, mae angen ailgychwyn y gwasanaeth i'r newidiadau ddod i rym. Bydd pob defnyddiwr yn cael eu allgofnodi.",
-    "updateJwtSecret": "Diweddaru cyfrinach JWT"
+    "otherLlmApiKey": "Allwedd API LLM arall"
   }
 }

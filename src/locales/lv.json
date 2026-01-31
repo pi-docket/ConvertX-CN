@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Iestatījumi",
-    "newPassword": "Jauna parole",
-    "newPasswordPlaceholder": "Ievadiet jaunu paroli",
-    "passwordHint": "Atstājiet tukšu, ja nevēlaties mainīt paroli.",
-    "updateSuccess": "Iestatījumi veiksmīgi atjaunināti.",
-    "updateFailed": "Neizdevās atjaunināt iestatījumus. Lūdzu, mēģiniet vēlreiz.",
-    "jwtSecretTitle": "JWT noslēpuma iestatījumi",
-    "currentJwtSecret": "Pašreizējais JWT noslēpums",
-    "newJwtSecret": "Jauns JWT noslēpums",
-    "newJwtSecretPlaceholder": "Ievadiet jaunu JWT noslēpumu (vismaz 32 rakstzīmes)",
-    "toggleVisibility": "Pārslēgt redzamību",
-    "generateRandom": "Ģenerēt nejaušu noslēpumu",
-    "jwtSecretHint": "Šis noslēpums tiek izmantots pieteikšanās marķieru parakstīšanai. Pēc maiņas visiem lietotājiem būs jāpiesakās no jauna.",
-    "jwtSecretLengthHint": "Noslēpumam jābūt vismaz 32 rakstzīmēm. Ieteicamas 64 nejaušas rakstzīmes.",
-    "jwtSecretWarning": "Pēc JWT noslēpuma maiņas jums jārestartē pakalpojums, lai izmaiņas stātos spēkā. Visi lietotāji tiks izrakstīti.",
-    "updateJwtSecret": "Atjaunināt JWT noslēpumu"
+    "otherLlmApiKey": "Cita LLM API atslēga"
   }
 }

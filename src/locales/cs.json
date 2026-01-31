@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Nastavení",
-    "newPassword": "Nové heslo",
-    "newPasswordPlaceholder": "Zadejte nové heslo",
-    "passwordHint": "Ponechte prázdné, pokud nechcete měnit heslo.",
-    "updateSuccess": "Nastavení bylo úspěšně aktualizováno.",
-    "updateFailed": "Aktualizace nastavení se nezdařila. Zkuste to prosím znovu.",
-    "jwtSecretTitle": "Nastavení JWT tajemství",
-    "currentJwtSecret": "Aktuální JWT tajemství",
-    "newJwtSecret": "Nové JWT tajemství",
-    "newJwtSecretPlaceholder": "Zadejte nové JWT tajemství (minimálně 32 znaků)",
-    "toggleVisibility": "Přepnout viditelnost",
-    "generateRandom": "Vygenerovat náhodné tajemství",
-    "jwtSecretHint": "Toto tajemství se používá k podepisování přihlašovacích tokenů. Po změně se všichni uživatelé budou muset znovu přihlásit.",
-    "jwtSecretLengthHint": "Tajemství musí mít alespoň 32 znaků. Doporučuje se 64 náhodných znaků.",
-    "jwtSecretWarning": "Po změně JWT tajemství je třeba restartovat službu, aby se změny projevily. Všichni uživatelé budou odhlášeni.",
-    "updateJwtSecret": "Aktualizovat JWT tajemství"
+    "otherLlmApiKey": "Jiný klíč API LLM"
   }
 }

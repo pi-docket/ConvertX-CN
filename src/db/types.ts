@@ -21,3 +21,12 @@ export class User {
   email!: string;
   password!: string;
 }
+
+export class ApiKey {
+  id!: number;
+  user_id!: number;
+  key_name!: string;
+  key_value!: string;
+  created_at!: string;
+  updated_at!: string;
+}

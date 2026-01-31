@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "設定",
-    "newPassword": "新しいパスワード",
-    "newPasswordPlaceholder": "新しいパスワードを入力",
-    "passwordHint": "パスワードを変更しない場合は空欄のままにしてください。",
-    "updateSuccess": "設定が正常に更新されました。",
-    "updateFailed": "設定の更新に失敗しました。もう一度お試しください。",
-    "jwtSecretTitle": "JWTシークレット設定",
-    "currentJwtSecret": "現在のJWTシークレット",
-    "newJwtSecret": "新しいJWTシークレット",
-    "newJwtSecretPlaceholder": "新しいJWTシークレットを入力（32文字以上）",
-    "toggleVisibility": "表示/非表示を切り替え",
-    "generateRandom": "ランダムシークレットを生成",
-    "jwtSecretHint": "このシークレットはログイントークンの署名に使用されます。変更後、すべてのユーザーは再ログインが必要になります。",
-    "jwtSecretLengthHint": "シークレットは32文字以上である必要があります。64文字のランダムな文字列を推奨します。",
-    "jwtSecretWarning": "JWTシークレットを変更した後、サービスを再起動する必要があります。すべてのユーザーがログアウトされます。",
-    "updateJwtSecret": "JWTシークレットを更新"
+    "otherLlmApiKey": "その他のLLM APIキー"
   }
 }

@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Ezarpenak",
-    "newPassword": "Pasahitz berria",
-    "newPasswordPlaceholder": "Sartu pasahitz berria",
-    "passwordHint": "Utzi hutsik pasahitza aldatu nahi ez baduzu.",
-    "updateSuccess": "Ezarpenak ondo eguneratu dira.",
-    "updateFailed": "Ezarpenak eguneratzeak huts egin du. Saiatu berriro.",
-    "jwtSecretTitle": "JWT sekretuaren ezarpenak",
-    "currentJwtSecret": "Uneko JWT sekretua",
-    "newJwtSecret": "JWT sekretu berria",
-    "newJwtSecretPlaceholder": "Sartu JWT sekretu berria (gutxienez 32 karaktere)",
-    "toggleVisibility": "Ikusgaitasuna txandakatu",
-    "generateRandom": "Ausazko sekretua sortu",
-    "jwtSecretHint": "Sekretu hau saioa hasteko tokenak sinatzeko erabiltzen da. Aldatu ondoren, erabiltzaile guztiek berriro saioa hasi beharko dute.",
-    "jwtSecretLengthHint": "Sekretuak gutxienez 32 karaktere izan behar ditu. 64 ausazko karaktere gomendatzen dira.",
-    "jwtSecretWarning": "JWT sekretua aldatu ondoren, zerbitzua berrabiarazi behar duzu aldaketak indarrean jartzeko. Erabiltzaile guztiek saioa itxi egingo dute.",
-    "updateJwtSecret": "JWT sekretua eguneratu"
+    "otherLlmApiKey": "Beste LLM API gakoa"
   }
 }

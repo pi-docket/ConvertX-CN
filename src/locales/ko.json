@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "설정",
-    "newPassword": "새 비밀번호",
-    "newPasswordPlaceholder": "새 비밀번호를 입력하세요",
-    "passwordHint": "비밀번호를 변경하지 않으려면 비워 두세요.",
-    "updateSuccess": "설정이 성공적으로 업데이트되었습니다.",
-    "updateFailed": "설정 업데이트에 실패했습니다. 다시 시도해 주세요.",
-    "jwtSecretTitle": "JWT 시크릿 설정",
-    "currentJwtSecret": "현재 JWT 시크릿",
-    "newJwtSecret": "새 JWT 시크릿",
-    "newJwtSecretPlaceholder": "새 JWT 시크릿 입력 (32자 이상)",
-    "toggleVisibility": "표시/숨김 전환",
-    "generateRandom": "랜덤 시크릿 생성",
-    "jwtSecretHint": "이 시크릿은 로그인 토큰 서명에 사용됩니다. 변경 후 모든 사용자는 다시 로그인해야 합니다.",
-    "jwtSecretLengthHint": "시크릿은 최소 32자 이상이어야 합니다. 64자 랜덤 문자열을 권장합니다.",
-    "jwtSecretWarning": "JWT 시크릿 변경 후 서비스를 재시작해야 적용됩니다. 모든 사용자가 로그아웃됩니다.",
-    "updateJwtSecret": "JWT 시크릿 업데이트"
+    "otherLlmApiKey": "기타 LLM API 키"
   }
 }

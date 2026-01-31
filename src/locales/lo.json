@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "ການຕັ້ງຄ່າ",
-    "newPassword": "ລະຫັດຜ່ານໃໝ່",
-    "newPasswordPlaceholder": "ປ້ອນລະຫັດຜ່ານໃໝ່",
-    "passwordHint": "ປະໄວ້ຫວ່າງຫາກທ່ານບໍ່ຕ້ອງການປ່ຽນລະຫັດຜ່ານ.",
-    "updateSuccess": "ອັບເດດການຕັ້ງຄ່າສໍາເລັດແລ້ວ.",
-    "updateFailed": "ອັບເດດການຕັ້ງຄ່າລົ້ມເຫລວ. ກະລຸນາລອງໃໝ່.",
-    "jwtSecretTitle": "ການຕັ້ງຄ່າ JWT Secret",
-    "currentJwtSecret": "JWT Secret ປັດຈຸບັນ",
-    "newJwtSecret": "JWT Secret ໃໝ່",
-    "newJwtSecretPlaceholder": "ປ້ອນ JWT secret ໃໝ່ (ຢ່າງໜ້ອຍ 32 ຕົວອັກສອນ)",
-    "toggleVisibility": "ສະແດງ/ເຊື່ອງ",
-    "generateRandom": "ສ້າງ secret ແບບສຸ່ມ",
-    "jwtSecretHint": "Secret ນີ້ໃຊ້ສໍາລັບເຊັນ token ເຂົ້າສູ່ລະບົບ. ຫຼັງຈາກປ່ຽນແລ້ວ, ຜູ້ໃຊ້ທັງໝົດຈະຕ້ອງເຂົ້າສູ່ລະບົບໃໝ່.",
-    "jwtSecretLengthHint": "Secret ຕ້ອງມີຢ່າງໜ້ອຍ 32 ຕົວອັກສອນ. ແນະນໍາ 64 ຕົວອັກສອນແບບສຸ່ມ.",
-    "jwtSecretWarning": "ຫຼັງຈາກປ່ຽນ JWT secret, ທ່ານຕ້ອງເລີ່ມບໍລິການໃໝ່ເພື່ອໃຫ້ການປ່ຽນແປງມີຜົນ. ຜູ້ໃຊ້ທັງໝົດຈະຖືກອອກຈາກລະບົບ.",
-    "updateJwtSecret": "ອັບເດດ JWT Secret"
+    "otherLlmApiKey": "ກະແຈ API LLM ອື່ນ"
   }
 }

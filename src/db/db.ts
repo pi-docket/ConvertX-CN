@@ -37,6 +37,23 @@ if (dbVersion === 0) {
   console.log("Updated database to version 1.");
 }
 
+// Version 2: Add api_keys table for storing third-party API keys
+if (dbVersion === 1) {
+  db.exec(`
+CREATE TABLE IF NOT EXISTS api_keys (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  key_name TEXT NOT NULL,
+  key_value TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(user_id, key_name),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+PRAGMA user_version = 2;`);
+  console.log("Updated database to version 2.");
+}
+
 // enable WAL mode
 db.exec("PRAGMA journal_mode = WAL;");
 

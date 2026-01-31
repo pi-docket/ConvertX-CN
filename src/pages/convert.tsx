@@ -7,6 +7,7 @@ import db from "../db/db";
 import { Jobs } from "../db/types";
 import { WEBROOT } from "../helpers/env";
 import { normalizeFiletype } from "../helpers/normalizeFiletype";
+import { setApiKeysToEnv, clearApiKeysFromEnv } from "../helpers/apiKeys";
 import { userService } from "./user";
 import { inferenceService } from "../inference";
 
@@ -74,6 +75,10 @@ export const convert = new Elysia().use(userService).post(
     // 取得輸入檔案的副檔名 (從第一個檔案)
     const inputExt = fileNames[0]?.split(".").pop()?.toLowerCase() ?? "";
 
+    // 設定使用者的 API Keys 到環境變數，供轉換器使用
+    const userId = parseInt(user.id, 10);
+    setApiKeysToEnv(userId);
+
     handleConvert(fileNames, userUploadsDir, userOutputDir, convertTo, converterName, jobId)
       .then(() => {
         // All conversions are done, update the job status to 'completed'
@@ -85,7 +90,7 @@ export const convert = new Elysia().use(userService).post(
         try {
           const durationMs = Date.now() - conversionStartTime;
           inferenceService.logConversion({
-            userId: parseInt(user.id, 10),
+            userId: userId,
             inputExt: inputExt,
             searchedFormat: convertTo,
             selectedEngine: converterName,
@@ -106,7 +111,7 @@ export const convert = new Elysia().use(userService).post(
         try {
           const durationMs = Date.now() - conversionStartTime;
           inferenceService.logConversion({
-            userId: parseInt(user.id, 10),
+            userId: userId,
             inputExt: inputExt,
             searchedFormat: convertTo,
             selectedEngine: converterName,
@@ -116,6 +121,10 @@ export const convert = new Elysia().use(userService).post(
         } catch (logError) {
           console.warn("Failed to log conversion event:", logError);
         }
+      })
+      .finally(() => {
+        // 清除環境變數中的 API Keys
+        clearApiKeysFromEnv();
       });
 
     // Redirect the client immediately

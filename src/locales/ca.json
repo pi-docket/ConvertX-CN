@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Configuració",
-    "newPassword": "Nova contrasenya",
-    "newPasswordPlaceholder": "Introdueix la nova contrasenya",
-    "passwordHint": "Deixa en blanc si no vols canviar la contrasenya.",
-    "updateSuccess": "Configuració actualitzada correctament.",
-    "updateFailed": "Error en actualitzar la configuració. Si us plau, torna-ho a provar.",
-    "jwtSecretTitle": "Configuració del secret JWT",
-    "currentJwtSecret": "Secret JWT actual",
-    "newJwtSecret": "Nou secret JWT",
-    "newJwtSecretPlaceholder": "Introdueix el nou secret JWT (almenys 32 caràcters)",
-    "toggleVisibility": "Alternar visibilitat",
-    "generateRandom": "Generar secret aleatori",
-    "jwtSecretHint": "Aquest secret s'utilitza per signar els tokens d'inici de sessió. Després del canvi, tots els usuaris hauran d'iniciar sessió de nou.",
-    "jwtSecretLengthHint": "El secret ha de tenir almenys 32 caràcters. Es recomanen 64 caràcters aleatoris.",
-    "jwtSecretWarning": "Després de canviar el secret JWT, heu de reiniciar el servei perquè els canvis tinguin efecte. Tots els usuaris tancaran la sessió.",
-    "updateJwtSecret": "Actualitzar secret JWT"
+    "otherLlmApiKey": "Altra clau API de LLM"
   }
 }

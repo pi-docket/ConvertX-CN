@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Ustawienia",
-    "newPassword": "Nowe hasło",
-    "newPasswordPlaceholder": "Wprowadź nowe hasło",
-    "passwordHint": "Pozostaw puste, jeśli nie chcesz zmieniać hasła.",
-    "updateSuccess": "Ustawienia zostały pomyślnie zaktualizowane.",
-    "updateFailed": "Nie udało się zaktualizować ustawień. Spróbuj ponownie.",
-    "jwtSecretTitle": "Ustawienia sekretu JWT",
-    "currentJwtSecret": "Aktualny sekret JWT",
-    "newJwtSecret": "Nowy sekret JWT",
-    "newJwtSecretPlaceholder": "Wprowadź nowy sekret JWT (co najmniej 32 znaki)",
-    "toggleVisibility": "Przełącz widoczność",
-    "generateRandom": "Wygeneruj losowy sekret",
-    "jwtSecretHint": "Ten sekret służy do podpisywania tokenów logowania. Po zmianie wszyscy użytkownicy muszą się ponownie zalogować.",
-    "jwtSecretLengthHint": "Sekret musi mieć co najmniej 32 znaki. Zalecane jest 64 losowych znaków.",
-    "jwtSecretWarning": "Po zmianie sekretu JWT należy ponownie uruchomić usługę, aby zmiany weszły w życie. Wszyscy użytkownicy zostaną wylogowani.",
-    "updateJwtSecret": "Zaktualizuj sekret JWT"
+    "otherLlmApiKey": "Inny klucz API LLM"
   }
 }

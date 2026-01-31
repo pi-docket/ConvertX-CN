@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Impostazioni",
-    "newPassword": "Nuova password",
-    "newPasswordPlaceholder": "Inserisci nuova password",
-    "passwordHint": "Lascia vuoto se non vuoi cambiare la password.",
-    "updateSuccess": "Impostazioni aggiornate con successo.",
-    "updateFailed": "Aggiornamento impostazioni fallito. Riprova.",
-    "jwtSecretTitle": "Impostazioni segreto JWT",
-    "currentJwtSecret": "Segreto JWT attuale",
-    "newJwtSecret": "Nuovo segreto JWT",
-    "newJwtSecretPlaceholder": "Inserisci il nuovo segreto JWT (almeno 32 caratteri)",
-    "toggleVisibility": "Mostra/nascondi",
-    "generateRandom": "Genera segreto casuale",
-    "jwtSecretHint": "Questo segreto viene utilizzato per firmare i token di accesso. Dopo la modifica, tutti gli utenti dovranno effettuare nuovamente l'accesso.",
-    "jwtSecretLengthHint": "Il segreto deve essere di almeno 32 caratteri. Si consigliano 64 caratteri casuali.",
-    "jwtSecretWarning": "Dopo aver modificato il segreto JWT, è necessario riavviare il servizio affinché le modifiche abbiano effetto. Tutti gli utenti verranno disconnessi.",
-    "updateJwtSecret": "Aggiorna segreto JWT"
+    "otherLlmApiKey": "Altra chiave API LLM"
   }
 }

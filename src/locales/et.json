@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Seaded",
-    "newPassword": "Uus parool",
-    "newPasswordPlaceholder": "Sisestage uus parool",
-    "passwordHint": "Jätke tühjaks, kui te ei soovi parooli muuta.",
-    "updateSuccess": "Seaded edukalt värskendatud.",
-    "updateFailed": "Seadete värskendamine ebaõnnestus. Palun proovige uuesti.",
-    "jwtSecretTitle": "JWT saladuse seaded",
-    "currentJwtSecret": "Praegune JWT saladus",
-    "newJwtSecret": "Uus JWT saladus",
-    "newJwtSecretPlaceholder": "Sisestage uus JWT saladus (vähemalt 32 tähemärki)",
-    "toggleVisibility": "Lülita nähtavust",
-    "generateRandom": "Genereeri juhuslik saladus",
-    "jwtSecretHint": "Seda saladust kasutatakse sisselogimismärkide allkirjastamiseks. Pärast muutmist peavad kõik kasutajad uuesti sisse logima.",
-    "jwtSecretLengthHint": "Saladus peab olema vähemalt 32 tähemärki. Soovitatav on 64 juhuslikku tähemärki.",
-    "jwtSecretWarning": "Pärast JWT saladuse muutmist peate teenuse taaskäivitama, et muudatused jõustuksid. Kõik kasutajad logitakse välja.",
-    "updateJwtSecret": "Uuenda JWT saladust"
+    "otherLlmApiKey": "Muu LLM API võti"
   }
 }

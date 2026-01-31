@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Izilungiselelo",
-    "newPassword": "Iphasiwedi Entsha",
-    "newPasswordPlaceholder": "Faka iphasiwedi entsha",
-    "passwordHint": "Shiya kungenalutho uma ungafuni ukushintsha iphasiwedi yakho.",
-    "updateSuccess": "Izilungiselelo zibuyekeziwe ngempumelelo.",
-    "updateFailed": "Ukubuyekeza izilungiselelo kwehlulekile. Sicela uzame futhi.",
-    "jwtSecretTitle": "Izilungiselelo Zemfihlo ye-JWT",
-    "currentJwtSecret": "Imfihlo ye-JWT Yamanje",
-    "newJwtSecret": "Imfihlo Entsha ye-JWT",
-    "newJwtSecretPlaceholder": "Faka imfihlo entsha ye-JWT (okungenani izinhlamvu ezingu-32)",
-    "toggleVisibility": "Guqula ukubonakala",
-    "generateRandom": "Khiqiza imfihlo engahleliwe",
-    "jwtSecretHint": "Le mfihlo isetshenziselwa ukusayina ama-token okungena. Ngemuva kokushintsha, bonke abasebenzisi bazodinga ukungena futhi.",
-    "jwtSecretLengthHint": "Imfihlo kumele ibe okungenani izinhlamvu ezingu-32. Izinhlamvu ezingahleliwe ezingu-64 ziyanconywa.",
-    "jwtSecretWarning": "Ngemuva kokushintsha imfihlo ye-JWT, udinga ukuqala kabusha isevisi ukuze izinguquko zisebenze. Bonke abasebenzisi bazophuma.",
-    "updateJwtSecret": "Buyekeza Imfihlo ye-JWT"
+    "otherLlmApiKey": "Okunye ukhiye we-API we-LLM"
   }
 }

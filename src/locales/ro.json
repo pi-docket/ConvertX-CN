@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Setări",
-    "newPassword": "Parolă nouă",
-    "newPasswordPlaceholder": "Introduceți parola nouă",
-    "passwordHint": "Lăsați gol dacă nu doriți să schimbați parola.",
-    "updateSuccess": "Setările au fost actualizate cu succes.",
-    "updateFailed": "Actualizarea setărilor a eșuat. Vă rugăm să încercați din nou.",
-    "jwtSecretTitle": "Setări secret JWT",
-    "currentJwtSecret": "Secret JWT curent",
-    "newJwtSecret": "Secret JWT nou",
-    "newJwtSecretPlaceholder": "Introduceți noul secret JWT (minim 32 de caractere)",
-    "toggleVisibility": "Comută vizibilitatea",
-    "generateRandom": "Generează secret aleatoriu",
-    "jwtSecretHint": "Acest secret este folosit pentru a semna token-urile de autentificare. După modificare, toți utilizatorii vor trebui să se autentifice din nou.",
-    "jwtSecretLengthHint": "Secretul trebuie să aibă cel puțin 32 de caractere. Se recomandă 64 de caractere aleatorii.",
-    "jwtSecretWarning": "După modificarea secretului JWT, trebuie să reporniți serviciul pentru ca modificările să aibă efect. Toți utilizatorii vor fi deconectați.",
-    "updateJwtSecret": "Actualizează secret JWT"
+    "otherLlmApiKey": "Altă cheie API LLM"
   }
 }

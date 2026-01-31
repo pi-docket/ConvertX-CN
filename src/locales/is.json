@@ -107,20 +107,6 @@
   },
   "settings": {
     "title": "Stillingar",
-    "newPassword": "Nýtt lykilorð",
-    "newPasswordPlaceholder": "Sláðu inn nýtt lykilorð",
-    "passwordHint": "Skilaðu eftir auðu ef þú vilt ekki breyta lykilorðinu.",
-    "updateSuccess": "Stillingar uppfærðar.",
-    "updateFailed": "Ekki tókst að uppfæra stillingar. Vinsamlegast reyndu aftur.",
-    "jwtSecretTitle": "JWT leyndarmál stillingar",
-    "currentJwtSecret": "Núverandi JWT leyndarmál",
-    "newJwtSecret": "Nýtt JWT leyndarmál",
-    "newJwtSecretPlaceholder": "Sláðu inn nýtt JWT leyndarmál (að minnsta kosti 32 stafir)",
-    "toggleVisibility": "Skipta um sýnileika",
-    "generateRandom": "Búa til handahófskennt leyndarmál",
-    "jwtSecretHint": "Þetta leyndarmál er notað til að undirrita innskráningartákn. Eftir breytingu þurfa allir notendur að skrá sig inn aftur.",
-    "jwtSecretLengthHint": "Leyndarmálið verður að vera að minnsta kosti 32 stafir. Mælt er með 64 handahófskenndum stöfum.",
-    "jwtSecretWarning": "Eftir að hafa breytt JWT leyndarmálinu þarftu að endurræsa þjónustuna til að breytingarnar taki gildi. Allir notendur verða skráðir út.",
-    "updateJwtSecret": "Uppfæra JWT leyndarmál"
+    "otherLlmApiKey": "Annar LLM API-lykil"
   }
 }
