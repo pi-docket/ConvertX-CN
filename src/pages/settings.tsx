@@ -25,12 +25,9 @@ function saveUserApiKey(userId: number, keyName: string, keyValue: string): void
   // 否則儲存或更新
   const now = new Date().toISOString();
   if (existing) {
-    db.query("UPDATE api_keys SET key_value = ?, updated_at = ? WHERE user_id = ? AND key_name = ?").run(
-      keyValue,
-      now,
-      userId,
-      keyName,
-    );
+    db.query(
+      "UPDATE api_keys SET key_value = ?, updated_at = ? WHERE user_id = ? AND key_name = ?",
+    ).run(keyValue, now, userId, keyName);
   } else {
     db.query(
       "INSERT INTO api_keys (user_id, key_name, key_value, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",

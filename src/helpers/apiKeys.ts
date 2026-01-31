@@ -15,8 +15,6 @@ export const API_KEY_NAMES = {
   OTHER_LLM: "other_llm_api_key",
 } as const;
 
-export type ApiKeyName = (typeof API_KEY_NAMES)[keyof typeof API_KEY_NAMES];
-
 /**
  * 取得使用者的單一 API Key
  */
@@ -76,17 +74,4 @@ export function clearApiKeysFromEnv(): void {
   delete process.env.OPENAI_API_KEY;
   delete process.env.DEEPSEEK_API_KEY;
   delete process.env.OTHER_LLM_API_KEY;
-}
-
-/**
- * 在執行需要 API 的操作前後包裝 API Keys
- * 自動設定和清除環境變數
- */
-export async function withApiKeys<T>(userId: number, operation: () => Promise<T>): Promise<T> {
-  try {
-    setApiKeysToEnv(userId);
-    return await operation();
-  } finally {
-    clearApiKeysFromEnv();
-  }
 }
