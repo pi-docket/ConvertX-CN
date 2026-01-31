@@ -88,15 +88,15 @@ ARG RESVG_VERSION=0.46.0
 RUN set -ex && \
     ARCH=$(uname -m) && \
     if [ "$ARCH" = "aarch64" ]; then \
-        echo "⚠️ resvg ARM64 not available, skipping..."; \
+    echo "⚠️ resvg ARM64 not available, skipping..."; \
     else \
-        curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
-        "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-linux-x86_64.tar.gz" \
-        -o /tmp/resvg.tar.gz && \
-        tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
-        mv /tmp/resvg /usr/local/bin/resvg && \
-        chmod +x /usr/local/bin/resvg && \
-        rm -f /tmp/resvg.tar.gz; \
+    curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
+    "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-linux-x86_64.tar.gz" \
+    -o /tmp/resvg.tar.gz && \
+    tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
+    mv /tmp/resvg /usr/local/bin/resvg && \
+    chmod +x /usr/local/bin/resvg && \
+    rm -f /tmp/resvg.tar.gz; \
     fi
 
 # Add pipx bin directory to PATH
