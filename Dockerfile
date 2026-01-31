@@ -652,7 +652,45 @@ ENV MINERU_USE_CPU="1"
 ENV MINERU_DEVICE_MODE="cpu"
 ENV TORCH_DEVICE="cpu"
 
-# 6.10 tiktoken
+# ==============================================================================
+# 6.11 llama.cpp（GGUF VLM 推理引擎）
+# ==============================================================================
+# 📌 llama.cpp 用於載入 GGUF 格式的 VLM 模型
+# 📌 提供 OpenAI 相容 API，讓 MinerU 使用 vlm-http-client 後端
+# 📌 CPU-only 編譯，無需 CUDA
+# ------------------------------------------------------------------------------
+ARG LLAMA_CPP_VERSION=b5234
+RUN set -ex && \
+  ARCH=$(uname -m) && \
+  if [ "$ARCH" = "aarch64" ]; then \
+  echo "⚠️ ARM64：跳過 llama.cpp 安裝"; \
+  else \
+  echo "📦 安裝 llama.cpp (${LLAMA_CPP_VERSION})..." && \
+  apt-get update && apt-get install -y --no-install-recommends \
+  build-essential cmake && \
+  cd /tmp && \
+  curl -fsSL -o llama.cpp.tar.gz \
+  "https://github.com/ggml-org/llama.cpp/archive/refs/tags/${LLAMA_CPP_VERSION}.tar.gz" && \
+  tar xzf llama.cpp.tar.gz && \
+  cd llama.cpp-* && \
+  cmake -B build \
+  -DGGML_CUDA=OFF \
+  -DGGML_METAL=OFF \
+  -DGGML_BLAS=OFF \
+  -DLLAMA_SERVER=ON \
+  -DCMAKE_BUILD_TYPE=Release && \
+  cmake --build build --config Release -j $(nproc) --target llama-server && \
+  cp build/bin/llama-server /usr/local/bin/ && \
+  chmod +x /usr/local/bin/llama-server && \
+  cd / && rm -rf /tmp/llama.cpp* && \
+  apt-get purge -y build-essential cmake && \
+  apt-get autoremove -y && \
+  rm -rf /var/lib/apt/lists/* && \
+  echo "✅ llama.cpp 安裝完成" && \
+  llama-server --version || echo "llama-server installed"; \
+  fi
+
+# 6.12 tiktoken
 RUN uv pip install --system --break-system-packages --no-cache tiktoken
 
 # 設定 PATH
@@ -676,6 +714,13 @@ RUN mkdir -p /opt/convertx/models/mineru && \
 
 # 7.2 複製預下載的 ONNX 模型
 COPY models/ /root/.cache/babeldoc/models/
+
+# 7.2.1 下載 VLM GGUF 模型
+# 📌 模型來源：mradermacher/MinerU2.5-2509-1.2B-GGUF
+# 📌 包含：主模型（Q6_K, ~482MB）+ 視覺投影器（mmproj-Q8_0, ~677MB）
+# 📌 總大小約 1.16 GB
+COPY scripts/download-vlm-gguf.sh /tmp/download-vlm-gguf.sh
+RUN chmod +x /tmp/download-vlm-gguf.sh && /tmp/download-vlm-gguf.sh && rm -f /tmp/download-vlm-gguf.sh
 
 # 7.3 複製 MinerU 模型下載腳本
 COPY scripts/download-mineru-models.sh /tmp/download-mineru-models.sh
@@ -713,6 +758,11 @@ WORKDIR /app
 COPY --from=models /opt/convertx /opt/convertx
 COPY --from=models /root/.cache/babeldoc /root/.cache/babeldoc
 COPY --from=models /root/mineru.json /root/mineru.json
+
+# 8.1.1 複製 llama.cpp server 啟動腳本
+COPY scripts/start-llama-server.sh /opt/convertx/start-llama-server.sh
+COPY scripts/entrypoint.sh /opt/convertx/entrypoint.sh
+RUN chmod +x /opt/convertx/start-llama-server.sh /opt/convertx/entrypoint.sh
 
 # 8.2 複製應用程式
 COPY --from=install /temp/prod/node_modules node_modules
@@ -805,16 +855,14 @@ RUN echo "======================================" && \
   else \
   echo "  ❌ MinerU Pipeline 模型不存在" && VALIDATION_PASSED=false; \
   fi && \
-  GGUF_MODEL="/opt/convertx/models/mineru/MinerU-VLM-GGUF/MinerU2.5-2509-1.2B.Q8_0.gguf" && \
-  MMPROJ_MODEL="/opt/convertx/models/mineru/MinerU-VLM-GGUF/mmproj-MinerU2.5-2509-1.2B-f16.gguf" && \
+  GGUF_MODEL="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.Q6_K.gguf" && \
+  MMPROJ_MODEL="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf" && \
   if [ -f "$GGUF_MODEL" ] && [ -f "$MMPROJ_MODEL" ]; then \
-  echo "  ✅ MinerU VLM GGUF 模型存在（Q8_0 量化版）"; \
+  echo "  ✅ MinerU VLM GGUF 模型存在（Q6_K 量化版）"; \
   echo "     - 主模型: $(basename $GGUF_MODEL)"; \
   echo "     - 視覺投影器: $(basename $MMPROJ_MODEL)"; \
-  elif [ -d "/opt/convertx/models/mineru/MinerU2.5-2509-1.2B" ]; then \
-  echo "  ✅ MinerU VLM 模型存在（transformers 版）"; \
   else \
-  echo "  ⚠️ MinerU VLM 模型未下載（將使用 pipeline 純 OCR 模式）"; \
+  echo "  ❌ MinerU VLM GGUF 模型不存在" && VALIDATION_PASSED=false; \
   fi && \
   if [ -f "/root/mineru.json" ]; then \
   echo "  ✅ mineru.json 存在"; \
@@ -903,6 +951,23 @@ ENV TRANSFORMERS_CACHE="/nonexistent"
 ENV MINERU_MODEL_SOURCE="local"
 ENV MINERU_CONFIG="/root/mineru.json"
 ENV MINERU_MODELS_DIR="/opt/convertx/models/mineru"
+# 📌 MinerU 後端配置：
+#   - vlm-http-client: 連接 llama.cpp server（預設，高精度 VLM 模式）
+#   - pipeline: 純 OCR 模式（如需停用 VLM）
+# 📌 VLM 模式說明：
+#   - llama.cpp server 會在背景自動啟動
+#   - 載入 GGUF 格式 VLM 模型
+#   - 提供 OpenAI 相容 API 供 MinerU 使用
+ENV MINERU_BACKEND="vlm-http-client"
+ENV MINERU_VLM_URL="http://127.0.0.1:11785/v1"
+
+# llama.cpp server 配置
+ENV LLAMA_SERVER_HOST="127.0.0.1"
+ENV LLAMA_SERVER_PORT="11785"
+
+# VLM GGUF 模型路徑（供 llama.cpp server 使用）
+ENV VLM_GGUF_MODEL="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.Q6_K.gguf"
+ENV VLM_GGUF_MMPROJ="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf"
 
 # BabelDOC 離線模式
 ENV BABELDOC_OFFLINE="1"
@@ -928,4 +993,5 @@ ENV NODE_ENV=production
 # ==============================================================================
 EXPOSE 3000/tcp
 
-ENTRYPOINT [ "bun", "run", "dist/src/index.js" ]
+# 使用啟動腳本（自動啟動 llama.cpp + 主程式）
+ENTRYPOINT [ "/opt/convertx/entrypoint.sh" ]

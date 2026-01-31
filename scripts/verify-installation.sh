@@ -183,22 +183,20 @@ verify_models() {
     
     # MinerU VLM GGUF 模型（量化版本）
     if [ "${ARCH}" = "x86_64" ]; then
-        local gguf_model="/opt/convertx/models/mineru/MinerU-VLM-GGUF/MinerU2.5-2509-1.2B.Q8_0.gguf"
-        local mmproj_model="/opt/convertx/models/mineru/MinerU-VLM-GGUF/mmproj-MinerU2.5-2509-1.2B-f16.gguf"
+        local gguf_model="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.Q6_K.gguf"
+        local mmproj_model="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf"
         if [ -f "${gguf_model}" ] && [ -f "${mmproj_model}" ]; then
             local gguf_size
             gguf_size=$(ls -lh "${gguf_model}" 2>/dev/null | awk '{print $5}')
-            echo "  ✅ VLM GGUF Q8_0: ${gguf_size}"
+            echo "  ✅ VLM GGUF Q6_K: ${gguf_size}"
             ((PASS++))
-            echo "  ✅ VLM mmproj: 已安裝"
+            echo "  ✅ VLM mmproj-Q8_0: 已安裝"
             ((PASS++))
-            echo "  💡 GGUF 模型需搭配 llama.cpp 服務器使用"
-        elif [ -d "/opt/convertx/models/mineru/MinerU2.5-2509-1.2B" ]; then
-            echo "  ✅ VLM 模型: transformers 版本"
-            ((PASS++))
+            echo "  💡 VLM 模式預設啟用，llama.cpp server 將自動啟動"
         else
-            echo "  ⚠️ VLM 模型: 未下載（將使用 pipeline 純 OCR 模式）"
-            ((WARN++))
+            echo "  ❌ VLM GGUF 模型不存在"
+            echo "     預期路徑: ${gguf_model}"
+            ((FAIL++))
         fi
     fi
     

@@ -94,28 +94,19 @@ if [ "$ARCH" = "aarch64" ]; then
 else
     check_dir "${MINERU_MODELS_DIR}/PDF-Extract-Kit-1.0" "PDF-Extract-Kit-1.0 Pipeline" "true"
     
-    # VLM 模型檢查（支援 GGUF 量化版本）
-    VLM_FOUND=false
-    GGUF_MODEL="${MINERU_MODELS_DIR}/MinerU-VLM-GGUF/MinerU2.5-2509-1.2B.Q8_0.gguf"
-    MMPROJ_MODEL="${MINERU_MODELS_DIR}/MinerU-VLM-GGUF/mmproj-MinerU2.5-2509-1.2B-f16.gguf"
+    # VLM GGUF 模型檢查（預設啟用）
+    VLM_MODEL_DIR="/opt/convertx/models/vlm/mineru2.5-2509-1.2b"
+    GGUF_MODEL="${VLM_MODEL_DIR}/MinerU2.5-2509-1.2B.Q6_K.gguf"
+    MMPROJ_MODEL="${VLM_MODEL_DIR}/MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf"
     
     if [ -f "$GGUF_MODEL" ] && [ -f "$MMPROJ_MODEL" ]; then
-        check_file "$GGUF_MODEL" "VLM GGUF Q8_0 主模型"
-        check_file "$MMPROJ_MODEL" "VLM GGUF 視覺投影器"
-        VLM_FOUND=true
-        echo "💡 GGUF 模型需搭配 llama.cpp 服務器使用"
-    elif [ -d "${MINERU_MODELS_DIR}/MinerU2.5-2509-1.2B" ]; then
-        # 向後相容：檢查舊版 transformers 模型
-        check_dir "${MINERU_MODELS_DIR}/MinerU2.5-2509-1.2B" "MinerU2.5 VLM 模型（transformers）"
-        VLM_FOUND=true
-    elif [ -d "${MINERU_MODELS_DIR}/MinerU-VLM" ]; then
-        check_dir "${MINERU_MODELS_DIR}/MinerU-VLM" "MinerU-VLM 模型"
-        VLM_FOUND=true
-    fi
-    
-    if [ "$VLM_FOUND" = "false" ]; then
-        echo "⚠️ MinerU VLM 模型未下載（將使用 pipeline 純 OCR 模式）"
-        ((WARN++))
+        check_file "$GGUF_MODEL" "VLM GGUF Q6_K 主模型"
+        check_file "$MMPROJ_MODEL" "VLM GGUF mmproj-Q8_0 視覺投影器"
+        echo "💡 VLM 模式預設啟用，llama.cpp server 會自動啟動"
+    else
+        echo "❌ VLM GGUF 模型不存在"
+        echo "   預期路徑: ${GGUF_MODEL}"
+        ((FAIL++))
     fi
     
     check_file "/root/mineru.json" "MinerU 配置檔"

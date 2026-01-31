@@ -50,3 +50,15 @@ package-lock.json
 /Bruno
 /tsconfig.tsbuildinfo
 /public/generated.css
+
+# ==============================================================================
+# MinerU 模型（由 Docker build 階段下載，不納入版控）
+# ==============================================================================
+# Pipeline 模型（PDF-Extract-Kit-1.0，約 1GB，Docker build 下載）
+models/mineru/
+
+# VLM GGUF 模型（超過 GitHub 100MB 限制，Docker build 時下載）
+# 📌 模型清單：
+#   - MinerU2.5-2509-1.2B.Q6_K.gguf (~482 MB)
+#   - MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf (~677 MB)
+models/vlm/**/*.gguf

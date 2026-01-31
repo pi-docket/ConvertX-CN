@@ -9,6 +9,11 @@ test-output-*/
 # Data files
 data/
 
+# Model files (binary)
+models/
+*.gguf
+*.onnx
+
 # Lock files
 bun.lock
 package-lock.json

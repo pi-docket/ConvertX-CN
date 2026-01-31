@@ -86,13 +86,51 @@ export async function convert(
    */
   const runMinerU = (useTableMode: boolean): Promise<void> => {
     return new Promise((resolve, reject) => {
-      // Build MinerU command arguments
-      // MinerU CLI: mineru -p <input> -o <output_dir> -m <method>
-      // 注意：MinerU 2.7+ 版本 -m/--method 有效值為 'auto', 'txt', 'ocr'
-      // - auto: 自動偵測（推薦，會根據 PDF 類型選擇最佳方法）
-      // - txt: 直接提取文字（適用於有文字層的 PDF）
-      // - ocr: 強制使用 OCR（適用於掃描版 PDF）
-      const args = ["-p", filePath, "-o", mineruOutputDir, "-m", "auto"];
+      // ===========================================================================
+      // MinerU CLI 參數說明
+      // ===========================================================================
+      // -p <input>       : 輸入檔案路徑
+      // -o <output_dir>  : 輸出目錄
+      // -m <method>      : 解析方法 (auto/txt/ocr)
+      // -b <backend>     : 後端選擇
+      // -u <url>         : VLM server URL (用於 http-client 模式)
+      //
+      // 📌 後端選項：
+      //   - pipeline:           純 OCR 模式，使用 PDF-Extract-Kit-1.0
+      //   - vlm-http-client:    連接外部 VLM server（如 llama.cpp）
+      //   - hybrid-http-client: 混合模式 + 外部 VLM server
+      //   - vlm-auto-engine:    本地 transformers VLM（需要大量資源）
+      //   - hybrid-auto-engine: 混合模式 + 本地 VLM（預設，但需要模型）
+      //
+      // 💡 GGUF VLM 架構：
+      //   - llama.cpp server 載入 GGUF 模型
+      //   - MinerU 使用 vlm-http-client 連接
+      //   - 不需要 transformers 直接載入模型
+      //
+      // ===========================================================================
+
+      // 後端選擇邏輯：
+      // 1. 環境變數 MINERU_BACKEND 優先
+      // 2. 如果設定了 MINERU_VLM_URL，使用 vlm-http-client
+      // 3. 否則使用 pipeline（純 OCR，最穩定）
+      const vlmServerUrl = process.env.MINERU_VLM_URL;
+      let backend: string;
+
+      if (process.env.MINERU_BACKEND) {
+        backend = process.env.MINERU_BACKEND;
+      } else if (vlmServerUrl) {
+        backend = "vlm-http-client";
+      } else {
+        backend = "pipeline";
+      }
+
+      const args = ["-p", filePath, "-o", mineruOutputDir, "-m", "auto", "-b", backend];
+
+      // 如果使用 http-client 後端，添加 server URL
+      if (backend.endsWith("-http-client") && vlmServerUrl) {
+        args.push("-u", vlmServerUrl);
+        console.log(`[MinerU] 使用 VLM server: ${vlmServerUrl}`);
+      }
 
       // 表格模式支援（可能與某些 vLLM 版本不相容）
       if (useTableMode) {
