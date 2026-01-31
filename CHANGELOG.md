@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.1.20](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.20) (2026-01-31)
+
+API Server 代理模式重構與部署優化版本。
+
+### ✨ Features
+
+- **API Server 代理模式**：重構 API Server 為輕量代理
+  - API Server 不再自行安裝轉換工具，改為轉發請求給 Web UI
+  - Image 體積從 ~2GB 縮小至 ~50MB
+  - 新增 `CONVERTX_BACKEND_URL` 環境變數設定後端地址
+  - 架構更清晰：外部程式 → API Server (代理) → Web UI (轉換)
+
+- **UI 搜尋增強**：支援按引擎名稱搜尋轉換器
+  - 可搜尋 "ffmpeg"、"imagemagick" 等引擎關鍵字
+  - 同時支援目標格式和引擎名稱的模糊搜尋
+
+### 📝 Documentation
+
+- **部署文檔重寫**：簡化 Docker 部署指南
+  - 移除過時的 `docker-compose.production.yml`
+  - 新增一鍵部署腳本（CPU/GPU 版本）
+  - 新增 API Server 代理模式說明
+  - 更新 JWT 統一認證配置說明
+
+### 🐛 Bug Fixes
+
+- **API Server Dockerfile**：修復套件安裝錯誤
+  - 移除不存在的套件：`imagemagick-7.q16`、`resvg`、`dasel`
+  - 代理模式不需要安裝這些工具
+
+### 📦 Build
+
+- **Dockerfile.lite 版本同步**：更新至 v0.1.20-lite
+- **版本號統一**：同步更新 package.json、version.json、Dockerfile
+
+---
+
 ## [0.1.19](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.19) (2026-01-28)
 
 Docker 構建修復與 SEO 優化版本。

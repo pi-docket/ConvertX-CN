@@ -1,6 +1,11 @@
 //! Configuration module for the RAS API server
 //!
 //! 支援環境變數配置，包含合理的預設值。
+//! 
+//! ## 代理模式
+//! 
+//! API Server 現在運作在代理模式，所有轉換請求會轉發給 Web UI。
+//! 設定 `CONVERTX_BACKEND_URL` 指向 Web UI 的地址。
 
 use std::env;
 use anyhow::Result;
@@ -29,6 +34,8 @@ pub struct Config {
     pub api_version: String,
     /// Enable Swagger UI
     pub enable_swagger: bool,
+    /// Backend URL for proxy mode (Web UI)
+    pub backend_url: String,
 }
 
 impl Config {
@@ -57,6 +64,8 @@ impl Config {
                 .unwrap_or_else(|_| "true".to_string())
                 .parse()
                 .unwrap_or(true),
+            backend_url: env::var("CONVERTX_BACKEND_URL")
+                .unwrap_or_else(|_| "http://convertx:3000".to_string()),
         })
     }
 
@@ -73,6 +82,7 @@ impl Config {
             jwt_expiration_secs: 3600,
             api_version: "2.0.0".to_string(),
             enable_swagger: true,
+            backend_url: "http://localhost:3000".to_string(),
         }
     }
 }
@@ -89,6 +99,7 @@ impl Default for Config {
             jwt_expiration_secs: 86400,
             api_version: "2.0.0".to_string(),
             enable_swagger: true,
+            backend_url: "http://convertx:3000".to_string(),
         }
     }
 }

@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN Lite 版 Docker Image
-# 版本：v0.1.15-lite
+# 版本：v0.1.20-lite
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -44,7 +44,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN Lite - 輕量版檔案轉換服務"
-LABEL org.opencontainers.image.version="lite"
+LABEL org.opencontainers.image.version="v0.1.20-lite"
 WORKDIR /app
 
 # 配置 APT 重試機制（解決 Multi-Arch Build 時的網路不穩定問題）

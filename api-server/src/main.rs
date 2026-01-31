@@ -42,13 +42,14 @@ async fn main() -> anyhow::Result<()> {
 ║  ╚██████╗╚██████╔╝██║ ╚████║ ╚████╔╝ ███████╗██║  ██║   ██║      ║
 ║   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝   ╚═╝      ║
 ║                                                                   ║
-║                    RAS API v{}                               ║
+║                    RAS API v{}  (Proxy Mode)                 ║
 ║                Remote AI Service for File Conversion              ║
 ║                                                                   ║
 ╚═══════════════════════════════════════════════════════════════════╝
 "#, config.api_version);
 
     tracing::info!("Starting ConvertX RAS API Server v{}", config.api_version);
+    tracing::info!("🔄 Proxy Mode:     Forwarding to {}", config.backend_url);
     tracing::info!("REST API:        http://{}:{}/api/v1", config.host, config.port);
     tracing::info!("Health Check:    http://{}:{}/api/v1/health", config.host, config.port);
     

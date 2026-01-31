@@ -1,11 +1,20 @@
 # ==============================================================================
-# ConvertX-CN API Server Dockerfile
+# ConvertX-CN API Server Dockerfile（輕量代理模式）
 # ==============================================================================
 #
 # 📦 說明：
-#   - 這是 ConvertX-CN API Server 的獨立 Dockerfile
+#   - 這是 ConvertX-CN API Server 的輕量 Dockerfile
 #   - 使用 Rust 編譯，提供 REST 與 GraphQL API
-#   - 此 API Server 獨立於 Web UI，直接調用轉換引擎
+#   - ⚡ 代理模式：API Server 不直接調用轉換工具
+#   - 🔄 所有轉換請求轉發給 Web UI（convertx:3000）
+#   - 💡 體積極小（約 50MB），不需要安裝任何轉換工具
+#
+# 🏗️ 架構：
+#
+#   ┌─────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+#   │   外部程式/腳本   │────▶│   API Server     │────▶│   Web UI         │
+#   │   (REST/GraphQL) │     │   (輕量代理)      │     │   (已有工具)      │
+#   └─────────────────┘     └──────────────────┘     └──────────────────┘
 #
 # 🔧 建置方式：
 #   docker build -f api-server/Dockerfile -t convertx-api .
@@ -38,69 +47,18 @@ COPY src ./src
 # Build the actual application
 RUN touch src/main.rs && cargo build --release
 
-# Stage 2: Runtime
+# Stage 2: Runtime（輕量版 - 只有 API 代理，不需要轉換工具）
 FROM debian:bookworm-slim AS runtime
 
 WORKDIR /app
 
-# Install runtime dependencies and conversion tools
+# 只安裝最基礎的依賴（SSL + curl for health check）
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # SSL/TLS support
     ca-certificates \
     libssl3 \
     curl \
-    # Conversion tools (subset - main ones used by API)
-    ffmpeg \
-    imagemagick \
-    graphicsmagick \
-    libreoffice \
-    pandoc \
-    inkscape \
-    potrace \
-    libvips-tools \
-    libheif-examples \
-    libjxl-tools \
-    assimp-utils \
-    calibre \
-    ghostscript \
-    # Python for markitdown
-    python3 \
-    python3-pip \
-    pipx \
-    && pipx install "markitdown[all]" \
-    # Cleanup
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /root/.cache/pip
-
-# Install dasel (JSON/YAML/TOML converter) from GitHub releases
-RUN set -ex && \
-    ARCH=$(uname -m) && \
-    if [ "$ARCH" = "aarch64" ]; then DASEL_ARCH="linux_arm64"; \
-    else DASEL_ARCH="linux_amd64"; fi && \
-    curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
-    "https://github.com/TomWright/dasel/releases/download/v2.8.1/dasel_${DASEL_ARCH}" \
-    -o /usr/local/bin/dasel && \
-    chmod +x /usr/local/bin/dasel
-
-# Install resvg (SVG renderer) from GitHub releases
-ARG RESVG_VERSION=0.46.0
-RUN set -ex && \
-    ARCH=$(uname -m) && \
-    if [ "$ARCH" = "aarch64" ]; then \
-    echo "⚠️ resvg ARM64 not available, skipping..."; \
-    else \
-    curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
-    "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-linux-x86_64.tar.gz" \
-    -o /tmp/resvg.tar.gz && \
-    tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
-    mv /tmp/resvg /usr/local/bin/resvg && \
-    chmod +x /usr/local/bin/resvg && \
-    rm -f /tmp/resvg.tar.gz; \
-    fi
-
-# Add pipx bin directory to PATH
-ENV PATH="/root/.local/bin:${PATH}"
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy the compiled binary
 COPY --from=builder /app/target/release/convertx-api /usr/local/bin/convertx-api
@@ -111,9 +69,10 @@ RUN mkdir -p /app/data/uploads /app/data/output
 # Set environment variables
 ENV RAS_API_HOST=0.0.0.0
 ENV RAS_API_PORT=7890
-ENV UPLOAD_DIR=/app/data/uploads
-ENV OUTPUT_DIR=/app/data/output
 ENV RUST_LOG=convertx_ras_api=info,tower_http=info
+
+# 代理模式設定（指向 Web UI）
+ENV CONVERTX_BACKEND_URL=http://convertx:3000
 
 # Expose API port
 EXPOSE 7890/tcp

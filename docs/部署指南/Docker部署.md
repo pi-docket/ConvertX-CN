@@ -6,41 +6,100 @@
 
 ## 快速開始（推薦）
 
-使用完整的 `docker-compose.production.yml` 配置：
+### 一鍵部署（CPU 版本）
 
 ```bash
-# 1. 建立資料目錄
+# 1. 建立專案目錄
+mkdir -p ~/convertx-cn && cd ~/convertx-cn
+
+# 2. 建立環境變數
+cat > .env << 'EOF'
+JWT_SECRET=your-super-secret-jwt-key-change-this
+AUTO_DELETE_EVERY_N_HOURS=24
+HTTP_ALLOWED=true
+EOF
+
+# 3. 建立 docker-compose.yml
+cat > docker-compose.yml << 'EOF'
+services:
+  convertx:
+    image: convertx/convertx-cn:latest
+    container_name: convertx-cn
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - AUTO_DELETE_EVERY_N_HOURS=24
+      - HTTP_ALLOWED=true
+EOF
+
+# 4. 啟動服務
 mkdir -p data
-
-# 2. 產生 JWT 密鑰
-echo "JWT_SECRET=$(openssl rand -hex 32)" > .env
-
-# 3. 啟動服務
-docker compose -f docker-compose.production.yml up -d
+docker compose pull
+docker compose up -d
 ```
 
-### Profile 選擇
+### 一鍵部署（GPU 版本）
 
 ```bash
-# 只啟動 Web UI（預設）
-docker compose -f docker-compose.production.yml up -d
+cat > docker-compose.yml << 'EOF'
+services:
+  convertx:
+    image: convertx/convertx-cn:latest
+    container_name: convertx-cn
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - AUTO_DELETE_EVERY_N_HOURS=24
+      - HTTP_ALLOWED=true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+EOF
 
-# Web UI + API Server（JWT 統一認證）
-docker compose -f docker-compose.production.yml --profile api up -d
-
-# Web UI + GPU 加速
-docker compose -f docker-compose.production.yml --profile gpu up -d
-
-# Web UI + MinerU（CPU-only）
-docker compose -f docker-compose.production.yml --profile mineru up -d
-
-# Web UI + API + 24 小時自動清理（完整版）
-docker compose -f docker-compose.production.yml --profile api --profile cleanup up -d
+docker compose up -d
 ```
 
 ---
 
-## JWT 統一認證（v2.0.0 新增）
+## 架構說明
+
+### Web UI（主服務）
+
+```
+┌─────────────────┐     ┌──────────────────┐
+│   瀏覽器使用者    │────▶│   Web UI         │──▶ 內建轉換工具
+│                 │     │   (Bun, :3000)   │
+└─────────────────┘     └──────────────────┘
+```
+
+Web UI 已內建所有轉換工具，直接使用即可。
+
+### Web UI + API Server（進階）
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│   外部程式/腳本   │────▶│   API Server     │────▶│   Web UI         │
+│   (REST/GraphQL) │     │   (輕量代理)      │     │   (已有工具)      │
+└─────────────────┘     └──────────────────┘     └──────────────────┘
+```
+
+API Server 是輕量代理，轉發請求給 Web UI，不需要安裝額外工具。
+
+---
+
+## JWT 統一認證
 
 ### 設計理念
 
@@ -58,18 +117,72 @@ Web UI 和 RAS API Server 共用同一個 `JWT_SECRET`：
 JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters
 ```
 
-或在 `docker-compose.yml` 中：
+---
+
+## 加入 API Server（可選）
+
+如果需要 REST/GraphQL API 給外部程式呼叫：
+
+### 1. 下載 api-server 目錄
+
+```bash
+cd ~/convertx-cn
+git clone --depth 1 https://github.com/pi-docket/ConvertX-CN.git /tmp/convertx-cn
+cp -r /tmp/convertx-cn/api-server ./
+rm -rf /tmp/convertx-cn
+```
+
+### 2. 更新 docker-compose.yml
 
 ```yaml
 services:
+  # Web UI（主服務）
   convertx:
+    image: convertx/convertx-cn:latest
+    container_name: convertx-cn
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
     environment:
       - JWT_SECRET=${JWT_SECRET}
+      - AUTO_DELETE_EVERY_N_HOURS=24
+      - HTTP_ALLOWED=true
 
+  # API Server（輕量代理）
   convertx-api:
+    build:
+      context: ./api-server
+      dockerfile: Dockerfile
+    container_name: convertx-api
+    restart: unless-stopped
+    ports:
+      - "7890:7890"
     environment:
       - JWT_SECRET=${JWT_SECRET}
+      - CONVERTX_BACKEND_URL=http://convertx:3000
+    depends_on:
+      - convertx
 ```
+
+### 3. 啟動服務
+
+```bash
+docker compose down
+docker compose up -d --build
+```
+
+### API 端點
+
+| 端點                  | 說明         |
+| --------------------- | ------------ |
+| `GET /api/v1/health`  | 健康檢查     |
+| `GET /api/v1/info`    | API 資訊     |
+| `GET /api/v1/engines` | 引擎列表     |
+| `GET /api/v1/formats` | 格式列表     |
+| `POST /api/v1/jobs`   | 建立轉換任務 |
+| `GET /swagger-ui`     | Swagger 文件 |
 
 ---
 
@@ -77,10 +190,11 @@ services:
 
 ### 官方預建版（推薦）
 
-| Tag                           | 說明       |
-| ----------------------------- | ---------- |
-| `convertx/convertx-cn:latest` | 最新穩定版 |
-| `convertx/convertx-cn:v0.1.x` | 指定版本號 |
+| Tag                           | 說明               |
+| ----------------------------- | ------------------ |
+| `convertx/convertx-cn:latest` | 最新穩定版         |
+| `convertx/convertx-cn:v0.1.x` | 指定版本號         |
+| `convertx/convertx-cn:lite`   | 輕量版（約 1.5GB） |
 
 **內建功能：**
 
@@ -88,22 +202,9 @@ services:
 - ✅ OCR 支援：英文、繁/簡中文、日文、韓文、德文、法文
 - ✅ 字型：Noto CJK、Liberation、自訂中文字型
 - ✅ TexLive（支援 CJK/德/法）
+- ✅ 24 小時自動清理（內建）
 
 **Image 大小：約 4-6 GB**
-
-### 完整版（自行 Build）
-
-使用 `Dockerfile.full` 自行建構，適合需要：
-
-- 65 種 OCR 語言
-- 完整 TexLive
-- 額外字型套件
-
-```bash
-docker build -f Dockerfile.full -t convertx-cn-full .
-```
-
-> ⚠️ 注意：Image 大小可能超過 **10GB**，Build 時間約 **30-60 分鐘**
 
 ---
 
@@ -121,17 +222,6 @@ docker run -d \
   -e JWT_SECRET=你的隨機字串至少32字元 \
   convertx/convertx-cn:latest
 ```
-
-### 參數說明
-
-| 參數                       | 說明       |
-| -------------------------- | ---------- |
-| `-d`                       | 背景執行   |
-| `--name convertx-cn`       | 容器名稱   |
-| `--restart unless-stopped` | 自動重啟   |
-| `-p 3000:3000`             | 連接埠映射 |
-| `-v ./data:/app/data`      | 資料持久化 |
-| `-e TZ=Asia/Taipei`        | 時區設定   |
 
 ### 進階選項
 
@@ -160,22 +250,6 @@ docker run -d \
 ├── convertx.db  # SQLite 資料庫
 ├── uploads/     # 上傳的原始檔案
 └── output/      # 轉換後的檔案
-```
-
-### 建立資料夾
-
-**重要**：請務必先建立資料夾，否則 Docker 會建立匿名 volume。
-
-**Linux / macOS：**
-
-```bash
-mkdir -p ~/convertx-cn/data
-```
-
-**Windows PowerShell：**
-
-```powershell
-mkdir C:\convertx-cn\data
 ```
 
 ### 備份與還原
@@ -231,75 +305,22 @@ services:
       - FFMPEG_OUTPUT_ARGS=-c:v h264_qsv -preset faster
 ```
 
-### AMD VAAPI
-
-```yaml
-services:
-  convertx:
-    image: convertx/convertx-cn:latest
-    devices:
-      - /dev/dri:/dev/dri
-    environment:
-      - FFMPEG_ARGS=-hwaccel vaapi -hwaccel_device /dev/dri/renderD128
-      - FFMPEG_OUTPUT_ARGS=-c:v h264_vaapi
-```
-
----
-
-## 資源限制
-
-### 記憶體限制
-
-```yaml
-services:
-  convertx:
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-        reservations:
-          memory: 2G
-```
-
-### CPU 限制
-
-```yaml
-services:
-  convertx:
-    deploy:
-      resources:
-        limits:
-          cpus: "2"
-```
-
 ---
 
 ## 版本更新
 
-**1. 拉取最新版本：**
-
-```bash
-docker pull convertx/convertx-cn:latest
-```
-
-**2. 停止並移除舊容器：**
-
-```bash
-docker stop convertx-cn
-docker rm convertx-cn
-```
-
-**3. 重新啟動（使用相同的參數）：**
-
-```bash
-docker run -d --name convertx-cn ...
-```
-
-或使用 Docker Compose：
-
 ```bash
 docker compose pull
 docker compose up -d
+```
+
+或手動：
+
+```bash
+docker pull convertx/convertx-cn:latest
+docker stop convertx-cn
+docker rm convertx-cn
+docker run -d --name convertx-cn ...
 ```
 
 ---
@@ -307,12 +328,6 @@ docker compose up -d
 ## 疑難排解
 
 ### 查看日誌
-
-```bash
-docker logs convertx-cn
-```
-
-持續追蹤日誌：
 
 ```bash
 docker logs -f convertx-cn
