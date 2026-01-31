@@ -17,6 +17,9 @@
 //! - `RAS_API_PORT`: API 伺服器埠號（預設 7890）
 //! - `CONVERTX_BACKEND_URL`: ConvertX 後端 URL（預設 http://localhost:3000）
 
+// 允許未使用的代碼，因為這些是公共 API 的一部分
+#![allow(dead_code)]
+
 pub mod auth;
 pub mod config;
 pub mod engine;

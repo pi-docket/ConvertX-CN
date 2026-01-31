@@ -18,6 +18,9 @@
 //! - `API_PORT`：API 伺服器埠號（預設 7890）
 //! - `BACKEND_URL`：ConvertX-CN 後端 URL（預設 http://localhost:3000）
 
+// 允許未使用的代碼，因為這些是公共 API 的一部分
+#![allow(dead_code)]
+
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
     extract::State,
