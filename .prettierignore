@@ -1,6 +1,7 @@
 # Build outputs
 dist/
 node_modules/
+api-server/target/
 
 # Test outputs (generated files)
 tests/e2e/output/

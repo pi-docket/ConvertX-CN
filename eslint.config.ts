@@ -11,7 +11,13 @@ const __dirname = path.dirname(__filename);
 
 export default tseslint.config(
   {
-    ignores: ["**/node_modules/**", "eslint.config.ts", "dist/**"],
+    ignores: [
+      "**/node_modules/**",
+      "eslint.config.ts",
+      "dist/**",
+      "public/**",
+      "api-server/target/**",
+    ],
   },
   js.configs.recommended,
   tseslint.configs.recommended,
