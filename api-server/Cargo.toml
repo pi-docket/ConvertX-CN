@@ -1,74 +1,28 @@
 [package]
-name = "convertx-ras-api"
-version = "2.0.0"
+name = "convertx-api"
+version = "1.0.0"
 edition = "2021"
 authors = ["ConvertX Team"]
-description = "ConvertX RAS API Server - Remote AI Service for file conversion"
+description = "ConvertX API Server - Lightweight proxy for ConvertX-CN"
 license = "MIT"
-repository = "https://github.com/c-ares-wiki/ConvertX-CN"
-keywords = ["file-conversion", "api", "ai", "pdf", "document"]
-categories = ["web-programming", "multimedia"]
+repository = "https://github.com/pi-docket/ConvertX-CN"
 
 [dependencies]
-# Web framework - Axum (選擇理由：Tower 生態系整合、類型安全、效能優秀)
-axum = { version = "0.7", features = ["multipart", "macros"] }
-tokio = { version = "1.0", features = ["full"] }
-tower = "0.4"
-tower-http = { version = "0.5", features = ["cors", "trace", "fs", "compression-gzip"] }
-
-# OpenAPI 文件生成
-utoipa = { version = "4.0", features = ["axum_extras", "uuid", "chrono"] }
-utoipa-swagger-ui = { version = "6.0", features = ["axum"] }
-
-# GraphQL (可選)
-async-graphql = { version = "7.0", features = ["uuid"] }
-async-graphql-axum = "7.0"
-
-# Authentication
-jsonwebtoken = "9.0"
+# Web framework
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+tower-http = { version = "0.5", features = ["cors", "trace"] }
 
 # Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-
-# Async utilities
-futures = "0.3"
-async-trait = "0.1"
-
-# UUID for job IDs
-uuid = { version = "1.0", features = ["v4", "serde"] }
-
-# File handling
-mime_guess = "2.0"
-tempfile = "3.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 
 # Logging
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-
-# Error handling
-thiserror = "1.0"
-anyhow = "1.0"
-
-# Time
-chrono = { version = "0.4", features = ["serde"] }
-
-# Base64 encoding
-base64 = "0.22"
-
-# Configuration
-dotenvy = "0.15"
-
-# Process execution (for calling converters)
-tokio-process = "0.2"
-
-[dev-dependencies]
-axum-test = "14.0"
+tracing-subscriber = "0.3"
 
 [profile.release]
 lto = true
 codegen-units = 1
-opt-level = 3
-tokio-test = "0.4"
-reqwest = { version = "0.11", features = ["json", "multipart"] }
-pretty_assertions = "1.0"
+opt-level = "z"
+strip = true

@@ -58,30 +58,13 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      # Linux AMD64 需要 OpenSSL
-      - name: Install OpenSSL (Linux AMD64)
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libssl-dev pkg-config
-
       # Linux ARM64 需要交叉編譯工具
       - name: Install cross-compilation tools (Linux ARM64)
         if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libssl-dev pkg-config
-          # 設定交叉編譯環境
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
           echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
-          echo "OPENSSL_DIR=/usr" >> $GITHUB_ENV
-          echo "OPENSSL_STATIC=1" >> $GITHUB_ENV
-
-      # macOS 需要 OpenSSL
-      - name: Install OpenSSL (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install openssl@3
-          echo "OPENSSL_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
 
       - name: Build release binary
         working-directory: api-server
