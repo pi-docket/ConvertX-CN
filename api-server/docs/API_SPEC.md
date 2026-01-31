@@ -50,7 +50,8 @@ Authorization: Bearer <jwt-token>
 
 ### 基礎資訊
 
-- **Base URL**: `http://localhost:3001/api/v1`
+- **Base URL**: `http://localhost:7890/api/v1`
+- **Swagger UI**: `http://localhost:7890/swagger-ui`
 - **Content-Type**: `application/json`（一般請求）或 `multipart/form-data`（檔案上傳）
 
 ---
@@ -369,11 +370,11 @@ Content-Disposition: attachment; filename="output.webm"
 
 ### Endpoint
 
-- **URL**: `http://localhost:3001/graphql`
+- **URL**: `http://localhost:7890/graphql` (規劃中)
 - **Method**: POST
 - **Content-Type**: `application/json`
 
-GraphQL Playground 可透過 GET 請求訪問同一 URL。
+> ℹ️ **注意**：GraphQL API 在 RAS-API v2.0.0 中暫時停用
 
 ### Schema
 

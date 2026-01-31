@@ -503,6 +503,7 @@ RUN set -ex && \
   dpkg -i /tmp/libreoffice/DEBS/*.deb || apt-get -f install -y && \
   rm -rf /tmp/libreoffice* && \
   ln -sf /opt/libreoffice*/program/soffice /usr/local/bin/soffice 2>/dev/null || true && \
+  ln -sf /opt/libreoffice*/program/soffice /usr/local/bin/libreoffice 2>/dev/null || true && \
   echo "✅ LibreOffice $(soffice --version 2>&1 | head -1) 安裝完成"
 
 # 4.12 TexLive 基礎

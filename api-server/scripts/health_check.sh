@@ -12,8 +12,8 @@
 #   ./health_check.sh [API_URL]
 #
 # Example:
-#   ./health_check.sh http://localhost:3001
-#   ./health_check.sh http://convertx-api:3001
+#   ./health_check.sh http://localhost:7890
+#   ./health_check.sh http://convertx-api:7890
 #
 # Exit codes:
 #   0 - API is healthy
@@ -23,7 +23,7 @@
 set -euo pipefail
 
 # Default API URL
-API_URL="${1:-http://localhost:3001}"
+API_URL="${1:-http://localhost:7890}"
 TIMEOUT="${HEALTH_CHECK_TIMEOUT:-5}"
 RETRIES="${HEALTH_CHECK_RETRIES:-3}"
 RETRY_DELAY="${HEALTH_CHECK_DELAY:-2}"

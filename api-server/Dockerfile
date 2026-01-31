@@ -84,18 +84,18 @@ COPY --from=builder /app/target/release/convertx-api /usr/local/bin/convertx-api
 RUN mkdir -p /app/data/uploads /app/data/output
 
 # Set environment variables
-ENV API_HOST=0.0.0.0
-ENV API_PORT=3001
+ENV RAS_API_HOST=0.0.0.0
+ENV RAS_API_PORT=7890
 ENV UPLOAD_DIR=/app/data/uploads
 ENV OUTPUT_DIR=/app/data/output
-ENV RUST_LOG=convertx_api=info,tower_http=info
+ENV RUST_LOG=convertx_ras_api=info,tower_http=info
 
 # Expose API port
-EXPOSE 3001/tcp
+EXPOSE 7890/tcp
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3001/health || exit 1
+    CMD curl -f http://localhost:7890/api/v1/health || exit 1
 
 # Run the API server
 ENTRYPOINT ["/usr/local/bin/convertx-api"]

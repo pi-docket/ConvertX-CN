@@ -17,7 +17,7 @@ use convertx_api::{build_router, config::Config, AppState};
 fn create_integration_test_server() -> TestServer {
     let config = Config {
         host: "127.0.0.1".to_string(),
-        port: 3001,
+        port: 7890,
         jwt_secret: "integration-test-secret-key-32chars".to_string(),
         upload_dir: "./test_data/uploads".to_string(),
         output_dir: "./test_data/output".to_string(),

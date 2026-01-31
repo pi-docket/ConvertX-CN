@@ -646,11 +646,11 @@ jobs:
             [ -n "$response" ]
           ' || true
 
-          # 11. Converters API
+          # 11. Converters API（使用新的 /api/converters 端點，不需認證）
           run_test "API: Converters 列表" '
-            response=$(curl -sf http://localhost:3000/converters 2>/dev/null | head -c 500)
+            response=$(curl -sf http://localhost:3000/api/converters 2>/dev/null | head -c 500)
             echo "Response (前500字符): $response"
-            [ -n "$response" ]
+            [ -n "$response" ] && echo "$response" | grep -q "success"
           ' || true
 
           # 12. 主頁面

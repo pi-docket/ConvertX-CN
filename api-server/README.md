@@ -56,22 +56,23 @@ cargo run --release
 
 | 變數            | 說明                  | 預設值                   |
 | --------------- | --------------------- | ------------------------ |
-| `API_HOST`      | 伺服器監聽地址        | `0.0.0.0`                |
-| `API_PORT`      | 伺服器監聽埠          | `3001`                   |
+| `RAS_API_HOST`  | 伺服器監聽地址        | `0.0.0.0`                |
+| `RAS_API_PORT`  | 伺服器監聽埠          | `7890`                   |
 | `JWT_SECRET`    | JWT 驗證密鑰          | (預設值，正式環境請更改) |
 | `UPLOAD_DIR`    | 上傳檔案目錄          | `./data/uploads`         |
 | `OUTPUT_DIR`    | 輸出檔案目錄          | `./data/output`          |
-| `MAX_FILE_SIZE` | 最大檔案大小（bytes） | `104857600` (100MB)      |
+| `MAX_FILE_SIZE` | 最大檔案大小（bytes） | `524288000` (500MB)      |
 
 ### 範例 .env 檔案
 
 ```env
-API_HOST=0.0.0.0
-API_PORT=3001
+RAS_API_HOST=0.0.0.0
+RAS_API_PORT=7890
 JWT_SECRET=your-super-secret-jwt-key-change-in-production
 UPLOAD_DIR=./data/uploads
 OUTPUT_DIR=./data/output
-MAX_FILE_SIZE=104857600
+MAX_FILE_SIZE=524288000
+ENABLE_SWAGGER=true
 ```
 
 ## 🔐 認證機制
@@ -101,7 +102,7 @@ Authorization: Bearer <your-jwt-token>
 ### 基礎 URL
 
 ```
-http://localhost:3001/api/v1
+http://localhost:7890/api/v1
 ```
 
 ### Endpoints
@@ -226,10 +227,10 @@ Authorization: Bearer <token>
 
 ```bash
 # 健康檢查
-curl http://localhost:3001/health
+curl http://localhost:7890/api/v1/health
 
 # 列出引擎
-curl -H "Authorization: Bearer $TOKEN" http://localhost:3001/api/v1/engines
+curl -H "Authorization: Bearer $TOKEN" http://localhost:7890/api/v1/engines
 
 # 建立轉檔任務
 curl -X POST \
@@ -237,16 +238,16 @@ curl -X POST \
   -F "file=@video.mp4" \
   -F "engine=ffmpeg" \
   -F "target_format=webm" \
-  http://localhost:3001/api/v1/convert
+  http://localhost:7890/api/v1/jobs
 
 # 查詢任務狀態
 curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:3001/api/v1/jobs/$JOB_ID
+  http://localhost:7890/api/v1/jobs/$JOB_ID
 
 # 下載結果
 curl -H "Authorization: Bearer $TOKEN" \
   -o result.webm \
-  http://localhost:3001/api/v1/jobs/$JOB_ID/download
+  http://localhost:7890/api/v1/jobs/$JOB_ID/download
 ```
 
 ## 📊 GraphQL API
@@ -254,10 +255,10 @@ curl -H "Authorization: Bearer $TOKEN" \
 ### Endpoint
 
 ```
-http://localhost:3001/graphql
+http://localhost:7890/graphql
 ```
 
-GraphQL Playground 可透過瀏覽器訪問 `http://localhost:3001/graphql`
+GraphQL Playground 可透過瀏覽器訪問 `http://localhost:7890/graphql`
 
 ### Schema
 

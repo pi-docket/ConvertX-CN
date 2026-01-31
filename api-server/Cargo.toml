@@ -1,20 +1,26 @@
 [package]
-name = "convertx-api"
-version = "0.1.0"
+name = "convertx-ras-api"
+version = "2.0.0"
 edition = "2021"
 authors = ["ConvertX Team"]
-description = "ConvertX API Server - REST & GraphQL file conversion API"
+description = "ConvertX RAS API Server - Remote AI Service for file conversion"
 license = "MIT"
-repository = "https://github.com/your-username/ConvertX-CN"
+repository = "https://github.com/c-ares-wiki/ConvertX-CN"
+keywords = ["file-conversion", "api", "ai", "pdf", "document"]
+categories = ["web-programming", "multimedia"]
 
 [dependencies]
-# Web framework
-axum = { version = "0.7", features = ["multipart"] }
+# Web framework - Axum (選擇理由：Tower 生態系整合、類型安全、效能優秀)
+axum = { version = "0.7", features = ["multipart", "macros"] }
 tokio = { version = "1.0", features = ["full"] }
 tower = "0.4"
-tower-http = { version = "0.5", features = ["cors", "trace", "fs"] }
+tower-http = { version = "0.5", features = ["cors", "trace", "fs", "compression-gzip"] }
 
-# GraphQL
+# OpenAPI 文件生成
+utoipa = { version = "4.0", features = ["axum_extras", "uuid", "chrono"] }
+utoipa-swagger-ui = { version = "6.0", features = ["axum"] }
+
+# GraphQL (可選)
 async-graphql = { version = "7.0", features = ["uuid"] }
 async-graphql-axum = "7.0"
 
@@ -58,6 +64,11 @@ tokio-process = "0.2"
 
 [dev-dependencies]
 axum-test = "14.0"
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
 tokio-test = "0.4"
 reqwest = { version = "0.11", features = ["json", "multipart"] }
 pretty_assertions = "1.0"

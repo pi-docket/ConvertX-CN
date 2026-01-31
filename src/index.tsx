@@ -24,6 +24,8 @@ import { healthcheck } from "./pages/healthcheck";
 import { inferenceApi } from "./pages/inference";
 import { inferenceService } from "./inference";
 import { enginesApi } from "./pages/enginesApi";
+import { convertersApi } from "./pages/convertersApi";
+import { rasApi } from "./pages/rasApi";
 
 export const uploadsDir = "./data/uploads/";
 export const outputDir = "./data/output/";
@@ -61,6 +63,8 @@ const app = new Elysia({
   .use(healthcheck)
   .use(inferenceApi)
   .use(enginesApi)
+  .use(convertersApi)
+  .use(rasApi)
   .use(settings)
   .onError(({ error }) => {
     console.error(error);

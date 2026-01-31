@@ -27,21 +27,21 @@ docker compose --profile api up -d
 
 ### 服務端口
 
-| 服務       | 端口 | 說明           |
-| ---------- | ---- | -------------- |
-| Web UI     | 3000 | 網頁介面       |
-| API Server | 3001 | REST & GraphQL |
+| 服務          | 端口 | 說明              |
+| ------------- | ---- | ----------------- |
+| Web UI        | 3000 | 網頁介面          |
+| RAS-API Server| 7890 | REST API & Swagger|
 
 ### 環境變數
 
-| 變數            | 說明                  | 預設值           |
-| --------------- | --------------------- | ---------------- |
-| `API_HOST`      | 監聽地址              | `0.0.0.0`        |
-| `API_PORT`      | 監聽埠                | `3001`           |
-| `JWT_SECRET`    | JWT 驗證密鑰          | （需自行設定）   |
-| `UPLOAD_DIR`    | 上傳目錄              | `./data/uploads` |
-| `OUTPUT_DIR`    | 輸出目錄              | `./data/output`  |
-| `MAX_FILE_SIZE` | 最大檔案大小（bytes） | `104857600`      |
+| 變數            | 說明                  | 預設值             |
+| --------------- | --------------------- | ------------------ |
+| `RAS_API_HOST`  | 監聽地址              | `0.0.0.0`          |
+| `RAS_API_PORT`  | 監聽埠                | `7890`             |
+| `JWT_SECRET`    | JWT 驗證密鑰          | （需自行設定）     |
+| `UPLOAD_DIR`    | 上傳目錄              | `./data/uploads`   |
+| `OUTPUT_DIR`    | 輸出目錄              | `./data/output`    |
+| `MAX_FILE_SIZE` | 最大檔案大小（bytes） | `524288000` (500MB)|
 
 ---
 
@@ -71,7 +71,9 @@ Authorization: Bearer <your-jwt-token>
 
 ## REST API 端點
 
-**Base URL**: `http://localhost:3001/api/v1`
+**Base URL**: `http://localhost:7890/api/v1`
+
+**Swagger UI**: `http://localhost:7890/swagger-ui`
 
 ### 健康檢查
 
@@ -275,7 +277,9 @@ Authorization: Bearer <token>
 
 ## GraphQL API
 
-**Endpoint**: `http://localhost:3001/graphql`
+> ℹ️ **注意**：GraphQL API 在 RAS-API v2.0.0 中已暫時停用，建議使用 REST API
+
+**Endpoint**: `http://localhost:7890/graphql` (規劃中)
 
 ### Schema 概覽
 
@@ -420,29 +424,27 @@ mutation {
 **上傳並轉換檔案**：
 
 ```bash
-# 1. 上傳檔案
-FILE_RESPONSE=$(curl -X POST \
-  -H "Authorization: Bearer $TOKEN" \
-  -F "file=@document.docx" \
-  http://localhost:3001/api/v1/upload)
+# 1. 查看支援的引擎
+curl http://localhost:7890/api/v1/engines
 
-FILE_ID=$(echo $FILE_RESPONSE | jq -r '.fileId')
+# 2. 驗證轉換可行性
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"source_format": "docx", "target_format": "pdf"}' \
+  http://localhost:7890/api/v1/validate
 
-# 2. 開始轉換
+# 3. 建立轉換任務
 JOB_RESPONSE=$(curl -X POST \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d "{\"fileId\": \"$FILE_ID\", \"outputFormat\": \"pdf\"}" \
-  http://localhost:3001/api/v1/convert)
+  -d '{"source_format": "docx", "target_format": "pdf"}' \
+  http://localhost:7890/api/v1/jobs)
 
-JOB_ID=$(echo $JOB_RESPONSE | jq -r '.jobId')
+JOB_ID=$(echo $JOB_RESPONSE | jq -r '.data.job_id')
 
-# 3. 等待完成並下載
-sleep 10
-
+# 4. 查詢任務狀態
 curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:3001/api/v1/download/$FILE_ID \
-  -o output.pdf
+  http://localhost:7890/api/v1/jobs/$JOB_ID
 ```
 
 ### Python 範例
@@ -450,71 +452,82 @@ curl -H "Authorization: Bearer $TOKEN" \
 ```python
 import requests
 
-BASE_URL = "http://localhost:3001/api/v1"
+BASE_URL = "http://localhost:7890/api/v1"
 TOKEN = "your-jwt-token"
 HEADERS = {"Authorization": f"Bearer {TOKEN}"}
 
-# 上傳檔案
-with open("document.docx", "rb") as f:
-    response = requests.post(
-        f"{BASE_URL}/upload",
-        headers=HEADERS,
-        files={"file": f}
-    )
-    file_id = response.json()["fileId"]
+# 查看可用引擎
+response = requests.get(f"{BASE_URL}/engines")
+engines = response.json()["data"]["engines"]
 
-# 開始轉換
+# 驗證轉換可行性
 response = requests.post(
-    f"{BASE_URL}/convert",
-    headers=HEADERS,
-    json={"fileId": file_id, "outputFormat": "pdf"}
+    f"{BASE_URL}/validate",
+    json={"source_format": "docx", "target_format": "pdf"}
 )
-job_id = response.json()["jobId"]
+if response.json()["data"]["supported"]:
+    print("轉換可行")
+
+# 建立轉換任務
+response = requests.post(
+    f"{BASE_URL}/jobs",
+    headers=HEADERS,
+    json={"source_format": "docx", "target_format": "pdf"}
+)
+job_id = response.json()["data"]["job_id"]
 
 # 輪詢狀態
 import time
 while True:
     response = requests.get(f"{BASE_URL}/jobs/{job_id}", headers=HEADERS)
-    status = response.json()["status"]
+    status = response.json()["data"]["status"]
     if status == "completed":
         break
     time.sleep(2)
 
-# 下載結果
-result_id = response.json()["result"]["fileId"]
-response = requests.get(f"{BASE_URL}/download/{result_id}", headers=HEADERS)
-with open("output.pdf", "wb") as f:
-    f.write(response.content)
+print("轉換完成")
 ```
 
 ### JavaScript 範例
 
 ```javascript
-const BASE_URL = "http://localhost:3001/api/v1";
+const BASE_URL = "http://localhost:7890/api/v1";
 const TOKEN = "your-jwt-token";
 
-async function convertFile(file, outputFormat) {
-  // 上傳檔案
-  const formData = new FormData();
-  formData.append("file", file);
+async function getEngines() {
+  const response = await fetch(`${BASE_URL}/engines`);
+  const { data } = await response.json();
+  return data.engines;
+}
 
-  const uploadResponse = await fetch(`${BASE_URL}/upload`, {
+async function validateConversion(sourceFormat, targetFormat) {
+  const response = await fetch(`${BASE_URL}/validate`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${TOKEN}` },
-    body: formData,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      source_format: sourceFormat,
+      target_format: targetFormat,
+    }),
   });
-  const { fileId } = await uploadResponse.json();
+  const { data } = await response.json();
+  return data.supported;
+}
 
-  // 開始轉換
-  const convertResponse = await fetch(`${BASE_URL}/convert`, {
+async function createJob(sourceFormat, targetFormat) {
+  const response = await fetch(`${BASE_URL}/jobs`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${TOKEN}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ fileId, outputFormat }),
+    body: JSON.stringify({
+      source_format: sourceFormat,
+      target_format: targetFormat,
+    }),
   });
-  const { jobId } = await convertResponse.json();
+  const { data } = await response.json();
+  return data.job_id;
+}
 
   // 輪詢狀態
   let result;
