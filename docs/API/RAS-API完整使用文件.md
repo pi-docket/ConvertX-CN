@@ -16,12 +16,12 @@
 
 ### 適合誰用？
 
-| 使用場景 | 說明 |
-|---------|------|
+| 使用場景          | 說明                      |
+| ----------------- | ------------------------- |
 | 📱 **App 開發者** | 在 App 中整合檔案轉換功能 |
-| 🔄 **自動化流程** | CI/CD 中的文件處理 |
-| 🤖 **AI 應用** | PDF 解析、文件萃取 |
-| 🏢 **企業系統** | 文件格式標準化 |
+| 🔄 **自動化流程** | CI/CD 中的文件處理        |
+| 🤖 **AI 應用**    | PDF 解析、文件萃取        |
+| 🏢 **企業系統**   | 文件格式標準化            |
 
 ### 快速開始
 
@@ -74,6 +74,7 @@ curl -X POST http://localhost:7890/api/v1/jobs \
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -98,6 +99,7 @@ curl http://localhost:7890/api/v1/jobs/550e8400-e29b-41d4-a716-446655440000 \
 ```
 
 **回應（處理中）：**
+
 ```json
 {
   "success": true,
@@ -116,6 +118,7 @@ curl http://localhost:7890/api/v1/jobs/550e8400-e29b-41d4-a716-446655440000 \
 ```
 
 **回應（完成）：**
+
 ```json
 {
   "success": true,
@@ -143,12 +146,12 @@ curl -O http://localhost:7890/api/v1/jobs/550e8400-e29b-41d4-a716-446655440000/r
 
 ### 基本資訊
 
-| 項目 | 值 |
-|------|-----|
-| Base URL | `http://localhost:7890/api/v1` |
-| 預設端口 | **7890** |
+| 項目         | 值                                          |
+| ------------ | ------------------------------------------- |
+| Base URL     | `http://localhost:7890/api/v1`              |
+| 預設端口     | **7890**                                    |
 | Content-Type | `application/json` 或 `multipart/form-data` |
-| 認證方式 | Bearer Token |
+| 認證方式     | Bearer Token                                |
 
 ### 回應格式
 
@@ -180,6 +183,7 @@ curl http://localhost:7890/api/v1/health
 ```
 
 **回應：**
+
 ```json
 {
   "status": "healthy",
@@ -199,6 +203,7 @@ curl http://localhost:7890/api/v1/info
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -245,6 +250,7 @@ curl http://localhost:7890/api/v1/engines
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -284,6 +290,7 @@ curl http://localhost:7890/api/v1/engines/libreoffice
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -317,12 +324,71 @@ curl http://localhost:7890/api/v1/formats
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
   "data": {
-    "inputs": ["avi", "bmp", "doc", "docx", "epub", "gif", "jpg", "json", "md", "mp3", "mp4", "pdf", "png", "ppt", "pptx", "svg", "tiff", "toml", "wav", "webm", "webp", "xls", "xlsx", "xml", "yaml"],
-    "outputs": ["aac", "avi", "bmp", "csv", "docx", "epub", "gif", "html", "ico", "jpg", "json", "latex", "m4a", "md", "mkv", "mobi", "mov", "mp3", "mp4", "ogg", "pdf", "png", "rst", "tiff", "toml", "txt", "wav", "webm", "webp", "xml", "yaml"],
+    "inputs": [
+      "avi",
+      "bmp",
+      "doc",
+      "docx",
+      "epub",
+      "gif",
+      "jpg",
+      "json",
+      "md",
+      "mp3",
+      "mp4",
+      "pdf",
+      "png",
+      "ppt",
+      "pptx",
+      "svg",
+      "tiff",
+      "toml",
+      "wav",
+      "webm",
+      "webp",
+      "xls",
+      "xlsx",
+      "xml",
+      "yaml"
+    ],
+    "outputs": [
+      "aac",
+      "avi",
+      "bmp",
+      "csv",
+      "docx",
+      "epub",
+      "gif",
+      "html",
+      "ico",
+      "jpg",
+      "json",
+      "latex",
+      "m4a",
+      "md",
+      "mkv",
+      "mobi",
+      "mov",
+      "mp3",
+      "mp4",
+      "ogg",
+      "pdf",
+      "png",
+      "rst",
+      "tiff",
+      "toml",
+      "txt",
+      "wav",
+      "webm",
+      "webp",
+      "xml",
+      "yaml"
+    ],
     "input_count": 25,
     "output_count": 31
   }
@@ -340,6 +406,7 @@ curl http://localhost:7890/api/v1/formats/pdf/targets
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -381,6 +448,7 @@ curl -X POST http://localhost:7890/api/v1/validate \
 ```
 
 **回應（支援）：**
+
 ```json
 {
   "success": true,
@@ -394,6 +462,7 @@ curl -X POST http://localhost:7890/api/v1/validate \
 ```
 
 **回應（不支援）：**
+
 ```json
 {
   "success": true,
@@ -416,12 +485,12 @@ curl -X POST http://localhost:7890/api/v1/validate \
 
 **請求格式：** `multipart/form-data`
 
-| 欄位 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| file | File | ✅ | 要轉換的檔案 |
-| target_format | String | ✅ | 目標格式（如 pdf、docx） |
-| engine | String | ❌ | 指定引擎（不指定則自動選擇） |
-| options | JSON | ❌ | 引擎特定參數 |
+| 欄位          | 類型   | 必填 | 說明                         |
+| ------------- | ------ | ---- | ---------------------------- |
+| file          | File   | ✅   | 要轉換的檔案                 |
+| target_format | String | ✅   | 目標格式（如 pdf、docx）     |
+| engine        | String | ❌   | 指定引擎（不指定則自動選擇） |
+| options       | JSON   | ❌   | 引擎特定參數                 |
 
 ```bash
 curl -X POST http://localhost:7890/api/v1/jobs \
@@ -431,6 +500,7 @@ curl -X POST http://localhost:7890/api/v1/jobs \
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -454,6 +524,7 @@ curl http://localhost:7890/api/v1/jobs \
 ```
 
 **回應：**
+
 ```json
 {
   "success": true,
@@ -551,15 +622,16 @@ curl -X POST http://localhost:7890/api/v1/jobs \
 }
 ```
 
-| 欄位 | 責任 | 穩定性 |
-|------|------|--------|
-| `engine` | 選擇轉換引擎 | ✅ 穩定 |
+| 欄位       | 責任             | 穩定性      |
+| ---------- | ---------------- | ----------- |
+| `engine`   | 選擇轉換引擎     | ✅ 穩定     |
 | `pipeline` | 引擎內部處理流程 | ⚠️ 引擎相依 |
-| `params` | 引擎特定參數 | ⚠️ 引擎相依 |
+| `params`   | 引擎特定參數     | ⚠️ 引擎相依 |
 
 ### 常見引擎參數
 
 #### MinerU (PDF → Markdown)
+
 ```json
 {
   "table_mode": "markdown",
@@ -569,6 +641,7 @@ curl -X POST http://localhost:7890/api/v1/jobs \
 ```
 
 #### PDFMathTranslate (PDF 翻譯)
+
 ```json
 {
   "target_language": "zh-TW",
@@ -577,6 +650,7 @@ curl -X POST http://localhost:7890/api/v1/jobs \
 ```
 
 #### FFmpeg (影片轉換)
+
 ```json
 {
   "codec": "libx264",
@@ -589,18 +663,18 @@ curl -X POST http://localhost:7890/api/v1/jobs \
 
 ## ❌ Error Codes
 
-| 錯誤碼 | HTTP 狀態 | 說明 |
-|--------|----------|------|
-| `SUCCESS` | 200 | 成功 |
-| `BAD_REQUEST` | 400 | 請求格式錯誤 |
-| `UNAUTHORIZED` | 401 | 未認證 |
-| `FORBIDDEN` | 403 | 無權限 |
-| `NOT_FOUND` | 404 | 資源不存在 |
-| `FILE_TOO_LARGE` | 413 | 檔案太大 |
-| `UNSUPPORTED_CONVERSION` | 400 | 不支援的轉換 |
-| `ENGINE_NOT_FOUND` | 404 | 引擎不存在 |
-| `JOB_NOT_FOUND` | 404 | 任務不存在 |
-| `CONVERSION_FAILED` | 500 | 轉換失敗 |
+| 錯誤碼                   | HTTP 狀態 | 說明         |
+| ------------------------ | --------- | ------------ |
+| `SUCCESS`                | 200       | 成功         |
+| `BAD_REQUEST`            | 400       | 請求格式錯誤 |
+| `UNAUTHORIZED`           | 401       | 未認證       |
+| `FORBIDDEN`              | 403       | 無權限       |
+| `NOT_FOUND`              | 404       | 資源不存在   |
+| `FILE_TOO_LARGE`         | 413       | 檔案太大     |
+| `UNSUPPORTED_CONVERSION` | 400       | 不支援的轉換 |
+| `ENGINE_NOT_FOUND`       | 404       | 引擎不存在   |
+| `JOB_NOT_FOUND`          | 404       | 任務不存在   |
+| `CONVERSION_FAILED`      | 500       | 轉換失敗     |
 
 ### 錯誤回應範例
 
@@ -626,15 +700,15 @@ curl -X POST http://localhost:7890/api/v1/jobs \
 
 ## 🔧 環境變數
 
-| 變數名 | 預設值 | 說明 |
-|--------|--------|------|
-| `RAS_API_HOST` | `0.0.0.0` | 監聽地址 |
-| `RAS_API_PORT` | `7890` | 監聽端口（固定） |
-| `JWT_SECRET` | (內建) | JWT 密鑰 |
-| `UPLOAD_DIR` | `./data/uploads` | 上傳目錄 |
-| `OUTPUT_DIR` | `./data/output` | 輸出目錄 |
-| `MAX_FILE_SIZE` | `524288000` | 最大檔案 (500MB) |
-| `ENABLE_SWAGGER` | `true` | 啟用 Swagger UI |
+| 變數名           | 預設值           | 說明             |
+| ---------------- | ---------------- | ---------------- |
+| `RAS_API_HOST`   | `0.0.0.0`        | 監聽地址         |
+| `RAS_API_PORT`   | `7890`           | 監聽端口（固定） |
+| `JWT_SECRET`     | (內建)           | JWT 密鑰         |
+| `UPLOAD_DIR`     | `./data/uploads` | 上傳目錄         |
+| `OUTPUT_DIR`     | `./data/output`  | 輸出目錄         |
+| `MAX_FILE_SIZE`  | `524288000`      | 最大檔案 (500MB) |
+| `ENABLE_SWAGGER` | `true`           | 啟用 Swagger UI  |
 
 ---
 
@@ -683,24 +757,24 @@ if status["data"]["job"]["status"] == "completed":
 ### JavaScript / Node.js
 
 ```javascript
-const FormData = require('form-data');
-const fs = require('fs');
-const axios = require('axios');
+const FormData = require("form-data");
+const fs = require("fs");
+const axios = require("axios");
 
-const BASE_URL = 'http://localhost:7890/api/v1';
-const TOKEN = 'your-token';
+const BASE_URL = "http://localhost:7890/api/v1";
+const TOKEN = "your-token";
 
 async function convertFile() {
   // 建立任務
   const form = new FormData();
-  form.append('file', fs.createReadStream('document.docx'));
-  form.append('target_format', 'pdf');
+  form.append("file", fs.createReadStream("document.docx"));
+  form.append("target_format", "pdf");
 
   const { data: createRes } = await axios.post(`${BASE_URL}/jobs`, form, {
     headers: {
       ...form.getHeaders(),
-      'Authorization': `Bearer ${TOKEN}`
-    }
+      Authorization: `Bearer ${TOKEN}`,
+    },
   });
 
   const jobId = createRes.data.job_id;
@@ -708,20 +782,20 @@ async function convertFile() {
   // 輪詢狀態
   let status;
   do {
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise((r) => setTimeout(r, 1000));
     const { data } = await axios.get(`${BASE_URL}/jobs/${jobId}`, {
-      headers: { 'Authorization': `Bearer ${TOKEN}` }
+      headers: { Authorization: `Bearer ${TOKEN}` },
     });
     status = data.data.job.status;
-  } while (status === 'pending' || status === 'processing');
+  } while (status === "pending" || status === "processing");
 
   // 下載結果
-  if (status === 'completed') {
+  if (status === "completed") {
     const { data } = await axios.get(`${BASE_URL}/jobs/${jobId}/result`, {
-      headers: { 'Authorization': `Bearer ${TOKEN}` },
-      responseType: 'stream'
+      headers: { Authorization: `Bearer ${TOKEN}` },
+      responseType: "stream",
     });
-    data.pipe(fs.createWriteStream('output.pdf'));
+    data.pipe(fs.createWriteStream("output.pdf"));
   }
 }
 ```
@@ -809,12 +883,12 @@ curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:7890/api/v1/jobs
 
 RAS API 使用 Rust 實作，技術選型：
 
-| 元件 | 選擇 | 理由 |
-|------|------|------|
-| Web Framework | Axum | Tower 生態系整合、類型安全 |
-| JSON | Serde | 業界標準、零成本抽象 |
-| 錯誤處理 | thiserror + anyhow | 類型化錯誤 + 靈活的錯誤傳播 |
-| API 文件 | utoipa | OpenAPI 3.0 自動生成 |
+| 元件          | 選擇               | 理由                        |
+| ------------- | ------------------ | --------------------------- |
+| Web Framework | Axum               | Tower 生態系整合、類型安全  |
+| JSON          | Serde              | 業界標準、零成本抽象        |
+| 錯誤處理      | thiserror + anyhow | 類型化錯誤 + 靈活的錯誤傳播 |
+| API 文件      | utoipa             | OpenAPI 3.0 自動生成        |
 
 ### 專案結構
 

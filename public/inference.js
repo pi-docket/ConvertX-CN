@@ -122,11 +122,12 @@ async function cancelWarmup() {
 
 /**
  * 自動填入推斷的格式
- * UI 行為完全等同使用者手動輸入
+ * UI 行為完全等同使用者手動輸入，但會顯示視覺提示
  * @param {string} token - 推斷的 search token
  * @param {string} [engine] - 推斷的引擎
+ * @param {boolean} [isColdStart] - 是否為 Cold Start 預測
  */
-function autoFillInferredFormat(token, engine) {
+function autoFillInferredFormat(token, engine, isColdStart) {
   /** @type {HTMLInputElement|null} */
   const searchInput = document.querySelector("input[name='convert_to_search']");
   const convertToPopup = document.querySelector(".convert_to_popup");
@@ -148,9 +149,16 @@ function autoFillInferredFormat(token, engine) {
   const inputEvent = new Event("input", { bubbles: true });
   searchInput.dispatchEvent(inputEvent);
 
-  // 不修改任何 UI 樣式 - 純粹模擬使用者輸入
+  // 添加視覺提示 - 讓使用者知道這是系統預填的
+  searchInput.classList.add("inference-auto-filled");
+  searchInput.setAttribute("data-inference-source", isColdStart ? "cold-start" : "learned");
 
-  console.log(`🎯 Auto-filled search token: ${token}${engine ? ` (engine: ${engine})` : ""}`);
+  // 顯示提示訊息（如果有 toast 系統的話）
+  const mode = isColdStart ? "智慧推薦" : "根據您的習慣";
+  console.log(`🎯 ${mode}: ${token}${engine ? ` (引擎: ${engine})` : ""}`);
+
+  // 在搜尋框旁顯示小提示
+  showInferenceHint(searchInput, token, isColdStart);
 }
 
 /**
@@ -172,6 +180,9 @@ function handleSearchClear(inputExt) {
   isInferredValue = false;
   lastInferredToken = null;
   lastInferredEngine = null;
+
+  // 移除視覺提示
+  removeInferenceHint();
 }
 
 /**
@@ -182,7 +193,157 @@ function handleManualInput() {
     // 使用者手動修改，取消預調用
     cancelWarmup();
     isInferredValue = false;
+
+    // 移除視覺提示
+    removeInferenceHint();
   }
+}
+
+/**
+ * 顯示推斷提示
+ * @param {HTMLInputElement} searchInput
+ * @param {string} token
+ * @param {boolean} isColdStart
+ */
+function showInferenceHint(searchInput, token, isColdStart) {
+  // 移除舊的提示
+  removeInferenceHint();
+
+  // 創建提示元素
+  const hint = document.createElement("div");
+  hint.id = "inference-hint";
+  hint.className = "inference-hint";
+  hint.innerHTML = `
+    <span class="inference-hint-icon">✨</span>
+    <span class="inference-hint-text">${isColdStart ? "智慧推薦" : "您常用的格式"}: <strong>${token.toUpperCase()}</strong></span>
+    <button class="inference-hint-dismiss" title="清除建議">✕</button>
+  `;
+
+  // 插入到搜尋欄後面
+  searchInput.parentNode?.insertBefore(hint, searchInput.nextSibling);
+
+  // 綁定清除按鈕
+  const dismissBtn = hint.querySelector(".inference-hint-dismiss");
+  if (dismissBtn) {
+    dismissBtn.addEventListener("click", () => {
+      // @ts-expect-error - fileType is set by script.js
+      const fileType = window.fileType || "";
+      handleSearchClear(fileType);
+      searchInput.value = "";
+      searchInput.focus();
+    });
+  }
+}
+
+/**
+ * 移除推斷提示
+ */
+function removeInferenceHint() {
+  const existingHint = document.getElementById("inference-hint");
+  if (existingHint) {
+    existingHint.remove();
+  }
+
+  // 移除搜尋框的 CSS class
+  const searchInput = document.querySelector("input[name='convert_to_search']");
+  if (searchInput) {
+    searchInput.classList.remove("inference-auto-filled");
+    searchInput.removeAttribute("data-inference-source");
+  }
+}
+
+/**
+ * 注入推斷相關的 CSS 樣式
+ */
+function injectInferenceStyles() {
+  if (document.getElementById("inference-styles")) return;
+
+  const style = document.createElement("style");
+  style.id = "inference-styles";
+  style.textContent = `
+    /* 推斷自動填入的搜尋框樣式 */
+    .inference-auto-filled {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 51, 234, 0.08) 100%) !important;
+      border-color: rgba(59, 130, 246, 0.4) !important;
+      transition: all 0.3s ease;
+    }
+    
+    .inference-auto-filled:focus {
+      border-color: rgba(59, 130, 246, 0.6) !important;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+    }
+    
+    /* 推斷提示樣式 */
+    .inference-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      margin-left: 0.5rem;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      color: var(--text-color, #374151);
+      animation: inference-hint-appear 0.3s ease;
+    }
+    
+    @keyframes inference-hint-appear {
+      from {
+        opacity: 0;
+        transform: translateX(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .inference-hint-icon {
+      font-size: 1rem;
+    }
+    
+    .inference-hint-text strong {
+      color: var(--primary-color, #3b82f6);
+      font-weight: 600;
+    }
+    
+    .inference-hint-dismiss {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      padding: 0;
+      margin-left: 0.25rem;
+      background: rgba(0, 0, 0, 0.1);
+      border: none;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: all 0.2s ease;
+    }
+    
+    .inference-hint-dismiss:hover {
+      opacity: 1;
+      background: rgba(239, 68, 68, 0.2);
+      color: #dc2626;
+    }
+    
+    /* 暗色模式 */
+    @media (prefers-color-scheme: dark) {
+      .inference-hint {
+        color: #e5e7eb;
+      }
+      
+      .inference-hint-dismiss {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
 }
 
 /**
@@ -190,6 +351,9 @@ function handleManualInput() {
  * 需要在頁面載入後呼叫
  */
 function initInferenceModule() {
+  // 注入 CSS 樣式
+  injectInferenceStyles();
+
   // 監聽搜尋欄的 search 事件 (當使用者點擊 X 時觸發)
   /** @type {HTMLInputElement|null} */
   const searchInput = document.querySelector("input[name='convert_to_search']");
@@ -214,7 +378,11 @@ function initInferenceModule() {
     });
   }
 
-  console.log("✅ Inference module initialized");
+  console.log("┌──────────────────────────────────────────┐");
+  console.log("│  ✅ Inference Module Initialized         │");
+  console.log("│  ✅ Cold-Start prediction ready          │");
+  console.log("│  ✅ Auto-fill on file drop enabled       │");
+  console.log("└──────────────────────────────────────────┘");
 }
 
 /**
@@ -237,6 +405,8 @@ window.inferenceModule = {
   initInferenceModule,
   logDismissEvent,
   cancelWarmup,
+  showInferenceHint,
+  removeInferenceHint,
 };
 
 // 頁面載入後初始化

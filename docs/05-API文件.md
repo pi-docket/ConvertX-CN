@@ -27,21 +27,21 @@ docker compose --profile api up -d
 
 ### 服務端口
 
-| 服務          | 端口 | 說明              |
-| ------------- | ---- | ----------------- |
-| Web UI        | 3000 | 網頁介面          |
-| RAS-API Server| 7890 | REST API & Swagger|
+| 服務           | 端口 | 說明               |
+| -------------- | ---- | ------------------ |
+| Web UI         | 3000 | 網頁介面           |
+| RAS-API Server | 7890 | REST API & Swagger |
 
 ### 環境變數
 
-| 變數            | 說明                  | 預設值             |
-| --------------- | --------------------- | ------------------ |
-| `RAS_API_HOST`  | 監聽地址              | `0.0.0.0`          |
-| `RAS_API_PORT`  | 監聽埠                | `7890`             |
-| `JWT_SECRET`    | JWT 驗證密鑰          | （需自行設定）     |
-| `UPLOAD_DIR`    | 上傳目錄              | `./data/uploads`   |
-| `OUTPUT_DIR`    | 輸出目錄              | `./data/output`    |
-| `MAX_FILE_SIZE` | 最大檔案大小（bytes） | `524288000` (500MB)|
+| 變數            | 說明                  | 預設值              |
+| --------------- | --------------------- | ------------------- |
+| `RAS_API_HOST`  | 監聽地址              | `0.0.0.0`           |
+| `RAS_API_PORT`  | 監聽埠                | `7890`              |
+| `JWT_SECRET`    | JWT 驗證密鑰          | （需自行設定）      |
+| `UPLOAD_DIR`    | 上傳目錄              | `./data/uploads`    |
+| `OUTPUT_DIR`    | 輸出目錄              | `./data/output`     |
+| `MAX_FILE_SIZE` | 最大檔案大小（bytes） | `524288000` (500MB) |
 
 ---
 

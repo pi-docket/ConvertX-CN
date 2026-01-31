@@ -1,15 +1,26 @@
 # ConvertX API 規格文件
 
+> ⚠️ **注意**：此文件為舊版規格，主要保留 GraphQL Schema 參考。
+> 
+> 最新的 RAS-API v2.0.0 規格請參閱：
+> - [RAS-API-SPEC.md](RAS-API-SPEC.md) - 架構設計規格
+> - [RAS-API完整使用文件](../../docs/API/RAS-API完整使用文件.md) - 使用者文件
+
 ## 概述
 
-ConvertX API Server 是一個獨立的檔案轉換 API 服務，同時提供 REST API 和 GraphQL API。
-兩種 API 是完全獨立的服務，使用者可以選擇只使用其中一種。
+ConvertX RAS-API Server（v2.0.0）是一個獨立的檔案轉換 API 服務。
+
+**主要變更（v2.0.0）**：
+- 端口改為 **7890**
+- 環境變數前綴改為 `RAS_API_*`
+- 新增 Swagger UI (`/swagger-ui`)
+- GraphQL API 暫時停用
 
 ## 認證
 
 ### JWT Bearer Token
 
-所有 API 請求（除了健康檢查）都需要在 HTTP Header 中提供有效的 JWT Token：
+部分 API 請求（如 Job 管理）需要在 HTTP Header 中提供有效的 JWT Token：
 
 ```http
 Authorization: Bearer <jwt-token>

@@ -22,15 +22,22 @@ export interface FormatPrediction {
   top_k: Array<{ token: string; score: number }>;
   /** 預測原因碼 */
   reason_codes: string[];
+  /** 是否為 Cold Start 預測 (無使用者歷史) */
+  is_cold_start?: boolean;
 }
 
 /**
  * 模型權重配置
+ *
+ * Cold Start 策略：
+ * - 規則先驗權重最高，確保即使沒有歷史資料也能預測
+ * - 全域流行度提供基礎分數
+ * - 使用者歷史隨使用增加逐漸調整排序
  */
 export interface ModelWeights {
-  /** 使用者歷史權重 */
+  /** 使用者歷史權重 (會隨歷史累積而增加影響) */
   user_history_weight: number;
-  /** 規則先驗權重 */
+  /** 規則先驗權重 (Cold Start 核心) */
   rule_prior_weight: number;
   /** 全域流行度權重 */
   global_popularity_weight: number;
@@ -42,32 +49,86 @@ export interface ModelWeights {
 
 /**
  * 預設模型權重
+ *
+ * Cold Start 優化：規則先驗 (0.45) + 全域流行 (0.25) + 特徵 (0.10) = 0.80
+ * 這確保在沒有使用者歷史時，系統仍能給出高信心度預測
  */
 const DEFAULT_WEIGHTS: ModelWeights = {
-  user_history_weight: 0.45,
-  rule_prior_weight: 0.25,
-  global_popularity_weight: 0.15,
-  recency_weight: 0.1,
-  feature_weight: 0.05,
+  user_history_weight: 0.15, // 降低，讓 Cold Start 更有效
+  rule_prior_weight: 0.45, // 提高，Cold Start 核心
+  global_popularity_weight: 0.25, // 提高，提供基礎分數
+  recency_weight: 0.05, // 降低
+  feature_weight: 0.1, // 提高，檔案特徵很重要
 };
 
 /**
  * 全域格式流行度 (預設值，會被實際統計覆蓋)
+ *
+ * 基於常見使用場景的先驗知識：
+ * - 高分：最常用的轉換目標格式
+ * - 中分：常用但非首選
+ * - 低分：專業用途
  */
 const DEFAULT_GLOBAL_POPULARITY: Record<string, number> = {
-  png: 0.85,
-  jpeg: 0.8,
-  pdf: 0.75,
-  mp4: 0.7,
-  webp: 0.65,
-  mp3: 0.6,
-  docx: 0.55,
-  gif: 0.5,
-  svg: 0.45,
-  wav: 0.4,
-  xlsx: 0.35,
-  txt: 0.3,
-  json: 0.25,
+  // 圖片格式 (web 優先)
+  png: 0.95,
+  jpeg: 0.9,
+  webp: 0.85,
+  jpg: 0.88,
+  avif: 0.7,
+  gif: 0.65,
+  svg: 0.6,
+  tiff: 0.35,
+  bmp: 0.25,
+  ico: 0.3,
+
+  // 文件格式
+  pdf: 0.95,
+  docx: 0.85,
+  txt: 0.75,
+  html: 0.65,
+  md: 0.55,
+  odt: 0.45,
+  epub: 0.5,
+
+  // 試算表
+  xlsx: 0.8,
+  csv: 0.85,
+  ods: 0.4,
+
+  // 影片格式
+  mp4: 0.95,
+  webm: 0.8,
+  mkv: 0.7,
+  avi: 0.5,
+  mov: 0.55,
+
+  // 音訊格式
+  mp3: 0.95,
+  wav: 0.75,
+  flac: 0.7,
+  aac: 0.65,
+  ogg: 0.55,
+  m4a: 0.6,
+  opus: 0.5,
+
+  // 資料格式
+  json: 0.85,
+  yaml: 0.7,
+  xml: 0.6,
+  toml: 0.45,
+
+  // 字型格式
+  woff2: 0.9,
+  woff: 0.8,
+  ttf: 0.75,
+  otf: 0.7,
+
+  // 壓縮檔
+  zip: 0.9,
+  "7z": 0.7,
+  tar: 0.6,
+  rar: 0.55,
 };
 
 /**
@@ -82,8 +143,8 @@ export class FormatPredictionModel {
   constructor(
     weights: Partial<ModelWeights> = {},
     globalPopularity: Record<string, number> = DEFAULT_GLOBAL_POPULARITY,
-    minConfidenceThreshold = 0.35,
-    coldStartThreshold = 0.15,
+    minConfidenceThreshold = 0.3, // 降低閾值，讓更容易觸發預測
+    coldStartThreshold = 0.2, // Cold Start 閾值略低，但仍需有意義
   ) {
     this.weights = { ...DEFAULT_WEIGHTS, ...weights };
     this.globalPopularity = globalPopularity;
@@ -205,6 +266,8 @@ export class FormatPredictionModel {
       confidence: Math.round(confidence * 100) / 100,
       top_k: topK,
       reason_codes: matched_rules,
+      // Cold Start 診斷信息
+      is_cold_start: !hasUserHistory,
     };
   }
 

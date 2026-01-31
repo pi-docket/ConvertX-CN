@@ -22,7 +22,12 @@
 
 import Elysia, { t } from "elysia";
 import { userService } from "./user";
-import { getAllInputs, getAllTargets, getDisabledEngines, getPossibleTargets } from "../converters/main";
+import {
+  getAllInputs,
+  getAllTargets,
+  getDisabledEngines,
+  getPossibleTargets,
+} from "../converters/main";
 import os from "node:os";
 import { randomUUID } from "node:crypto";
 
@@ -93,7 +98,7 @@ function createErrorResponse(
   code: ErrorCode,
   message: string,
   details?: unknown,
-  requestId?: string
+  requestId?: string,
 ): ApiResponse {
   return {
     success: false,
@@ -140,7 +145,7 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
         },
       });
     },
-    { auth: false }
+    { auth: false },
   )
 
   /**
@@ -183,7 +188,7 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
         },
       });
     },
-    { auth: false }
+    { auth: false },
   )
 
   /**
@@ -222,7 +227,7 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
         },
       });
     },
-    { auth: false }
+    { auth: false },
   )
 
   /**
@@ -237,11 +242,9 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
       const disabledEngines = getDisabledEngines();
 
       if (!outputs) {
-        return createErrorResponse(
-          ErrorCodes.ENGINE_NOT_FOUND,
-          `Engine '${id}' not found`,
-          { availableEngines: Object.keys(allTargets) }
-        );
+        return createErrorResponse(ErrorCodes.ENGINE_NOT_FOUND, `Engine '${id}' not found`, {
+          availableEngines: Object.keys(allTargets),
+        });
       }
 
       const isDisabled = disabledEngines.includes(id.toLowerCase());
@@ -259,12 +262,12 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
           disabledReason: isDisabled ? `Disabled on this platform` : null,
           category: getEngineCategory(id),
           conversions: inputs.flatMap((input) =>
-            outputs.map((output) => ({ from: input, to: output }))
+            outputs.map((output) => ({ from: input, to: output })),
           ),
         },
       });
     },
-    { auth: false }
+    { auth: false },
   )
 
   /**
@@ -294,7 +297,7 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
         outputCount: allOutputFormats.size,
       });
     },
-    { auth: false }
+    { auth: false },
   )
 
   /**
@@ -309,7 +312,7 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
         return createErrorResponse(
           ErrorCodes.UNSUPPORTED_FORMAT,
           `Format '${format}' is not supported as input`,
-          { format }
+          { format },
         );
       }
 
@@ -323,7 +326,7 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
         allOutputs: [...new Set(Object.values(targets).flat())].sort(),
       });
     },
-    { auth: false }
+    { auth: false },
   )
 
   /**
@@ -403,7 +406,7 @@ export const rasApi = new Elysia({ prefix: "/api/v1" })
         outputFormat: t.String(),
         engine: t.Optional(t.String()),
       }),
-    }
+    },
   );
 
 // ==============================================================================

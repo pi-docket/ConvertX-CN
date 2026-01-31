@@ -58,26 +58,26 @@ RAS（Remote AI Service）API 是一套專為外部整合設計的 RESTful API �
 
 ### 上傳什麼？
 
-| 類別 | 格式範例 |
-|------|----------|
-| 文件 | PDF, DOCX, XLSX, PPTX, TXT, MD, HTML |
-| 圖片 | PNG, JPG, WEBP, SVG, HEIC, TIFF |
-| 影音 | MP4, WEBM, AVI, MP3, WAV, FLAC |
-| 電子書 | EPUB, MOBI, AZW3 |
-| 資料 | JSON, YAML, TOML, CSV |
+| 類別   | 格式範例                             |
+| ------ | ------------------------------------ |
+| 文件   | PDF, DOCX, XLSX, PPTX, TXT, MD, HTML |
+| 圖片   | PNG, JPG, WEBP, SVG, HEIC, TIFF      |
+| 影音   | MP4, WEBM, AVI, MP3, WAV, FLAC       |
+| 電子書 | EPUB, MOBI, AZW3                     |
+| 資料   | JSON, YAML, TOML, CSV                |
 
 ### 指定哪些 AI 引擎？
 
-| 引擎 ID | 說明 | 特色 |
-|---------|------|------|
-| `ffmpeg` | 多媒體轉換 | 影片/音訊格式互轉 |
-| `imagemagick` | 圖片處理 | 100+ 圖片格式支援 |
-| `libreoffice` | 辦公文件 | DOC/XLS/PPT → PDF |
-| `pandoc` | 文件轉換 | Markdown/HTML/LaTeX |
-| `mineru` | PDF 解析 | AI 驅動的 PDF 萃取 |
-| `pdfmathtranslate` | PDF 翻譯 | 保留數學公式 |
-| `ocrmypdf` | OCR 識別 | 讓 PDF 可搜尋 |
-| `calibre` | 電子書 | EPUB/MOBI 互轉 |
+| 引擎 ID            | 說明       | 特色                |
+| ------------------ | ---------- | ------------------- |
+| `ffmpeg`           | 多媒體轉換 | 影片/音訊格式互轉   |
+| `imagemagick`      | 圖片處理   | 100+ 圖片格式支援   |
+| `libreoffice`      | 辦公文件   | DOC/XLS/PPT → PDF   |
+| `pandoc`           | 文件轉換   | Markdown/HTML/LaTeX |
+| `mineru`           | PDF 解析   | AI 驅動的 PDF 萃取  |
+| `pdfmathtranslate` | PDF 翻譯   | 保留數學公式        |
+| `ocrmypdf`         | OCR 識別   | 讓 PDF 可搜尋       |
+| `calibre`          | 電子書     | EPUB/MOBI 互轉      |
 
 ### 拿回什麼結果？
 
@@ -112,12 +112,12 @@ RAS（Remote AI Service）API 是一套專為外部整合設計的 RESTful API �
 {
   "engine_params": {
     "mineru": {
-      "table_mode": "markdown",    // 可能新增選項
-      "ocr_language": "chi_sim"    // 可能支援更多語言
+      "table_mode": "markdown", // 可能新增選項
+      "ocr_language": "chi_sim" // 可能支援更多語言
     },
     "ffmpeg": {
-      "codec": "libx264",          // 可能新增編碼器
-      "quality": "high"            // 可能調整品質等級
+      "codec": "libx264", // 可能新增編碼器
+      "quality": "high" // 可能調整品質等級
     }
   }
 }
@@ -163,18 +163,18 @@ RAS（Remote AI Service）API 是一套專為外部整合設計的 RESTful API �
 
 ## 六、端點責任說明
 
-| 端點類別 | 責任 | 認證 | 冪等性 |
-|---------|------|------|--------|
-| `/health` | 服務存活檢查 | 否 | 是 |
-| `/info` | API 能力描述 | 否 | 是 |
-| `/engines` | 引擎能力查詢 | 否 | 是 |
-| `/formats` | 格式支援查詢 | 否 | 是 |
-| `/validate` | 轉換可行性驗證 | 否 | 是 |
-| `POST /jobs` | 建立轉換任務 | 是 | 否 |
-| `GET /jobs` | 列出使用者任務 | 是 | 是 |
-| `GET /jobs/{id}` | 查詢特定任務 | 是 | 是 |
-| `GET /jobs/{id}/result` | 下載結果 | 是 | 是 |
-| `DELETE /jobs/{id}` | 刪除任務 | 是 | 是 |
+| 端點類別                | 責任           | 認證 | 冪等性 |
+| ----------------------- | -------------- | ---- | ------ |
+| `/health`               | 服務存活檢查   | 否   | 是     |
+| `/info`                 | API 能力描述   | 否   | 是     |
+| `/engines`              | 引擎能力查詢   | 否   | 是     |
+| `/formats`              | 格式支援查詢   | 否   | 是     |
+| `/validate`             | 轉換可行性驗證 | 否   | 是     |
+| `POST /jobs`            | 建立轉換任務   | 是   | 否     |
+| `GET /jobs`             | 列出使用者任務 | 是   | 是     |
+| `GET /jobs/{id}`        | 查詢特定任務   | 是   | 是     |
+| `GET /jobs/{id}/result` | 下載結果       | 是   | 是     |
+| `DELETE /jobs/{id}`     | 刪除任務       | 是   | 是     |
 
 ---
 
@@ -195,6 +195,7 @@ registry.register(NewEngine::new());
 ```
 
 新引擎接入後：
+
 - `/engines` 自動列出
 - `/engines/{id}` 自動支援
 - `/jobs` 可指定使用

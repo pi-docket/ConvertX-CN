@@ -440,9 +440,11 @@ async function triggerFormatInference(ext, fileSize) {
 
     if (result && result.should_auto_fill && result.format) {
       // 自動填入推斷的 search token (模擬使用者輸入)
+      // 傳遞 is_cold_start 以顯示正確的 UX 提示
       window.inferenceModule.autoFillInferredFormat(
         result.format.search_token,
         result.engine?.engine,
+        result.format.is_cold_start,
       );
 
       // 嘗試自動選擇對應的引擎選項
