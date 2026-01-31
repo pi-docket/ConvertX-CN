@@ -48,9 +48,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # SSL/TLS support
     ca-certificates \
     libssl3 \
+    curl \
     # Conversion tools (subset - main ones used by API)
     ffmpeg \
-    imagemagick-7.q16 \
+    imagemagick \
     graphicsmagick \
     libreoffice \
     pandoc \
@@ -59,8 +60,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libvips-tools \
     libheif-examples \
     libjxl-tools \
-    resvg \
-    dasel \
     assimp-utils \
     calibre \
     ghostscript \
@@ -73,6 +72,32 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /root/.cache/pip
+
+# Install dasel (JSON/YAML/TOML converter) from GitHub releases
+RUN set -ex && \
+    ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ]; then DASEL_ARCH="linux_arm64"; \
+    else DASEL_ARCH="linux_amd64"; fi && \
+    curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
+    "https://github.com/TomWright/dasel/releases/download/v2.8.1/dasel_${DASEL_ARCH}" \
+    -o /usr/local/bin/dasel && \
+    chmod +x /usr/local/bin/dasel
+
+# Install resvg (SVG renderer) from GitHub releases
+ARG RESVG_VERSION=0.46.0
+RUN set -ex && \
+    ARCH=$(uname -m) && \
+    if [ "$ARCH" = "aarch64" ]; then \
+        echo "⚠️ resvg ARM64 not available, skipping..."; \
+    else \
+        curl -sSLf --retry 3 --retry-delay 5 --retry-all-errors \
+        "https://github.com/linebender/resvg/releases/download/v${RESVG_VERSION}/resvg-linux-x86_64.tar.gz" \
+        -o /tmp/resvg.tar.gz && \
+        tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
+        mv /tmp/resvg /usr/local/bin/resvg && \
+        chmod +x /usr/local/bin/resvg && \
+        rm -f /tmp/resvg.tar.gz; \
+    fi
 
 # Add pipx bin directory to PATH
 ENV PATH="/root/.local/bin:${PATH}"
