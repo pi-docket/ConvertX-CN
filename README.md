@@ -113,7 +113,9 @@ docker run -d \
 
 ## 🔗 線上示範
 
-### 一般版（需登入）
+[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://convertx-cn.bioailab.qzz.io)
+
+<!-- [![Online Preview](https://img.shields.io/badge/online-preview-available-green)](https://convertx-cn.bioailab.qzz.io) -->
 
 🔗 **https://convertx-cn.bioailab.qzz.io**
 
@@ -123,6 +125,8 @@ docker run -d \
 | 密碼 | admin             |
 
 ### Lite 版（無需登入）
+
+[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://convertx-cn-lite.bioailab.qzz.io)
 
 🔗 **https://convertx-cn-lite.bioailab.qzz.io**
 
