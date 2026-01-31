@@ -100,12 +100,12 @@ Authorization: Bearer <your-jwt-token>
 
 ### 權限範圍（Scope）
 
-| 權限           | 說明             |
-| -------------- | ---------------- |
-| `list_engines` | 查詢可用引擎     |
-| `convert`      | 執行檔案轉換     |
-| `download`     | 下載轉換結果     |
-| `*`            | 所有權限（管理員）|
+| 權限           | 說明               |
+| -------------- | ------------------ |
+| `list_engines` | 查詢可用引擎       |
+| `convert`      | 執行檔案轉換       |
+| `download`     | 下載轉換結果       |
+| `*`            | 所有權限（管理員） |
 
 **注意**: API Server 只負責驗證 JWT，不負責產生 JWT。Token 應由您的應用程式使用相同的 `JWT_SECRET` 產生。
 

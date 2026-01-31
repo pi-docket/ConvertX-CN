@@ -30,8 +30,8 @@ chrono = { version = "0.4", features = ["serde"] }
 # UUID for job IDs
 uuid = { version = "1", features = ["v4", "serde"] }
 
-# HTTP client for proxying
-reqwest = { version = "0.12", features = ["json", "multipart", "stream"] }
+# HTTP client for proxying (use rustls to avoid OpenSSL cross-compilation issues)
+reqwest = { version = "0.12", default-features = false, features = ["json", "multipart", "stream", "rustls-tls"] }
 
 # File handling
 tokio-util = { version = "0.7", features = ["io"] }

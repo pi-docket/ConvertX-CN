@@ -113,9 +113,7 @@ docker run -d \
 
 ## 🔗 線上示範
 
-[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://convertx-cn.bioailab.qzz.io)
-
-<!-- [![Online Preview](https://img.shields.io/badge/online-preview-available-green)](https://convertx-cn.bioailab.qzz.io) -->
+### 一般版（需登入）
 
 🔗 **https://convertx-cn.bioailab.qzz.io**
 
@@ -123,6 +121,12 @@ docker run -d \
 | ---- | ----------------- |
 | 帳號 | admin@example.com |
 | 密碼 | admin             |
+
+### Lite 版（無需登入）
+
+🔗 **https://convertx-cn-lite.bioailab.qzz.io**
+
+直接使用，無需帳號密碼。
 
 > ⚠️ 示範站僅供測試，請勿上傳敏感檔案，會定期清理資料。
 

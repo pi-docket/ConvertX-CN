@@ -62,21 +62,21 @@ docker compose --profile api up -d
 
 ### 服務端口
 
-| 服務       | 端口 | 說明              |
-| ---------- | ---- | ----------------- |
-| Web UI     | 3000 | 網頁介面          |
+| 服務       | 端口 | 說明               |
+| ---------- | ---- | ------------------ |
+| Web UI     | 3000 | 網頁介面           |
 | API Server | 7890 | REST & GraphQL API |
 
 ### 環境變數
 
-| 變數                   | 說明                  | 預設值                   | 必須 |
-| ---------------------- | --------------------- | ------------------------ | ---- |
-| `JWT_SECRET`           | JWT 驗證密鑰          | （無）                   | ✅   |
-| `RAS_API_PORT`         | 監聽埠                | `7890`                   |      |
-| `CONVERTX_BACKEND_URL` | Web UI 後端地址       | `http://convertx:3000`   |      |
-| `UPLOAD_DIR`           | 上傳目錄              | `./data/uploads`         |      |
-| `OUTPUT_DIR`           | 輸出目錄              | `./data/output`          |      |
-| `MAX_FILE_SIZE`        | 最大檔案大小（bytes） | `524288000` (500MB)      |      |
+| 變數                   | 說明                  | 預設值                 | 必須 |
+| ---------------------- | --------------------- | ---------------------- | ---- |
+| `JWT_SECRET`           | JWT 驗證密鑰          | （無）                 | ✅   |
+| `RAS_API_PORT`         | 監聽埠                | `7890`                 |      |
+| `CONVERTX_BACKEND_URL` | Web UI 後端地址       | `http://convertx:3000` |      |
+| `UPLOAD_DIR`           | 上傳目錄              | `./data/uploads`       |      |
+| `OUTPUT_DIR`           | 輸出目錄              | `./data/output`        |      |
+| `MAX_FILE_SIZE`        | 最大檔案大小（bytes） | `524288000` (500MB)    |      |
 
 ---
 
@@ -98,12 +98,12 @@ API Server 驗證的 JWT Token 必須包含以下欄位：
 
 ### 權限範圍（Scope）
 
-| 權限           | 說明                 |
-| -------------- | -------------------- |
-| `list_engines` | 查詢可用引擎         |
-| `convert`      | 執行檔案轉換         |
-| `download`     | 下載轉換結果         |
-| `*`            | 所有權限（管理員）   |
+| 權限           | 說明               |
+| -------------- | ------------------ |
+| `list_engines` | 查詢可用引擎       |
+| `convert`      | 執行檔案轉換       |
+| `download`     | 下載轉換結果       |
+| `*`            | 所有權限（管理員） |
 
 ### 產生 JWT Token（Python 範例）
 
@@ -135,9 +135,9 @@ print(f"Bearer {token}")
 ### 產生 JWT Token（Node.js 範例）
 
 ```javascript
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = 'your-super-secret-jwt-key-change-me-in-production';
+const JWT_SECRET = "your-super-secret-jwt-key-change-me-in-production";
 
 function generateToken(userId, email, scopes) {
   const payload = {
@@ -145,16 +145,12 @@ function generateToken(userId, email, scopes) {
     email: email,
     scope: scopes,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 3600 // 1 小時後過期
+    exp: Math.floor(Date.now() / 1000) + 3600, // 1 小時後過期
   };
-  return jwt.sign(payload, JWT_SECRET, { algorithm: 'HS256' });
+  return jwt.sign(payload, JWT_SECRET, { algorithm: "HS256" });
 }
 
-const token = generateToken(
-  'user123',
-  'user@example.com',
-  ['list_engines', 'convert', 'download']
-);
+const token = generateToken("user123", "user@example.com", ["list_engines", "convert", "download"]);
 console.log(`Bearer ${token}`);
 ```
 
@@ -224,8 +220,34 @@ Authorization: Bearer <token>
         "engine_name": "FFmpeg",
         "description": "影音轉換引擎",
         "enabled": true,
-        "input_formats": ["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm", "mp3", "wav", "flac", "aac", "ogg", "m4a"],
-        "output_formats": ["mp4", "avi", "mkv", "mov", "webm", "gif", "mp3", "wav", "flac", "aac", "ogg"],
+        "input_formats": [
+          "mp4",
+          "avi",
+          "mkv",
+          "mov",
+          "wmv",
+          "flv",
+          "webm",
+          "mp3",
+          "wav",
+          "flac",
+          "aac",
+          "ogg",
+          "m4a"
+        ],
+        "output_formats": [
+          "mp4",
+          "avi",
+          "mkv",
+          "mov",
+          "webm",
+          "gif",
+          "mp3",
+          "wav",
+          "flac",
+          "aac",
+          "ogg"
+        ],
         "max_file_size_mb": 2000,
         "requires_params": false
       },
@@ -422,19 +444,19 @@ http://localhost:7890/graphql
 type Query {
   # 健康檢查
   health: HealthStatus!
-  
+
   # 列出所有引擎
   engines: [Engine!]!
-  
+
   # 取得特定引擎
   engine(id: String!): Engine
-  
+
   # 取得任務狀態
   job(id: String!): Job
-  
+
   # 驗證轉換是否支援
   validateConversion(engineId: String!, from: String!, to: String!): ValidationResult!
-  
+
   # 取得轉換建議
   suggestions(from: String!, to: String!): [ConversionSuggestion!]!
 }
@@ -446,7 +468,7 @@ type Query {
 type Mutation {
   # 刪除任務
   deleteJob(id: ID!): Boolean!
-  
+
   # 取消任務（僅限等待中的任務）
   cancelJob(id: ID!): Boolean!
 }
@@ -559,20 +581,20 @@ query {
 
 ## 錯誤碼說明
 
-| HTTP 狀態碼 | 錯誤碼                  | 說明                     |
-| ----------- | ----------------------- | ------------------------ |
-| 400         | `INVALID_INPUT`         | 請求參數無效             |
-| 400         | `UNSUPPORTED_CONVERSION`| 不支援的格式轉換         |
-| 400         | `JOB_NOT_READY`         | 任務尚未完成             |
-| 401         | `MISSING_AUTH_HEADER`   | 缺少授權標頭             |
-| 401         | `INVALID_TOKEN`         | JWT Token 無效           |
-| 401         | `TOKEN_EXPIRED`         | JWT Token 已過期         |
-| 403         | `FORBIDDEN`             | 權限不足                 |
-| 404         | `ENGINE_NOT_FOUND`      | 引擎不存在               |
-| 404         | `JOB_NOT_FOUND`         | 任務不存在               |
-| 413         | `FILE_TOO_LARGE`        | 檔案過大                 |
-| 500         | `INTERNAL_ERROR`        | 內部錯誤                 |
-| 502         | `BACKEND_ERROR`         | 後端服務錯誤             |
+| HTTP 狀態碼 | 錯誤碼                   | 說明             |
+| ----------- | ------------------------ | ---------------- |
+| 400         | `INVALID_INPUT`          | 請求參數無效     |
+| 400         | `UNSUPPORTED_CONVERSION` | 不支援的格式轉換 |
+| 400         | `JOB_NOT_READY`          | 任務尚未完成     |
+| 401         | `MISSING_AUTH_HEADER`    | 缺少授權標頭     |
+| 401         | `INVALID_TOKEN`          | JWT Token 無效   |
+| 401         | `TOKEN_EXPIRED`          | JWT Token 已過期 |
+| 403         | `FORBIDDEN`              | 權限不足         |
+| 404         | `ENGINE_NOT_FOUND`       | 引擎不存在       |
+| 404         | `JOB_NOT_FOUND`          | 任務不存在       |
+| 413         | `FILE_TOO_LARGE`         | 檔案過大         |
+| 500         | `INTERNAL_ERROR`         | 內部錯誤         |
+| 502         | `BACKEND_ERROR`          | 後端服務錯誤     |
 
 **錯誤回應格式**：
 
