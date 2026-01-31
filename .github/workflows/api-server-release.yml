@@ -145,7 +145,39 @@ jobs:
             | macOS (Apple Silicon) | `convertx-api-darwin-arm64.tar.gz` |
             | Windows (x86_64) | `convertx-api-windows-amd64.zip` |
 
-            ### 🚀 使用方式
+            ### � 快速下載命令
+
+            **Linux (x86_64)**
+            ```bash
+            wget https://github.com/pi-docket/ConvertX-CN/releases/download/${{ steps.version.outputs.version }}/convertx-api-linux-amd64.tar.gz
+            tar -xzf convertx-api-linux-amd64.tar.gz
+            ```
+
+            **Linux (ARM64)**
+            ```bash
+            wget https://github.com/pi-docket/ConvertX-CN/releases/download/${{ steps.version.outputs.version }}/convertx-api-linux-arm64.tar.gz
+            tar -xzf convertx-api-linux-arm64.tar.gz
+            ```
+
+            **macOS (Intel)**
+            ```bash
+            curl -LO https://github.com/pi-docket/ConvertX-CN/releases/download/${{ steps.version.outputs.version }}/convertx-api-darwin-amd64.tar.gz
+            tar -xzf convertx-api-darwin-amd64.tar.gz
+            ```
+
+            **macOS (Apple Silicon)**
+            ```bash
+            curl -LO https://github.com/pi-docket/ConvertX-CN/releases/download/${{ steps.version.outputs.version }}/convertx-api-darwin-arm64.tar.gz
+            tar -xzf convertx-api-darwin-arm64.tar.gz
+            ```
+
+            **Windows (PowerShell)**
+            ```powershell
+            Invoke-WebRequest -Uri "https://github.com/pi-docket/ConvertX-CN/releases/download/${{ steps.version.outputs.version }}/convertx-api-windows-amd64.zip" -OutFile "convertx-api-windows-amd64.zip"
+            Expand-Archive -Path "convertx-api-windows-amd64.zip" -DestinationPath "."
+            ```
+
+            ### �🚀 使用方式
 
             ```bash
             # 下載並解壓
