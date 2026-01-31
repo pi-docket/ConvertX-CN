@@ -1,6 +1,6 @@
 [package]
 name = "convertx-api"
-version = "2.0.0"
+version = "2.0.1"
 edition = "2021"
 authors = ["ConvertX Team"]
 description = "ConvertX API Server - REST & GraphQL API for ConvertX-CN"

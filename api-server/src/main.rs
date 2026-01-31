@@ -103,19 +103,21 @@ async fn graphql_playground() -> axum::response::Html<&'static str> {
 <html>
 <head>
     <title>ConvertX API - GraphQL Playground</title>
-    <link rel="stylesheet" href="https://unpkg.com/graphiql/graphiql.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/graphiql@3.7.2/graphiql.min.css" />
+    <style>
+        body { margin: 0; height: 100vh; }
+        #graphiql { height: 100%; }
+    </style>
 </head>
-<body style="margin: 0;">
-    <div id="graphiql" style="height: 100vh;"></div>
-    <script crossorigin src="https://unpkg.com/react/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/graphiql/graphiql.min.js"></script>
+<body>
+    <div id="graphiql"></div>
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/graphiql@3.7.2/graphiql.min.js" crossorigin></script>
     <script>
+        const root = ReactDOM.createRoot(document.getElementById('graphiql'));
         const fetcher = GraphiQL.createFetcher({ url: '/graphql' });
-        ReactDOM.render(
-            React.createElement(GraphiQL, { fetcher }),
-            document.getElementById('graphiql'),
-        );
+        root.render(React.createElement(GraphiQL, { fetcher }));
     </script>
 </body>
 </html>
