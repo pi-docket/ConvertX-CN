@@ -1,7 +1,6 @@
 //! JWT 認證模組
 
 use axum::{
-    async_trait,
     extract::FromRequestParts,
     http::{header::AUTHORIZATION, request::Parts},
 };
@@ -108,6 +107,7 @@ pub struct AppState {
     pub jwt_validator: Arc<JwtValidator>,
     pub engine_registry: crate::engine::EngineRegistry,
     pub job_store: crate::job::JobStore,
+    pub graphql_schema: Option<Arc<crate::graphql::ApiSchema>>,
 }
 
 impl AppState {
@@ -118,7 +118,13 @@ impl AppState {
             jwt_validator: Arc::new(jwt_validator),
             engine_registry: crate::engine::EngineRegistry::new(),
             job_store: crate::job::JobStore::new(),
+            graphql_schema: None,
         }
+    }
+
+    pub fn with_graphql_schema(mut self, schema: crate::graphql::ApiSchema) -> Self {
+        self.graphql_schema = Some(Arc::new(schema));
+        self
     }
 }
 
@@ -136,7 +142,6 @@ impl AuthenticatedUser {
 }
 
 /// 從請求中提取已認證使用者
-#[async_trait]
 impl FromRequestParts<AppState> for AuthenticatedUser {
     type Rejection = ApiError;
 

@@ -45,30 +45,36 @@
 
 ## 🚀 快速開始
 
-### Docker Run
+### 步驟 1：建立 `.env` 檔案
+
+> ⚠️ **必須先設定 `JWT_SECRET`**，這是系統運作的必要條件
 
 ```bash
-mkdir -p ~/convertx-cn/data && cd ~/convertx-cn && \
-docker run -d \
-  --name convertx-cn \
-  --restart unless-stopped \
-  -p 3000:3000 \
-  -v ./data:/app/data \
-  -e TZ=Asia/Taipei \
-  -e JWT_SECRET=Xk9mPqL2vN7wR4tY6uI8oA3sD5fG1hJ0 \
-  convertx/convertx-cn:latest
+mkdir -p ~/convertx-cn && cd ~/convertx-cn
+
+# 產生 .env 檔案
+cat > .env << 'EOF'
+# JWT 密鑰（必須設定！建議 32+ 字元）
+JWT_SECRET=你的隨機密鑰請更換成自己的字串
+
+# 時區
+TZ=Asia/Taipei
+EOF
+
+# 產生安全的 JWT_SECRET（擇一執行）
+# Linux/macOS:
+# sed -i "s/你的隨機密鑰請更換成自己的字串/$(openssl rand -base64 32)/" .env
+# Windows PowerShell:
+# (Get-Content .env) -replace '你的隨機密鑰請更換成自己的字串', [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 })) | Set-Content .env
 ```
 
-> ⚠️ **安全提醒**：正式環境請更換 `JWT_SECRET` 為自己的隨機字串（至少 32 字元）
-
-開啟瀏覽器：`http://localhost:3000`
-
-### Docker Compose（推薦）
-
-> 💡 以下命令會自動建立 `~/convertx-cn/data` 資料夾、產生 `docker-compose.yml` 並啟動服務
+### 步驟 2：Docker Compose（推薦）
 
 ```bash
-mkdir -p ~/convertx-cn/data && cd ~/convertx-cn && \
+# 建立資料目錄
+mkdir -p data
+
+# 建立 docker-compose.yml
 cat > docker-compose.yml << 'EOF'
 services:
   convertx:
@@ -79,16 +85,27 @@ services:
       - "3000:3000"
     volumes:
       - ./data:/app/data
-    environment:
-      - TZ=Asia/Taipei
-      - JWT_SECRET=Xk9mPqL2vN7wR4tY6uI8oA3sD5fG1hJ0
+    env_file:
+      - .env
 EOF
+
+# 啟動服務
 docker compose up -d
 ```
 
-> ⚠️ **安全提醒**：正式環境請更換 `JWT_SECRET` 為自己的隨機字串（至少 32 字元）
-
 開啟瀏覽器：`http://localhost:3000`
+
+### 或使用 Docker Run
+
+```bash
+docker run -d \
+  --name convertx-cn \
+  --restart unless-stopped \
+  -p 3000:3000 \
+  -v ./data:/app/data \
+  --env-file .env \
+  convertx/convertx-cn:latest
+```
 
 > 📖 詳細說明請參閱 [快速開始](docs/快速入門/快速開始.md)
 
@@ -185,11 +202,21 @@ ConvertX-CN 提供三個版本，滿足不同需求：
 ### Lite 版快速啟動
 
 ```bash
+# 1. 建立 .env
+mkdir -p ~/convertx-lite && cd ~/convertx-lite
+cat > .env << 'EOF'
+JWT_SECRET=你的隨機密鑰請更換成自己的字串
+TZ=Asia/Taipei
+ALLOW_UNAUTHENTICATED=true
+EOF
+
+# 2. 建立資料目錄並啟動
+mkdir -p data
 docker run -d \
   --name convertx-cn-lite \
   -p 3000:3000 \
   -v ./data:/app/data \
-  -e JWT_SECRET=你的隨機字串至少32字元 \
+  --env-file .env \
   convertx/convertx-cn:latest-lite
 ```
 

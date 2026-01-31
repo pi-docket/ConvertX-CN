@@ -1,17 +1,21 @@
 [package]
 name = "convertx-api"
-version = "1.0.0"
+version = "2.0.0"
 edition = "2021"
 authors = ["ConvertX Team"]
-description = "ConvertX API Server - External API for ConvertX-CN"
+description = "ConvertX API Server - REST & GraphQL API for ConvertX-CN"
 license = "MIT"
 repository = "https://github.com/pi-docket/ConvertX-CN"
 
 [dependencies]
 # Web framework
-axum = { version = "0.7", features = ["multipart"] }
+axum = { version = "0.8", features = ["multipart"] }
 tokio = { version = "1", features = ["full"] }
-tower-http = { version = "0.5", features = ["cors", "trace"] }
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+
+# GraphQL
+async-graphql = { version = "7", features = ["chrono", "uuid"] }
+async-graphql-axum = "7"
 
 # Serialization
 serde = { version = "1", features = ["derive"] }

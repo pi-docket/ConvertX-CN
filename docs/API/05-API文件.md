@@ -1,6 +1,6 @@
 # API 文件
 
-ConvertX-CN 提供選用的 API Server，支援 REST API 介面供第三方程式呼叫。
+ConvertX-CN 提供選用的 API Server，支援 **REST API** 和 **GraphQL API** 介面供第三方程式呼叫。
 
 ---
 
@@ -10,6 +10,7 @@ ConvertX-CN 提供選用的 API Server，支援 REST API 介面供第三方程�
 - [JWT 認證配置](#jwt-認證配置)
 - [認證機制](#認證機制)
 - [REST API 端點](#rest-api-端點)
+- [GraphQL API](#graphql-api)
 - [錯誤碼說明](#錯誤碼說明)
 - [使用範例](#使用範例)
 
@@ -61,10 +62,10 @@ docker compose --profile api up -d
 
 ### 服務端口
 
-| 服務       | 端口 | 說明         |
-| ---------- | ---- | ------------ |
-| Web UI     | 3000 | 網頁介面     |
-| API Server | 7890 | REST API     |
+| 服務       | 端口 | 說明              |
+| ---------- | ---- | ----------------- |
+| Web UI     | 3000 | 網頁介面          |
+| API Server | 7890 | REST & GraphQL API |
 
 ### 環境變數
 
@@ -395,6 +396,163 @@ Content-Type: application/zip
 Content-Disposition: attachment; filename="a1b2c3d4-e5f6-7890-abcd-ef1234567890.zip"
 
 <binary zip data>
+```
+
+---
+
+## GraphQL API
+
+API Server v2.0 新增 GraphQL 支援，提供更靈活的查詢介面。
+
+### Endpoint
+
+```
+http://localhost:7890/graphql
+```
+
+### GraphQL Playground
+
+在瀏覽器中訪問 `http://localhost:7890/graphql` 即可使用內建的 GraphQL Playground。
+
+### Schema
+
+#### Queries
+
+```graphql
+type Query {
+  # 健康檢查
+  health: HealthStatus!
+  
+  # 列出所有引擎
+  engines: [Engine!]!
+  
+  # 取得特定引擎
+  engine(id: String!): Engine
+  
+  # 取得任務狀態
+  job(id: String!): Job
+  
+  # 驗證轉換是否支援
+  validateConversion(engineId: String!, from: String!, to: String!): ValidationResult!
+  
+  # 取得轉換建議
+  suggestions(from: String!, to: String!): [ConversionSuggestion!]!
+}
+```
+
+#### Mutations
+
+```graphql
+type Mutation {
+  # 刪除任務
+  deleteJob(id: ID!): Boolean!
+  
+  # 取消任務（僅限等待中的任務）
+  cancelJob(id: ID!): Boolean!
+}
+```
+
+#### Types
+
+```graphql
+type Engine {
+  id: String!
+  name: String!
+  description: String!
+  enabled: Boolean!
+  inputFormats: [String!]!
+  outputFormats: [String!]!
+  maxFileSizeMb: Int!
+  requiresParams: Boolean!
+}
+
+type Job {
+  id: String!
+  userId: String!
+  originalFilename: String!
+  inputFormat: String!
+  outputFormat: String!
+  engineId: String!
+  status: JobStatus!
+  progress: Int!
+  errorMessage: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  completedAt: DateTime
+  downloadReady: Boolean!
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+type HealthStatus {
+  status: String!
+  version: String!
+  backendStatus: String!
+  timestamp: DateTime!
+}
+
+type ValidationResult {
+  valid: Boolean!
+  message: String!
+  suggestions: [ConversionSuggestion!]!
+}
+
+type ConversionSuggestion {
+  engine: String!
+  engineName: String!
+  from: String!
+  to: String!
+}
+```
+
+### GraphQL 範例
+
+#### 列出所有引擎
+
+```graphql
+query {
+  engines {
+    id
+    name
+    description
+    inputFormats
+    outputFormats
+  }
+}
+```
+
+#### 驗證轉換
+
+```graphql
+query {
+  validateConversion(engineId: "ffmpeg", from: "mp4", to: "webm") {
+    valid
+    message
+    suggestions {
+      engine
+      engineName
+    }
+  }
+}
+```
+
+#### 取得任務狀態
+
+```graphql
+query {
+  job(id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890") {
+    id
+    status
+    progress
+    downloadReady
+    errorMessage
+  }
+}
 ```
 
 ---
