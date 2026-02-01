@@ -138,7 +138,8 @@
   },
   "inference": {
     "smartRecommend": "ការណែនាំឆ្លាតវៃ",
-    "yourFrequentFormat": "ទម្រង់ដែលអ្នកប្រើញឹកញាប់"  },
+    "yourFrequentFormat": "ទម្រង់ដែលអ្នកប្រើញឹកញាប់"
+  },
   "theme": {
     "pickerTitle": "ការបង្ហាញធីម",
     "modeLabel": "លក្ខណៈ",

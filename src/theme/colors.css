@@ -11,23 +11,23 @@
   --text-muted: var(--neutral-500);
   --border-color: var(--neutral-700);
   --border-light: var(--neutral-800);
-  
+
   /* ===== Accent Semantic Tokens ===== */
   --accent-main: var(--accent-500);
   --accent-hover: var(--accent-400);
   --accent-active: var(--accent-600);
   --accent-muted: var(--accent-500);
-  
+
   /* ===== Status Colors ===== */
   --accent-success: oklch(72% 0.19 142);
   --accent-error: oklch(65% 0.2 25);
   --accent-warning: oklch(75% 0.18 85);
   --accent-info: oklch(70% 0.15 250);
-  
+
   /* ===== Gradient Tokens (for gradient themes) ===== */
   --accent-gradient: linear-gradient(135deg, var(--accent-main), var(--accent-hover));
   --accent-gradient-text: var(--accent-main);
-  
+
   /* ===== Glow/Neon Tokens ===== */
   --accent-glow: 0 0 20px color-mix(in oklch, var(--accent-main) 50%, transparent);
   --accent-glow-intense: 0 0 30px color-mix(in oklch, var(--accent-main) 70%, transparent);
@@ -221,18 +221,20 @@
   --accent-600: oklch(55% 0.18 250);
   --accent-500: oklch(65% 0.2 280);
   --accent-400: oklch(72% 0.18 150);
-  --accent-gradient: linear-gradient(135deg, 
-    oklch(65% 0.2 250) 0%, 
-    oklch(62% 0.22 300) 50%, 
+  --accent-gradient: linear-gradient(
+    135deg,
+    oklch(65% 0.2 250) 0%,
+    oklch(62% 0.22 300) 50%,
     oklch(70% 0.2 150) 100%
   );
   --accent-gradient-text: oklch(65% 0.2 280);
 }
 
 :root[data-theme="dark"][data-style="gradient"][data-color="aurora"] {
-  --accent-gradient: linear-gradient(135deg, 
-    oklch(72% 0.18 250) 0%, 
-    oklch(70% 0.2 300) 50%, 
+  --accent-gradient: linear-gradient(
+    135deg,
+    oklch(72% 0.18 250) 0%,
+    oklch(70% 0.2 300) 50%,
     oklch(78% 0.18 150) 100%
   );
   --accent-gradient-text: oklch(72% 0.18 280);
@@ -240,9 +242,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"])[data-style="gradient"][data-color="aurora"] {
-    --accent-gradient: linear-gradient(135deg, 
-      oklch(72% 0.18 250) 0%, 
-      oklch(70% 0.2 300) 50%, 
+    --accent-gradient: linear-gradient(
+      135deg,
+      oklch(72% 0.18 250) 0%,
+      oklch(70% 0.2 300) 50%,
       oklch(78% 0.18 150) 100%
     );
     --accent-gradient-text: oklch(72% 0.18 280);
@@ -254,18 +257,20 @@
   --accent-600: oklch(60% 0.2 50);
   --accent-500: oklch(68% 0.22 350);
   --accent-400: oklch(65% 0.2 300);
-  --accent-gradient: linear-gradient(135deg, 
-    oklch(70% 0.2 50) 0%, 
-    oklch(68% 0.22 350) 50%, 
+  --accent-gradient: linear-gradient(
+    135deg,
+    oklch(70% 0.2 50) 0%,
+    oklch(68% 0.22 350) 50%,
     oklch(62% 0.22 300) 100%
   );
   --accent-gradient-text: oklch(68% 0.2 20);
 }
 
 :root[data-theme="dark"][data-style="gradient"][data-color="sunset"] {
-  --accent-gradient: linear-gradient(135deg, 
-    oklch(78% 0.18 50) 0%, 
-    oklch(75% 0.2 350) 50%, 
+  --accent-gradient: linear-gradient(
+    135deg,
+    oklch(78% 0.18 50) 0%,
+    oklch(75% 0.2 350) 50%,
     oklch(72% 0.19 300) 100%
   );
   --accent-gradient-text: oklch(75% 0.18 20);
@@ -273,9 +278,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"])[data-style="gradient"][data-color="sunset"] {
-    --accent-gradient: linear-gradient(135deg, 
-      oklch(78% 0.18 50) 0%, 
-      oklch(75% 0.2 350) 50%, 
+    --accent-gradient: linear-gradient(
+      135deg,
+      oklch(78% 0.18 50) 0%,
+      oklch(75% 0.2 350) 50%,
       oklch(72% 0.19 300) 100%
     );
     --accent-gradient-text: oklch(75% 0.18 20);
@@ -287,18 +293,20 @@
   --accent-600: oklch(52% 0.15 200);
   --accent-500: oklch(62% 0.18 220);
   --accent-400: oklch(70% 0.2 250);
-  --accent-gradient: linear-gradient(135deg, 
-    oklch(65% 0.15 190) 0%, 
-    oklch(62% 0.18 220) 50%, 
+  --accent-gradient: linear-gradient(
+    135deg,
+    oklch(65% 0.15 190) 0%,
+    oklch(62% 0.18 220) 50%,
     oklch(60% 0.2 250) 100%
   );
   --accent-gradient-text: oklch(62% 0.18 220);
 }
 
 :root[data-theme="dark"][data-style="gradient"][data-color="ocean"] {
-  --accent-gradient: linear-gradient(135deg, 
-    oklch(75% 0.12 190) 0%, 
-    oklch(72% 0.16 220) 50%, 
+  --accent-gradient: linear-gradient(
+    135deg,
+    oklch(75% 0.12 190) 0%,
+    oklch(72% 0.16 220) 50%,
     oklch(70% 0.18 250) 100%
   );
   --accent-gradient-text: oklch(72% 0.16 220);
@@ -306,9 +314,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"])[data-style="gradient"][data-color="ocean"] {
-    --accent-gradient: linear-gradient(135deg, 
-      oklch(75% 0.12 190) 0%, 
-      oklch(72% 0.16 220) 50%, 
+    --accent-gradient: linear-gradient(
+      135deg,
+      oklch(75% 0.12 190) 0%,
+      oklch(72% 0.16 220) 50%,
       oklch(70% 0.18 250) 100%
     );
     --accent-gradient-text: oklch(72% 0.16 220);
@@ -324,11 +333,10 @@
   --accent-600: oklch(70% 0.3 180);
   --accent-500: oklch(80% 0.35 180);
   --accent-400: oklch(88% 0.3 180);
-  --accent-glow: 0 0 15px oklch(80% 0.35 180 / 0.6),
-                 0 0 30px oklch(80% 0.35 180 / 0.3);
-  --accent-glow-intense: 0 0 20px oklch(80% 0.35 180 / 0.8),
-                         0 0 40px oklch(80% 0.35 180 / 0.5),
-                         0 0 60px oklch(80% 0.35 180 / 0.3);
+  --accent-glow: 0 0 15px oklch(80% 0.35 180 / 0.6), 0 0 30px oklch(80% 0.35 180 / 0.3);
+  --accent-glow-intense:
+    0 0 20px oklch(80% 0.35 180 / 0.8), 0 0 40px oklch(80% 0.35 180 / 0.5),
+    0 0 60px oklch(80% 0.35 180 / 0.3);
 }
 
 :root[data-theme="dark"][data-style="neon"][data-color="cyber"],
@@ -344,11 +352,10 @@
   --accent-600: oklch(65% 0.3 330);
   --accent-500: oklch(75% 0.35 330);
   --accent-400: oklch(85% 0.3 330);
-  --accent-glow: 0 0 15px oklch(75% 0.35 330 / 0.6),
-                 0 0 30px oklch(75% 0.35 330 / 0.3);
-  --accent-glow-intense: 0 0 20px oklch(75% 0.35 330 / 0.8),
-                         0 0 40px oklch(75% 0.35 330 / 0.5),
-                         0 0 60px oklch(75% 0.35 330 / 0.3);
+  --accent-glow: 0 0 15px oklch(75% 0.35 330 / 0.6), 0 0 30px oklch(75% 0.35 330 / 0.3);
+  --accent-glow-intense:
+    0 0 20px oklch(75% 0.35 330 / 0.8), 0 0 40px oklch(75% 0.35 330 / 0.5),
+    0 0 60px oklch(75% 0.35 330 / 0.3);
   --neutral-950: oklch(10% 0.02 260);
   --neutral-900: oklch(14% 0.02 260);
   --neutral-800: oklch(18% 0.02 260);
@@ -359,11 +366,10 @@
   --accent-600: oklch(60% 0.28 290);
   --accent-500: oklch(70% 0.32 290);
   --accent-400: oklch(80% 0.28 290);
-  --accent-glow: 0 0 15px oklch(70% 0.32 290 / 0.6),
-                 0 0 30px oklch(70% 0.32 290 / 0.3);
-  --accent-glow-intense: 0 0 20px oklch(70% 0.32 290 / 0.8),
-                         0 0 40px oklch(70% 0.32 290 / 0.5),
-                         0 0 60px oklch(70% 0.32 290 / 0.3);
+  --accent-glow: 0 0 15px oklch(70% 0.32 290 / 0.6), 0 0 30px oklch(70% 0.32 290 / 0.3);
+  --accent-glow-intense:
+    0 0 20px oklch(70% 0.32 290 / 0.8), 0 0 40px oklch(70% 0.32 290 / 0.5),
+    0 0 60px oklch(70% 0.32 290 / 0.3);
   --neutral-950: oklch(10% 0.02 260);
   --neutral-900: oklch(14% 0.02 260);
   --neutral-800: oklch(18% 0.02 260);
@@ -374,7 +380,8 @@
   --accent-600: oklch(65% 0.25 0);
   --accent-500: oklch(75% 0.28 120);
   --accent-400: oklch(80% 0.25 240);
-  --accent-gradient: linear-gradient(90deg,
+  --accent-gradient: linear-gradient(
+    90deg,
     oklch(75% 0.28 0) 0%,
     oklch(75% 0.28 60) 17%,
     oklch(75% 0.28 120) 33%,
@@ -384,8 +391,7 @@
     oklch(75% 0.28 360) 100%
   );
   --accent-glow: 0 0 15px oklch(75% 0.28 180 / 0.5);
-  --accent-glow-intense: 0 0 20px oklch(80% 0.3 180 / 0.7),
-                         0 0 40px oklch(75% 0.28 180 / 0.4);
+  --accent-glow-intense: 0 0 20px oklch(80% 0.3 180 / 0.7), 0 0 40px oklch(75% 0.28 180 / 0.4);
   --neutral-950: oklch(10% 0.02 260);
   --neutral-900: oklch(14% 0.02 260);
   --neutral-800: oklch(18% 0.02 260);
@@ -425,7 +431,9 @@
 :root[data-style="gradient"] .btn-gradient,
 :root[data-style="gradient"] .btn-primary {
   background: var(--accent-gradient);
-  transition: filter 0.2s ease, transform 0.1s ease;
+  transition:
+    filter 0.2s ease,
+    transform 0.1s ease;
 }
 
 :root[data-style="gradient"] .btn-gradient:hover,
@@ -440,7 +448,9 @@
   border: 2px solid var(--accent-500);
   color: var(--accent-500);
   box-shadow: var(--accent-glow);
-  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
 
 :root[data-style="neon"] .btn-neon:hover,
@@ -470,8 +480,7 @@
 :root[data-style="gradient"] .header-gradient {
   background: var(--neutral-900);
   border-bottom: 2px solid transparent;
-  background-image: linear-gradient(var(--neutral-900), var(--neutral-900)), 
-                    var(--accent-gradient);
+  background-image: linear-gradient(var(--neutral-900), var(--neutral-900)), var(--accent-gradient);
   background-origin: padding-box, border-box;
   background-clip: padding-box, border-box;
 }

@@ -55,7 +55,8 @@
     "neon-purple": { hue: 290, chroma: 0.32, glow: true },
     "neon-green": { hue: 150, chroma: 0.35, glow: true },
     rainbow: {
-      gradient: "linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff)",
+      gradient:
+        "linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff)",
       primary: { hue: 0, chroma: 0.3 },
       animated: true,
     },
@@ -118,7 +119,7 @@
 
     updateModeButtons();
     updateThemeIcons();
-    
+
     // Re-apply color for correct lightness
     applyColor(getStoredColor());
 
@@ -130,7 +131,11 @@
     const { id, category, customHue, customChroma } = colorData;
     const isDark = getEffectiveMode() === "dark";
 
-    let hue, chroma, gradient = null, glow = false, animated = false;
+    let hue,
+      chroma,
+      gradient = null,
+      glow = false,
+      animated = false;
 
     // Determine color values based on category
     if (category === "custom" && customHue !== undefined) {
@@ -285,9 +290,15 @@
     if (max !== min) {
       const d = max - min;
       switch (max) {
-        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-        case g: h = ((b - r) / d + 2) / 6; break;
-        case b: h = ((r - g) / d + 4) / 6; break;
+        case r:
+          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+          break;
+        case g:
+          h = ((b - r) / d + 2) / 6;
+          break;
+        case b:
+          h = ((r - g) / d + 4) / 6;
+          break;
       }
     }
     return Math.round(h * 360);
@@ -296,7 +307,7 @@
   function toggleDropdown() {
     const dropdown = document.getElementById("theme-dropdown");
     if (!dropdown) return;
-    
+
     const isHidden = dropdown.classList.contains("hidden");
     if (isHidden) {
       dropdown.classList.remove("hidden");
@@ -345,7 +356,8 @@
 
     // Quick apply color
     const { id, category, customHue, customChroma } = colorData;
-    let hue = 131, chroma = 0.2;
+    let hue = 131,
+      chroma = 0.2;
 
     if (category === "custom" && customHue) {
       hue = customHue;
@@ -361,7 +373,8 @@
       chroma = VIVID_COLORS[id].chroma || VIVID_COLORS[id].primary?.chroma || 0.35;
     }
 
-    const isDark = mode === "dark" || (!mode && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const isDark =
+      mode === "dark" || (!mode && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
     if (isDark) {
       root.style.setProperty("--accent-600", `oklch(64% ${chroma} ${hue})`);
