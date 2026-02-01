@@ -45,8 +45,9 @@ export default defineConfig(
           printWidth: 100,
         },
       ],
-      // 關閉未註冊 class 的檢查，因為專案使用了很多自訂 class
+      // 關閉未註冊/未知 class 的檢查，因為專案使用了很多自訂 class
       "better-tailwindcss/no-unregistered-classes": "off",
+      "better-tailwindcss/no-unknown-classes": "off",
     },
   },
   {
