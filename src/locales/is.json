@@ -108,6 +108,27 @@
   "settings": {
     "title": "Stillingar",
     "otherLlmApiKey": "Annar LLM API-lykil",
-    "updateButton": "Update"
+    "updateButton": "Update",
+    "processingMode": "Vinnslustilling",
+    "mineruProcessingMode": "MinerU vinnslustilling",
+    "pipelineMode": "Pipeline Lite",
+    "pipelineModeDesc": "Stable, compatible with all environments",
+    "vlmMode": "VLM-stilling",
+    "vlmModeDesc": "Higher quality output",
+    "apiKeysSection": "API Keys",
+    "vlmStatusAvailable": "VLM service available",
+    "vlmStatusUnavailable": "VLM service not detected",
+    "vlmRequirement": "Requires local llama-server",
+    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
+    "effectiveMode": "Active",
+    "pipelineEngine": "Uses MinerU Pipeline OCR engine",
+    "vlmEngine": "Uses MinerU VLM inference engine",
+    "updateSuccess": "Settings saved",
+    "updateError": "Failed to save settings",
+    "updating": "Saving..."
+  },
+  "inference": {
+    "smartRecommend": "Snjöll tillaga",
+    "yourFrequentFormat": "Tíðasta sniðið þitt"
   }
 }

@@ -108,6 +108,27 @@
   "settings": {
     "title": "Inställningar",
     "otherLlmApiKey": "Annan LLM API-nyckel",
-    "updateButton": "Update"
+    "updateButton": "Update",
+    "processingMode": "Bearbetningsläge",
+    "mineruProcessingMode": "MinerU-bearbetningsläge",
+    "pipelineMode": "Pipeline Lite",
+    "pipelineModeDesc": "Stable, compatible with all environments",
+    "vlmMode": "VLM-läge",
+    "vlmModeDesc": "Higher quality output",
+    "apiKeysSection": "API Keys",
+    "vlmStatusAvailable": "VLM service available",
+    "vlmStatusUnavailable": "VLM service not detected",
+    "vlmRequirement": "Requires local llama-server",
+    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
+    "effectiveMode": "Active",
+    "pipelineEngine": "Uses MinerU Pipeline OCR engine",
+    "vlmEngine": "Uses MinerU VLM inference engine",
+    "updateSuccess": "Settings saved",
+    "updateError": "Failed to save settings",
+    "updating": "Saving..."
+  },
+  "inference": {
+    "smartRecommend": "Smart rekommendation",
+    "yourFrequentFormat": "Ditt frekventa format"
   }
 }

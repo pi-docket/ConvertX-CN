@@ -5,6 +5,13 @@ import db from "../db/db";
 import { User } from "../db/types";
 import { ACCOUNT_REGISTRATION, ALLOW_UNAUTHENTICATED, HIDE_HISTORY, WEBROOT } from "../helpers/env";
 import { API_KEY_NAMES, getUserApiKey, getApiKeys } from "../helpers/apiKeys";
+import {
+  getUserProcessingMode,
+  setUserProcessingMode,
+  checkVlmAvailability,
+  getEffectiveProcessingMode,
+  type ProcessingMode,
+} from "../helpers/processingMode";
 import { localeService } from "../i18n/service";
 import { userService } from "./user";
 
@@ -60,6 +67,15 @@ export const settings = new Elysia()
       const deepseekKey = getUserApiKey(userId, API_KEY_NAMES.DEEPSEEK);
       const otherLlmKey = getUserApiKey(userId, API_KEY_NAMES.OTHER_LLM);
 
+      // 取得使用者的處理模式設定
+      const processingMode = getUserProcessingMode(userId);
+
+      // 檢查 VLM 可用性
+      const vlmStatus = await checkVlmAvailability();
+
+      // 取得有效的處理模式（考慮自動回退）
+      const effectiveMode = await getEffectiveProcessingMode(userId);
+
       return (
         <BaseHtml webroot={WEBROOT} title="ConvertX-CN | Settings" locale={locale}>
           <>
@@ -82,51 +98,157 @@ export const settings = new Elysia()
                 <header class="mb-6 text-xl font-bold" safe>
                   {t("settings", "title")}
                 </header>
-                <form id="api-keys-form" method="post" class="flex flex-col gap-4">
-                  {/* OpenAI API Key */}
-                  <label class="flex flex-col gap-1">
-                    <span class="text-sm text-neutral-300">OpenAI API Key</span>
-                    <input
-                      type="password"
-                      name="openai_api_key"
-                      class="rounded-sm bg-neutral-800 p-3"
-                      placeholder="sk-..."
-                      value={openaiKey}
-                    />
-                  </label>
+                <form id="api-keys-form" class="flex flex-col gap-6" onsubmit="return false;">
+                  {/* API Keys Section */}
+                  <section class="flex flex-col gap-4">
+                    <h2 class="text-sm font-medium text-neutral-400" safe>
+                      {t("settings", "apiKeysSection")}
+                    </h2>
 
-                  {/* DeepSeek API Key */}
-                  <label class="flex flex-col gap-1">
-                    <span class="text-sm text-neutral-300">DeepSeek API Key</span>
-                    <input
-                      type="password"
-                      name="deepseek_api_key"
-                      class="rounded-sm bg-neutral-800 p-3"
-                      placeholder="sk-..."
-                      value={deepseekKey}
-                    />
-                  </label>
+                    {/* OpenAI API Key */}
+                    <label class="flex flex-col gap-1">
+                      <span class="text-sm text-neutral-300">OpenAI API Key</span>
+                      <input
+                        type="password"
+                        name="openai_api_key"
+                        class="rounded-sm bg-neutral-800 p-3"
+                        placeholder="sk-..."
+                        value={openaiKey}
+                      />
+                    </label>
 
-                  {/* Other LLM API Key */}
-                  <label class="flex flex-col gap-1">
-                    <span class="text-sm text-neutral-300" safe>
-                      {t("settings", "otherLlmApiKey")}
-                    </span>
-                    <input
-                      type="password"
-                      name="other_llm_api_key"
-                      class="rounded-sm bg-neutral-800 p-3"
-                      placeholder="..."
-                      value={otherLlmKey}
-                    />
-                  </label>
+                    {/* DeepSeek API Key */}
+                    <label class="flex flex-col gap-1">
+                      <span class="text-sm text-neutral-300">DeepSeek API Key</span>
+                      <input
+                        type="password"
+                        name="deepseek_api_key"
+                        class="rounded-sm bg-neutral-800 p-3"
+                        placeholder="sk-..."
+                        value={deepseekKey}
+                      />
+                    </label>
 
-                  <div id="settings-message" class="hidden rounded-sm p-3 text-center"></div>
-                  <div role="group" class="mt-2">
+                    {/* Other LLM API Key */}
+                    <label class="flex flex-col gap-1">
+                      <span class="text-sm text-neutral-300" safe>
+                        {t("settings", "otherLlmApiKey")}
+                      </span>
+                      <input
+                        type="password"
+                        name="other_llm_api_key"
+                        class="rounded-sm bg-neutral-800 p-3"
+                        placeholder="..."
+                        value={otherLlmKey}
+                      />
+                    </label>
+                  </section>
+
+                  {/* Processing Mode Section */}
+                  <section class="flex flex-col gap-3 border-t border-neutral-800 pt-6">
+                    <div class="flex items-center justify-between">
+                      <h2 class="text-sm font-medium text-neutral-400" safe>
+                        {t("settings", "mineruProcessingMode")}
+                      </h2>
+                      {/* Effective mode indicator */}
+                      <span class="text-xs text-neutral-500">
+                        <span safe>{t("settings", "effectiveMode")}</span>:{" "}
+                        <span class="font-medium text-neutral-300">
+                          {effectiveMode.mode === "pipeline" ? "Pipeline" : "VLM"}
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Fallback notice - only show when VLM is selected but unavailable */}
+                    {effectiveMode.isAutoFallback && (
+                      <div class="rounded-md bg-neutral-800/30 px-3 py-2 text-xs text-neutral-500">
+                        <span safe>{t("settings", "vlmFallbackActive")}</span>
+                      </div>
+                    )}
+
+                    <div class="flex flex-col gap-2">
+                      {/* Pipeline Lite Option */}
+                      <label
+                        class={`
+                          flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors
+                          ${effectiveMode.mode === "pipeline" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
+                        `}
+                      >
+                        <input
+                          type="radio"
+                          name="processing_mode"
+                          value="pipeline"
+                          checked={processingMode === "pipeline"}
+                          class="mt-0.5 h-4 w-4 accent-neutral-400"
+                        />
+                        <div class="flex flex-col gap-0.5">
+                          <span class="text-sm font-medium text-neutral-200" safe>
+                            {t("settings", "pipelineMode")}
+                          </span>
+                          <span class="text-xs text-neutral-500" safe>
+                            {t("settings", "pipelineModeDesc")}
+                          </span>
+                          <span class="mt-0.5 text-xs text-neutral-600" safe>
+                            {t("settings", "pipelineEngine")}
+                          </span>
+                        </div>
+                      </label>
+
+                      {/* VLM Option */}
+                      <label
+                        class={`
+                          flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors
+                          ${effectiveMode.mode === "vlm" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
+                        `}
+                      >
+                        <input
+                          type="radio"
+                          name="processing_mode"
+                          value="vlm"
+                          checked={processingMode === "vlm"}
+                          class="mt-0.5 h-4 w-4 accent-neutral-400"
+                        />
+                        <div class="flex flex-col gap-0.5">
+                          <span class="text-sm font-medium text-neutral-200" safe>
+                            {t("settings", "vlmMode")}
+                          </span>
+                          <span class="text-xs text-neutral-500" safe>
+                            {t("settings", "vlmModeDesc")}
+                          </span>
+                          <span class="mt-0.5 text-xs text-neutral-600" safe>
+                            {t("settings", "vlmEngine")}
+                          </span>
+                          {/* VLM Status - subtle inline indicator */}
+                          <span
+                            class={`
+                              mt-1 text-xs
+                              ${vlmStatus.available ? "text-neutral-500" : "text-neutral-600"}
+                            `}
+                            safe
+                          >
+                            {vlmStatus.available
+                              ? t("settings", "vlmStatusAvailable")
+                              : t("settings", "vlmStatusUnavailable")}
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </section>
+
+                  {/* Submit section with inline status */}
+                  <div class="flex flex-col gap-3 border-t border-neutral-800 pt-6">
+                    {/* Inline status message - appears above button */}
+                    <div
+                      id="settings-status"
+                      class="hidden rounded-md px-4 py-2 text-center text-sm transition-all"
+                      data-success={t("settings", "updateSuccess")}
+                      data-error={t("settings", "updateError")}
+                      data-updating={t("settings", "updating")}
+                    />
                     <input
                       type="submit"
                       value={t("settings", "updateButton")}
-                      class="w-full btn-primary"
+                      class="w-full btn-primary cursor-pointer py-3 text-base font-medium"
                     />
                   </div>
                 </form>
@@ -168,14 +290,21 @@ export const settings = new Elysia()
         saveUserApiKey(userId, API_KEY_NAMES.OTHER_LLM, body.other_llm_api_key);
       }
 
+      // 儲存處理模式設定
+      if (body.processing_mode !== undefined) {
+        const mode = body.processing_mode === "vlm" ? "vlm" : "pipeline";
+        setUserProcessingMode(userId, mode as ProcessingMode);
+      }
+
       set.status = 200;
-      return { success: true, message: "API Keys updated successfully." };
+      return { success: true, message: "Settings updated successfully." };
     },
     {
       body: t.Object({
         openai_api_key: t.Optional(t.String()),
         deepseek_api_key: t.Optional(t.String()),
         other_llm_api_key: t.Optional(t.String()),
+        processing_mode: t.Optional(t.String()),
       }),
       cookie: "session",
     },

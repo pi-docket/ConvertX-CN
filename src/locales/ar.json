@@ -108,6 +108,27 @@
   "settings": {
     "title": "الإعدادات",
     "otherLlmApiKey": "مفتاح API آخر لـ LLM",
-    "updateButton": "تحديث"
+    "updateButton": "تحديث",
+    "processingMode": "وضع المعالجة",
+    "mineruProcessingMode": "وضع معالجة MinerU",
+    "pipelineMode": "Pipeline Lite",
+    "pipelineModeDesc": "مستقر، متوافق مع جميع البيئات",
+    "vlmMode": "وضع VLM",
+    "vlmModeDesc": "مخرجات أعلى جودة",
+    "apiKeysSection": "مفاتيح API",
+    "vlmStatusAvailable": "خدمة VLM متاحة",
+    "vlmStatusUnavailable": "خدمة VLM غير مكتشفة",
+    "vlmRequirement": "يتطلب llama-server محلي",
+    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
+    "effectiveMode": "Active",
+    "pipelineEngine": "Uses MinerU Pipeline OCR engine",
+    "vlmEngine": "Uses MinerU VLM inference engine",
+    "updateSuccess": "Settings saved",
+    "updateError": "Failed to save settings",
+    "updating": "Saving..."
+  },
+  "inference": {
+    "smartRecommend": "توصية ذكية",
+    "yourFrequentFormat": "التنسيق المستخدم بكثرة"
   }
 }

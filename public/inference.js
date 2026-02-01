@@ -10,6 +10,25 @@
 // @ts-check
 
 /**
+ * @typedef {function(string, string, Object=): string} TranslateFunction
+ */
+
+/**
+ * 安全取得翻譯函數
+ * @param {string} category
+ * @param {string} key
+ * @returns {string|null}
+ */
+function safeTranslate(category, key) {
+  // @ts-ignore - window.t is defined by i18n.js
+  if (typeof window.t === "function") {
+    // @ts-ignore
+    return window.t(category, key);
+  }
+  return null;
+}
+
+/**
  * @typedef {Object} FormatPrediction
  * @property {string} search_token - 預測的搜尋 token (用於 prefix matching)
  * @property {number} confidence - 預測信心度 (0-1)
@@ -125,9 +144,9 @@ async function cancelWarmup() {
  * UI 行為完全等同使用者手動輸入，但會顯示視覺提示
  * @param {string} token - 推斷的 search token
  * @param {string} [engine] - 推斷的引擎
- * @param {boolean} [isColdStart] - 是否為 Cold Start 預測
+ * @param {boolean} [isColdStart=false] - 是否為 Cold Start 預測
  */
-function autoFillInferredFormat(token, engine, isColdStart) {
+function autoFillInferredFormat(token, engine, isColdStart = false) {
   /** @type {HTMLInputElement|null} */
   const searchInput = document.querySelector("input[name='convert_to_search']");
   const convertToPopup = document.querySelector(".convert_to_popup");
@@ -154,7 +173,9 @@ function autoFillInferredFormat(token, engine, isColdStart) {
   searchInput.setAttribute("data-inference-source", isColdStart ? "cold-start" : "learned");
 
   // 顯示提示訊息（如果有 toast 系統的話）
-  const mode = isColdStart ? "智慧推薦" : "根據您的習慣";
+  const mode = isColdStart
+    ? safeTranslate("inference", "smartRecommend") || "Smart Recommend"
+    : safeTranslate("inference", "yourFrequentFormat") || "Your frequent format";
   console.log(`🎯 ${mode}: ${token}${engine ? ` (引擎: ${engine})` : ""}`);
 
   // 在搜尋框旁顯示小提示
@@ -203,9 +224,9 @@ function handleManualInput() {
  * 顯示推斷提示
  * @param {HTMLInputElement} searchInput
  * @param {string} token
- * @param {boolean} isColdStart
+ * @param {boolean} [isColdStart=false]
  */
-function showInferenceHint(searchInput, token, isColdStart) {
+function showInferenceHint(searchInput, token, isColdStart = false) {
   // 移除舊的提示
   removeInferenceHint();
 
@@ -213,10 +234,13 @@ function showInferenceHint(searchInput, token, isColdStart) {
   const hint = document.createElement("div");
   hint.id = "inference-hint";
   hint.className = "inference-hint";
+  const hintLabel = isColdStart
+    ? safeTranslate("inference", "smartRecommend") || "Smart Recommend"
+    : safeTranslate("inference", "yourFrequentFormat") || "Your frequent format";
   hint.innerHTML = `
     <span class="inference-hint-icon">✨</span>
-    <span class="inference-hint-text">${isColdStart ? "智慧推薦" : "您常用的格式"}: <strong>${token.toUpperCase()}</strong></span>
-    <button class="inference-hint-dismiss" title="清除建議">✕</button>
+    <span class="inference-hint-text">${hintLabel}: <strong>${token.toUpperCase()}</strong></span>
+    <button class="inference-hint-dismiss" title="✕">✕</button>
   `;
 
   // 插入到搜尋欄後面
@@ -226,10 +250,16 @@ function showInferenceHint(searchInput, token, isColdStart) {
   const dismissBtn = hint.querySelector(".inference-hint-dismiss");
   if (dismissBtn) {
     dismissBtn.addEventListener("click", () => {
-      // @ts-expect-error - fileType is set by script.js
+      // @ts-ignore - fileType is set by script.js
       const fileType = window.fileType || "";
       handleSearchClear(fileType);
       searchInput.value = "";
+
+      // 🔧 關鍵修復：觸發 input 事件以同步過濾狀態
+      // 這會讓 script.js 中的 showMatching("") 被呼叫，重置格式清單為「顯示全部」
+      const inputEvent = new Event("input", { bubbles: true });
+      searchInput.dispatchEvent(inputEvent);
+
       searchInput.focus();
     });
   }
@@ -361,7 +391,7 @@ function initInferenceModule() {
   if (searchInput) {
     // 監聯清除事件
     searchInput.addEventListener("search", () => {
-      // @ts-expect-error - fileType is set by script.js
+      // @ts-ignore - fileType is set by script.js
       const fileType = window.fileType || "";
       handleSearchClear(fileType);
     });

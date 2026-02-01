@@ -668,7 +668,7 @@ RUN set -ex && \
   else \
   echo "📦 安裝 llama.cpp (${LLAMA_CPP_VERSION})..." && \
   apt-get update && apt-get install -y --no-install-recommends \
-  build-essential cmake && \
+  build-essential cmake libcurl4-openssl-dev && \
   cd /tmp && \
   curl -fsSL -o llama.cpp.tar.gz \
   "https://github.com/ggml-org/llama.cpp/archive/refs/tags/${LLAMA_CPP_VERSION}.tar.gz" && \
@@ -679,16 +679,27 @@ RUN set -ex && \
   -DGGML_METAL=OFF \
   -DGGML_BLAS=OFF \
   -DLLAMA_SERVER=ON \
+  -DLLAMA_CURL=ON \
   -DCMAKE_BUILD_TYPE=Release && \
   cmake --build build --config Release -j $(nproc) --target llama-server && \
+  # 驗證編譯產物存在
+  if [ ! -f "build/bin/llama-server" ]; then \
+  echo "❌ llama-server 編譯失敗：找不到 build/bin/llama-server" && exit 1; \
+  fi && \
   cp build/bin/llama-server /usr/local/bin/ && \
   chmod +x /usr/local/bin/llama-server && \
+  # 驗證安裝成功
+  if ! /usr/local/bin/llama-server --version 2>&1; then \
+  echo "⚠️ llama-server 無法執行，檢查動態庫依賴..." && \
+  ldd /usr/local/bin/llama-server || true; \
+  fi && \
   cd / && rm -rf /tmp/llama.cpp* && \
   apt-get purge -y build-essential cmake && \
   apt-get autoremove -y && \
   rm -rf /var/lib/apt/lists/* && \
   echo "✅ llama.cpp 安裝完成" && \
-  llama-server --version || echo "llama-server installed"; \
+  echo "   路徑: $(which llama-server)" && \
+  echo "   版本: $(llama-server --version 2>&1 | head -1 || echo 'N/A')"; \
   fi
 
 # 6.12 tiktoken
@@ -870,6 +881,15 @@ RUN echo "======================================" && \
   cat /root/mineru.json; \
   else \
   echo "  ❌ mineru.json 不存在" && VALIDATION_PASSED=false; \
+  fi && \
+  # 驗證 llama-server（VLM 推理引擎）
+  echo "🔍 驗證 llama-server..." && \
+  if command -v llama-server >/dev/null 2>&1; then \
+  echo "  ✅ llama-server: $(which llama-server)"; \
+  LLAMA_VERSION=$(llama-server --version 2>&1 | head -1 || echo "version unknown"); \
+  echo "     Version: ${LLAMA_VERSION}"; \
+  else \
+  echo "  ⚠️ llama-server 未安裝（VLM 模式將不可用）"; \
   fi; \
   else \
   echo "  ⚠️ ARM64：跳過 MinerU 驗證"; \

@@ -108,6 +108,27 @@
   "settings": {
     "title": "設定",
     "otherLlmApiKey": "その他のLLM APIキー",
-    "updateButton": "更新"
+    "updateButton": "更新",
+    "processingMode": "処理モード",
+    "mineruProcessingMode": "MinerU 処理モード",
+    "pipelineMode": "Pipeline Lite",
+    "pipelineModeDesc": "安定、すべての環境と互換性あり",
+    "vlmMode": "VLMモード",
+    "vlmModeDesc": "より高品質な出力",
+    "apiKeysSection": "API キー",
+    "vlmStatusAvailable": "VLM サービス利用可能",
+    "vlmStatusUnavailable": "VLM サービスが検出されません",
+    "vlmRequirement": "ローカル llama-server が必要",
+    "vlmFallbackActive": "VLM が利用できないため、Pipeline モードに切り替えました",
+    "effectiveMode": "有効",
+    "pipelineEngine": "MinerU Pipeline OCR エンジンを使用",
+    "vlmEngine": "MinerU VLM 推論エンジンを使用",
+    "updateSuccess": "設定を保存しました",
+    "updateError": "設定の保存に失敗しました",
+    "updating": "保存中..."
+  },
+  "inference": {
+    "smartRecommend": "スマート推薦",
+    "yourFrequentFormat": "よく使う形式"
   }
 }

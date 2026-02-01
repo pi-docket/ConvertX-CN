@@ -108,6 +108,27 @@
   "settings": {
     "title": "Mga Setting",
     "otherLlmApiKey": "Ibang LLM API Key",
-    "updateButton": "Update"
+    "updateButton": "Update",
+    "processingMode": "Mode ng Pagproseso",
+    "mineruProcessingMode": "Mode ng Pagproseso ng MinerU",
+    "pipelineMode": "Pipeline Lite",
+    "pipelineModeDesc": "Stable, compatible with all environments",
+    "vlmMode": "VLM Mode",
+    "vlmModeDesc": "Higher quality output",
+    "apiKeysSection": "API Keys",
+    "vlmStatusAvailable": "VLM service available",
+    "vlmStatusUnavailable": "VLM service not detected",
+    "vlmRequirement": "Requires local llama-server",
+    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
+    "effectiveMode": "Active",
+    "pipelineEngine": "Uses MinerU Pipeline OCR engine",
+    "vlmEngine": "Uses MinerU VLM inference engine",
+    "updateSuccess": "Settings saved",
+    "updateError": "Failed to save settings",
+    "updating": "Saving..."
+  },
+  "inference": {
+    "smartRecommend": "Matalinong Rekomendasyon",
+    "yourFrequentFormat": "Iyong madalas na format"
   }
 }

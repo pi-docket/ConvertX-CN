@@ -5,8 +5,8 @@
 #
 # 📦 說明：
 #   此腳本作為 Docker 容器的入口點
-#   1. 檢查並啟動 llama.cpp server（背景運行）
-#   2. 等待 server 就緒
+#   1. 根據使用者設定決定是否啟動 llama.cpp server
+#   2. 等待 server 就緒（如果需要）
 #   3. 啟動主應用程式
 #
 # 📌 環境變數：
@@ -29,6 +29,8 @@ log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 log_success() { echo -e "${GREEN}[OK]${NC} $1"; }
 log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+log_config() { echo -e "${GREEN}[CONFIG]${NC} $1"; }
+log_backend() { echo -e "${BLUE}[BACKEND]${NC} $1"; }
 
 # ==============================================================================
 # VLM Server 啟動邏輯
@@ -39,47 +41,54 @@ start_vlm_server() {
     local MODEL="${VLM_GGUF_MODEL:-/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.Q6_K.gguf}"
     local MMPROJ="${VLM_GGUF_MMPROJ:-/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf}"
     
-    # 檢查是否應該啟動
+    # 檢查是否應該跳過
     if [ "${SKIP_LLAMA_SERVER}" = "1" ]; then
-        log_warn "SKIP_LLAMA_SERVER=1，跳過 llama.cpp server"
+        log_config "SKIP_LLAMA_SERVER=1，跳過 llama.cpp server"
         return 0
     fi
     
-    # 檢查後端設定
+    # 只有當明確設定為 VLM 模式時才嘗試啟動
     if [ "${MINERU_BACKEND}" != "vlm-http-client" ] && [ "${MINERU_BACKEND}" != "hybrid-http-client" ]; then
-        log_info "MINERU_BACKEND=${MINERU_BACKEND}，不需要 llama.cpp server"
+        log_config "模式：${MINERU_BACKEND:-pipeline}"
+        log_backend "使用 pipeline 模式（穩定，不需要 VLM）"
         return 0
     fi
     
-    # 檢查 llama-server 是否可用
+    # 使用者選擇了 VLM 模式
+    log_info "MinerU 後端：vlm-http-client"
+    log_info "VLM URL：http://${HOST}:${PORT}/v1"
+    
+    # 檢查 llama-server 是否安裝
     if ! command -v llama-server &> /dev/null; then
         log_error "llama-server 未安裝"
-        log_warn "回退到 pipeline 模式"
-        export MINERU_BACKEND="pipeline"
-        unset MINERU_VLM_URL
-        return 0
+        log_info "  預期路徑：/usr/local/bin/llama-server"
+        log_info "  PATH：$PATH"
+        # 檢查檔案是否存在但不在 PATH 中
+        if [ -f "/usr/local/bin/llama-server" ]; then
+            log_info "  檔案存在但無法執行，檢查權限和依賴..."
+            ls -la /usr/local/bin/llama-server
+            ldd /usr/local/bin/llama-server 2>&1 || true
+        fi
+        export VLM_AVAILABLE="false"
+        return 1
     fi
     
     # 檢查模型檔案
     if [ ! -f "$MODEL" ]; then
-        log_error "找不到 VLM 主模型：$MODEL"
-        log_warn "回退到 pipeline 模式"
-        export MINERU_BACKEND="pipeline"
-        unset MINERU_VLM_URL
-        return 0
+        log_error "VLM 模型不存在：$MODEL"
+        export VLM_AVAILABLE="false"
+        return 1
     fi
     
     if [ ! -f "$MMPROJ" ]; then
-        log_error "找不到視覺投影器：$MMPROJ"
-        log_warn "回退到 pipeline 模式"
-        export MINERU_BACKEND="pipeline"
-        unset MINERU_VLM_URL
-        return 0
+        log_error "VLM 投影器模型不存在：$MMPROJ"
+        export VLM_AVAILABLE="false"
+        return 1
     fi
     
-    log_info "啟動 llama.cpp VLM server..."
-    log_info "  主模型：$(basename $MODEL)"
-    log_info "  視覺投影器：$(basename $MMPROJ)"
+    log_backend "啟動 llama.cpp VLM server..."
+    log_info "  模型：$(basename $MODEL)"
+    log_info "  投影器：$(basename $MMPROJ)"
     log_info "  監聽：$HOST:$PORT"
     
     # 背景啟動 llama.cpp server
@@ -102,17 +111,16 @@ start_vlm_server() {
     
     while [ $WAITED -lt $MAX_WAIT ]; do
         if curl -s "http://$HOST:$PORT/health" > /dev/null 2>&1; then
-            log_success "llama.cpp server 已就緒 (http://$HOST:$PORT)"
+            log_success "llama.cpp server 就緒 (http://$HOST:$PORT)"
+            export VLM_AVAILABLE="true"
             return 0
         fi
         
         # 檢查進程是否還在運行
         if ! kill -0 $LLAMA_PID 2>/dev/null; then
             log_error "llama.cpp server 啟動失敗"
-            log_warn "回退到 pipeline 模式"
-            export MINERU_BACKEND="pipeline"
-            unset MINERU_VLM_URL
-            return 0
+            export VLM_AVAILABLE="false"
+            return 1
         fi
         
         sleep 1
@@ -123,13 +131,12 @@ start_vlm_server() {
         fi
     done
     
-    log_error "llama.cpp server 啟動超時（${MAX_WAIT}s）"
-    log_warn "回退到 pipeline 模式"
-    export MINERU_BACKEND="pipeline"
-    unset MINERU_VLM_URL
+    log_error "llama.cpp server 啟動逾時 (${MAX_WAIT}s)"
+    export VLM_AVAILABLE="false"
     
     # 嘗試終止殭屍進程
     kill $LLAMA_PID 2>/dev/null || true
+    return 1
 }
 
 # ==============================================================================
@@ -141,15 +148,23 @@ main() {
     echo "=============================================="
     echo ""
     
-    # 顯示配置
-    log_info "MinerU 後端：${MINERU_BACKEND:-pipeline}"
-    log_info "VLM URL：${MINERU_VLM_URL:-未設定}"
+    # 顯示配置（預設為 pipeline）
+    local CONFIGURED_MODE="${MINERU_BACKEND:-pipeline}"
+    log_config "設定模式：${CONFIGURED_MODE}"
     
-    # 啟動 VLM server（如果需要）
-    start_vlm_server
+    # 嘗試啟動 VLM server（只有當設定為 VLM 模式時才會實際啟動）
+    if start_vlm_server; then
+        log_backend "後端就緒：${MINERU_BACKEND:-pipeline}"
+    else
+        # VLM 啟動失敗，自動回退到 pipeline 模式
+        log_warn "回退到 pipeline 模式"
+        export MINERU_BACKEND="pipeline"
+        export VLM_AVAILABLE="false"
+        export VLM_FALLBACK="true"
+    fi
     
     echo ""
-    log_info "最終後端設定：${MINERU_BACKEND}"
+    log_info "最終後端設定：${MINERU_BACKEND:-pipeline}"
     echo ""
     
     # 啟動主應用程式

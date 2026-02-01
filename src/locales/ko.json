@@ -108,6 +108,27 @@
   "settings": {
     "title": "설정",
     "otherLlmApiKey": "기타 LLM API 키",
-    "updateButton": "업데이트"
+    "updateButton": "업데이트",
+    "processingMode": "처리 모드",
+    "mineruProcessingMode": "MinerU 처리 모드",
+    "pipelineMode": "Pipeline Lite",
+    "pipelineModeDesc": "안정적, 모든 환경과 호환",
+    "vlmMode": "VLM 모드",
+    "vlmModeDesc": "더 높은 품질 출력",
+    "apiKeysSection": "API 키",
+    "vlmStatusAvailable": "VLM 서비스 사용 가능",
+    "vlmStatusUnavailable": "VLM 서비스가 감지되지 않음",
+    "vlmRequirement": "로컬 llama-server 필요",
+    "vlmFallbackActive": "VLM을 사용할 수 없어 Pipeline 모드로 전환됨",
+    "effectiveMode": "활성",
+    "pipelineEngine": "MinerU Pipeline OCR 엔진 사용",
+    "vlmEngine": "MinerU VLM 추론 엔진 사용",
+    "updateSuccess": "설정이 저장되었습니다",
+    "updateError": "설정 저장에 실패했습니다",
+    "updating": "저장 중..."
+  },
+  "inference": {
+    "smartRecommend": "스마트 추천",
+    "yourFrequentFormat": "자주 사용하는 형식"
   }
 }
