@@ -106,9 +106,9 @@ export const BaseHtml = ({
       <link rel="icon" type="image/png" sizes="16x16" href={`${webroot}/favicon-16x16.png`} />
       <link rel="manifest" href={`${webroot}/site.webmanifest`} />
       <script>{`window.__TRANSLATIONS__ = ${JSON.stringify(getTranslations(locale))};`}</script>
+      <script src={`${webroot}/theme.js`} />
       <script src={`${webroot}/i18n.js`} defer />
       <script src={`${webroot}/inference.js`} defer />
-      <script src={`${webroot}/theme.js`} />
     </head>
     <body class={`flex min-h-screen w-full flex-col bg-neutral-900 text-neutral-200`}>
       {children}

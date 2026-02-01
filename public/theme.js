@@ -306,23 +306,28 @@
 
   function toggleDropdown() {
     const dropdown = document.getElementById("theme-dropdown");
+    const toggle = document.getElementById("theme-toggle");
     if (!dropdown) return;
 
     const isHidden = dropdown.classList.contains("hidden");
     if (isHidden) {
       dropdown.classList.remove("hidden");
       dropdown.classList.add("flex");
+      if (toggle) toggle.setAttribute("aria-expanded", "true");
     } else {
       dropdown.classList.add("hidden");
       dropdown.classList.remove("flex");
+      if (toggle) toggle.setAttribute("aria-expanded", "false");
     }
   }
 
   function closeDropdown() {
     const dropdown = document.getElementById("theme-dropdown");
+    const toggle = document.getElementById("theme-toggle");
     if (dropdown) {
       dropdown.classList.add("hidden");
       dropdown.classList.remove("flex");
+      if (toggle) toggle.setAttribute("aria-expanded", "false");
     }
   }
 
@@ -390,12 +395,13 @@
     root.setAttribute("data-color-category", category);
   })();
 
-  // Event listeners
-  document.addEventListener("DOMContentLoaded", function () {
+  // Event binding function
+  function bindEvents() {
     init();
 
     // Theme toggle button - opens dropdown
     const themeToggle = document.getElementById("theme-toggle");
+
     if (themeToggle) {
       themeToggle.addEventListener("click", function (e) {
         e.stopPropagation();
@@ -438,7 +444,15 @@
         closeDropdown();
       }
     });
-  });
+  }
+
+  // Execute when DOM is ready (handles both cases: before and after DOMContentLoaded)
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bindEvents);
+  } else {
+    // DOM is already ready
+    bindEvents();
+  }
 
   // Expose API
   window.themeSystem = {
