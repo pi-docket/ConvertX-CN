@@ -166,6 +166,9 @@
     "colorNeonGreen": "นีออนเขียว",
     "colorRainbow": "สายรุ้ง",
     "customColor": "กำหนดเอง",
-    "customColorHint": "เลือกสีใดก็ได้"
+    "customColorHint": "เลือกสีใดก็ได้",
+    "presetColors": "สีที่ตั้งไว้ล่วงหน้า",
+    "alphaLabel": "ความโปร่งใส",
+    "applyColor": "ใช้สี"
   }
 }

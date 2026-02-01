@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon glas",
     "colorRainbow": "Tuar ceatha",
     "customColor": "Saincheaptha",
-    "customColorHint": "Roghnaigh aon dath"
+    "customColorHint": "Roghnaigh aon dath",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

@@ -167,6 +167,9 @@
     "colorNeonGreen": "Неон зелен",
     "colorRainbow": "Дъга",
     "customColor": "Персонализиран",
-    "customColorHint": "Изберете произволен цвят"
+    "customColorHint": "Изберете произволен цвят",
+    "presetColors": "Предварително зададени цветове",
+    "alphaLabel": "Алфа",
+    "applyColor": "Приложи цвета"
   }
 }

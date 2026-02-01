@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon berde",
     "colorRainbow": "Bahaghari",
     "customColor": "Custom",
-    "customColorHint": "Pumili ng anumang kulay"
+    "customColorHint": "Pumili ng anumang kulay",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

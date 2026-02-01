@@ -167,6 +167,9 @@
     "colorNeonGreen": "أخضر نيون",
     "colorRainbow": "قوس قزح",
     "customColor": "مخصص",
-    "customColorHint": "اختر أي لون"
+    "customColorHint": "اختر أي لون",
+    "presetColors": "ألوان مسبقة",
+    "alphaLabel": "شفافية",
+    "applyColor": "تطبيق اللون"
   }
 }

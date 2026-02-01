@@ -167,6 +167,9 @@
     "colorNeonGreen": "Неон зелёный",
     "colorRainbow": "Радуга",
     "customColor": "Пользовательский",
-    "customColorHint": "Выберите любой цвет"
+    "customColorHint": "Выберите любой цвет",
+    "presetColors": "Предустановленные цвета",
+    "alphaLabel": "Прозрачность",
+    "applyColor": "Применить цвет"
   }
 }

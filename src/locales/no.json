@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon grønn",
     "colorRainbow": "Regnbue",
     "customColor": "Egendefinert",
-    "customColorHint": "Velg hvilken som helst farge"
+    "customColorHint": "Velg hvilken som helst farge",
+    "presetColors": "Forhåndsinnstilte farger",
+    "alphaLabel": "Alfa",
+    "applyColor": "Bruk farge"
   }
 }

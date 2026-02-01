@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon hijau",
     "colorRainbow": "Pelangi",
     "customColor": "Tersuai",
-    "customColorHint": "Pilih sebarang warna"
+    "customColorHint": "Pilih sebarang warna",
+    "presetColors": "Warna Pratetap",
+    "alphaLabel": "Alfa",
+    "applyColor": "Gunakan Warna"
   }
 }

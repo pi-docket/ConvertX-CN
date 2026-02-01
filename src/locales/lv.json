@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neona zaļa",
     "colorRainbow": "Varavīksne",
     "customColor": "Pielāgots",
-    "customColorHint": "Izvēlieties jebkuru krāsu"
+    "customColorHint": "Izvēlieties jebkuru krāsu",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

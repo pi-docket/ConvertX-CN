@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon berdea",
     "colorRainbow": "Ostadar",
     "customColor": "Pertsonalizatua",
-    "customColorHint": "Aukeratu edozein kolore"
+    "customColorHint": "Aukeratu edozein kolore",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neó verd",
     "colorRainbow": "Arc de Sant Martí",
     "customColor": "Personalitzat",
-    "customColorHint": "Trieu qualsevol color"
+    "customColorHint": "Trieu qualsevol color",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

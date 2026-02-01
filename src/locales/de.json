@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon Grün",
     "colorRainbow": "Regenbogen",
     "customColor": "Benutzerdefiniert",
-    "customColorHint": "Beliebige Farbe wählen"
+    "customColorHint": "Beliebige Farbe wählen",
+    "presetColors": "Voreingestellte Farben",
+    "alphaLabel": "Alpha",
+    "applyColor": "Farbe anwenden"
   }
 }

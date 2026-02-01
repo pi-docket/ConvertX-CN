@@ -167,6 +167,9 @@
     "colorNeonGreen": "နီယွန်အစိမ်း",
     "colorRainbow": "သက်တံ့",
     "customColor": "စိတ်ကြိုက်",
-    "customColorHint": "အရောင်မျိုးမျိုးကိုရွေးပါ"
+    "customColorHint": "အရောင်မျိုးမျိုးကိုရွေးပါ",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

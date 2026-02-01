@@ -167,6 +167,9 @@
     "colorNeonGreen": "নিয়ন সবুজ",
     "colorRainbow": "রংধনু",
     "customColor": "কাস্টম",
-    "customColorHint": "যেকোনো রং বেছে নিন"
+    "customColorHint": "যেকোনো রং বেছে নিন",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

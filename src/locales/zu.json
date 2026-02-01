@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon oluhlaza",
     "colorRainbow": "Uthingo lwenkosazana",
     "customColor": "Ngokwezifiso",
-    "customColorHint": "Khetha noma yimuphi umbala"
+    "customColorHint": "Khetha noma yimuphi umbala",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

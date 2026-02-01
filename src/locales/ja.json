@@ -167,6 +167,9 @@
     "colorNeonGreen": "ネオングリーン",
     "colorRainbow": "レインボー",
     "customColor": "カスタム",
-    "customColorHint": "任意の色を選択"
+    "customColorHint": "任意の色を選択",
+    "presetColors": "プリセットカラー",
+    "alphaLabel": "透明度",
+    "applyColor": "色を適用"
   }
 }

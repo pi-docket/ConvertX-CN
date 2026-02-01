@@ -166,6 +166,9 @@
     "colorNeonGreen": "नियॉन हरा",
     "colorRainbow": "इंद्रधनुष",
     "customColor": "कस्टम",
-    "customColorHint": "कोई भी रंग चुनें"
+    "customColorHint": "कोई भी रंग चुनें",
+    "presetColors": "प्रीसेट रंग",
+    "alphaLabel": "पारदर्शिता",
+    "applyColor": "रंग लागू करें"
   }
 }

@@ -167,6 +167,9 @@
     "colorNeonGreen": "नियॉन हरियो",
     "colorRainbow": "इन्द्रेणी",
     "customColor": "कस्टम",
-    "customColorHint": "कुनै पनि रङ छान्नुहोस्"
+    "customColorHint": "कुनै पनि रङ छान्नुहोस्",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

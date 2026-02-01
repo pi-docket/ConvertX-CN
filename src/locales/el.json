@@ -167,6 +167,9 @@
     "colorNeonGreen": "Νέον πράσινο",
     "colorRainbow": "Ουράνιο τόξο",
     "customColor": "Προσαρμοσμένο",
-    "customColorHint": "Επιλέξτε οποιοδήποτε χρώμα"
+    "customColorHint": "Επιλέξτε οποιοδήποτε χρώμα",
+    "presetColors": "Προεπιλεγμένα χρώματα",
+    "alphaLabel": "Άλφα",
+    "applyColor": "Εφαρμογή χρώματος"
   }
 }

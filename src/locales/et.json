@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neoon roheline",
     "colorRainbow": "Vikerkaar",
     "customColor": "Kohandatud",
-    "customColorHint": "Valige mis tahes värv"
+    "customColorHint": "Valige mis tahes värv",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

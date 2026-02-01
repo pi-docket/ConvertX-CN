@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon žalia",
     "colorRainbow": "Vaivėrykstė",
     "customColor": "Pasirinktinis",
-    "customColorHint": "Pasirinkite bet kokią spalvą"
+    "customColorHint": "Pasirinkite bet kokią spalvą",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

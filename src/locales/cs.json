@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon zelená",
     "colorRainbow": "Duha",
     "customColor": "Vlastní",
-    "customColorHint": "Vyberte libovolnou barvu"
+    "customColorHint": "Vyberte libovolnou barvu",
+    "presetColors": "Přednastavené barvy",
+    "alphaLabel": "Alfa",
+    "applyColor": "Použít barvu"
   }
 }

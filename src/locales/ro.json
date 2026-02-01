@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon verde",
     "colorRainbow": "Curcubeu",
     "customColor": "Personalizat",
-    "customColorHint": "Alegeți orice culoare"
+    "customColorHint": "Alegeți orice culoare",
+    "presetColors": "Culori predefinite",
+    "alphaLabel": "Alfa",
+    "applyColor": "Aplicați culoarea"
   }
 }

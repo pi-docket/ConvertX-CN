@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon grön",
     "colorRainbow": "Regnbåge",
     "customColor": "Anpassad",
-    "customColorHint": "Välj valfri färg"
+    "customColorHint": "Välj valfri färg",
+    "presetColors": "Förinställda färger",
+    "alphaLabel": "Alfa",
+    "applyColor": "Använd färg"
   }
 }

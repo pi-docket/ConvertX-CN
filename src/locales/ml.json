@@ -167,6 +167,9 @@
     "colorNeonGreen": "നിയോൺ പച്ച",
     "colorRainbow": "മഴവില്ല്",
     "customColor": "കസ്റ്റം",
-    "customColorHint": "ഏത് നിറം തിരഞ്ഞെടുക്കുക"
+    "customColorHint": "ഏത് നിറം തിരഞ്ഞെടുക്കുക",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

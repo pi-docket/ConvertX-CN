@@ -167,6 +167,9 @@
     "colorNeonGreen": "ניאון ירוק",
     "colorRainbow": "קשת",
     "customColor": "מותאם אישית",
-    "customColorHint": "בחר כל צבע"
+    "customColorHint": "בחר כל צבע",
+    "presetColors": "צבעים מוגדרים מראש",
+    "alphaLabel": "שקיפות",
+    "applyColor": "החל צבע"
   }
 }

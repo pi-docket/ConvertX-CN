@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon gwyrdd",
     "colorRainbow": "Enfys",
     "customColor": "Personol",
-    "customColorHint": "Dewiswch unrhyw liw"
+    "customColorHint": "Dewiswch unrhyw liw",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neón grænt",
     "colorRainbow": "Regnbogi",
     "customColor": "Sérsniðið",
-    "customColorHint": "Veldu hvaða lit sem er"
+    "customColorHint": "Veldu hvaða lit sem er",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

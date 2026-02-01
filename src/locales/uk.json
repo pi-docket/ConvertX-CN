@@ -167,6 +167,9 @@
     "colorNeonGreen": "Неон зелений",
     "colorRainbow": "Веселка",
     "customColor": "Користувацький",
-    "customColorHint": "Виберіть будь-який колір"
+    "customColorHint": "Виберіть будь-який колір",
+    "presetColors": "Попередньо встановлені кольори",
+    "alphaLabel": "Прозорість",
+    "applyColor": "Застосувати колір"
   }
 }

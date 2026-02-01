@@ -167,6 +167,9 @@
     "colorNeonGreen": "Néon Vert",
     "colorRainbow": "Arc-en-ciel",
     "customColor": "Personnalisé",
-    "customColorHint": "Choisir une couleur"
+    "customColorHint": "Choisir une couleur",
+    "presetColors": "Couleurs prédéfinies",
+    "alphaLabel": "Alpha",
+    "applyColor": "Appliquer la couleur"
   }
 }

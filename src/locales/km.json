@@ -167,6 +167,9 @@
     "colorNeonGreen": "នីអូងស្វាយបឣតង់",
     "colorRainbow": "ឥន្ទ្ធនូ",
     "customColor": "ផ្ទាល់ខ្លួន",
-    "customColorHint": "ជ្រើសរើសព័ឌណ៍ភើនូអ្វីមួយ"
+    "customColorHint": "ជ្រើសរើសព័ឌណ៍ភើនូអ្វីមួយ",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

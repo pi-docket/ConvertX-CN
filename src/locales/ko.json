@@ -167,6 +167,9 @@
     "colorNeonGreen": "네온 그린",
     "colorRainbow": "무지개",
     "customColor": "사용자 지정",
-    "customColorHint": "원하는 색상 선택"
+    "customColorHint": "원하는 색상 선택",
+    "presetColors": "프리셋 색상",
+    "alphaLabel": "알파",
+    "applyColor": "색상 적용"
   }
 }

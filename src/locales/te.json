@@ -167,6 +167,9 @@
     "colorNeonGreen": "నియాన్ ఆకుపచ్చ",
     "colorRainbow": "ఇంద్రధనుస్సు",
     "customColor": "కస్టమ్",
-    "customColorHint": "ఏదైనా రంగును ఎంచుకోండి"
+    "customColorHint": "ఏదైనా రంగును ఎంచుకోండి",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

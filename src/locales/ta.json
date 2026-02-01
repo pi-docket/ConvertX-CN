@@ -167,6 +167,9 @@
     "colorNeonGreen": "நியான் பச்சை",
     "colorRainbow": "வானவில்",
     "customColor": "தனிப்பயன்",
-    "customColorHint": "எந்த நிறத்தையும் தேர்ந்தெடுக்கவும்"
+    "customColorHint": "எந்த நிறத்தையும் தேர்ந்தெடுக்கவும்",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon zelena",
     "colorRainbow": "Mavrica",
     "customColor": "Po meri",
-    "customColorHint": "Izberite katero koli barvo"
+    "customColorHint": "Izberite katero koli barvo",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

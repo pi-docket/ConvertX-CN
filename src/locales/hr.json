@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon zelena",
     "colorRainbow": "Duga",
     "customColor": "Prilagođeno",
-    "customColorHint": "Odaberite bilo koju boju"
+    "customColorHint": "Odaberite bilo koju boju",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

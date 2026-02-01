@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon zielony",
     "colorRainbow": "Tęcza",
     "customColor": "Niestandardowy",
-    "customColorHint": "Wybierz dowolny kolor"
+    "customColorHint": "Wybierz dowolny kolor",
+    "presetColors": "Predefiniowane kolory",
+    "alphaLabel": "Alfa",
+    "applyColor": "Zastosuj kolor"
   }
 }

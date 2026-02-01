@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon kijani",
     "colorRainbow": "Upinde wa mvua",
     "customColor": "Maalum",
-    "customColorHint": "Chagua rangi yoyote"
+    "customColorHint": "Chagua rangi yoyote",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

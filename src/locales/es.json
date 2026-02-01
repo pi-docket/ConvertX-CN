@@ -167,6 +167,9 @@
     "colorNeonGreen": "Verde neón",
     "colorRainbow": "Arcoíris",
     "customColor": "Personalizado",
-    "customColorHint": "Elegir cualquier color"
+    "customColorHint": "Elegir cualquier color",
+    "presetColors": "Colores predefinidos",
+    "alphaLabel": "Alfa",
+    "applyColor": "Aplicar color"
   }
 }

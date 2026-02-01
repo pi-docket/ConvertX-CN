@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon aħdar",
     "colorRainbow": "Qawsalla",
     "customColor": "Personalizzat",
-    "customColorHint": "Agħżel kwalunkwe kulur"
+    "customColorHint": "Agħżel kwalunkwe kulur",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

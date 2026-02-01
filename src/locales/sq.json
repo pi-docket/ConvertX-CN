@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon e gjelbër",
     "colorRainbow": "Ylberi",
     "customColor": "E personalizuar",
-    "customColorHint": "Zgjidhni çdo ngjyrë"
+    "customColorHint": "Zgjidhni çdo ngjyrë",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

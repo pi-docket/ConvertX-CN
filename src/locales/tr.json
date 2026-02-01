@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon yeşil",
     "colorRainbow": "Gökkuşağı",
     "customColor": "Özel",
-    "customColorHint": "Herhangi bir renk seçin"
+    "customColorHint": "Herhangi bir renk seçin",
+    "presetColors": "Önceden Ayarlanmış Renkler",
+    "alphaLabel": "Alfa",
+    "applyColor": "Rengi Uygula"
   }
 }

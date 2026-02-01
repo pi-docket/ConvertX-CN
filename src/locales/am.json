@@ -166,6 +166,9 @@
     "colorNeonGreen": "ኔኦን አረንጓዴ",
     "colorRainbow": "ቅስተ ደመና",
     "customColor": "ብጁ",
-    "customColorHint": "ማንኛውንም ቀለም ይምረጡ"
+    "customColorHint": "ማንኛውንም ቀለም ይምረጡ",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

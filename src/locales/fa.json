@@ -167,6 +167,9 @@
     "colorNeonGreen": "نئون سبز",
     "colorRainbow": "رنگین‌کمان",
     "customColor": "سفارشی",
-    "customColorHint": "هر رنگی را انتخاب کنید"
+    "customColorHint": "هر رنگی را انتخاب کنید",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

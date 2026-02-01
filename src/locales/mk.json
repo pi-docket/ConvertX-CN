@@ -167,6 +167,9 @@
     "colorNeonGreen": "Неон зелена",
     "colorRainbow": "Дага",
     "customColor": "Прилагодено",
-    "customColorHint": "Изберете било која боја"
+    "customColorHint": "Изберете било која боја",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

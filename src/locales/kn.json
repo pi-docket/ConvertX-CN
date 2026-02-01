@@ -167,6 +167,9 @@
     "colorNeonGreen": "ನಿಯಾನ್ ಹಸಿರು",
     "colorRainbow": "ಕಾಮನಬಿಲ್ಲು",
     "customColor": "ಕಸ್ಟಮ್",
-    "customColorHint": "ಯಾವುದೇ ಬಣ್ಣ ಆಯ್ಕೆ ಮಾಡಿ"
+    "customColorHint": "ಯಾವುದೇ ಬಣ್ಣ ಆಯ್ಕೆ ಮಾಡಿ",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

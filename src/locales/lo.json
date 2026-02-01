@@ -167,6 +167,9 @@
     "colorNeonGreen": "ນີອອນຂຽວ",
     "colorRainbow": "ຮຸ້ງກິນນາມ",
     "customColor": "ກຳຫົນເອງ",
-    "customColorHint": "ເລືອກສີໃດກໍໄດ້"
+    "customColorHint": "ເລືອກສີໃດກໍໄດ້",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

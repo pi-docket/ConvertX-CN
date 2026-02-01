@@ -166,6 +166,9 @@
     "colorNeonGreen": "Neon xanh lá",
     "colorRainbow": "Cầu vồng",
     "customColor": "Tùy chỉnh",
-    "customColorHint": "Chọn màu bất kỳ"
+    "customColorHint": "Chọn màu bất kỳ",
+    "presetColors": "Màu đặt sẵn",
+    "alphaLabel": "Độ trong suốt",
+    "applyColor": "Áp dụng màu"
   }
 }

@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon groen",
     "colorRainbow": "Reënboog",
     "customColor": "Pasgemaak",
-    "customColorHint": "Kies enige kleur"
+    "customColorHint": "Kies enige kleur",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

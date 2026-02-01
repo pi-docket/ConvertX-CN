@@ -167,6 +167,9 @@
     "colorNeonGreen": "නියොන් කොළ",
     "colorRainbow": "දීධ්ධනු",
     "customColor": "කස්ටම්",
-    "customColorHint": "ඔනෑම පාටයක් තොරන්න"
+    "customColorHint": "ඔනෑම පාටයක් තොරන්න",
+    "presetColors": "Preset Colors",
+    "alphaLabel": "Alpha",
+    "applyColor": "Apply Color"
   }
 }

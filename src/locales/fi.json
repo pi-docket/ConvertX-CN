@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon vihreä",
     "colorRainbow": "Sateenkaari",
     "customColor": "Mukautettu",
-    "customColorHint": "Valitse mikä tahansa väri"
+    "customColorHint": "Valitse mikä tahansa väri",
+    "presetColors": "Esiasetetut värit",
+    "alphaLabel": "Alfa",
+    "applyColor": "Käytä väriä"
   }
 }

@@ -167,6 +167,9 @@
     "colorNeonGreen": "霓虹绿",
     "colorRainbow": "彩虹",
     "customColor": "自定义",
-    "customColorHint": "选择任意颜色"
+    "customColorHint": "选择任意颜色",
+    "presetColors": "预设颜色",
+    "alphaLabel": "透明度",
+    "applyColor": "应用颜色"
   }
 }

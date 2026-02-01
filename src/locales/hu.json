@@ -167,6 +167,9 @@
     "colorNeonGreen": "Neon zöld",
     "colorRainbow": "Szivárvány",
     "customColor": "Egyedi",
-    "customColorHint": "Válasszon bármilyen színt"
+    "customColorHint": "Válasszon bármilyen színt",
+    "presetColors": "Előre beállított színek",
+    "alphaLabel": "Alfa",
+    "applyColor": "Szín alkalmazása"
   }
 }
