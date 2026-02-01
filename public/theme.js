@@ -274,14 +274,14 @@
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
     const dropdownWidth = 280;
-    
+
     // Reset position first to get accurate height measurement
     dropdown.style.top = "0";
     dropdown.style.left = "0";
-    
+
     // Force layout to get accurate height
     const dropdownHeight = dropdown.scrollHeight || dropdown.offsetHeight || 400;
-    
+
     // Max height is 85vh or 700px, whichever is smaller
     const maxHeight = Math.min(viewportHeight * 0.85, 700);
 
