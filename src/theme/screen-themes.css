@@ -17,6 +17,53 @@
   --screen-border: transparent;
   --screen-text-shadow: none;
   --screen-glow: none;
+  
+  /* ===== Glassmorphism Variables ===== */
+  --glass-bg: rgba(20, 20, 20, 0.75);
+  --glass-bg-hover: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --glass-blur: blur(20px);
+  --glass-text: rgba(255, 255, 255, 0.9);
+  --glass-text-muted: rgba(255, 255, 255, 0.6);
+  --glass-divider: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme="light"] {
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-bg-hover: rgba(0, 0, 0, 0.05);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --glass-text: rgba(0, 0, 0, 0.9);
+  --glass-text-muted: rgba(0, 0, 0, 0.6);
+  --glass-divider: rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   Glassmorphism Dropdown Styles
+   ============================================================================ */
+.theme-glass-dropdown {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  color: var(--glass-text);
+}
+
+.theme-glass-dropdown .theme-glass-divider {
+  height: 1px;
+  background: var(--glass-divider);
+  margin: 0;
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(20px)) {
+  .theme-glass-dropdown {
+    background: rgba(20, 20, 20, 0.95);
+  }
+  
+  :root[data-theme="light"] .theme-glass-dropdown {
+    background: rgba(255, 255, 255, 0.95);
+  }
 }
 
 /* ============================================================================

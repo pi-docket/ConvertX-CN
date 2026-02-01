@@ -267,6 +267,38 @@
   // ============================================================================
   let dropdownOpen = false;
 
+  function positionDropdown(dropdown, toggleBtn) {
+    if (!dropdown || !toggleBtn) return;
+    
+    const rect = toggleBtn.getBoundingClientRect();
+    const dropdownHeight = dropdown.offsetHeight || 400;
+    const dropdownWidth = dropdown.offsetWidth || 280;
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+    
+    // Calculate position
+    let top = rect.bottom + 8;
+    let left = rect.right - dropdownWidth;
+    
+    // Ensure dropdown doesn't go off-screen (bottom)
+    if (top + dropdownHeight > viewportHeight - 16) {
+      top = rect.top - dropdownHeight - 8;
+    }
+    
+    // Ensure dropdown doesn't go off-screen (left)
+    if (left < 16) {
+      left = 16;
+    }
+    
+    // Ensure dropdown doesn't go off-screen (right)
+    if (left + dropdownWidth > viewportWidth - 16) {
+      left = viewportWidth - dropdownWidth - 16;
+    }
+    
+    dropdown.style.top = `${top}px`;
+    dropdown.style.left = `${left}px`;
+  }
+
   function toggleDropdown() {
     const dropdown = document.getElementById("theme-color-dropdown");
     const arrow = document.getElementById("theme-dropdown-arrow");
@@ -282,6 +314,10 @@
     if (dropdownOpen) {
       // Show dropdown
       dropdown.style.display = "block";
+      
+      // Position the fixed dropdown relative to the toggle button
+      positionDropdown(dropdown, toggleBtn);
+      
       // Force reflow for animation
       void dropdown.offsetHeight;
       dropdown.style.opacity = "1";

@@ -60,6 +60,37 @@
 
     if (!toggle || !dropdown) return;
 
+    // Position the fixed dropdown
+    function positionLanguageDropdown() {
+      const rect = toggle.getBoundingClientRect();
+      const dropdownHeight = dropdown.offsetHeight || 320;
+      const dropdownWidth = dropdown.offsetWidth || 180;
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+      
+      // Calculate position
+      let top = rect.bottom + 8;
+      let left = rect.right - dropdownWidth;
+      
+      // Ensure dropdown doesn't go off-screen (bottom)
+      if (top + dropdownHeight > viewportHeight - 16) {
+        top = rect.top - dropdownHeight - 8;
+      }
+      
+      // Ensure dropdown doesn't go off-screen (left)
+      if (left < 16) {
+        left = 16;
+      }
+      
+      // Ensure dropdown doesn't go off-screen (right)
+      if (left + dropdownWidth > viewportWidth - 16) {
+        left = viewportWidth - dropdownWidth - 16;
+      }
+      
+      dropdown.style.top = `${top}px`;
+      dropdown.style.left = `${left}px`;
+    }
+
     // Toggle dropdown
     toggle.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -72,6 +103,7 @@
       } else {
         dropdown.classList.remove("hidden");
         dropdown.classList.add("flex");
+        positionLanguageDropdown();
         toggle.setAttribute("aria-expanded", "true");
       }
     });

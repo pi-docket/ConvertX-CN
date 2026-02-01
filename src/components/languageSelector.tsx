@@ -58,10 +58,15 @@ export const LanguageSelector = ({
       <ul
         id="language-dropdown"
         class={`
-          absolute top-full right-0 z-50 mt-2 scrollbar hidden max-h-[320px] min-w-[180px] flex-col
-          overflow-y-auto rounded border border-neutral-600 bg-neutral-800 shadow-xl
-          scrollbar-thumb-neutral-600 scrollbar-track-neutral-800
+          theme-glass-dropdown
+          fixed z-[9999] scrollbar hidden max-h-[320px] min-w-[180px] flex-col
+          overflow-y-auto rounded-xl border border-white/20 shadow-2xl
+          scrollbar-thumb-neutral-600 scrollbar-track-transparent
         `}
+        style={{
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+        }}
         role="menu"
       >
         {supportedLocales.map((locale) => (
@@ -72,11 +77,11 @@ export const LanguageSelector = ({
               class={`
                 language-option flex w-full items-center gap-2 px-4 py-2 text-left text-sm
                 transition-colors
-                hover:bg-neutral-700
+                hover:bg-white/10
                 ${
                   locale.code === currentLocale
-                    ? "bg-neutral-700 text-accent-500"
-                    : `text-neutral-200`
+                    ? "bg-white/15 text-accent-500"
+                    : ``
                 }
               `}
               data-locale={locale.code}

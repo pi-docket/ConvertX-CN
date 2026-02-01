@@ -298,93 +298,29 @@ export const ThemeToggle = ({
         </button>
       </div>
 
-      {/* Figma/Linear Style Color Picker Dropdown */}
+      {/* Figma/Linear Style Color Picker Dropdown - Glassmorphism */}
       <div
         id="theme-color-dropdown"
         class={`
-          absolute top-full right-0 z-50 mt-2 w-[280px] overflow-hidden rounded-xl border
-          border-neutral-700/50 bg-neutral-900/95 shadow-2xl backdrop-blur-xl
+          theme-glass-dropdown
+          fixed z-[9999] w-[280px] overflow-hidden rounded-xl
+          border border-white/20 shadow-2xl
         `}
         style={{
           display: "none",
           opacity: 0,
           transform: "scale(0.95) translateY(-8px)",
           transition: "opacity 200ms ease-out, transform 200ms ease-out",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
         }}
         role="menu"
         aria-orientation="vertical"
       >
         {/* ========================================
-            1. Preset Colors Section (Accent Colors)
+            1. Screen Theme Section (Full-Screen Themes)
+            位置：最上方（無標題）
             ======================================== */}
-        <div class="p-3">
-          <div class="mb-2 text-xs font-medium uppercase tracking-wider text-neutral-500" safe>
-            {t("theme", "presetColors")}
-          </div>
-
-          {/* Color swatches grid with glow effect */}
-          <div class="grid grid-cols-5 gap-2" role="group" aria-label={t("theme", "pickerTitle")}>
-            {THEME_COLORS.map((colorDef) => (
-              <button
-                type="button"
-                class={`
-                  theme-color-swatch group relative h-10 w-10 cursor-pointer rounded-lg border-2
-                  border-transparent transition-all duration-200
-                  hover:scale-110 hover:border-white/50
-                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-neutral-900
-                  focus:outline-none
-                `}
-                data-color={colorDef.id}
-                data-style={colorDef.style}
-                data-hue={colorDef.hue}
-                style={{
-                  background: colorDef.gradient || colorDef.color,
-                }}
-                aria-label={t("theme", colorDef.i18nKey)}
-                title={t("theme", colorDef.i18nKey)}
-                role="menuitem"
-              >
-                {/* Glow effect on hover */}
-                <div
-                  class={`
-                    pointer-events-none absolute inset-0 rounded-lg opacity-0 transition-opacity
-                    duration-200
-                    group-hover:opacity-100
-                  `}
-                  style={{
-                    boxShadow: colorDef.gradient
-                      ? "0 0 20px 4px rgba(255, 255, 255, 0.3)"
-                      : `0 0 20px 4px ${colorDef.color}`,
-                  }}
-                />
-                {/* Active indicator (checkmark) */}
-                <div
-                  class={`
-                    active-indicator absolute inset-0 flex items-center justify-center opacity-0
-                    transition-opacity
-                  `}
-                >
-                  <svg
-                    class="h-5 w-5 text-white drop-shadow-lg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="3"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ========================================
-            2. Screen Theme Section (Full-Screen Themes)
-            位置：中間（無標題，只有分隔線）
-            ======================================== */}
-        <div class="border-t border-neutral-700/50" />
-
         <div class="p-3">
           {/* Screen theme swatches grid - 無標題 */}
           <div class="grid grid-cols-6 gap-2" role="group" aria-label={t("theme", "screenThemeTitle")}>
@@ -395,7 +331,7 @@ export const ThemeToggle = ({
                   screen-theme-swatch group relative h-9 w-9 cursor-pointer rounded-lg border-2
                   border-transparent transition-all duration-200
                   hover:scale-110 hover:border-white/50
-                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-neutral-900
+                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2
                   focus:outline-none
                   ${themeDef.id === "neon-night" ? "shadow-[inset_0_0_8px_oklch(60%_0.25_300_/_40%)]" : ""}
                 `}
@@ -459,18 +395,81 @@ export const ThemeToggle = ({
         </div>
 
         {/* ========================================
+            2. Preset Colors Section (Accent Colors)
+            ======================================== */}
+        <div class="theme-glass-divider" />
+
+        <div class="p-3">
+          {/* Color swatches grid with glow effect - 無標題 */}
+          <div class="grid grid-cols-5 gap-2" role="group" aria-label={t("theme", "pickerTitle")}>
+            {THEME_COLORS.map((colorDef) => (
+              <button
+                type="button"
+                class={`
+                  theme-color-swatch group relative h-10 w-10 cursor-pointer rounded-lg border-2
+                  border-transparent transition-all duration-200
+                  hover:scale-110 hover:border-white/50
+                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-neutral-900
+                  focus:outline-none
+                `}
+                data-color={colorDef.id}
+                data-style={colorDef.style}
+                data-hue={colorDef.hue}
+                style={{
+                  background: colorDef.gradient || colorDef.color,
+                }}
+                aria-label={t("theme", colorDef.i18nKey)}
+                title={t("theme", colorDef.i18nKey)}
+                role="menuitem"
+              >
+                {/* Glow effect on hover */}
+                <div
+                  class={`
+                    pointer-events-none absolute inset-0 rounded-lg opacity-0 transition-opacity
+                    duration-200
+                    group-hover:opacity-100
+                  `}
+                  style={{
+                    boxShadow: colorDef.gradient
+                      ? "0 0 20px 4px rgba(255, 255, 255, 0.3)"
+                      : `0 0 20px 4px ${colorDef.color}`,
+                  }}
+                />
+                {/* Active indicator (checkmark) */}
+                <div
+                  class={`
+                    active-indicator absolute inset-0 flex items-center justify-center opacity-0
+                    transition-opacity
+                  `}
+                >
+                  <svg
+                    class="h-5 w-5 text-white drop-shadow-lg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="3"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ========================================
             3. Custom Color Section
             ======================================== */}
-        <div class="border-t border-neutral-700/50" />
+        <div class="theme-glass-divider" />
 
         <div class="p-3">
           <button
             type="button"
             id="advanced-picker-toggle"
             class={`
-              flex w-full items-center justify-between rounded-lg bg-neutral-800/50 px-3 py-2.5
-              text-sm text-neutral-300 transition-colors
-              hover:bg-neutral-800 hover:text-white
+              flex w-full items-center justify-between rounded-lg px-3 py-2.5
+              text-sm transition-colors
+              hover:bg-white/10
             `}
           >
             <span class="flex items-center gap-2">
