@@ -250,10 +250,7 @@ export const ThemeToggle = ({
                 text-sm text-neutral-400 transition-colors
                 group-hover:text-neutral-300
               `}
-<<<<<<< Updated upstream
-=======
               safe
->>>>>>> Stashed changes
             >
               {t("theme", "customColor")}
             </span>
