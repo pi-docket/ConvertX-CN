@@ -1,12 +1,13 @@
 // ============================================================================
-// Theme System v4.0 - Light/Dark Mode + Color Picker
+// Theme System v4.1 - Light/Dark Mode + Color Picker + Screen Themes
 // ============================================================================
 // Features:
 // 1. Mode (light/dark) - Simple toggle
 // 2. Color selection - Solid, gradient, neon, custom colors
-// 3. CSS Variables - Instant updates without page reload
-// 4. localStorage persistence
-// 5. System preference detection
+// 3. Screen themes - Full-screen background themes (Aurora, Sunset, etc.)
+// 4. CSS Variables - Instant updates without page reload
+// 5. localStorage persistence
+// 6. System preference detection
 // ============================================================================
 
 (function () {
@@ -14,12 +15,14 @@
   const THEME_COLOR_KEY = "themeColor";
   const THEME_STYLE_KEY = "themeStyle";
   const CUSTOM_HUE_KEY = "customHue";
+  const SCREEN_THEME_KEY = "screenTheme";
 
   // Default values
   const DEFAULT_HUE = 131;
   const DEFAULT_CHROMA = 0.2;
   const DEFAULT_COLOR = "green";
   const DEFAULT_STYLE = "solid";
+  const DEFAULT_SCREEN_THEME = "none";
 
   // ============================================================================
   // State Management
@@ -56,6 +59,14 @@
     }
   }
 
+  function getStoredScreenTheme() {
+    try {
+      return localStorage.getItem(SCREEN_THEME_KEY) || DEFAULT_SCREEN_THEME;
+    } catch (e) {
+      return DEFAULT_SCREEN_THEME;
+    }
+  }
+
   function saveMode(mode) {
     try {
       if (mode) {
@@ -81,6 +92,12 @@
   function saveCustomHue(hue) {
     try {
       localStorage.setItem(CUSTOM_HUE_KEY, String(hue));
+    } catch (e) {}
+  }
+
+  function saveScreenTheme(theme) {
+    try {
+      localStorage.setItem(SCREEN_THEME_KEY, theme);
     } catch (e) {}
   }
 
@@ -127,6 +144,48 @@
 
     // Update active swatch indicator
     updateActiveSwatchIndicator(color);
+  }
+
+  function applyScreenTheme() {
+    const root = document.documentElement;
+    const screenTheme = getStoredScreenTheme();
+
+    // Set data attribute for CSS selectors
+    root.setAttribute("data-screen-theme", screenTheme);
+
+    // Update active screen theme indicator
+    updateActiveScreenThemeIndicator(screenTheme);
+
+    // Dispatch event for screen theme change
+    window.dispatchEvent(
+      new CustomEvent("screenthemechange", { detail: { screenTheme: screenTheme } }),
+    );
+  }
+
+  function setScreenTheme(themeId) {
+    saveScreenTheme(themeId);
+    applyScreenTheme();
+  }
+
+  function updateActiveScreenThemeIndicator(activeTheme) {
+    // Remove active indicator from all screen theme swatches
+    document.querySelectorAll(".screen-theme-swatch").forEach((swatch) => {
+      const indicator = swatch.querySelector(".screen-theme-active-indicator");
+      if (indicator) {
+        if (swatch.dataset.screenTheme === activeTheme) {
+          indicator.style.opacity = "1";
+          swatch.classList.add("ring-2", "ring-white", "ring-offset-2", "ring-offset-neutral-900");
+        } else {
+          indicator.style.opacity = "0";
+          swatch.classList.remove(
+            "ring-2",
+            "ring-white",
+            "ring-offset-2",
+            "ring-offset-neutral-900",
+          );
+        }
+      }
+    });
   }
 
   function setColor(colorId, style) {
@@ -230,8 +289,9 @@
       if (arrow) arrow.style.transform = "rotate(180deg)";
       if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "true");
 
-      // Update active indicator
+      // Update active indicators
       updateActiveSwatchIndicator(getStoredColor());
+      updateActiveScreenThemeIndicator(getStoredScreenTheme());
     } else {
       // Hide dropdown with animation
       dropdown.style.opacity = "0";
@@ -288,6 +348,7 @@
     const mode = getStoredMode();
     applyMode(mode);
     applyColorTheme();
+    applyScreenTheme();
 
     // Listen for system preference changes
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
@@ -303,6 +364,7 @@
     const mode = getStoredMode();
     const color = getStoredColor();
     const style = getStoredStyle();
+    const screenTheme = getStoredScreenTheme();
 
     if (mode) {
       root.setAttribute("data-theme", mode);
@@ -310,6 +372,7 @@
 
     root.setAttribute("data-color", color);
     root.setAttribute("data-style", style);
+    root.setAttribute("data-screen-theme", screenTheme);
 
     if (color === "custom") {
       const customHue = getStoredCustomHue();
@@ -364,6 +427,15 @@
       if (copyBtn && (e.target === copyBtn || copyBtn.contains(e.target))) {
         e.preventDefault();
         copyHexCode();
+        return;
+      }
+
+      // Screen theme swatch click
+      const screenSwatch = e.target.closest(".screen-theme-swatch");
+      if (screenSwatch && dropdown && dropdown.contains(screenSwatch)) {
+        e.preventDefault();
+        const themeId = screenSwatch.dataset.screenTheme;
+        setScreenTheme(themeId);
         return;
       }
 
@@ -484,7 +556,7 @@
           updateSLFromEvent(e.touches[0]);
         }
       },
-      { passive: false }
+      { passive: false },
     );
 
     document.addEventListener(
@@ -499,7 +571,7 @@
           }
         }
       },
-      { passive: false }
+      { passive: false },
     );
 
     document.addEventListener("touchend", function () {
@@ -723,6 +795,8 @@
     setCustomColor,
     getStoredColor,
     getStoredStyle,
+    setScreenTheme,
+    getStoredScreenTheme,
   };
 
   // Legacy support

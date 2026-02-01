@@ -38,6 +38,91 @@ type ThemeI18nKey =
   | "colorNeonGreen"
   | "colorRainbow";
 
+// Screen theme i18n keys type
+type ScreenThemeI18nKey =
+  | "screenThemeNone"
+  | "screenThemeAurora"
+  | "screenThemeSunset"
+  | "screenThemeOcean"
+  | "screenThemeNeonNight"
+  | "screenThemeMinimalPro"
+  | "screenThemeLavender"
+  | "screenThemeMidnight"
+  | "screenThemeTwilight"
+  | "screenThemeForest"
+  | "screenThemePeach"
+  | "screenThemeCyber";
+
+// Screen theme definitions (full-screen background themes)
+interface ScreenTheme {
+  id: string;
+  preview: string; // CSS gradient for preview swatch
+  i18nKey: ScreenThemeI18nKey;
+}
+
+const SCREEN_THEMES: ScreenTheme[] = [
+  {
+    id: "none",
+    preview: "linear-gradient(135deg, var(--neutral-700), var(--neutral-800))",
+    i18nKey: "screenThemeNone",
+  },
+  {
+    id: "aurora",
+    preview: "linear-gradient(135deg, oklch(50% 0.15 280), oklch(55% 0.18 200), oklch(60% 0.2 150))",
+    i18nKey: "screenThemeAurora",
+  },
+  {
+    id: "sunset",
+    preview: "linear-gradient(135deg, oklch(65% 0.18 350), oklch(70% 0.2 40), oklch(75% 0.18 70))",
+    i18nKey: "screenThemeSunset",
+  },
+  {
+    id: "ocean",
+    preview: "linear-gradient(135deg, oklch(50% 0.15 230), oklch(55% 0.15 200), oklch(60% 0.12 180))",
+    i18nKey: "screenThemeOcean",
+  },
+  {
+    id: "neon-night",
+    preview: "linear-gradient(135deg, oklch(25% 0.1 280), oklch(30% 0.15 300), oklch(25% 0.1 180))",
+    i18nKey: "screenThemeNeonNight",
+  },
+  {
+    id: "minimal-pro",
+    preview: "linear-gradient(180deg, oklch(30% 0.01 260), oklch(25% 0.01 260))",
+    i18nKey: "screenThemeMinimalPro",
+  },
+  {
+    id: "lavender",
+    preview: "linear-gradient(135deg, oklch(70% 0.15 300), oklch(75% 0.18 330), oklch(80% 0.12 350))",
+    i18nKey: "screenThemeLavender",
+  },
+  {
+    id: "midnight",
+    preview: "linear-gradient(180deg, oklch(15% 0.08 260), oklch(20% 0.1 280), oklch(12% 0.06 240))",
+    i18nKey: "screenThemeMidnight",
+  },
+  {
+    id: "twilight",
+    preview: "linear-gradient(135deg, oklch(40% 0.12 280), oklch(35% 0.15 300), oklch(30% 0.1 320))",
+    i18nKey: "screenThemeTwilight",
+  },
+  {
+    id: "forest",
+    preview: "linear-gradient(180deg, oklch(35% 0.1 150), oklch(40% 0.12 140), oklch(30% 0.08 160))",
+    i18nKey: "screenThemeForest",
+  },
+  {
+    id: "peach",
+    preview: "linear-gradient(135deg, oklch(80% 0.12 50), oklch(85% 0.15 40), oklch(90% 0.1 30))",
+    i18nKey: "screenThemePeach",
+  },
+  {
+    id: "cyber",
+    preview: "linear-gradient(135deg, oklch(45% 0.2 180), oklch(40% 0.18 200), oklch(35% 0.15 220))",
+    i18nKey: "screenThemeCyber",
+  },
+];
+
 // Color definitions for swatches (matching colors.css)
 interface ThemeColor {
   id: string;
@@ -229,7 +314,9 @@ export const ThemeToggle = ({
         role="menu"
         aria-orientation="vertical"
       >
-        {/* Preset Colors Section */}
+        {/* ========================================
+            1. Preset Colors Section (Accent Colors)
+            ======================================== */}
         <div class="p-3">
           <div class="mb-2 text-xs font-medium uppercase tracking-wider text-neutral-500" safe>
             {t("theme", "presetColors")}
@@ -292,10 +379,90 @@ export const ThemeToggle = ({
           </div>
         </div>
 
-        {/* Divider */}
+        {/* ========================================
+            2. Screen Theme Section (Full-Screen Themes)
+            位置：中間（無標題，只有分隔線）
+            ======================================== */}
         <div class="border-t border-neutral-700/50" />
 
-        {/* Custom Color Section */}
+        <div class="p-3">
+          {/* Screen theme swatches grid - 無標題 */}
+          <div class="grid grid-cols-6 gap-2" role="group" aria-label={t("theme", "screenThemeTitle")}>
+            {SCREEN_THEMES.map((themeDef) => (
+              <button
+                type="button"
+                class={`
+                  screen-theme-swatch group relative h-9 w-9 cursor-pointer rounded-lg border-2
+                  border-transparent transition-all duration-200
+                  hover:scale-110 hover:border-white/50
+                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-neutral-900
+                  focus:outline-none
+                  ${themeDef.id === "neon-night" ? "shadow-[inset_0_0_8px_oklch(60%_0.25_300_/_40%)]" : ""}
+                `}
+                data-screen-theme={themeDef.id}
+                style={{
+                  background: themeDef.id === "none" 
+                    ? "linear-gradient(135deg, var(--neutral-700), var(--neutral-800))"
+                    : themeDef.preview,
+                }}
+                aria-label={t("theme", themeDef.i18nKey)}
+                title={t("theme", themeDef.i18nKey)}
+                role="menuitem"
+              >
+                {/* "None" indicator (X icon) */}
+                {themeDef.id === "none" && (
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <svg
+                      class="h-4 w-4 text-neutral-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                )}
+                {/* Glow effect on hover */}
+                <div
+                  class={`
+                    pointer-events-none absolute inset-0 rounded-lg opacity-0 transition-opacity
+                    duration-200
+                    group-hover:opacity-100
+                  `}
+                  style={{
+                    boxShadow: themeDef.id === "neon-night"
+                      ? "0 0 15px 3px oklch(60% 0.25 300 / 40%)"
+                      : "0 0 15px 3px rgba(255, 255, 255, 0.25)",
+                  }}
+                />
+                {/* Active indicator (checkmark) */}
+                <div
+                  class={`
+                    screen-theme-active-indicator absolute inset-0 flex items-center justify-center
+                    opacity-0 transition-opacity
+                  `}
+                >
+                  <svg
+                    class="h-4 w-4 text-white drop-shadow-lg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="3"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ========================================
+            3. Custom Color Section
+            ======================================== */}
+        <div class="border-t border-neutral-700/50" />
+
         <div class="p-3">
           <button
             type="button"

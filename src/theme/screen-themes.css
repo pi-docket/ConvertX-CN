@@ -1,0 +1,413 @@
+/* ============================================================================
+   Screen Theme System - Full-Screen Background Themes
+   ============================================================================
+   說明：全畫面主題系統 - 提供整體背景與視覺風格
+   規則：
+   1. 使用獨立的 --screen-* CSS 變數，不覆蓋舊的 accent/neutral 變數
+   2. 全畫面主題與 Accent 顏色主題可以疊加使用
+   3. 若未選擇全畫面主題，行為與現有系統完全一致
+   ============================================================================ */
+
+:root {
+  /* ===== Screen Theme Base Variables (Default: None Selected) ===== */
+  --screen-theme: none;
+  --screen-bg-page: transparent;
+  --screen-bg-card: transparent;
+  --screen-bg-overlay: transparent;
+  --screen-border: transparent;
+  --screen-text-shadow: none;
+  --screen-glow: none;
+}
+
+/* ============================================================================
+   SCREEN THEME: Aurora (極光 - 紫 → 藍 → 綠)
+   ============================================================================ */
+:root[data-screen-theme="aurora"] {
+  --screen-theme: aurora;
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(20% 0.08 280) 0%,
+    oklch(18% 0.1 250) 25%,
+    oklch(22% 0.12 200) 50%,
+    oklch(20% 0.15 150) 75%,
+    oklch(18% 0.1 130) 100%
+  );
+  --screen-bg-card: oklch(15% 0.02 260 / 80%);
+  --screen-bg-overlay: oklch(10% 0.05 250 / 40%);
+  --screen-border: oklch(40% 0.1 200 / 30%);
+  --screen-glow: 0 0 60px oklch(50% 0.15 180 / 20%);
+}
+
+:root[data-theme="light"][data-screen-theme="aurora"] {
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(92% 0.05 280) 0%,
+    oklch(94% 0.06 250) 25%,
+    oklch(93% 0.07 200) 50%,
+    oklch(95% 0.08 150) 75%,
+    oklch(94% 0.06 130) 100%
+  );
+  --screen-bg-card: oklch(98% 0.01 260 / 85%);
+  --screen-bg-overlay: oklch(95% 0.02 250 / 50%);
+  --screen-border: oklch(80% 0.06 200 / 40%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Sunset (日落 - 粉 → 橘 → 金)
+   ============================================================================ */
+:root[data-screen-theme="sunset"] {
+  --screen-theme: sunset;
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(22% 0.12 350) 0%,
+    oklch(25% 0.15 30) 30%,
+    oklch(28% 0.18 50) 60%,
+    oklch(25% 0.15 80) 100%
+  );
+  --screen-bg-card: oklch(18% 0.04 40 / 80%);
+  --screen-bg-overlay: oklch(15% 0.06 50 / 40%);
+  --screen-border: oklch(45% 0.12 40 / 30%);
+  --screen-glow: 0 0 60px oklch(55% 0.15 50 / 20%);
+}
+
+:root[data-theme="light"][data-screen-theme="sunset"] {
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(95% 0.06 350) 0%,
+    oklch(96% 0.08 30) 30%,
+    oklch(97% 0.1 50) 60%,
+    oklch(96% 0.08 80) 100%
+  );
+  --screen-bg-card: oklch(99% 0.02 40 / 85%);
+  --screen-bg-overlay: oklch(97% 0.03 50 / 50%);
+  --screen-border: oklch(85% 0.08 40 / 40%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Ocean (海洋 - 深藍 → 青綠)
+   ============================================================================ */
+:root[data-screen-theme="ocean"] {
+  --screen-theme: ocean;
+  --screen-bg-page: linear-gradient(
+    180deg,
+    oklch(18% 0.08 230) 0%,
+    oklch(20% 0.1 210) 40%,
+    oklch(22% 0.12 190) 70%,
+    oklch(18% 0.1 180) 100%
+  );
+  --screen-bg-card: oklch(15% 0.03 210 / 80%);
+  --screen-bg-overlay: oklch(12% 0.05 200 / 40%);
+  --screen-border: oklch(40% 0.1 190 / 30%);
+  --screen-glow: 0 0 60px oklch(50% 0.12 200 / 20%);
+}
+
+:root[data-theme="light"][data-screen-theme="ocean"] {
+  --screen-bg-page: linear-gradient(
+    180deg,
+    oklch(94% 0.04 230) 0%,
+    oklch(95% 0.05 210) 40%,
+    oklch(96% 0.06 190) 70%,
+    oklch(95% 0.05 180) 100%
+  );
+  --screen-bg-card: oklch(98% 0.01 210 / 85%);
+  --screen-bg-overlay: oklch(96% 0.02 200 / 50%);
+  --screen-border: oklch(82% 0.06 190 / 40%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Neon Night (霓虹夜 - 深色背景 + 霓虹漸層)
+   ============================================================================ */
+:root[data-screen-theme="neon-night"] {
+  --screen-theme: neon-night;
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(8% 0.02 280) 0%,
+    oklch(10% 0.04 300) 25%,
+    oklch(8% 0.03 320) 50%,
+    oklch(10% 0.04 250) 75%,
+    oklch(8% 0.02 230) 100%
+  );
+  --screen-bg-card: oklch(12% 0.02 280 / 90%);
+  --screen-bg-overlay: oklch(8% 0.03 290 / 60%);
+  --screen-border: oklch(50% 0.2 300 / 40%);
+  --screen-glow: 0 0 40px oklch(60% 0.25 300 / 30%), 0 0 80px oklch(55% 0.2 180 / 15%);
+  --screen-text-shadow: 0 0 10px oklch(70% 0.2 300 / 50%);
+}
+
+:root[data-theme="light"][data-screen-theme="neon-night"] {
+  /* Neon Night 不適合淺色模式，保持深色效果 */
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(15% 0.03 280) 0%,
+    oklch(18% 0.05 300) 25%,
+    oklch(15% 0.04 320) 50%,
+    oklch(18% 0.05 250) 75%,
+    oklch(15% 0.03 230) 100%
+  );
+  --screen-bg-card: oklch(20% 0.02 280 / 85%);
+  --screen-bg-overlay: oklch(15% 0.03 290 / 50%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Minimal Pro (極簡專業 - 淡色、非純白，高級感)
+   ============================================================================ */
+:root[data-screen-theme="minimal-pro"] {
+  --screen-theme: minimal-pro;
+  --screen-bg-page: linear-gradient(180deg, oklch(22% 0.005 260) 0%, oklch(20% 0.008 260) 100%);
+  --screen-bg-card: oklch(25% 0.008 260 / 90%);
+  --screen-bg-overlay: oklch(18% 0.005 260 / 40%);
+  --screen-border: oklch(35% 0.01 260 / 50%);
+  --screen-glow: none;
+}
+
+:root[data-theme="light"][data-screen-theme="minimal-pro"] {
+  --screen-bg-page: linear-gradient(180deg, oklch(96% 0.005 260) 0%, oklch(94% 0.008 260) 100%);
+  --screen-bg-card: oklch(99% 0.003 260 / 92%);
+  --screen-bg-overlay: oklch(97% 0.004 260 / 50%);
+  --screen-border: oklch(88% 0.01 260 / 50%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Lavender (薰衣草 - 柔和紫粉)
+   ============================================================================ */
+:root[data-screen-theme="lavender"] {
+  --screen-theme: lavender;
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(30% 0.1 300) 0%,
+    oklch(35% 0.12 330) 50%,
+    oklch(32% 0.08 350) 100%
+  );
+  --screen-bg-card: oklch(25% 0.05 310 / 85%);
+  --screen-bg-overlay: oklch(20% 0.06 300 / 40%);
+  --screen-border: oklch(50% 0.1 310 / 35%);
+  --screen-glow: 0 0 50px oklch(55% 0.12 300 / 15%);
+}
+
+:root[data-theme="light"][data-screen-theme="lavender"] {
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(92% 0.06 300) 0%,
+    oklch(94% 0.08 330) 50%,
+    oklch(93% 0.05 350) 100%
+  );
+  --screen-bg-card: oklch(98% 0.02 310 / 90%);
+  --screen-bg-overlay: oklch(96% 0.03 300 / 50%);
+  --screen-border: oklch(85% 0.06 310 / 40%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Midnight (午夜 - 深邃藍黑)
+   ============================================================================ */
+:root[data-screen-theme="midnight"] {
+  --screen-theme: midnight;
+  --screen-bg-page: linear-gradient(
+    180deg,
+    oklch(10% 0.06 260) 0%,
+    oklch(15% 0.08 280) 50%,
+    oklch(8% 0.04 240) 100%
+  );
+  --screen-bg-card: oklch(12% 0.03 265 / 90%);
+  --screen-bg-overlay: oklch(8% 0.04 260 / 50%);
+  --screen-border: oklch(25% 0.06 270 / 40%);
+  --screen-glow: 0 0 40px oklch(30% 0.08 260 / 20%);
+}
+
+:root[data-theme="light"][data-screen-theme="midnight"] {
+  --screen-bg-page: linear-gradient(
+    180deg,
+    oklch(20% 0.06 260) 0%,
+    oklch(25% 0.08 280) 50%,
+    oklch(18% 0.04 240) 100%
+  );
+  --screen-bg-card: oklch(22% 0.03 265 / 88%);
+  --screen-bg-overlay: oklch(18% 0.04 260 / 45%);
+  --screen-border: oklch(35% 0.06 270 / 40%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Twilight (暮光 - 紫色漸變)
+   ============================================================================ */
+:root[data-screen-theme="twilight"] {
+  --screen-theme: twilight;
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(25% 0.1 280) 0%,
+    oklch(22% 0.12 300) 50%,
+    oklch(18% 0.08 320) 100%
+  );
+  --screen-bg-card: oklch(20% 0.04 290 / 85%);
+  --screen-bg-overlay: oklch(15% 0.06 295 / 45%);
+  --screen-border: oklch(40% 0.1 295 / 35%);
+  --screen-glow: 0 0 50px oklch(45% 0.12 300 / 18%);
+}
+
+:root[data-theme="light"][data-screen-theme="twilight"] {
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(50% 0.08 280) 0%,
+    oklch(45% 0.1 300) 50%,
+    oklch(40% 0.06 320) 100%
+  );
+  --screen-bg-card: oklch(45% 0.03 290 / 80%);
+  --screen-bg-overlay: oklch(40% 0.05 295 / 40%);
+  --screen-border: oklch(55% 0.08 295 / 40%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Forest (森林 - 深綠自然)
+   ============================================================================ */
+:root[data-screen-theme="forest"] {
+  --screen-theme: forest;
+  --screen-bg-page: linear-gradient(
+    180deg,
+    oklch(20% 0.08 150) 0%,
+    oklch(25% 0.1 140) 50%,
+    oklch(18% 0.06 160) 100%
+  );
+  --screen-bg-card: oklch(18% 0.04 148 / 88%);
+  --screen-bg-overlay: oklch(15% 0.05 150 / 45%);
+  --screen-border: oklch(35% 0.08 145 / 35%);
+  --screen-glow: 0 0 45px oklch(40% 0.1 145 / 15%);
+}
+
+:root[data-theme="light"][data-screen-theme="forest"] {
+  --screen-bg-page: linear-gradient(
+    180deg,
+    oklch(92% 0.04 150) 0%,
+    oklch(94% 0.05 140) 50%,
+    oklch(91% 0.03 160) 100%
+  );
+  --screen-bg-card: oklch(97% 0.02 148 / 90%);
+  --screen-bg-overlay: oklch(95% 0.03 150 / 50%);
+  --screen-border: oklch(85% 0.05 145 / 40%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Peach (蜜桃 - 溫暖橘粉)
+   ============================================================================ */
+:root[data-screen-theme="peach"] {
+  --screen-theme: peach;
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(35% 0.1 50) 0%,
+    oklch(40% 0.12 40) 50%,
+    oklch(38% 0.08 30) 100%
+  );
+  --screen-bg-card: oklch(30% 0.05 45 / 85%);
+  --screen-bg-overlay: oklch(25% 0.06 50 / 40%);
+  --screen-border: oklch(50% 0.1 45 / 35%);
+  --screen-glow: 0 0 50px oklch(55% 0.12 45 / 15%);
+}
+
+:root[data-theme="light"][data-screen-theme="peach"] {
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(95% 0.06 50) 0%,
+    oklch(97% 0.08 40) 50%,
+    oklch(96% 0.05 30) 100%
+  );
+  --screen-bg-card: oklch(99% 0.02 45 / 90%);
+  --screen-bg-overlay: oklch(97% 0.03 50 / 50%);
+  --screen-border: oklch(90% 0.06 45 / 40%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Cyber (科技 - 青藍漸變)
+   ============================================================================ */
+:root[data-screen-theme="cyber"] {
+  --screen-theme: cyber;
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(22% 0.15 180) 0%,
+    oklch(18% 0.12 200) 50%,
+    oklch(15% 0.1 220) 100%
+  );
+  --screen-bg-card: oklch(15% 0.06 195 / 88%);
+  --screen-bg-overlay: oklch(12% 0.08 190 / 45%);
+  --screen-border: oklch(45% 0.15 185 / 40%);
+  --screen-glow: 0 0 50px oklch(55% 0.18 180 / 25%);
+  --screen-text-shadow: 0 0 8px oklch(65% 0.15 180 / 40%);
+}
+
+:root[data-theme="light"][data-screen-theme="cyber"] {
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(45% 0.12 180) 0%,
+    oklch(40% 0.1 200) 50%,
+    oklch(35% 0.08 220) 100%
+  );
+  --screen-bg-card: oklch(40% 0.05 195 / 85%);
+  --screen-bg-overlay: oklch(35% 0.06 190 / 40%);
+  --screen-border: oklch(55% 0.12 185 / 45%);
+}
+
+/* ============================================================================
+   SCREEN THEME APPLICATION - Apply to Page Elements
+   ============================================================================ */
+
+/* 當有選擇全畫面主題時，套用背景 */
+:root[data-screen-theme]:not([data-screen-theme="none"]) body {
+  background: var(--screen-bg-page);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* 套用到卡片區塊 (article, card 等) */
+:root[data-screen-theme]:not([data-screen-theme="none"]) article,
+:root[data-screen-theme]:not([data-screen-theme="none"]) .screen-card {
+  background: var(--screen-bg-card) !important;
+  border-color: var(--screen-border) !important;
+  box-shadow: var(--screen-glow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Overlay 效果 */
+:root[data-screen-theme]:not([data-screen-theme="none"]) .screen-overlay {
+  background: var(--screen-bg-overlay);
+}
+
+/* Header / Nav 保持一致風格 */
+:root[data-screen-theme]:not([data-screen-theme="none"]) header nav {
+  background: var(--screen-bg-card);
+  border-bottom-color: var(--screen-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* 霓虹夜主題特殊文字效果 */
+:root[data-screen-theme="neon-night"] h1,
+:root[data-screen-theme="neon-night"] h2,
+:root[data-screen-theme="neon-night"] .neon-text {
+  text-shadow: var(--screen-text-shadow);
+}
+
+/* ============================================================================
+   SCREEN THEME PREVIEW SWATCHES (for UI)
+   ============================================================================ */
+.screen-theme-swatch[data-preview="aurora"] {
+  background: linear-gradient(135deg, oklch(50% 0.15 280), oklch(55% 0.18 200), oklch(60% 0.2 150));
+}
+
+.screen-theme-swatch[data-preview="sunset"] {
+  background: linear-gradient(135deg, oklch(65% 0.18 350), oklch(70% 0.2 40), oklch(75% 0.18 70));
+}
+
+.screen-theme-swatch[data-preview="ocean"] {
+  background: linear-gradient(
+    135deg,
+    oklch(50% 0.15 230),
+    oklch(55% 0.15 200),
+    oklch(60% 0.12 180)
+  );
+}
+
+.screen-theme-swatch[data-preview="neon-night"] {
+  background: linear-gradient(135deg, oklch(25% 0.1 280), oklch(30% 0.15 300), oklch(25% 0.1 180));
+  box-shadow: inset 0 0 10px oklch(60% 0.25 300 / 50%);
+}
+
+.screen-theme-swatch[data-preview="minimal-pro"] {
+  background: linear-gradient(180deg, oklch(30% 0.01 260), oklch(25% 0.01 260));
+}
