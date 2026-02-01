@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Ni sprememb za shranjevanje"
+    "noChanges": "Ni sprememb za shranjevanje",
+    "translationService": "Prevajalska storitev (BabelDOC)",
+    "translationServiceDesc": "Izberite prevajalski motor za prevajanje PDF z BabelDOC",
+    "localTranslation": "Vgrajen lokalni prevod",
+    "localTranslationDesc": "Uporablja lokalni llama-strežnik, ne potrebuje API ključa, deluje brez povezave",
+    "openaiTranslationDesc": "Uporablja OpenAI API, potreben zgornji API ključ",
+    "deepseekTranslationDesc": "Uporablja DeepSeek API, potreben zgornji API ključ",
+    "customApiTranslation": "API po meri",
+    "customApiTranslationDesc": "Uporablja končno točko API po meri, združljivo z OpenAI"
   },
   "inference": {
     "smartRecommend": "Pametno priporočilo",

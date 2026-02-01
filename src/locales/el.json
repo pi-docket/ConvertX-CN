@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Δεν υπάρχουν αλλαγές για αποθήκευση"
+    "noChanges": "Δεν υπάρχουν αλλαγές για αποθήκευση",
+    "translationService": "Υπηρεσία μετάφρασης (BabelDOC)",
+    "translationServiceDesc": "Επιλέξτε τη μηχανή μετάφρασης για μετάφραση PDF με BabelDOC",
+    "localTranslation": "Ενσωματωμένη τοπική μετάφραση",
+    "localTranslationDesc": "Χρησιμοποιεί τοπικό llama-server, δεν απαιτείται κλειδί API, λειτουργεί εκτός σύνδεσης",
+    "openaiTranslationDesc": "Χρησιμοποιεί OpenAI API, απαιτείται το παραπάνω κλειδί API",
+    "deepseekTranslationDesc": "Χρησιμοποιεί DeepSeek API, απαιτείται το παραπάνω κλειδί API",
+    "customApiTranslation": "Προσαρμοσμένο API",
+    "customApiTranslationDesc": "Χρησιμοποιεί προσαρμοσμένο τελικό σημείο API συμβατό με OpenAI"
   },
   "inference": {
     "smartRecommend": "Έξυπνη Σύσταση",

@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Nėra pakeitimų, kuriuos reikėtų išsaugoti"
+    "noChanges": "Nėra pakeitimų, kuriuos reikėtų išsaugoti",
+    "translationService": "Vertimo paslauga (BabelDOC)",
+    "translationServiceDesc": "Pasirinkite vertimo variklį PDF vertimui su BabelDOC",
+    "localTranslation": "Įintegruotas vietinis vertimas",
+    "localTranslationDesc": "Naudoja vielinį llama-server, nereikia API rakto, veikia neprisijungus",
+    "openaiTranslationDesc": "Naudoja OpenAI API, reikia aukščiau nurodyto API rakto",
+    "deepseekTranslationDesc": "Naudoja DeepSeek API, reikia aukščiau nurodyto API rakto",
+    "customApiTranslation": "Pasirinktinis API",
+    "customApiTranslationDesc": "Naudoja pasirintinį su OpenAI suderinamą API galinį tašką"
   },
   "inference": {
     "smartRecommend": "Išmanioji rekomendacija",

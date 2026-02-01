@@ -126,7 +126,15 @@
     "updateSuccess": "Guardado",
     "updateError": "Error al guardar",
     "updating": "Guardando...",
-    "noChanges": "No hay cambios que guardar"
+    "noChanges": "No hay cambios que guardar",
+    "translationService": "Servicio de traducción (BabelDOC)",
+    "translationServiceDesc": "Elija el motor de traducción para traducción PDF con BabelDOC",
+    "localTranslation": "Traducción local integrada",
+    "localTranslationDesc": "Usa llama-server local, no requiere clave API, funciona sin conexión",
+    "openaiTranslationDesc": "Usa API de OpenAI, requiere clave API anterior",
+    "deepseekTranslationDesc": "Usa API de DeepSeek, requiere clave API anterior",
+    "customApiTranslation": "API personalizada",
+    "customApiTranslationDesc": "Usa endpoint de API compatible con OpenAI personalizado"
   },
   "inference": {
     "smartRecommend": "Recomendación inteligente",

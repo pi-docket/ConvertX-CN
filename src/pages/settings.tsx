@@ -12,6 +12,11 @@ import {
   getEffectiveProcessingMode,
   type ProcessingMode,
 } from "../helpers/processingMode";
+import {
+  getUserTranslationProvider,
+  setUserTranslationProvider,
+  type TranslationProviderType,
+} from "../helpers/translation";
 import { localeService } from "../i18n/service";
 import { userService } from "./user";
 
@@ -69,6 +74,9 @@ export const settings = new Elysia()
 
       // 取得使用者的處理模式設定
       const processingMode = getUserProcessingMode(userId);
+
+      // 取得使用者的翻譯服務設定
+      const translationProvider = getUserTranslationProvider(userId);
 
       // 檢查 VLM 可用性
       const vlmStatus = await checkVlmAvailability();
@@ -235,6 +243,110 @@ export const settings = new Elysia()
                     </div>
                   </section>
 
+                  {/* Translation Service Section (BabelDOC) */}
+                  <section class="flex flex-col gap-3 border-t border-neutral-800 pt-6">
+                    <h2 class="text-sm font-medium text-neutral-400" safe>
+                      {t("settings", "translationService")}
+                    </h2>
+                    <p class="text-xs text-neutral-500" safe>
+                      {t("settings", "translationServiceDesc")}
+                    </p>
+
+                    <div class="flex flex-col gap-2">
+                      {/* Local Translation Option */}
+                      <label
+                        class={`
+                          flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors
+                          ${translationProvider === "local" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
+                        `}
+                      >
+                        <input
+                          type="radio"
+                          name="translation_provider"
+                          value="local"
+                          checked={translationProvider === "local"}
+                          class="mt-0.5 h-4 w-4 accent-neutral-400"
+                        />
+                        <div class="flex flex-col gap-0.5">
+                          <span class="text-sm font-medium text-neutral-200" safe>
+                            {t("settings", "localTranslation")}
+                          </span>
+                          <span class="text-xs text-neutral-500" safe>
+                            {t("settings", "localTranslationDesc")}
+                          </span>
+                        </div>
+                      </label>
+
+                      {/* OpenAI Translation Option */}
+                      <label
+                        class={`
+                          flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors
+                          ${translationProvider === "openai" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
+                        `}
+                      >
+                        <input
+                          type="radio"
+                          name="translation_provider"
+                          value="openai"
+                          checked={translationProvider === "openai"}
+                          class="mt-0.5 h-4 w-4 accent-neutral-400"
+                        />
+                        <div class="flex flex-col gap-0.5">
+                          <span class="text-sm font-medium text-neutral-200">OpenAI</span>
+                          <span class="text-xs text-neutral-500" safe>
+                            {t("settings", "openaiTranslationDesc")}
+                          </span>
+                        </div>
+                      </label>
+
+                      {/* DeepSeek Translation Option */}
+                      <label
+                        class={`
+                          flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors
+                          ${translationProvider === "deepseek" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
+                        `}
+                      >
+                        <input
+                          type="radio"
+                          name="translation_provider"
+                          value="deepseek"
+                          checked={translationProvider === "deepseek"}
+                          class="mt-0.5 h-4 w-4 accent-neutral-400"
+                        />
+                        <div class="flex flex-col gap-0.5">
+                          <span class="text-sm font-medium text-neutral-200">DeepSeek</span>
+                          <span class="text-xs text-neutral-500" safe>
+                            {t("settings", "deepseekTranslationDesc")}
+                          </span>
+                        </div>
+                      </label>
+
+                      {/* Custom API Translation Option */}
+                      <label
+                        class={`
+                          flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors
+                          ${translationProvider === "custom" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
+                        `}
+                      >
+                        <input
+                          type="radio"
+                          name="translation_provider"
+                          value="custom"
+                          checked={translationProvider === "custom"}
+                          class="mt-0.5 h-4 w-4 accent-neutral-400"
+                        />
+                        <div class="flex flex-col gap-0.5">
+                          <span class="text-sm font-medium text-neutral-200" safe>
+                            {t("settings", "customApiTranslation")}
+                          </span>
+                          <span class="text-xs text-neutral-500" safe>
+                            {t("settings", "customApiTranslationDesc")}
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </section>
+
                   {/* Submit section with inline status */}
                   <div class="flex flex-col gap-3 border-t border-neutral-800 pt-6">
                     {/* Inline status message - appears above button */}
@@ -254,6 +366,11 @@ export const settings = new Elysia()
                   </div>
                   {/* Hidden field to store initial values for change detection */}
                   <input type="hidden" id="initial-processing-mode" value={processingMode} />
+                  <input
+                    type="hidden"
+                    id="initial-translation-provider"
+                    value={translationProvider}
+                  />
                   <input type="hidden" id="initial-openai-key" value={openaiKey} />
                   <input type="hidden" id="initial-deepseek-key" value={deepseekKey} />
                   <input type="hidden" id="initial-other-llm-key" value={otherLlmKey} />
@@ -302,6 +419,14 @@ export const settings = new Elysia()
         setUserProcessingMode(userId, mode as ProcessingMode);
       }
 
+      // 儲存翻譯服務設定
+      if (body.translation_provider !== undefined) {
+        const provider = body.translation_provider as TranslationProviderType;
+        if (["local", "openai", "deepseek", "custom"].includes(provider)) {
+          setUserTranslationProvider(userId, provider);
+        }
+      }
+
       set.status = 200;
       return { success: true, message: "Settings updated successfully." };
     },
@@ -311,6 +436,7 @@ export const settings = new Elysia()
         deepseek_api_key: t.Optional(t.String()),
         other_llm_api_key: t.Optional(t.String()),
         processing_mode: t.Optional(t.String()),
+        translation_provider: t.Optional(t.String()),
       }),
       cookie: "session",
     },

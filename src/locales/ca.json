@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "No hi ha canvis per desar"
+    "noChanges": "No hi ha canvis per desar",
+    "translationService": "Servei de traducció (BabelDOC)",
+    "translationServiceDesc": "Trieu el motor de traducció per a la traducció de PDF amb BabelDOC",
+    "localTranslation": "Traducció local integrada",
+    "localTranslationDesc": "Utilitza llama-server local, no requereix clau API, funciona fora de línia",
+    "openaiTranslationDesc": "Utilitza OpenAI API, requereix clau API superior",
+    "deepseekTranslationDesc": "Utilitza DeepSeek API, requereix clau API superior",
+    "customApiTranslation": "API personalitzat",
+    "customApiTranslationDesc": "Utilitza un punt final d'API compatible amb OpenAI personalitzat"
   },
   "inference": {
     "smartRecommend": "Recomanació intel·ligent",

@@ -125,7 +125,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Không có thay đổi để lưu"
+    "noChanges": "Không có thay đổi để lưu",
+    "translationService": "Dịch vụ dịch thuật (BabelDOC)",
+    "translationServiceDesc": "Chọn công cụ dịch cho dịch PDF với BabelDOC",
+    "localTranslation": "Dịch cục bộ tích hợp",
+    "localTranslationDesc": "Sử dụng llama-server cục bộ, không cần khóa API, hoạt động ngoại tuyến",
+    "openaiTranslationDesc": "Sử dụng OpenAI API, cần khóa API ở trên",
+    "deepseekTranslationDesc": "Sử dụng DeepSeek API, cần khóa API ở trên",
+    "customApiTranslation": "API tùy chỉnh",
+    "customApiTranslationDesc": "Sử dụng điểm cuối API tương thích OpenAI tùy chỉnh"
   },
   "inference": {
     "smartRecommend": "Đề xuất thông minh",

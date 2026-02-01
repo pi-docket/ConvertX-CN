@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Nuk ka ndryshime për të ruajtur"
+    "noChanges": "Nuk ka ndryshime për të ruajtur",
+    "translationService": "Shërbimi i Përkthimit (BabelDOC)",
+    "translationServiceDesc": "Zgjidhni motorin e përkthimit për përkthimin PDF me BabelDOC",
+    "localTranslation": "Përkthim lokal i integruar",
+    "localTranslationDesc": "Përdor llama-server lokal, nuk kërkon çelës API, punon jashtë linje",
+    "openaiTranslationDesc": "Përdor OpenAI API, kërkon çelësin API më lart",
+    "deepseekTranslationDesc": "Përdor DeepSeek API, kërkon çelësin API më lart",
+    "customApiTranslation": "API i personalizuar",
+    "customApiTranslationDesc": "Përdor pikën fundore API të përputhshme me OpenAI të personalizuar"
   },
   "inference": {
     "smartRecommend": "Rekomandim i zgjuar",

@@ -126,7 +126,15 @@
     "updateSuccess": "설정이 저장되었습니다",
     "updateError": "설정 저장에 실패했습니다",
     "updating": "저장 중...",
-    "noChanges": "저장할 변경 사항이 없습니다"
+    "noChanges": "저장할 변경 사항이 없습니다",
+    "translationService": "번역 서비스 (BabelDOC)",
+    "translationServiceDesc": "BabelDOC PDF 번역을 위한 번역 엔진 선택",
+    "localTranslation": "내장 로컬 번역",
+    "localTranslationDesc": "로컬 llama-server 사용, API 키 불필요, 오프라인 작동",
+    "openaiTranslationDesc": "OpenAI API 사용, 위의 API 키 필요",
+    "deepseekTranslationDesc": "DeepSeek API 사용, 위의 API 키 필요",
+    "customApiTranslation": "사용자 정의 API",
+    "customApiTranslationDesc": "사용자 정의 OpenAI 호환 API 엔드포인트 사용"
   },
   "inference": {
     "smartRecommend": "스마트 추천",

@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Dim newidiadau i'w cadw"
+    "noChanges": "Dim newidiadau i'w cadw",
+    "translationService": "Gwasanaeth Cyfieithu (BabelDOC)",
+    "translationServiceDesc": "Dewiswch yr injan gyfieithu ar gyfer cyfieithu PDF gyda BabelDOC",
+    "localTranslation": "Cyfieithu lleol adeiledig",
+    "localTranslationDesc": "Yn defnyddio llama-server lleol, dim angen allwedd API, yn gweithio all-lein",
+    "openaiTranslationDesc": "Yn defnyddio OpenAI API, angen allwedd API uchod",
+    "deepseekTranslationDesc": "Yn defnyddio DeepSeek API, angen allwedd API uchod",
+    "customApiTranslation": "API personol",
+    "customApiTranslationDesc": "Yn defnyddio pwynt terfyn API cydnaws ag OpenAI personol"
   },
   "inference": {
     "smartRecommend": "Argymhelliad Clyfar",

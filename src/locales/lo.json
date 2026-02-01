@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "ບໍ່ມີການປ່ຽນແປງທີ່ຈະບັນທຶກ"
+    "noChanges": "ບໍ່ມີການປ່ຽນແປງທີ່ຈະບັນທຶກ",
+    "translationService": "ບໍລິການແປ (BabelDOC)",
+    "translationServiceDesc": "ເລືອກເຄື່ອງແປລາພາສາສຳລັບການແປ PDF ດ້ວຍ BabelDOC",
+    "localTranslation": "ການແປທ້ອງຖິ່ນທີ່ມີໃນຕົວ",
+    "localTranslationDesc": "ໃຊ້ llama-server ທ້ອງຖິ່ນ, ບໍ່ຕ້ອງການກຸນແຈ API, ເຮັດວຽກອອຟໄລນ໌",
+    "openaiTranslationDesc": "ໃຊ້ OpenAI API, ຕ້ອງການກຸນແຈ API ຂ້າງເທິງ",
+    "deepseekTranslationDesc": "ໃຊ້ DeepSeek API, ຕ້ອງການກຸນແຈ API ຂ້າງເທິງ",
+    "customApiTranslation": "API ທີ່ກຳນົດເອງ",
+    "customApiTranslationDesc": "ໃຊ້ຈຸດສິ້ນສຸດ API ທີ່ເຂົ້າກັນໄດ້ກັບ OpenAI ທີ່ກຳນົດເອງ"
   },
   "inference": {
     "smartRecommend": "ຄຳແນະນຳອັດສະລິຍະ",

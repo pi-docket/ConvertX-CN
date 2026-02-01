@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Walang pagbabagong i-save"
+    "noChanges": "Walang pagbabagong i-save",
+    "translationService": "Serbisyo ng Pagsasalin (BabelDOC)",
+    "translationServiceDesc": "Pumili ng translation engine para sa PDF translation gamit ang BabelDOC",
+    "localTranslation": "Built-in na Lokal na Pagsasalin",
+    "localTranslationDesc": "Gumagamit ng lokal na llama-server, hindi kailangan ng API key, gumagana offline",
+    "openaiTranslationDesc": "Gumagamit ng OpenAI API, kailangan ang API key sa itaas",
+    "deepseekTranslationDesc": "Gumagamit ng DeepSeek API, kailangan ang API key sa itaas",
+    "customApiTranslation": "Custom na API",
+    "customApiTranslationDesc": "Gumagamit ng custom na OpenAI-compatible API endpoint"
   },
   "inference": {
     "smartRecommend": "Matalinong Rekomendasyon",

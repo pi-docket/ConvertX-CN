@@ -12,6 +12,7 @@ import { join, basename, dirname } from "node:path";
 import { ExecFileFn } from "./types";
 import { getArchiveFileName } from "../transfer";
 import { ensureSearchablePdf, cleanupOcrTempFile } from "../helpers/pdfOcr";
+import { getUserTranslationProvider, type TranslationProviderType } from "../helpers/translation";
 
 /**
  * BabelDOC Content Engine
@@ -192,6 +193,98 @@ function getOutputExtension(format: OutputFormat): string {
 }
 
 /**
+ * 取得翻譯服務的 CLI 參數
+ *
+ * @param userId 使用者 ID（可選）
+ * @returns babeldoc CLI 參數陣列
+ */
+function getTranslationArgs(userId?: number): string[] {
+  const args: string[] = [];
+
+  // 取得使用者偏好的翻譯服務
+  const providerType: TranslationProviderType = userId
+    ? getUserTranslationProvider(userId)
+    : "local";
+
+  // llama-server 的 OpenAI 相容 API 端點
+  const llamaServerUrl = process.env.LLAMA_SERVER_URL || "http://127.0.0.1:11785";
+
+  switch (providerType) {
+    case "local":
+      // 使用本地 llama-server（OpenAI 相容 API）
+      args.push("--openai");
+      args.push("--openai-base-url", `${llamaServerUrl}/v1`);
+      args.push("--openai-api-key", "local-llama"); // 本地不需要 key，但參數必填
+      args.push("--openai-model", process.env.LOCAL_TRANSLATION_MODEL || "local");
+      console.log(`[BabelDOC] Using local llama-server at ${llamaServerUrl}`);
+      break;
+
+    case "openai":
+      if (process.env.OPENAI_API_KEY) {
+        args.push("--openai");
+        args.push("--openai-api-key", process.env.OPENAI_API_KEY);
+        if (process.env.OPENAI_MODEL) {
+          args.push("--openai-model", process.env.OPENAI_MODEL);
+        }
+        if (process.env.OPENAI_BASE_URL) {
+          args.push("--openai-base-url", process.env.OPENAI_BASE_URL);
+        }
+        console.log(`[BabelDOC] Using OpenAI API`);
+      } else {
+        // Fallback 到本地
+        console.log(`[BabelDOC] OpenAI API key not set, falling back to local`);
+        return getTranslationArgsLocal(llamaServerUrl);
+      }
+      break;
+
+    case "deepseek":
+      if (process.env.DEEPSEEK_API_KEY) {
+        args.push("--openai");
+        args.push("--openai-api-key", process.env.DEEPSEEK_API_KEY);
+        args.push("--openai-base-url", "https://api.deepseek.com/v1");
+        args.push("--openai-model", process.env.DEEPSEEK_MODEL || "deepseek-chat");
+        console.log(`[BabelDOC] Using DeepSeek API`);
+      } else {
+        console.log(`[BabelDOC] DeepSeek API key not set, falling back to local`);
+        return getTranslationArgsLocal(llamaServerUrl);
+      }
+      break;
+
+    case "custom":
+      if (process.env.OTHER_LLM_API_KEY && process.env.CUSTOM_LLM_BASE_URL) {
+        args.push("--openai");
+        args.push("--openai-api-key", process.env.OTHER_LLM_API_KEY);
+        args.push("--openai-base-url", process.env.CUSTOM_LLM_BASE_URL);
+        if (process.env.CUSTOM_LLM_MODEL) {
+          args.push("--openai-model", process.env.CUSTOM_LLM_MODEL);
+        }
+        console.log(`[BabelDOC] Using custom API at ${process.env.CUSTOM_LLM_BASE_URL}`);
+      } else {
+        console.log(`[BabelDOC] Custom API not configured, falling back to local`);
+        return getTranslationArgsLocal(llamaServerUrl);
+      }
+      break;
+  }
+
+  return args;
+}
+
+/**
+ * 取得本地翻譯服務的 CLI 參數
+ */
+function getTranslationArgsLocal(llamaServerUrl: string): string[] {
+  return [
+    "--openai",
+    "--openai-base-url",
+    `${llamaServerUrl}/v1`,
+    "--openai-api-key",
+    "local-llama",
+    "--openai-model",
+    process.env.LOCAL_TRANSLATION_MODEL || "local",
+  ];
+}
+
+/**
  * 執行 babeldoc 命令進行 PDF 翻譯
  *
  * @param inputPath 輸入 PDF 路徑
@@ -199,6 +292,7 @@ function getOutputExtension(format: OutputFormat): string {
  * @param targetLang 目標語言
  * @param outputFormat 輸出格式（pdf/md/html）
  * @param execFile 執行函數
+ * @param userId 使用者 ID（用於取得翻譯設定）
  */
 function runBabelDoc(
   inputPath: string,
@@ -206,6 +300,7 @@ function runBabelDoc(
   targetLang: string,
   outputFormat: OutputFormat,
   execFile: ExecFileFn,
+  userId?: number,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // babeldoc CLI 參數（2026 版本）：
@@ -217,22 +312,22 @@ function runBabelDoc(
     const babelLang = toBabelDocLang(targetLang);
     const outputDir = dirname(outputPath);
 
-    // 新版 babeldoc 只接受 --files 和 --output（目錄）
+    // 基本參數
     const args = ["--files", inputPath, "--output", outputDir, "--lang-out", babelLang];
 
-    // 如果有設定 OpenAI，則使用 OpenAI
-    if (process.env.OPENAI_API_KEY) {
-      args.push("--openai");
-      if (process.env.OPENAI_MODEL) {
-        args.push("--openai-model", process.env.OPENAI_MODEL);
-      }
-      if (process.env.OPENAI_BASE_URL) {
-        args.push("--openai-base-url", process.env.OPENAI_BASE_URL);
-      }
-      args.push("--openai-api-key", process.env.OPENAI_API_KEY);
-    }
+    // 加入翻譯服務參數
+    const translationArgs = getTranslationArgs(userId);
+    args.push(...translationArgs);
 
-    console.log(`[BabelDOC] Running: babeldoc ${args.join(" ")}`);
+    // 遮蔽 API key 的日誌輸出
+    const logArgs = args.map((arg, i) => {
+      const prevArg = args[i - 1];
+      if (prevArg === "--openai-api-key" && arg !== "local-llama") {
+        return "***";
+      }
+      return arg;
+    });
+    console.log(`[BabelDOC] Running: babeldoc ${logArgs.join(" ")}`);
 
     execFile("babeldoc", args, (error, stdout, stderr) => {
       if (error) {
@@ -293,7 +388,7 @@ function runBabelDoc(
  * @param fileType 檔案類型（應為 "pdf"）
  * @param convertTo 目標格式（如 "pdf-babel-zh"、"md-babel-en"、"html-babel-ja"）
  * @param targetPath 輸出路徑
- * @param _options 額外選項
+ * @param options 額外選項（包含 userId）
  * @param execFile 執行函數覆寫
  */
 export async function convert(
@@ -301,9 +396,14 @@ export async function convert(
   fileType: string,
   convertTo: string,
   targetPath: string,
-  _options?: unknown,
+  options?: unknown,
   execFile: ExecFileFn = execFileOriginal,
 ): Promise<string> {
+  // 從 options 中安全提取 userId
+  const userId =
+    options && typeof options === "object" && "userId" in options
+      ? (options as { userId?: number }).userId
+      : undefined;
   let ocrTempFile: string | undefined;
 
   try {
@@ -341,8 +441,8 @@ export async function convert(
     // 5. 設定 BabelDOC 輸出路徑（依輸出格式決定副檔名）
     const translatedFilePath = join(tempDir, `${inputFileName}-translated.${outputExt}`);
 
-    // 6. 執行 babeldoc 翻譯（使用 OCR 處理後的 PDF）
-    await runBabelDoc(inputPdf, translatedFilePath, targetLang, outputFormat, execFile);
+    // 6. 執行 babeldoc 翻譯（使用 OCR 處理後的 PDF，根據使用者設定選擇翻譯服務）
+    await runBabelDoc(inputPdf, translatedFilePath, targetLang, outputFormat, execFile, userId);
 
     // 7. 複製翻譯後的檔案到封裝目錄
     const translatedDest = join(archiveDir, `translated-${targetLang}.${outputExt}`);

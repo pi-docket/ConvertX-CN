@@ -126,7 +126,15 @@
     "updateSuccess": "設定已儲存",
     "updateError": "儲存設定失敗",
     "updating": "儲存中...",
-    "noChanges": "沒有變更需要儲存"
+    "noChanges": "沒有變更需要儲存",
+    "translationService": "翻譯服務（BabelDOC）",
+    "translationServiceDesc": "選擇 BabelDOC PDF 翻譯使用的翻譯引擎",
+    "localTranslation": "內建本地翻譯",
+    "localTranslationDesc": "使用本地 llama-server，無需 API Key，可離線運作",
+    "openaiTranslationDesc": "使用 OpenAI API，需在上方設定 API Key",
+    "deepseekTranslationDesc": "使用 DeepSeek API，需在上方設定 API Key",
+    "customApiTranslation": "自訂 API",
+    "customApiTranslationDesc": "使用自訂的 OpenAI 相容 API 端點"
   },
   "inference": {
     "smartRecommend": "智慧推薦",

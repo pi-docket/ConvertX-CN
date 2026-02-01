@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Geen wijzigingen om op te slaan"
+    "noChanges": "Geen wijzigingen om op te slaan",
+    "translationService": "Vertaalservice (BabelDOC)",
+    "translationServiceDesc": "Kies de vertaalengine voor PDF-vertaling met BabelDOC",
+    "localTranslation": "Ingebouwde lokale vertaling",
+    "localTranslationDesc": "Gebruikt lokale llama-server, geen API-sleutel vereist, werkt offline",
+    "openaiTranslationDesc": "Gebruikt OpenAI API, vereist bovenstaande API-sleutel",
+    "deepseekTranslationDesc": "Gebruikt DeepSeek API, vereist bovenstaande API-sleutel",
+    "customApiTranslation": "Aangepaste API",
+    "customApiTranslationDesc": "Gebruikt aangepast OpenAI-compatibel API-eindpunt"
   },
   "inference": {
     "smartRecommend": "Slimme aanbeveling",

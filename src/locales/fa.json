@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "تغییری برای ذخیره وجود ندارد"
+    "noChanges": "تغییری برای ذخیره وجود ندارد",
+    "translationService": "سرویس ترجمه (BabelDOC)",
+    "translationServiceDesc": "موتور ترجمه را برای ترجمه PDF با BabelDOC انتخاب کنید",
+    "localTranslation": "ترجمه محلی داخلی",
+    "localTranslationDesc": "از llama-server محلی استفاده می‌کند، به کلید API نیاز ندارد، آفلاین کار می‌کند",
+    "openaiTranslationDesc": "از OpenAI API استفاده می‌کند، به کلید API بالا نیاز دارد",
+    "deepseekTranslationDesc": "از DeepSeek API استفاده می‌کند، به کلید API بالا نیاز دارد",
+    "customApiTranslation": "API سفارشی",
+    "customApiTranslationDesc": "از نقطه پایانی API سازگار با OpenAI سفارشی استفاده می‌کند"
   },
   "inference": {
     "smartRecommend": "پیشنهاد هوشمند",

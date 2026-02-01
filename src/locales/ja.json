@@ -126,7 +126,15 @@
     "updateSuccess": "設定を保存しました",
     "updateError": "設定の保存に失敗しました",
     "updating": "保存中...",
-    "noChanges": "保存する変更はありません"
+    "noChanges": "保存する変更はありません",
+    "translationService": "翻訳サービス（BabelDOC）",
+    "translationServiceDesc": "BabelDOC PDF翻訳で使用する翻訳エンジンを選択",
+    "localTranslation": "内蔵ローカル翻訳",
+    "localTranslationDesc": "ローカル llama-server を使用、API キー不要、オフライン動作可能",
+    "openaiTranslationDesc": "OpenAI API を使用、上記で API キーの設定が必要",
+    "deepseekTranslationDesc": "DeepSeek API を使用、上記で API キーの設定が必要",
+    "customApiTranslation": "カスタム API",
+    "customApiTranslationDesc": "カスタム OpenAI 互換 API エンドポイントを使用"
   },
   "inference": {
     "smartRecommend": "スマート推薦",

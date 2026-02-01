@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Nu există modificări de salvat"
+    "noChanges": "Nu există modificări de salvat",
+    "translationService": "Serviciu de traducere (BabelDOC)",
+    "translationServiceDesc": "Alegeți motorul de traducere pentru traducerea PDF cu BabelDOC",
+    "localTranslation": "Traducere locală integrată",
+    "localTranslationDesc": "Foloseste llama-server local, nu necesită cheie API, funcționează offline",
+    "openaiTranslationDesc": "Foloseste OpenAI API, necesită cheia API de mai sus",
+    "deepseekTranslationDesc": "Foloseste DeepSeek API, necesită cheia API de mai sus",
+    "customApiTranslation": "API personalizat",
+    "customApiTranslationDesc": "Foloseste un punct final API compatibil OpenAI personalizat"
   },
   "inference": {
     "smartRecommend": "Recomandare inteligentă",

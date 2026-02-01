@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Tidak ada perubahan untuk disimpan"
+    "noChanges": "Tidak ada perubahan untuk disimpan",
+    "translationService": "Layanan Terjemahan (BabelDOC)",
+    "translationServiceDesc": "Pilih mesin terjemahan untuk terjemahan PDF dengan BabelDOC",
+    "localTranslation": "Terjemahan Lokal Bawaan",
+    "localTranslationDesc": "Menggunakan llama-server lokal, tidak memerlukan kunci API, bekerja offline",
+    "openaiTranslationDesc": "Menggunakan OpenAI API, memerlukan kunci API di atas",
+    "deepseekTranslationDesc": "Menggunakan DeepSeek API, memerlukan kunci API di atas",
+    "customApiTranslation": "API Kustom",
+    "customApiTranslationDesc": "Menggunakan endpoint API yang kompatibel dengan OpenAI kustom"
   },
   "inference": {
     "smartRecommend": "Rekomendasi Cerdas",

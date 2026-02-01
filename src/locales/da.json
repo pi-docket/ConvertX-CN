@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Ingen ændringer at gemme"
+    "noChanges": "Ingen ændringer at gemme",
+    "translationService": "Oversættelsestjeneste (BabelDOC)",
+    "translationServiceDesc": "Vælg oversættelsesmotor til PDF-oversættelse med BabelDOC",
+    "localTranslation": "Indbygget lokal oversættelse",
+    "localTranslationDesc": "Bruger lokal llama-server, ingen API-nøgle kræves, fungerer offline",
+    "openaiTranslationDesc": "Bruger OpenAI API, kræver API-nøgle ovenfor",
+    "deepseekTranslationDesc": "Bruger DeepSeek API, kræver API-nøgle ovenfor",
+    "customApiTranslation": "Brugerdefineret API",
+    "customApiTranslationDesc": "Bruger brugerdefineret OpenAI-kompatibelt API-endepunkt"
   },
   "inference": {
     "smartRecommend": "Smart anbefaling",

@@ -209,6 +209,7 @@ export async function handleConvert(
   convertTo: string,
   converterName: string,
   jobId: Cookie<string | undefined>,
+  userId?: number,
 ) {
   const query = db.query(
     "INSERT INTO file_names (job_id, file_name, output_file_name, status) VALUES (?1, ?2, ?3, ?4)",
@@ -248,7 +249,7 @@ export async function handleConvert(
       const targetPath = `${userOutputDir}${newFileName.replace(/\.tar$/, "")}`;
       toProcess.push(
         new Promise((resolve, reject) => {
-          mainConverter(filePath, fileType, convertTo, targetPath, {}, converterName)
+          mainConverter(filePath, fileType, convertTo, targetPath, { userId }, converterName)
             .then((r) => {
               if (jobId.value) {
                 query.run(jobId.value, fileName, newFileName, r);

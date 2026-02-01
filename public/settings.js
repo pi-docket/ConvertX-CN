@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     deepseek_api_key: document.getElementById("initial-deepseek-key")?.value || "",
     other_llm_api_key: document.getElementById("initial-other-llm-key")?.value || "",
     processing_mode: document.getElementById("initial-processing-mode")?.value || "pipeline",
+    translation_provider: document.getElementById("initial-translation-provider")?.value || "local",
   });
 
   form.addEventListener("submit", async function (e) {
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
       deepseek_api_key: formData.get("deepseek_api_key") || "",
       other_llm_api_key: formData.get("other_llm_api_key") || "",
       processing_mode: formData.get("processing_mode") || "pipeline",
+      translation_provider: formData.get("translation_provider") || "local",
     };
 
     // Get initial values
@@ -45,7 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
       currentValues.openai_api_key !== initialValues.openai_api_key ||
       currentValues.deepseek_api_key !== initialValues.deepseek_api_key ||
       currentValues.other_llm_api_key !== initialValues.other_llm_api_key ||
-      currentValues.processing_mode !== initialValues.processing_mode;
+      currentValues.processing_mode !== initialValues.processing_mode ||
+      currentValues.translation_provider !== initialValues.translation_provider;
 
     // If no changes, show message and return early
     if (!hasChanges) {
@@ -98,11 +101,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Update initial values to current values (so next submit won't trigger if unchanged)
           const initProcessingMode = document.getElementById("initial-processing-mode");
+          const initTranslationProvider = document.getElementById("initial-translation-provider");
           const initOpenai = document.getElementById("initial-openai-key");
           const initDeepseek = document.getElementById("initial-deepseek-key");
           const initOtherLlm = document.getElementById("initial-other-llm-key");
 
           if (initProcessingMode) initProcessingMode.value = currentValues.processing_mode;
+          if (initTranslationProvider)
+            initTranslationProvider.value = currentValues.translation_provider;
           if (initOpenai) initOpenai.value = currentValues.openai_api_key;
           if (initDeepseek) initDeepseek.value = currentValues.deepseek_api_key;
           if (initOtherLlm) initOtherLlm.value = currentValues.other_llm_api_key;

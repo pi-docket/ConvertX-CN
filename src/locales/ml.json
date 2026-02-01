@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "സംരക്ഷിക്കാൻ മാറ്റങ്ങളൊന്നുമില്ല"
+    "noChanges": "സംരക്ഷിക്കാൻ മാറ്റങ്ങളൊന്നുമില്ല",
+    "translationService": "വിവർത്തന സേവനം (BabelDOC)",
+    "translationServiceDesc": "BabelDOC ഉപയോഗിച്ച് PDF വിവർത്തനത്തിനായി വിവർത്തന എൻജിൻ തിരഞ്ഞെടുക്കുക",
+    "localTranslation": "ബിൽറ്റ്-ഇൻ ലോക്കൽ വിവർത്തനം",
+    "localTranslationDesc": "ലോക്കൽ llama-server ഉപയോഗിക്കുന്നു, API കീ ആവശ്യമില്ല, ഓഫ്‌ലൈനിൽ പ്രവർത്തിക്കുന്നു",
+    "openaiTranslationDesc": "OpenAI API ഉപയോഗിക്കുന്നു, മുകളിലുള്ള API കീ ആവശ്യമാണ്",
+    "deepseekTranslationDesc": "DeepSeek API ഉപയോഗിക്കുന്നു, മുകളിലുള്ള API കീ ആവശ്യമാണ്",
+    "customApiTranslation": "കസ്റ്റം API",
+    "customApiTranslationDesc": "കസ്റ്റം OpenAI-അനുകൂല API എൻഡ്‌പോയിന്റ് ഉപയോഗിക്കുന്നു"
   },
   "inference": {
     "smartRecommend": "സ്മാർട്ട് ശുപാർശ",

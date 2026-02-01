@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "సేవ్ చేయడానికి మార్పులు లేవు"
+    "noChanges": "సేవ్ చేయడానికి మార్పులు లేవు",
+    "translationService": "అనువాద సేవ (BabelDOC)",
+    "translationServiceDesc": "BabelDOC తో PDF అనువాదం కోసం అనువాద ఇంజిన్ ఎంచుకోండి",
+    "localTranslation": "బిల్ట్-ఇన్ స్థానిక అనువాదం",
+    "localTranslationDesc": "స్థానిక llama-server ఉపయోగిస్తుంది, API కీ అవసరం లేదు, ఆఫ్‌లైన్‌లో పని చేస్తుంది",
+    "openaiTranslationDesc": "OpenAI API ఉపయోగిస్తుంది, పైన API కీ అవసరం",
+    "deepseekTranslationDesc": "DeepSeek API ఉపయోగిస్తుంది, పైన API కీ అవసరం",
+    "customApiTranslation": "కస్టమ్ API",
+    "customApiTranslationDesc": "కస్టమ్ OpenAI-అనుకూల API ఎండ్‌పాయింట్ ఉపయోగిస్తుంది"
   },
   "inference": {
     "smartRecommend": "స్మార్ట్ సిఫార్సు",

@@ -125,7 +125,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "ไม่มีการเปลี่ยนแปลงที่จะบันทึก"
+    "noChanges": "ไม่มีการเปลี่ยนแปลงที่จะบันทึก",
+    "translationService": "บริการแปลภาษา (BabelDOC)",
+    "translationServiceDesc": "เลือกเครื่องมือแปลสำหรับการแปล PDF ด้วย BabelDOC",
+    "localTranslation": "การแปลในเครื่องในตัว",
+    "localTranslationDesc": "ใช้ llama-server ในเครื่อง ไม่ต้องใช้ API key ทำงานแบบออฟไลน์",
+    "openaiTranslationDesc": "ใช้ OpenAI API ต้องใช้ API key ด้านบน",
+    "deepseekTranslationDesc": "ใช้ DeepSeek API ต้องใช้ API key ด้านบน",
+    "customApiTranslation": "API แบบกำหนดเอง",
+    "customApiTranslationDesc": "ใช้ endpoint API ที่เข้ากันได้กับ OpenAI แบบกำหนดเอง"
   },
   "inference": {
     "smartRecommend": "คำแนะนำอัจฉริยะ",

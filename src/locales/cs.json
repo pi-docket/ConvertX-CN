@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Žádné změny k uložení"
+    "noChanges": "Žádné změny k uložení",
+    "translationService": "Překladatelská služba (BabelDOC)",
+    "translationServiceDesc": "Vyberte překladový stroj pro překlad PDF pomocí BabelDOC",
+    "localTranslation": "Vestavěný lokální překlad",
+    "localTranslationDesc": "Používá lokální llama-server, nevyžaduje API klíč, funguje offline",
+    "openaiTranslationDesc": "Používá OpenAI API, vyžaduje výše uvedený API klíč",
+    "deepseekTranslationDesc": "Používá DeepSeek API, vyžaduje výše uvedený API klíč",
+    "customApiTranslation": "Vlastní API",
+    "customApiTranslationDesc": "Používá vlastní koncový bod API kompatibilní s OpenAI"
   },
   "inference": {
     "smartRecommend": "Chytrá doporučení",

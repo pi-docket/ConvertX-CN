@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Kaydedilecek değişiklik yok"
+    "noChanges": "Kaydedilecek değişiklik yok",
+    "translationService": "Çeviri Servisi (BabelDOC)",
+    "translationServiceDesc": "BabelDOC ile PDF çevirisi için çeviri motorunu seçin",
+    "localTranslation": "Yerleşik Yerel Çeviri",
+    "localTranslationDesc": "Yerel llama-server kullanır, API anahtarı gerektirmez, çevrimdışı çalışır",
+    "openaiTranslationDesc": "OpenAI API kullanır, yukarıdaki API anahtarı gerektirir",
+    "deepseekTranslationDesc": "DeepSeek API kullanır, yukarıdaki API anahtarı gerektirir",
+    "customApiTranslation": "Özel API",
+    "customApiTranslationDesc": "Özel OpenAI uyumlu API uç noktası kullanır"
   },
   "inference": {
     "smartRecommend": "Akıllı Öneri",

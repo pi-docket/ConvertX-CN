@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Azikho izinguquko zokugcina"
+    "noChanges": "Azikho izinguquko zokugcina",
+    "translationService": "Isevisi Yokuhumusha (BabelDOC)",
+    "translationServiceDesc": "Khetha injini yokuhumusha yokuhumusha i-PDF nge-BabelDOC",
+    "localTranslation": "Ukuhumusha kwangaphakathi kwendawo",
+    "localTranslationDesc": "Isebenzisa i-llama-server yasendaweni, akudingeki ukhiye we-API, isebenza ngaphandle kwe-inthanethi",
+    "openaiTranslationDesc": "Isebenzisa i-OpenAI API, idinga ukhiye we-API ongenhla",
+    "deepseekTranslationDesc": "Isebenzisa i-DeepSeek API, idinga ukhiye we-API ongenhla",
+    "customApiTranslation": "I-API yangokwezifiso",
+    "customApiTranslationDesc": "Isebenzisa iphoyinti lokugcina le-API ehambisana ne-OpenAI yangokwezifiso"
   },
   "inference": {
     "smartRecommend": "Isiphakamiso Esihlakaniphile",

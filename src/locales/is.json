@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Engar breytingar til að vista"
+    "noChanges": "Engar breytingar til að vista",
+    "translationService": "Þýðingarþjonusta (BabelDOC)",
+    "translationServiceDesc": "Veldu þýðingavél fyrir PDF þýðingu með BabelDOC",
+    "localTranslation": "Innbyggt staðbundið þýðing",
+    "localTranslationDesc": "Notar staðbundinn llama-server, þarf ekki API lykil, virkar ónettengt",
+    "openaiTranslationDesc": "Notar OpenAI API, þarf API lykil hér að ofan",
+    "deepseekTranslationDesc": "Notar DeepSeek API, þarf API lykil hér að ofan",
+    "customApiTranslation": "Sérsniðið API",
+    "customApiTranslationDesc": "Notar sérsniðinn OpenAI-samræmdan API endapunkt"
   },
   "inference": {
     "smartRecommend": "Snjöll tillaga",

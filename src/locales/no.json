@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Ingen endringer å lagre"
+    "noChanges": "Ingen endringer å lagre",
+    "translationService": "Oversettelsestjeneste (BabelDOC)",
+    "translationServiceDesc": "Velg oversettelsesmotor for PDF-oversettelse med BabelDOC",
+    "localTranslation": "Innebygd lokal oversettelse",
+    "localTranslationDesc": "Bruker lokal llama-server, ingen API-nøkkel kreves, fungerer offline",
+    "openaiTranslationDesc": "Bruker OpenAI API, krever API-nøkkel ovenfor",
+    "deepseekTranslationDesc": "Bruker DeepSeek API, krever API-nøkkel ovenfor",
+    "customApiTranslation": "Tilpasset API",
+    "customApiTranslationDesc": "Bruker tilpasset OpenAI-kompatibelt API-endepunkt"
   },
   "inference": {
     "smartRecommend": "Smart anbefaling",

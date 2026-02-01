@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Няма промени за запазване"
+    "noChanges": "Няма промени за запазване",
+    "translationService": "Услуга за превод (BabelDOC)",
+    "translationServiceDesc": "Изберете машина за превод за PDF превод с BabelDOC",
+    "localTranslation": "Вграден локален превод",
+    "localTranslationDesc": "Използва локален llama-server, не изисква API ключ, работи офлайн",
+    "openaiTranslationDesc": "Използва OpenAI API, изисква API ключ отгоре",
+    "deepseekTranslationDesc": "Използва DeepSeek API, изисква API ключ отгоре",
+    "customApiTranslation": "Персонализиран API",
+    "customApiTranslationDesc": "Използва персонализирана крайна точка на API, съвместима с OpenAI"
   },
   "inference": {
     "smartRecommend": "Интелигентна препоръка",

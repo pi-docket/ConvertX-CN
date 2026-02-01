@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Níl aon athruithe le sábháil"
+    "noChanges": "Níl aon athruithe le sábháil",
+    "translationService": "Seirbhís Aistrithe (BabelDOC)",
+    "translationServiceDesc": "Roghnaigh an t-inneall aistrithe le haghaidh aistrú PDF le BabelDOC",
+    "localTranslation": "Aistrú áitiúil insuite",
+    "localTranslationDesc": "Úsáideann llama-server áitiúil, ní théastáodh eochair API, oibríonn as líne",
+    "openaiTranslationDesc": "Úsáideann OpenAI API, téastáodh an eochair API thuas",
+    "deepseekTranslationDesc": "Úsáideann DeepSeek API, téastáodh an eochair API thuas",
+    "customApiTranslation": "API saincheaptha",
+    "customApiTranslationDesc": "Úsáideann pointe deiridh API comhoiriúnach le OpenAI saincheaptha"
   },
   "inference": {
     "smartRecommend": "Moladh Cliste",

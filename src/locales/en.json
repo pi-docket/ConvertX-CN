@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "No changes to save"
+    "noChanges": "No changes to save",
+    "translationService": "Translation Service (BabelDOC)",
+    "translationServiceDesc": "Choose the translation engine for PDF translation with BabelDOC",
+    "localTranslation": "Built-in Local Translation",
+    "localTranslationDesc": "Uses local llama-server, no API key required, works offline",
+    "openaiTranslationDesc": "Uses OpenAI API, requires API key above",
+    "deepseekTranslationDesc": "Uses DeepSeek API, requires API key above",
+    "customApiTranslation": "Custom API",
+    "customApiTranslationDesc": "Uses custom OpenAI-compatible API endpoint"
   },
   "inference": {
     "smartRecommend": "Smart Recommend",

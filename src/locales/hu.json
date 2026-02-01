@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Nincs mentendő módosítás"
+    "noChanges": "Nincs mentendő módosítás",
+    "translationService": "Fordítási szolgáltatás (BabelDOC)",
+    "translationServiceDesc": "Válassza ki a fordító motort a PDF fordításhoz BabelDOC-kal",
+    "localTranslation": "Beépített helyi fordítás",
+    "localTranslationDesc": "Helyi llama-servert használ, nem igényel API kulcsot, offline működik",
+    "openaiTranslationDesc": "OpenAI API-t használ, fenti API kulcs szükséges",
+    "deepseekTranslationDesc": "DeepSeek API-t használ, fenti API kulcs szükséges",
+    "customApiTranslation": "Egyéni API",
+    "customApiTranslationDesc": "Egyéni OpenAI-kompatibilis API végpontot használ"
   },
   "inference": {
     "smartRecommend": "Intelligens ajánlás",

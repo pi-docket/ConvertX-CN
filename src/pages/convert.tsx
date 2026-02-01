@@ -79,7 +79,7 @@ export const convert = new Elysia().use(userService).post(
     const userId = parseInt(user.id, 10);
     setApiKeysToEnv(userId);
 
-    handleConvert(fileNames, userUploadsDir, userOutputDir, convertTo, converterName, jobId)
+    handleConvert(fileNames, userUploadsDir, userOutputDir, convertTo, converterName, jobId, userId)
       .then(() => {
         // All conversions are done, update the job status to 'completed'
         if (jobId.value) {

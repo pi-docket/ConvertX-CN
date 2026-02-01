@@ -125,7 +125,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "सहेजने के लिए कोई बदलाव नहीं"
+    "noChanges": "सहेजने के लिए कोई बदलाव नहीं",
+    "translationService": "अनुवाद सेवा (BabelDOC)",
+    "translationServiceDesc": "BabelDOC के साथ PDF अनुवाद के लिए अनुवाद इंजन चुनें",
+    "localTranslation": "अंतर्निहित स्थानीय अनुवाद",
+    "localTranslationDesc": "स्थानीय llama-server का उपयोग करता है, API कुंजी की आवश्यकता नहीं, ऑफलाइन काम करता है",
+    "openaiTranslationDesc": "OpenAI API का उपयोग करता है, ऊपर API कुंजी आवश्यक",
+    "deepseekTranslationDesc": "DeepSeek API का उपयोग करता है, ऊपर API कुंजी आवश्यक",
+    "customApiTranslation": "कस्टम API",
+    "customApiTranslationDesc": "कस्टम OpenAI-संगत API एंडपॉइंट का उपयोग करता है"
   },
   "inference": {
     "smartRecommend": "स्मार्ट अनुशंसा",

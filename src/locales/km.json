@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "គ្មានការផ្លាស់ប្តូរដើម្បីរក្សាទុក"
+    "noChanges": "អមានការផ្លាស់ប្តូរដើម្បីរក្សាទុក",
+    "translationService": "សេវាកម្មបកប្រែ (BabelDOC)",
+    "translationServiceDesc": "ជ្រើសរើសម៉ាស៊ីនបកប្រែសម្រាប់ការបកប្រែ PDF ជាមួយ BabelDOC",
+    "localTranslation": "ការបកប្រែក្នុងស្រុកដែលបានបង្កើត",
+    "localTranslationDesc": "ប្រើប្រាស់ llama-server ក្នុងស្រុក មិនត្រូវការសោ API ធ្វើការបានប្រុកនៅក្រៅបឥនធឺណែត",
+    "openaiTranslationDesc": "ប្រើប្រាស់ OpenAI API ត្រូវការសោ API ខាងលើ",
+    "deepseekTranslationDesc": "ប្រើប្រាស់ DeepSeek API ត្រូវការសោ API ខាងលើ",
+    "customApiTranslation": "API ផ្ទាល់ខ្លួន",
+    "customApiTranslationDesc": "ប្រើប្រាស់ចុងបញ្ចប់ API ដែលត្រូវគ្នាជាមួយ OpenAI ផ្ទាល់ខ្លួន"
   },
   "inference": {
     "smartRecommend": "ការណែនាំឆ្លាតវៃ",

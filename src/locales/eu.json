@@ -126,7 +126,15 @@
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
     "updating": "Saving...",
-    "noChanges": "Ez dago gordetako aldaketarik"
+    "noChanges": "Ez dago gordetako aldaketarik",
+    "translationService": "Itzulpen zerbitzua (BabelDOC)",
+    "translationServiceDesc": "Aukeratu itzulpen motorra PDF itzulpenerako BabelDOC-ekin",
+    "localTranslation": "Barneko itzulpen lokala",
+    "localTranslationDesc": "Llama-server lokala erabiltzen du, ez du API gakorik behar, lineaz kanpo funtzionatzen du",
+    "openaiTranslationDesc": "OpenAI API erabiltzen du, goiko API gakoa behar du",
+    "deepseekTranslationDesc": "DeepSeek API erabiltzen du, goiko API gakoa behar du",
+    "customApiTranslation": "API pertsonalizatua",
+    "customApiTranslationDesc": "OpenAI-rekin bateragarria den API amaiera-puntu pertsonalizatua erabiltzen du"
   },
   "inference": {
     "smartRecommend": "Gomendio adimentsua",
