@@ -6,8 +6,9 @@
 # 📦 說明：
 #   此腳本作為 Docker 容器的入口點
 #   1. 根據使用者設定決定是否啟動 llama.cpp server
-#   2. 等待 server 就緒（如果需要）
-#   3. 啟動主應用程式
+#   2. 執行依賴檢查，避免因缺少 shared library 而崩潰
+#   3. 等待 server 就緒（如果需要）
+#   4. 啟動主應用程式
 #
 # 📌 環境變數：
 #   MINERU_BACKEND     - 後端選擇（vlm-http-client / pipeline）
@@ -23,6 +24,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 log_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -31,6 +33,82 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log_config() { echo -e "${GREEN}[CONFIG]${NC} $1"; }
 log_backend() { echo -e "${BLUE}[BACKEND]${NC} $1"; }
+log_check() { echo -e "${CYAN}[CHECK]${NC} $1"; }
+
+# ==============================================================================
+# 依賴檢查函數
+# ==============================================================================
+
+# 檢查 llama-server 是否可執行（包含動態連結庫檢查）
+check_llama_server_dependencies() {
+    local LLAMA_PATH="$1"
+    
+    log_check "檢查 llama-server 依賴..."
+    
+    # 檢查執行檔是否存在
+    if [ ! -f "$LLAMA_PATH" ]; then
+        log_error "llama-server 執行檔不存在: $LLAMA_PATH"
+        return 1
+    fi
+    
+    # 檢查執行權限
+    if [ ! -x "$LLAMA_PATH" ]; then
+        log_error "llama-server 無執行權限: $LLAMA_PATH"
+        log_info "嘗試修正權限..."
+        chmod +x "$LLAMA_PATH" 2>/dev/null || {
+            log_error "無法修正權限"
+            return 1
+        }
+    fi
+    
+    # 使用 ldd 檢查動態連結庫
+    if command -v ldd &> /dev/null; then
+        local LDD_OUTPUT
+        LDD_OUTPUT=$(ldd "$LLAMA_PATH" 2>&1)
+        
+        # 檢查是否有 "not found" 的 library
+        if echo "$LDD_OUTPUT" | grep -q "not found"; then
+            log_error "llama-server 缺少以下動態連結庫:"
+            echo "$LDD_OUTPUT" | grep "not found" | while read -r line; do
+                local LIB_NAME=$(echo "$line" | awk '{print $1}')
+                log_error "  • $LIB_NAME"
+            done
+            echo ""
+            log_warn "┌─────────────────────────────────────────────────────────────┐"
+            log_warn "│ 💡 解決方案：                                                │"
+            log_warn "├─────────────────────────────────────────────────────────────┤"
+            log_warn "│ 1️⃣  使用 Docker 環境（推薦）                                 │"
+            log_warn "│     docker pull convertx/convertx-cn:latest                 │"
+            log_warn "│                                                             │"
+            log_warn "│ 2️⃣  從 llama.cpp 官方 Release 下載完整版本                   │"
+            log_warn "│     https://github.com/ggml-org/llama.cpp/releases          │"
+            log_warn "│                                                             │"
+            log_warn "│ 3️⃣  從源碼編譯 llama.cpp（確保複製所有 .so 檔案）            │"
+            log_warn "└─────────────────────────────────────────────────────────────┘"
+            echo ""
+            return 1
+        fi
+    fi
+    
+    # 嘗試執行 --version 驗證
+    if ! "$LLAMA_PATH" --version &>/dev/null; then
+        local ERROR_OUTPUT
+        ERROR_OUTPUT=$("$LLAMA_PATH" --version 2>&1 || true)
+        
+        if echo "$ERROR_OUTPUT" | grep -q "cannot open shared object file"; then
+            local MISSING_LIB=$(echo "$ERROR_OUTPUT" | grep -oP 'error while loading shared libraries: \K\S+')
+            log_error "llama-server 無法載入動態連結庫: $MISSING_LIB"
+            log_warn "系統將回退到 pipeline 模式"
+            return 1
+        fi
+        
+        log_error "llama-server 執行失敗: $ERROR_OUTPUT"
+        return 1
+    fi
+    
+    log_success "llama-server 依賴檢查通過"
+    return 0
+}
 
 # ==============================================================================
 # VLM Server 啟動邏輯
@@ -58,18 +136,13 @@ start_vlm_server() {
     log_info "MinerU 後端：vlm-http-client"
     log_info "VLM URL：http://${HOST}:${PORT}/v1"
     
-    # 檢查 llama-server 是否安裝
-    if ! command -v llama-server &> /dev/null; then
-        log_error "llama-server 未安裝"
-        log_info "  預期路徑：/usr/local/bin/llama-server"
-        log_info "  PATH：$PATH"
-        # 檢查檔案是否存在但不在 PATH 中
-        if [ -f "/usr/local/bin/llama-server" ]; then
-            log_info "  檔案存在但無法執行，檢查權限和依賴..."
-            ls -la /usr/local/bin/llama-server
-            ldd /usr/local/bin/llama-server 2>&1 || true
-        fi
+    # ==== 使用新的依賴檢查函數 ====
+    local LLAMA_PATH="/usr/local/bin/llama-server"
+    if ! check_llama_server_dependencies "$LLAMA_PATH"; then
+        log_warn "llama-server 依賴檢查失敗"
+        log_warn "系統將自動回退到 pipeline 模式"
         export VLM_AVAILABLE="false"
+        export VLM_FALLBACK_REASON="missing_dependencies"
         return 1
     fi
     
@@ -91,8 +164,8 @@ start_vlm_server() {
     log_info "  投影器：$(basename $MMPROJ)"
     log_info "  監聽：$HOST:$PORT"
     
-    # 背景啟動 llama.cpp server
-    llama-server \
+    # 背景啟動 llama.cpp server（使用完整路徑）
+    "$LLAMA_PATH" \
         -m "$MODEL" \
         --mmproj "$MMPROJ" \
         --host "$HOST" \

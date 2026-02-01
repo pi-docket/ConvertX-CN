@@ -686,9 +686,16 @@ RUN set -ex && \
   if [ ! -f "build/bin/llama-server" ]; then \
   echo "❌ llama-server 編譯失敗：找不到 build/bin/llama-server" && exit 1; \
   fi && \
+  # 複製執行檔
   cp build/bin/llama-server /usr/local/bin/ && \
   chmod +x /usr/local/bin/llama-server && \
+  # 複製所有必要的動態連結庫（libmtmd.so、libggml.so、libllama.so 等）
+  echo "📦 複製動態連結庫..." && \
+  find build -name "*.so*" -type f -exec cp {} /usr/local/lib/ \; && \
+  ldconfig && \
   # 驗證安裝成功
+  echo "📋 檢查動態連結依賴..." && \
+  ldd /usr/local/bin/llama-server && \
   if ! /usr/local/bin/llama-server --version 2>&1; then \
   echo "⚠️ llama-server 無法執行，檢查動態庫依賴..." && \
   ldd /usr/local/bin/llama-server || true; \
@@ -699,7 +706,8 @@ RUN set -ex && \
   rm -rf /var/lib/apt/lists/* && \
   echo "✅ llama.cpp 安裝完成" && \
   echo "   路徑: $(which llama-server)" && \
-  echo "   版本: $(llama-server --version 2>&1 | head -1 || echo 'N/A')"; \
+  echo "   版本: $(llama-server --version 2>&1 | head -1 || echo 'N/A')" && \
+  echo "   動態庫: $(ls -la /usr/local/lib/lib*.so* 2>/dev/null | wc -l) 個"; \
   fi
 
 # 6.12 tiktoken
