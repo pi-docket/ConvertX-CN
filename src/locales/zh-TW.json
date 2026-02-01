@@ -148,6 +148,7 @@
     "styleSolid": "單色",
     "styleGradient": "漸層",
     "styleVivid": "炫彩",
+    "presetColors": "預設顏色",
     "colorGreen": "綠色",
     "colorBlue": "藍色",
     "colorPurple": "紫色",
@@ -166,7 +167,9 @@
     "colorNeonPurple": "霓虹紫",
     "colorNeonGreen": "霓虹綠",
     "colorRainbow": "彩虹",
-    "customColor": "自訂",
-    "customColorHint": "選擇任意顏色"
+    "customColor": "自訂顏色",
+    "customColorHint": "選擇任意顏色",
+    "alphaLabel": "透明度",
+    "applyColor": "套用"
   }
 }

@@ -148,6 +148,7 @@
     "styleSolid": "Solid",
     "styleGradient": "Gradient",
     "styleVivid": "Vivid",
+    "presetColors": "Preset Colors",
     "colorGreen": "Green",
     "colorBlue": "Blue",
     "colorPurple": "Purple",
@@ -166,7 +167,9 @@
     "colorNeonPurple": "Neon Purple",
     "colorNeonGreen": "Neon Green",
     "colorRainbow": "Rainbow",
-    "customColor": "Custom",
-    "customColorHint": "Pick any color"
+    "customColor": "Custom Color",
+    "customColorHint": "Pick any color",
+    "alphaLabel": "Opacity",
+    "applyColor": "Apply"
   }
 }

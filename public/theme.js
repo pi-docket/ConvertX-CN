@@ -327,6 +327,7 @@
       const dropdownToggle = document.getElementById("theme-dropdown-toggle");
       const dropdown = document.getElementById("theme-color-dropdown");
       const container = document.getElementById("theme-picker-container");
+      const advancedToggle = document.getElementById("advanced-picker-toggle");
 
       // Check dropdown toggle FIRST (it's the smaller button)
       if (dropdownToggle && (e.target === dropdownToggle || dropdownToggle.contains(e.target))) {
@@ -343,6 +344,29 @@
         return;
       }
 
+      // Advanced picker toggle
+      if (advancedToggle && (e.target === advancedToggle || advancedToggle.contains(e.target))) {
+        e.preventDefault();
+        toggleAdvancedPicker();
+        return;
+      }
+
+      // Apply custom color button
+      const applyBtn = document.getElementById("apply-custom-color");
+      if (applyBtn && (e.target === applyBtn || applyBtn.contains(e.target))) {
+        e.preventDefault();
+        applyAdvancedColor();
+        return;
+      }
+
+      // HEX copy button
+      const copyBtn = document.getElementById("hex-copy-btn");
+      if (copyBtn && (e.target === copyBtn || copyBtn.contains(e.target))) {
+        e.preventDefault();
+        copyHexCode();
+        return;
+      }
+
       // Color swatch click
       const swatch = e.target.closest(".theme-color-swatch");
       if (swatch && dropdown && dropdown.contains(swatch)) {
@@ -350,13 +374,8 @@
         const colorId = swatch.dataset.color;
         const style = swatch.dataset.style || "solid";
         setColor(colorId, style);
+        updateActiveSwatchIndicator(colorId);
         return;
-      }
-
-      // Custom color input
-      const customColorInput = document.getElementById("theme-custom-color");
-      if (customColorInput && e.target === customColorInput) {
-        return; // Let the input handle its own events
       }
 
       // Click outside dropdown - close it
@@ -365,12 +384,18 @@
       }
     });
 
-    // Custom color input change
+    // HEX input change
     document.addEventListener("input", function (e) {
-      if (e.target.id === "theme-custom-color") {
-        setCustomColor(e.target.value);
+      if (e.target.id === "hex-input") {
+        handleHexInput(e.target.value);
+      }
+      if (e.target.id === "alpha-slider") {
+        updateAlphaPreview(parseInt(e.target.value, 10));
       }
     });
+
+    // Hue ring and SL panel mouse events
+    initAdvancedPickerEvents();
 
     // Close dropdown on Escape key
     document.addEventListener("keydown", function (e) {
@@ -378,6 +403,308 @@
         closeDropdown();
       }
     });
+  }
+
+  // ============================================================================
+  // Advanced Picker State
+  // ============================================================================
+  let advancedPickerOpen = false;
+  let advancedState = {
+    hue: 131,
+    saturation: 100,
+    lightness: 50,
+    alpha: 100,
+  };
+  let isDragging = null;
+
+  function toggleAdvancedPicker() {
+    const panel = document.getElementById("advanced-picker-panel");
+    const arrow = document.getElementById("advanced-picker-arrow");
+
+    if (!panel) return;
+
+    advancedPickerOpen = !advancedPickerOpen;
+
+    if (advancedPickerOpen) {
+      panel.style.display = "block";
+      // Force reflow
+      void panel.offsetHeight;
+      panel.style.maxHeight = "500px";
+      if (arrow) arrow.style.transform = "rotate(180deg)";
+    } else {
+      panel.style.maxHeight = "0";
+      if (arrow) arrow.style.transform = "";
+      setTimeout(() => {
+        if (!advancedPickerOpen) {
+          panel.style.display = "none";
+        }
+      }, 300);
+    }
+  }
+
+  function initAdvancedPickerEvents() {
+    // Hue ring drag
+    document.addEventListener("mousedown", function (e) {
+      const hueRing = document.getElementById("hue-ring");
+      const slPanel = document.getElementById("sl-panel");
+
+      if (hueRing && hueRing.contains(e.target) && !slPanel.contains(e.target)) {
+        isDragging = "hue";
+        updateHueFromEvent(e);
+      } else if (slPanel && slPanel.contains(e.target)) {
+        isDragging = "sl";
+        updateSLFromEvent(e);
+      }
+    });
+
+    document.addEventListener("mousemove", function (e) {
+      if (isDragging === "hue") {
+        updateHueFromEvent(e);
+      } else if (isDragging === "sl") {
+        updateSLFromEvent(e);
+      }
+    });
+
+    document.addEventListener("mouseup", function () {
+      isDragging = null;
+    });
+
+    // Touch events for mobile
+    document.addEventListener(
+      "touchstart",
+      function (e) {
+        const hueRing = document.getElementById("hue-ring");
+        const slPanel = document.getElementById("sl-panel");
+
+        if (hueRing && hueRing.contains(e.target) && !slPanel.contains(e.target)) {
+          isDragging = "hue";
+          updateHueFromEvent(e.touches[0]);
+        } else if (slPanel && slPanel.contains(e.target)) {
+          isDragging = "sl";
+          updateSLFromEvent(e.touches[0]);
+        }
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "touchmove",
+      function (e) {
+        if (isDragging) {
+          e.preventDefault();
+          if (isDragging === "hue") {
+            updateHueFromEvent(e.touches[0]);
+          } else if (isDragging === "sl") {
+            updateSLFromEvent(e.touches[0]);
+          }
+        }
+      },
+      { passive: false }
+    );
+
+    document.addEventListener("touchend", function () {
+      isDragging = null;
+    });
+  }
+
+  function updateHueFromEvent(e) {
+    const hueRing = document.getElementById("hue-ring");
+    if (!hueRing) return;
+
+    const rect = hueRing.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+    let hue = (angle * 180) / Math.PI + 90;
+    if (hue < 0) hue += 360;
+
+    advancedState.hue = Math.round(hue);
+    updateAdvancedPickerUI();
+  }
+
+  function updateSLFromEvent(e) {
+    const slPanel = document.getElementById("sl-panel");
+    if (!slPanel) return;
+
+    const rect = slPanel.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    const y = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+
+    advancedState.saturation = Math.round((x / rect.width) * 100);
+    advancedState.lightness = Math.round(100 - (y / rect.height) * 100);
+    updateAdvancedPickerUI();
+  }
+
+  function updateAdvancedPickerUI() {
+    const hueIndicator = document.getElementById("hue-indicator");
+    const slGradient = document.getElementById("sl-gradient");
+    const slIndicator = document.getElementById("sl-indicator");
+    const hexInput = document.getElementById("hex-input");
+    const colorPreview = document.getElementById("color-preview");
+    const alphaSlider = document.getElementById("alpha-slider");
+
+    // Update hue indicator position
+    if (hueIndicator) {
+      const hueRing = document.getElementById("hue-ring");
+      if (hueRing) {
+        const size = 180;
+        const radius = 75; // (90 + 60) / 2
+        const angle = ((advancedState.hue - 90) * Math.PI) / 180;
+        const x = size / 2 + radius * Math.cos(angle);
+        const y = size / 2 + radius * Math.sin(angle);
+        hueIndicator.style.left = x + "px";
+        hueIndicator.style.top = y + "px";
+        hueIndicator.style.transform = "translate(-50%, -50%)";
+      }
+    }
+
+    // Update SL gradient hue
+    if (slGradient) {
+      slGradient.style.background = `linear-gradient(to right, white, hsl(${advancedState.hue}, 100%, 50%))`;
+    }
+
+    // Update SL indicator position
+    if (slIndicator) {
+      const slPanel = document.getElementById("sl-panel");
+      if (slPanel) {
+        const x = (advancedState.saturation / 100) * 120;
+        const y = ((100 - advancedState.lightness) / 100) * 120;
+        slIndicator.style.left = x + "px";
+        slIndicator.style.top = y + "px";
+        slIndicator.style.background = getCurrentHex();
+      }
+    }
+
+    // Update HEX input
+    if (hexInput) {
+      hexInput.value = getCurrentHex();
+    }
+
+    // Update color preview
+    if (colorPreview) {
+      const alpha = advancedState.alpha / 100;
+      colorPreview.style.background = `hsla(${advancedState.hue}, ${advancedState.saturation}%, ${advancedState.lightness}%, ${alpha})`;
+    }
+
+    // Update alpha slider background
+    if (alphaSlider) {
+      alphaSlider.style.background = `linear-gradient(to right, transparent, hsl(${advancedState.hue}, ${advancedState.saturation}%, ${advancedState.lightness}%))`;
+    }
+  }
+
+  function getCurrentHex() {
+    const h = advancedState.hue;
+    const s = advancedState.saturation;
+    const l = advancedState.lightness;
+
+    // HSL to RGB
+    const sNorm = s / 100;
+    const lNorm = l / 100;
+
+    const c = (1 - Math.abs(2 * lNorm - 1)) * sNorm;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = lNorm - c / 2;
+
+    let r, g, b;
+    if (h < 60) {
+      r = c;
+      g = x;
+      b = 0;
+    } else if (h < 120) {
+      r = x;
+      g = c;
+      b = 0;
+    } else if (h < 180) {
+      r = 0;
+      g = c;
+      b = x;
+    } else if (h < 240) {
+      r = 0;
+      g = x;
+      b = c;
+    } else if (h < 300) {
+      r = x;
+      g = 0;
+      b = c;
+    } else {
+      r = c;
+      g = 0;
+      b = x;
+    }
+
+    const toHex = (v) => {
+      const hex = Math.round((v + m) * 255).toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    };
+
+    return "#" + toHex(r) + toHex(g) + toHex(b);
+  }
+
+  function handleHexInput(hex) {
+    if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return;
+
+    // HEX to RGB
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+
+    // RGB to HSL
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h,
+      s,
+      l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+          break;
+        case g:
+          h = ((b - r) / d + 2) / 6;
+          break;
+        case b:
+          h = ((r - g) / d + 4) / 6;
+          break;
+      }
+    }
+
+    advancedState.hue = Math.round(h * 360);
+    advancedState.saturation = Math.round(s * 100);
+    advancedState.lightness = Math.round(l * 100);
+    updateAdvancedPickerUI();
+  }
+
+  function updateAlphaPreview(alpha) {
+    advancedState.alpha = alpha;
+    updateAdvancedPickerUI();
+  }
+
+  function copyHexCode() {
+    const hexInput = document.getElementById("hex-input");
+    if (!hexInput) return;
+
+    navigator.clipboard.writeText(hexInput.value).then(() => {
+      const copyBtn = document.getElementById("hex-copy-btn");
+      if (copyBtn) {
+        const originalHTML = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<span class="text-green-500">✓</span>';
+        setTimeout(() => {
+          copyBtn.innerHTML = originalHTML;
+        }, 1000);
+      }
+    });
+  }
+
+  function applyAdvancedColor() {
+    const hex = getCurrentHex();
+    setCustomColor(hex);
+    closeDropdown();
   }
 
   // Execute when DOM is ready
