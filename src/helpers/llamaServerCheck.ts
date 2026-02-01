@@ -53,16 +53,17 @@ const LLAMA_SERVER_PATHS = [
 ].filter(Boolean) as string[];
 
 /** 已知的必要 shared libraries */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const KNOWN_DEPENDENCIES = [
-  "libmtmd.so",      // llama.cpp multimodal library
-  "libggml.so",      // GGML core library
-  "libllama.so",     // LLaMA library
-  "libcurl.so",      // HTTP client (optional)
+  "libmtmd.so", // llama.cpp multimodal library
+  "libggml.so", // GGML core library
+  "libllama.so", // LLaMA library
+  "libcurl.so", // HTTP client (optional)
 ];
 
 /** 關鍵的必要 libraries（缺失會導致無法啟動） */
 const CRITICAL_DEPENDENCIES = [
-  "libmtmd.so",      // multimodal 必須有
+  "libmtmd.so", // multimodal 必須有
 ];
 
 // ==============================================================================
@@ -87,10 +88,10 @@ export function findLlamaServer(): string | null {
 
   // 嘗試使用 which 命令
   try {
-    const { execSync } = require("node:child_process");
-    const result = execSync("which llama-server", { encoding: "utf8" }).trim();
-    if (result && existsSync(result)) {
-      return result;
+    const result = Bun.spawnSync(["which", "llama-server"]);
+    const output = result.stdout.toString().trim();
+    if (output && existsSync(output)) {
+      return output;
     }
   } catch {
     // which 失敗
@@ -253,7 +254,7 @@ export async function checkLlamaServerAvailability(): Promise<LlamaServerCheckRe
   if (missing.length > 0) {
     // 檢查是否有關鍵依賴缺失
     const criticalMissing = missing.filter((lib) =>
-      CRITICAL_DEPENDENCIES.some((dep) => lib.includes(dep.replace(".so", "")))
+      CRITICAL_DEPENDENCIES.some((dep) => lib.includes(dep.replace(".so", ""))),
     );
 
     if (criticalMissing.length > 0) {
@@ -360,7 +361,9 @@ export function printDependencyReport(result: LlamaServerCheckResult): void {
   // 權限狀態
   if (result.executableExists) {
     const permStatus = result.isExecutable ? "✅" : "❌";
-    console.log(`│ ${permStatus} 執行權限: ${result.isExecutable ? "是" : "否"}                                          │`);
+    console.log(
+      `│ ${permStatus} 執行權限: ${result.isExecutable ? "是" : "否"}                                          │`,
+    );
   }
 
   // 缺失的 libraries
@@ -384,22 +387,5 @@ export function printDependencyReport(result: LlamaServerCheckResult): void {
   if (result.suggestion) {
     console.log("");
     console.log(result.suggestion);
-  }
-}
-
-/**
- * 輸出簡潔的狀態摘要
- */
-export function printVlmStatusSummary(status: VlmServerStatus): void {
-  if (status.status === "available") {
-    console.log("🧠 VLM Server  : 可用（vlm-http-client 模式）");
-  } else {
-    console.log(`🧠 VLM Server  : 不可用（${status.reason || "未知原因"}）`);
-    console.log(`   目前模式    : ${status.mode}（功能正常，但無本地 VLM）`);
-    if (status.suggestion) {
-      console.log("");
-      console.log("💡 建議：");
-      console.log("   使用 Docker 環境以獲得完整的 VLM 功能支援");
-    }
   }
 }

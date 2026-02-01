@@ -55,8 +55,8 @@ function ResultsArticle({
         class={`
           mb-4 inline-block h-2 w-full appearance-none overflow-hidden rounded-full border-0
           bg-neutral-700 bg-none text-accent-500 accent-accent-500
-          [&::-moz-progress-bar]:bg-accent-500
-          [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:[background:none]
+          [&::-moz-progress-bar]:bg-accent-500 [&::-webkit-progress-value]:rounded-full
+          [&::-webkit-progress-value]:[background:none]
           [&[value]::-webkit-progress-value]:bg-accent-500
           [&[value]::-webkit-progress-value]:transition-[inline-size]
         `}

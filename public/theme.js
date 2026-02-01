@@ -266,6 +266,8 @@
   // Dropdown Management
   // ============================================================================
   let dropdownOpen = false;
+  let dropdownOriginalParent = null;
+  let dropdownOriginalNextSibling = null;
 
   function positionDropdown(dropdown, toggleBtn) {
     if (!dropdown || !toggleBtn) return;
@@ -273,19 +275,26 @@
     const rect = toggleBtn.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
-    const dropdownWidth = 280;
 
-    // Reset position first to get accurate height measurement
+    // Temporarily show dropdown off-screen to measure actual dimensions
+    const originalVisibility = dropdown.style.visibility;
+    const originalPosition = dropdown.style.position;
+    dropdown.style.visibility = "hidden";
+    dropdown.style.position = "fixed";
     dropdown.style.top = "0";
     dropdown.style.left = "0";
 
-    // Force layout to get accurate height
+    // Force layout to get accurate dimensions
+    const dropdownWidth = dropdown.offsetWidth || 280;
     const dropdownHeight = dropdown.scrollHeight || dropdown.offsetHeight || 400;
+
+    dropdown.style.visibility = originalVisibility;
+    dropdown.style.position = originalPosition;
 
     // Max height is 85vh or 700px, whichever is smaller
     const maxHeight = Math.min(viewportHeight * 0.85, 700);
 
-    // Calculate position - prefer below the button
+    // Calculate position - align right edge of dropdown to right edge of button
     let top = rect.bottom + 8;
     let left = rect.right - dropdownWidth;
 
@@ -336,6 +345,14 @@
         if (langToggle) langToggle.setAttribute("aria-expanded", "false");
       }
 
+      // Move dropdown to body to escape any stacking context issues
+      // (e.g., parent elements with backdrop-filter, transform, etc.)
+      if (dropdown.parentNode !== document.body) {
+        dropdownOriginalParent = dropdown.parentNode;
+        dropdownOriginalNextSibling = dropdown.nextSibling;
+        document.body.appendChild(dropdown);
+      }
+
       // Show dropdown
       dropdown.style.display = "block";
 
@@ -359,10 +376,18 @@
       if (arrow) arrow.style.transform = "";
       if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
 
-      // Hide after animation
+      // Hide after animation and restore to original position
       setTimeout(() => {
         if (!dropdownOpen) {
           dropdown.style.display = "none";
+          // Restore dropdown to original position in DOM
+          if (dropdownOriginalParent && dropdown.parentNode === document.body) {
+            if (dropdownOriginalNextSibling) {
+              dropdownOriginalParent.insertBefore(dropdown, dropdownOriginalNextSibling);
+            } else {
+              dropdownOriginalParent.appendChild(dropdown);
+            }
+          }
         }
       }, 200);
     }
@@ -380,7 +405,17 @@
       dropdown.style.opacity = "0";
       dropdown.style.transform = "scale(0.95)";
       setTimeout(() => {
-        if (dropdown) dropdown.style.display = "none";
+        if (dropdown) {
+          dropdown.style.display = "none";
+          // Restore dropdown to original position in DOM
+          if (dropdownOriginalParent && dropdown.parentNode === document.body) {
+            if (dropdownOriginalNextSibling) {
+              dropdownOriginalParent.insertBefore(dropdown, dropdownOriginalNextSibling);
+            } else {
+              dropdownOriginalParent.appendChild(dropdown);
+            }
+          }
+        }
       }, 200);
     }
     if (arrow) arrow.style.transform = "";

@@ -18,10 +18,9 @@ export default defineConfig(
   tseslint.configs.recommended,
   {
     files: ["**/*.{ts,tsx,cts,mts}"],
-    extends: [
-      eslintPluginBetterTailwindcss.configs.recommended,
-      eslintPluginBetterTailwindcss.configs.stylistic,
-    ],
+    plugins: {
+      "better-tailwindcss": eslintPluginBetterTailwindcss,
+    },
     languageOptions: {
       parser: eslintParserTypeScript,
       parserOptions: {
@@ -37,6 +36,8 @@ export default defineConfig(
       },
     },
     rules: {
+      ...eslintPluginBetterTailwindcss.configs.recommended.rules,
+      ...eslintPluginBetterTailwindcss.configs.stylistic.rules,
       "better-tailwindcss/enforce-consistent-line-wrapping": [
         "warn",
         {
@@ -44,7 +45,7 @@ export default defineConfig(
           printWidth: 100,
         },
       ],
-      "better-tailwindcss/no-unknown-classes": [
+      "better-tailwindcss/no-unregistered-classes": [
         "warn",
         {
           ignore: [
@@ -58,6 +59,13 @@ export default defineConfig(
             "job-details-toggle",
             "language-selector",
             "language-option",
+            "active-indicator",
+            "theme-glass-divider",
+            "theme-glass-dropdown",
+            "dragover",
+            "screen-theme-swatch",
+            "screen-theme-active-indicator",
+            "theme-color-swatch",
           ],
         },
       ],

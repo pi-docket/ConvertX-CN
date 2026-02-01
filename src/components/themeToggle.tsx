@@ -68,7 +68,8 @@ const SCREEN_THEMES: ScreenTheme[] = [
   },
   {
     id: "aurora",
-    preview: "linear-gradient(135deg, oklch(50% 0.15 280), oklch(55% 0.18 200), oklch(60% 0.2 150))",
+    preview:
+      "linear-gradient(135deg, oklch(50% 0.15 280), oklch(55% 0.18 200), oklch(60% 0.2 150))",
     i18nKey: "screenThemeAurora",
   },
   {
@@ -78,7 +79,8 @@ const SCREEN_THEMES: ScreenTheme[] = [
   },
   {
     id: "ocean",
-    preview: "linear-gradient(135deg, oklch(50% 0.15 230), oklch(55% 0.15 200), oklch(60% 0.12 180))",
+    preview:
+      "linear-gradient(135deg, oklch(50% 0.15 230), oklch(55% 0.15 200), oklch(60% 0.12 180))",
     i18nKey: "screenThemeOcean",
   },
   {
@@ -93,22 +95,26 @@ const SCREEN_THEMES: ScreenTheme[] = [
   },
   {
     id: "lavender",
-    preview: "linear-gradient(135deg, oklch(70% 0.15 300), oklch(75% 0.18 330), oklch(80% 0.12 350))",
+    preview:
+      "linear-gradient(135deg, oklch(70% 0.15 300), oklch(75% 0.18 330), oklch(80% 0.12 350))",
     i18nKey: "screenThemeLavender",
   },
   {
     id: "midnight",
-    preview: "linear-gradient(180deg, oklch(15% 0.08 260), oklch(20% 0.1 280), oklch(12% 0.06 240))",
+    preview:
+      "linear-gradient(180deg, oklch(15% 0.08 260), oklch(20% 0.1 280), oklch(12% 0.06 240))",
     i18nKey: "screenThemeMidnight",
   },
   {
     id: "twilight",
-    preview: "linear-gradient(135deg, oklch(40% 0.12 280), oklch(35% 0.15 300), oklch(30% 0.1 320))",
+    preview:
+      "linear-gradient(135deg, oklch(40% 0.12 280), oklch(35% 0.15 300), oklch(30% 0.1 320))",
     i18nKey: "screenThemeTwilight",
   },
   {
     id: "forest",
-    preview: "linear-gradient(180deg, oklch(35% 0.1 150), oklch(40% 0.12 140), oklch(30% 0.08 160))",
+    preview:
+      "linear-gradient(180deg, oklch(35% 0.1 150), oklch(40% 0.12 140), oklch(30% 0.08 160))",
     i18nKey: "screenThemeForest",
   },
   {
@@ -118,7 +124,8 @@ const SCREEN_THEMES: ScreenTheme[] = [
   },
   {
     id: "cyber",
-    preview: "linear-gradient(135deg, oklch(45% 0.2 180), oklch(40% 0.18 200), oklch(35% 0.15 220))",
+    preview:
+      "linear-gradient(135deg, oklch(45% 0.2 180), oklch(40% 0.18 200), oklch(35% 0.15 220))",
     i18nKey: "screenThemeCyber",
   },
 ];
@@ -301,11 +308,7 @@ export const ThemeToggle = ({
       {/* Figma/Linear Style Color Picker Dropdown - Glassmorphism */}
       <div
         id="theme-color-dropdown"
-        class={`
-          theme-glass-dropdown
-          fixed w-[280px] rounded-xl
-          border border-white/20 shadow-2xl
-        `}
+        class={`theme-glass-dropdown fixed w-[280px] rounded-xl border border-white/20 shadow-2xl`}
         style={{
           display: "none",
           opacity: 0,
@@ -327,7 +330,11 @@ export const ThemeToggle = ({
             ======================================== */}
         <div class="p-3">
           {/* Screen theme swatches grid - 無標題 */}
-          <div class="grid grid-cols-6 gap-2" role="group" aria-label={t("theme", "screenThemeTitle")}>
+          <div
+            class="grid grid-cols-6 gap-2"
+            role="group"
+            aria-label={t("theme", "screenThemeTitle")}
+          >
             {SCREEN_THEMES.map((themeDef) => (
               <button
                 type="button"
@@ -335,15 +342,19 @@ export const ThemeToggle = ({
                   screen-theme-swatch group relative h-9 w-9 cursor-pointer rounded-lg border-2
                   border-transparent transition-all duration-200
                   hover:scale-110 hover:border-white/50
-                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2
-                  focus:outline-none
-                  ${themeDef.id === "neon-night" ? "shadow-[inset_0_0_8px_oklch(60%_0.25_300_/_40%)]" : ""}
+                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:outline-none
+                  ${
+                    themeDef.id === "neon-night"
+                      ? `shadow-[inset_0_0_8px_oklch(60%_0.25_300_/_40%)]`
+                      : ""
+                  }
                 `}
                 data-screen-theme={themeDef.id}
                 style={{
-                  background: themeDef.id === "none" 
-                    ? "linear-gradient(135deg, var(--neutral-700), var(--neutral-800))"
-                    : themeDef.preview,
+                  background:
+                    themeDef.id === "none"
+                      ? "linear-gradient(135deg, var(--neutral-700), var(--neutral-800))"
+                      : themeDef.preview,
                 }}
                 aria-label={t("theme", themeDef.i18nKey)}
                 title={t("theme", themeDef.i18nKey)}
@@ -359,7 +370,11 @@ export const ThemeToggle = ({
                       stroke="currentColor"
                       stroke-width="2"
                     >
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </div>
                 )}
@@ -371,9 +386,10 @@ export const ThemeToggle = ({
                     group-hover:opacity-100
                   `}
                   style={{
-                    boxShadow: themeDef.id === "neon-night"
-                      ? "0 0 15px 3px oklch(60% 0.25 300 / 40%)"
-                      : "0 0 15px 3px rgba(255, 255, 255, 0.25)",
+                    boxShadow:
+                      themeDef.id === "neon-night"
+                        ? "0 0 15px 3px oklch(60% 0.25 300 / 40%)"
+                        : "0 0 15px 3px rgba(255, 255, 255, 0.25)",
                   }}
                 />
                 {/* Active indicator (checkmark) */}
@@ -413,8 +429,8 @@ export const ThemeToggle = ({
                   theme-color-swatch group relative h-10 w-10 cursor-pointer rounded-lg border-2
                   border-transparent transition-all duration-200
                   hover:scale-110 hover:border-white/50
-                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:ring-offset-neutral-900
-                  focus:outline-none
+                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2
+                  focus:ring-offset-neutral-900 focus:outline-none
                 `}
                 data-color={colorDef.id}
                 data-style={colorDef.style}
@@ -471,8 +487,8 @@ export const ThemeToggle = ({
             type="button"
             id="advanced-picker-toggle"
             class={`
-              flex w-full items-center justify-between rounded-lg px-3 py-2.5
-              text-sm transition-colors
+              flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm
+              transition-colors
               hover:bg-white/10
             `}
           >
@@ -532,7 +548,9 @@ export const ThemeToggle = ({
               {/* Hue Indicator */}
               <div
                 id="hue-indicator"
-                class="pointer-events-none absolute h-4 w-4 rounded-full border-2 border-white shadow-lg"
+                class={`
+                  pointer-events-none absolute h-4 w-4 rounded-full border-2 border-white shadow-lg
+                `}
                 style={{
                   top: "0",
                   left: "50%",
@@ -569,7 +587,10 @@ export const ThemeToggle = ({
                 {/* SL Indicator */}
                 <div
                   id="sl-indicator"
-                  class="pointer-events-none absolute h-4 w-4 rounded-full border-2 border-white shadow-lg"
+                  class={`
+                    pointer-events-none absolute h-4 w-4 rounded-full border-2 border-white
+                    shadow-lg
+                  `}
                   style={{
                     top: "50%",
                     left: "100%",
@@ -583,16 +604,17 @@ export const ThemeToggle = ({
 
             {/* Alpha Slider */}
             <div class="mb-4">
-              <label class="mb-1 block text-xs text-neutral-500" safe>
+              <label class="mb-1 block text-xs" style={{ color: "var(--glass-text-muted)" }} safe>
                 {t("theme", "alphaLabel")}
               </label>
               <div class="relative h-3 overflow-hidden rounded-full">
                 {/* Checkerboard background */}
                 <div
+                  id="alpha-checkerboard"
                   class="absolute inset-0"
                   style={{
                     background:
-                      "linear-gradient(45deg, #444 25%, transparent 25%), linear-gradient(-45deg, #444 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #444 75%), linear-gradient(-45deg, transparent 75%, #444 75%)",
+                      "linear-gradient(45deg, var(--glass-divider) 25%, transparent 25%), linear-gradient(-45deg, var(--glass-divider) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--glass-divider) 75%), linear-gradient(-45deg, transparent 75%, var(--glass-divider) 75%)",
                     backgroundSize: "8px 8px",
                     backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
                   }}
@@ -611,7 +633,7 @@ export const ThemeToggle = ({
                     [&::-webkit-slider-thumb]:mt-[-2px] [&::-webkit-slider-thumb]:h-4
                     [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none
                     [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2
-                    [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-neutral-800
+                    [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-neutral-600
                     [&::-webkit-slider-thumb]:shadow-lg
                   `}
                   style={{
@@ -630,13 +652,20 @@ export const ThemeToggle = ({
                   value="#A5D601"
                   maxlength="7"
                   class={`
-                    w-full rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2 font-mono
-                    text-sm uppercase text-white transition-colors
+                    w-full rounded-lg border px-3 py-2 font-mono text-sm uppercase transition-colors
                     focus:border-accent-500 focus:outline-none
                   `}
+                  style={{
+                    background: "var(--glass-bg)",
+                    borderColor: "var(--glass-border)",
+                    color: "var(--glass-text)",
+                  }}
                   placeholder="#000000"
                 />
-                <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs text-neutral-500">
+                <span
+                  class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs"
+                  style={{ color: "var(--glass-text-muted)" }}
+                >
                   HEX
                 </span>
               </div>
@@ -644,14 +673,18 @@ export const ThemeToggle = ({
                 type="button"
                 id="hex-copy-btn"
                 class={`
-                  flex items-center justify-center rounded-lg border border-neutral-700
-                  bg-neutral-800 px-3 transition-colors
-                  hover:bg-neutral-700
+                  flex items-center justify-center rounded-lg border px-3 transition-colors
+                  hover:opacity-80
                 `}
+                style={{
+                  background: "var(--glass-bg)",
+                  borderColor: "var(--glass-border)",
+                }}
                 title="複製 HEX 碼"
               >
                 <svg
-                  class="h-4 w-4 text-neutral-400"
+                  class="h-4 w-4"
+                  style={{ color: "var(--glass-text-muted)" }}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -668,15 +701,20 @@ export const ThemeToggle = ({
               <div class="relative h-10 flex-1 overflow-hidden rounded-lg">
                 {/* Checkerboard */}
                 <div
+                  id="preview-checkerboard"
                   class="absolute inset-0"
                   style={{
                     background:
-                      "linear-gradient(45deg, #333 25%, transparent 25%), linear-gradient(-45deg, #333 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #333 75%), linear-gradient(-45deg, transparent 75%, #333 75%)",
+                      "linear-gradient(45deg, var(--glass-divider) 25%, transparent 25%), linear-gradient(-45deg, var(--glass-divider) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--glass-divider) 75%), linear-gradient(-45deg, transparent 75%, var(--glass-divider) 75%)",
                     backgroundSize: "8px 8px",
                     backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0px",
                   }}
                 />
-                <div id="color-preview" class="absolute inset-0" style={{ background: "#a5d601" }} />
+                <div
+                  id="color-preview"
+                  class="absolute inset-0"
+                  style={{ background: "#a5d601" }}
+                />
               </div>
               <button
                 type="button"

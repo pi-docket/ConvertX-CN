@@ -58,10 +58,9 @@ export const LanguageSelector = ({
       <ul
         id="language-dropdown"
         class={`
-          theme-glass-dropdown
-          fixed scrollbar hidden max-h-[320px] min-w-[180px] flex-col
-          overflow-y-auto rounded-xl border border-white/20 shadow-2xl
-          scrollbar-thumb-neutral-600 scrollbar-track-transparent
+          theme-glass-dropdown fixed scrollbar hidden max-h-[320px] min-w-[180px] flex-col
+          overflow-y-auto rounded-xl border border-white/20 shadow-2xl scrollbar-thumb-neutral-600
+          scrollbar-track-transparent
         `}
         style={{
           backdropFilter: "blur(20px)",
@@ -79,11 +78,7 @@ export const LanguageSelector = ({
                 language-option flex w-full items-center gap-2 px-4 py-2 text-left text-sm
                 transition-colors
                 hover:bg-white/10
-                ${
-                  locale.code === currentLocale
-                    ? "bg-white/15 text-accent-500"
-                    : ``
-                }
+                ${locale.code === currentLocale ? "bg-white/15 text-accent-500" : ``}
               `}
               data-locale={locale.code}
               data-webroot={webroot}

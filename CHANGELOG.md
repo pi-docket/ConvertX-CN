@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.1.22](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.22) (2026-02-02)
+
+UI 修復與程式碼品質改進版本。
+
+### ✨ Features
+
+- **主題選擇器改進**：支援亮色/暗色模式自適應顏色
+  - 自訂顏色區塊的文字顏色會根據目前主題自動調整
+  - HEX 輸入框、透明度標籤等元素使用 CSS 變數確保可見性
+  - 改善棋盤格背景色以適應不同主題
+
+### 🐛 Bug Fixes
+
+- **下拉選單定位修復**：修復主題/語言選擇器在捲動或窄視窗時的定位問題
+  - 動態計算下拉選單寬度，避免超出視窗邊界
+  - 使用 `position: fixed` 和 DOM 移動機制，解決 z-index 堆疊問題
+  - 新增 `isolation: isolate` 確保正確的層級關係
+
+- **亮色模式文字可見性**：修復自訂顏色選擇器在亮色模式下文字不可見的問題
+  - 將硬編碼的暗色模式顏色改為 CSS 變數（`--glass-text`、`--glass-text-muted`）
+
+### 🔧 Code Quality
+
+- **ESLint 配置升級**：遷移至 ESLint 9.x flat config 格式
+  - 修正 `better-tailwindcss` 插件配置方式
+  - 更新規則名稱 `no-unregistered-classes`
+  - 新增自訂 CSS class 忽略模式
+
+- **移除未使用程式碼**：清理未使用的導入和函式
+  - 移除 `@typescript-eslint/parser` 依賴
+  - 清理 `startupStatus.ts` 未使用的導入
+  - 使用 `Bun.spawnSync()` 替代 `require("node:child_process")`
+
+---
+
 ## [0.1.21](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.21) (2026-02-01)
 
 主題顏色系統重構版本。

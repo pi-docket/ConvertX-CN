@@ -60,21 +60,46 @@
 
     if (!toggle || !dropdown) return;
 
+    // Store original DOM position for restoration
+    let dropdownOriginalParent = null;
+    let dropdownOriginalNextSibling = null;
+
     // Position the fixed dropdown
     function positionLanguageDropdown() {
       const rect = toggle.getBoundingClientRect();
-      const dropdownHeight = dropdown.offsetHeight || 320;
-      const dropdownWidth = dropdown.offsetWidth || 180;
       const viewportHeight = window.innerHeight;
       const viewportWidth = window.innerWidth;
 
-      // Calculate position
+      // Temporarily show dropdown to measure actual dimensions
+      const wasHidden = dropdown.classList.contains("hidden");
+      if (wasHidden) {
+        dropdown.style.visibility = "hidden";
+        dropdown.classList.remove("hidden");
+        dropdown.classList.add("flex");
+      }
+
+      // Get actual dimensions
+      const dropdownHeight = dropdown.offsetHeight || 320;
+      const dropdownWidth = dropdown.offsetWidth || 180;
+
+      if (wasHidden) {
+        dropdown.classList.add("hidden");
+        dropdown.classList.remove("flex");
+        dropdown.style.visibility = "";
+      }
+
+      // Calculate position - align right edge of dropdown to right edge of button
       let top = rect.bottom + 8;
       let left = rect.right - dropdownWidth;
 
       // Ensure dropdown doesn't go off-screen (bottom)
       if (top + dropdownHeight > viewportHeight - 16) {
-        top = rect.top - dropdownHeight - 8;
+        // Check if there's more space above
+        if (rect.top > viewportHeight - rect.bottom) {
+          top = rect.top - dropdownHeight - 8;
+        } else {
+          top = Math.max(16, viewportHeight - dropdownHeight - 16);
+        }
       }
 
       // Ensure dropdown doesn't go off-screen (left)
@@ -114,7 +139,21 @@
         dropdown.classList.add("hidden");
         dropdown.classList.remove("flex");
         toggle.setAttribute("aria-expanded", "false");
+        // Restore dropdown to original position in DOM
+        if (dropdownOriginalParent && dropdown.parentNode === document.body) {
+          if (dropdownOriginalNextSibling) {
+            dropdownOriginalParent.insertBefore(dropdown, dropdownOriginalNextSibling);
+          } else {
+            dropdownOriginalParent.appendChild(dropdown);
+          }
+        }
       } else {
+        // Move dropdown to body to escape any stacking context issues
+        if (dropdown.parentNode !== document.body) {
+          dropdownOriginalParent = dropdown.parentNode;
+          dropdownOriginalNextSibling = dropdown.nextSibling;
+          document.body.appendChild(dropdown);
+        }
         dropdown.classList.remove("hidden");
         dropdown.classList.add("flex");
         positionLanguageDropdown();
@@ -125,9 +164,18 @@
     // Close dropdown when clicking outside
     document.addEventListener("click", (e) => {
       if (!toggle.contains(e.target) && !dropdown.contains(e.target)) {
+        const wasOpen = !dropdown.classList.contains("hidden");
         dropdown.classList.add("hidden");
         dropdown.classList.remove("flex");
         toggle.setAttribute("aria-expanded", "false");
+        // Restore dropdown to original position in DOM
+        if (wasOpen && dropdownOriginalParent && dropdown.parentNode === document.body) {
+          if (dropdownOriginalNextSibling) {
+            dropdownOriginalParent.insertBefore(dropdown, dropdownOriginalNextSibling);
+          } else {
+            dropdownOriginalParent.appendChild(dropdown);
+          }
+        }
       }
     });
 
@@ -172,9 +220,18 @@
           }
           break;
         case "Escape":
+          const wasOpenOnEscape = !dropdown.classList.contains("hidden");
           dropdown.classList.add("hidden");
           dropdown.classList.remove("flex");
           toggle.setAttribute("aria-expanded", "false");
+          // Restore dropdown to original position in DOM
+          if (wasOpenOnEscape && dropdownOriginalParent && dropdown.parentNode === document.body) {
+            if (dropdownOriginalNextSibling) {
+              dropdownOriginalParent.insertBefore(dropdown, dropdownOriginalNextSibling);
+            } else {
+              dropdownOriginalParent.appendChild(dropdown);
+            }
+          }
           toggle.focus();
           break;
         case "Enter":

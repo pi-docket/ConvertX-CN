@@ -47,6 +47,11 @@
   border-color: var(--glass-border);
   box-shadow: var(--glass-shadow);
   color: var(--glass-text);
+  /* 確保 dropdown 使用 fixed 定位並處於最高層級，不受父層 stacking context 影響 */
+  position: fixed;
+  z-index: 2147483647;
+  /* 使用 isolation 確保建立獨立的 stacking context */
+  isolation: isolate;
 }
 
 .theme-glass-dropdown .theme-glass-divider {

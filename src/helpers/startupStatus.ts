@@ -7,13 +7,7 @@
 
 import * as net from "node:net";
 import { WEBROOT } from "./env";
-import {
-  checkLlamaServerAvailability,
-  getVlmServerStatus,
-  printDependencyReport,
-  type LlamaServerCheckResult,
-  type VlmServerStatus,
-} from "./llamaServerCheck";
+import { checkLlamaServerAvailability, type LlamaServerCheckResult } from "./llamaServerCheck";
 
 // ==============================================================================
 // 環境變數
@@ -105,7 +99,9 @@ let cachedLlamaCheckResult: LlamaServerCheckResult | null = null;
 /**
  * 偵測 LLM Server 狀態（包含依賴檢查）
  */
-export async function detectLlmServerStatus(): Promise<ServiceStatus & { checkResult?: LlamaServerCheckResult }> {
+export async function detectLlmServerStatus(): Promise<
+  ServiceStatus & { checkResult?: LlamaServerCheckResult }
+> {
   const url = LLAMA_SERVER_URL;
   const healthUrl = `${url}/health`;
 
@@ -332,7 +328,10 @@ export async function printStartupSummary(
 /**
  * 輸出額外資訊提示
  */
-function printAdditionalInfo(apiServer: ServiceStatus, llmServer: ServiceStatus & { checkResult?: LlamaServerCheckResult }): void {
+function printAdditionalInfo(
+  apiServer: ServiceStatus,
+  llmServer: ServiceStatus & { checkResult?: LlamaServerCheckResult },
+): void {
   console.log("");
 
   // API Server 提示

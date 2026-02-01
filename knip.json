@@ -9,7 +9,8 @@
     "src/i18n/**",
     "tests/e2e/helpers.ts",
     "src/inference/**",
-    "src/helpers/translation/**"
+    "src/helpers/translation/**",
+    "src/helpers/llamaServerCheck.ts"
   ],
   "ignoreDependencies": [],
   "ignoreExportsUsedInFile": true
