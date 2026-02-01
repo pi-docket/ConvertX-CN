@@ -96,6 +96,20 @@
       e.stopPropagation();
       const isOpen = !dropdown.classList.contains("hidden");
 
+      // Close theme dropdown if open
+      const themeDropdown = document.getElementById("theme-color-dropdown");
+      if (themeDropdown && themeDropdown.style.display !== "none") {
+        themeDropdown.style.opacity = "0";
+        themeDropdown.style.transform = "scale(0.95)";
+        setTimeout(() => {
+          themeDropdown.style.display = "none";
+        }, 200);
+        const themeArrow = document.getElementById("theme-dropdown-arrow");
+        const themeToggle = document.getElementById("theme-dropdown-toggle");
+        if (themeArrow) themeArrow.style.transform = "";
+        if (themeToggle) themeToggle.setAttribute("aria-expanded", "false");
+      }
+
       if (isOpen) {
         dropdown.classList.add("hidden");
         dropdown.classList.remove("flex");

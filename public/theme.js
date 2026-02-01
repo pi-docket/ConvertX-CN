@@ -327,6 +327,15 @@
     dropdownOpen = !dropdownOpen;
 
     if (dropdownOpen) {
+      // Close language dropdown if open
+      const langDropdown = document.getElementById("language-dropdown");
+      const langToggle = document.getElementById("language-toggle");
+      if (langDropdown && !langDropdown.classList.contains("hidden")) {
+        langDropdown.classList.add("hidden");
+        langDropdown.classList.remove("flex");
+        if (langToggle) langToggle.setAttribute("aria-expanded", "false");
+      }
+
       // Show dropdown
       dropdown.style.display = "block";
 
