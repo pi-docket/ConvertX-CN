@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "স্মার্ট সুপারিশ",
     "yourFrequentFormat": "আপনার ঘন ঘন ব্যবহৃত ফরম্যাট"
+  },
+  "theme": {
+    "pickerTitle": "থিম",
+    "modeLabel": "চেহারা",
+    "lightMode": "হালকা",
+    "darkMode": "গাঢ়",
+    "styleSolid": "সলিড",
+    "styleGradient": "গ্রেডিয়েন্ট",
+    "styleVivid": "জীবন্ত",
+    "colorGreen": "সবুজ",
+    "colorBlue": "নীল",
+    "colorPurple": "বেগুনি",
+    "colorPink": "গোলাপি",
+    "colorOrange": "কমলা",
+    "colorTeal": "টিল",
+    "colorGray": "ধূসর",
+    "colorYellow": "হলুদ",
+    "colorAurora": "অরোরা",
+    "colorSunset": "সূর্যাস্ত",
+    "colorOcean": "মহাসাগর",
+    "colorForest": "বন",
+    "colorFire": "আগুন",
+    "colorNeonCyan": "নিয়ন সায়ান",
+    "colorNeonPink": "নিয়ন গোলাপি",
+    "colorNeonPurple": "নিয়ন বেগুনি",
+    "colorNeonGreen": "নিয়ন সবুজ",
+    "colorRainbow": "রংধনু",
+    "customColor": "কাস্টম",
+    "customColorHint": "যেকোনো রং বেছে নিন"
   }
 }

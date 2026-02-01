@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "پیشنهاد هوشمند",
     "yourFrequentFormat": "فرمت پرکاربرد شما"
+  },
+  "theme": {
+    "pickerTitle": "پوسته",
+    "modeLabel": "ظاهر",
+    "lightMode": "روشن",
+    "darkMode": "تاریک",
+    "styleSolid": "یکدست",
+    "styleGradient": "گرادیان",
+    "styleVivid": "زنده",
+    "colorGreen": "سبز",
+    "colorBlue": "آبی",
+    "colorPurple": "بنفش",
+    "colorPink": "صورتی",
+    "colorOrange": "نارنجی",
+    "colorTeal": "سبزآبی",
+    "colorGray": "خاکستری",
+    "colorYellow": "زرد",
+    "colorAurora": "شفق قطبی",
+    "colorSunset": "غروب",
+    "colorOcean": "اقیانوس",
+    "colorForest": "جنگل",
+    "colorFire": "آتش",
+    "colorNeonCyan": "نئون فیروزه‌ای",
+    "colorNeonPink": "نئون صورتی",
+    "colorNeonPurple": "نئون بنفش",
+    "colorNeonGreen": "نئون سبز",
+    "colorRainbow": "رنگین‌کمان",
+    "customColor": "سفارشی",
+    "customColorHint": "هر رنگی را انتخاب کنید"
   }
 }

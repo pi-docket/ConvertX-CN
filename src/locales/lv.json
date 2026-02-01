@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Viedais ieteikums",
     "yourFrequentFormat": "Jūsu biežais formāts"
+  },
+  "theme": {
+    "pickerTitle": "Tēma",
+    "modeLabel": "Izskats",
+    "lightMode": "Gaiša",
+    "darkMode": "Tumša",
+    "styleSolid": "Vienlaidu",
+    "styleGradient": "Gradients",
+    "styleVivid": "Spilgts",
+    "colorGreen": "Zaļa",
+    "colorBlue": "Zila",
+    "colorPurple": "Violeta",
+    "colorPink": "Rozā",
+    "colorOrange": "Oranža",
+    "colorTeal": "Zilganzala",
+    "colorGray": "Peleka",
+    "colorYellow": "Dzeltena",
+    "colorAurora": "Ziemeļblazma",
+    "colorSunset": "Saulriets",
+    "colorOcean": "Okeāns",
+    "colorForest": "Mežs",
+    "colorFire": "Uguns",
+    "colorNeonCyan": "Neona ciāna",
+    "colorNeonPink": "Neona rozā",
+    "colorNeonPurple": "Neona violeta",
+    "colorNeonGreen": "Neona zaļa",
+    "colorRainbow": "Varavīksne",
+    "customColor": "Pielāgots",
+    "customColorHint": "Izvēlieties jebkuru krāsu"
   }
 }

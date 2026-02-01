@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Rakkomandazzjoni Intelliġenti",
     "yourFrequentFormat": "Il-format frekwenti tiegħek"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Dehra",
+    "lightMode": "Ċara",
+    "darkMode": "Skura",
+    "styleSolid": "Solidu",
+    "styleGradient": "Gradjent",
+    "styleVivid": "Vividu",
+    "colorGreen": "Aħdar",
+    "colorBlue": "Blu",
+    "colorPurple": "Vjola",
+    "colorPink": "Roża",
+    "colorOrange": "Oranġjo",
+    "colorTeal": "Teal",
+    "colorGray": "Griż",
+    "colorYellow": "Isfar",
+    "colorAurora": "Aurora",
+    "colorSunset": "Ħruġ ix-xemx",
+    "colorOcean": "Oċean",
+    "colorForest": "Foresta",
+    "colorFire": "Nar",
+    "colorNeonCyan": "Neon cyan",
+    "colorNeonPink": "Neon roża",
+    "colorNeonPurple": "Neon vjola",
+    "colorNeonGreen": "Neon aħdar",
+    "colorRainbow": "Qawsalla",
+    "customColor": "Personalizzat",
+    "customColorHint": "Agħżel kwalunkwe kulur"
   }
 }

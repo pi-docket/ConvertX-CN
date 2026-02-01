@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Rekomendasi Cerdas",
     "yourFrequentFormat": "Format sering Anda"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Tampilan",
+    "lightMode": "Terang",
+    "darkMode": "Gelap",
+    "styleSolid": "Solid",
+    "styleGradient": "Gradien",
+    "styleVivid": "Cerah",
+    "colorGreen": "Hijau",
+    "colorBlue": "Biru",
+    "colorPurple": "Ungu",
+    "colorPink": "Merah muda",
+    "colorOrange": "Oranye",
+    "colorTeal": "Hijau kebiruan",
+    "colorGray": "Abu-abu",
+    "colorYellow": "Kuning",
+    "colorAurora": "Aurora",
+    "colorSunset": "Matahari terbenam",
+    "colorOcean": "Samudra",
+    "colorForest": "Hutan",
+    "colorFire": "Api",
+    "colorNeonCyan": "Neon sian",
+    "colorNeonPink": "Neon merah muda",
+    "colorNeonPurple": "Neon ungu",
+    "colorNeonGreen": "Neon hijau",
+    "colorRainbow": "Pelangi",
+    "customColor": "Kustom",
+    "customColorHint": "Pilih warna apa saja"
   }
 }

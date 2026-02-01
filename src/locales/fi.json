@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Älykäs suositus",
     "yourFrequentFormat": "Usein käyttämäsi muoto"
+  },
+  "theme": {
+    "pickerTitle": "Teema",
+    "modeLabel": "Ulkoasu",
+    "lightMode": "Vaalea",
+    "darkMode": "Tumma",
+    "styleSolid": "Tasainen",
+    "styleGradient": "Liuku",
+    "styleVivid": "Elävä",
+    "colorGreen": "Vihreä",
+    "colorBlue": "Sininen",
+    "colorPurple": "Violetti",
+    "colorPink": "Pinkki",
+    "colorOrange": "Oranssi",
+    "colorTeal": "Sinivihreä",
+    "colorGray": "Harmaa",
+    "colorYellow": "Keltainen",
+    "colorAurora": "Revontulet",
+    "colorSunset": "Auringonlasku",
+    "colorOcean": "Valtameri",
+    "colorForest": "Metsä",
+    "colorFire": "Tuli",
+    "colorNeonCyan": "Neon syaani",
+    "colorNeonPink": "Neon pinkki",
+    "colorNeonPurple": "Neon violetti",
+    "colorNeonGreen": "Neon vihreä",
+    "colorRainbow": "Sateenkaari",
+    "customColor": "Mukautettu",
+    "customColorHint": "Valitse mikä tahansa väri"
   }
 }

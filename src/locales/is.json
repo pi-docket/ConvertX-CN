@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Snjöll tillaga",
     "yourFrequentFormat": "Tíðasta sniðið þitt"
+  },
+  "theme": {
+    "pickerTitle": "Þma",
+    "modeLabel": "Útlit",
+    "lightMode": "Ljóst",
+    "darkMode": "Dökkt",
+    "styleSolid": "Solid",
+    "styleGradient": "Litbreiða",
+    "styleVivid": "Lífleg",
+    "colorGreen": "Grænt",
+    "colorBlue": "Blátt",
+    "colorPurple": "Fjólubrátt",
+    "colorPink": "Bleikt",
+    "colorOrange": "Appelsínugult",
+    "colorTeal": "Blágrænt",
+    "colorGray": "Grátt",
+    "colorYellow": "Gult",
+    "colorAurora": "Norðurljós",
+    "colorSunset": "Sólsetur",
+    "colorOcean": "Haf",
+    "colorForest": "Skógur",
+    "colorFire": "Eldur",
+    "colorNeonCyan": "Neón blágrænt",
+    "colorNeonPink": "Neón bleikt",
+    "colorNeonPurple": "Neón fjólubrátt",
+    "colorNeonGreen": "Neón grænt",
+    "colorRainbow": "Regnbogi",
+    "customColor": "Sérsniðið",
+    "customColorHint": "Veldu hvaða lit sem er"
   }
 }

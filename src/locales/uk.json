@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Розумна рекомендація",
     "yourFrequentFormat": "Ваш частий формат"
+  },
+  "theme": {
+    "pickerTitle": "Тема",
+    "modeLabel": "Зовнішній вигляд",
+    "lightMode": "Світла",
+    "darkMode": "Темна",
+    "styleSolid": "Суцільний",
+    "styleGradient": "Градієнт",
+    "styleVivid": "Яскравий",
+    "colorGreen": "Зелений",
+    "colorBlue": "Синій",
+    "colorPurple": "Фіолетовий",
+    "colorPink": "Рожевий",
+    "colorOrange": "Помаранчевий",
+    "colorTeal": "Бірюзовий",
+    "colorGray": "Сірий",
+    "colorYellow": "Жовтий",
+    "colorAurora": "Сіяйво",
+    "colorSunset": "Захід",
+    "colorOcean": "Океан",
+    "colorForest": "Ліс",
+    "colorFire": "Вогонь",
+    "colorNeonCyan": "Неон блакитний",
+    "colorNeonPink": "Неон рожевий",
+    "colorNeonPurple": "Неон фіолетовий",
+    "colorNeonGreen": "Неон зелений",
+    "colorRainbow": "Веселка",
+    "customColor": "Користувацький",
+    "customColorHint": "Виберіть будь-який колір"
   }
 }

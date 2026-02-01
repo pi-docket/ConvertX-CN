@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Isiphakamiso Esihlakaniphile",
     "yourFrequentFormat": "Ifomethi yakho evamile"
+  },
+  "theme": {
+    "pickerTitle": "Ithemu",
+    "modeLabel": "Ukubukeka",
+    "lightMode": "Ukukhanya",
+    "darkMode": "Mnyama",
+    "styleSolid": "Iqine",
+    "styleGradient": "Igradiyenti",
+    "styleVivid": "Okuphilayo",
+    "colorGreen": "Oluhlaza",
+    "colorBlue": "Okusasibhakabhaka",
+    "colorPurple": "Okumfusa",
+    "colorPink": "Okuphinki",
+    "colorOrange": "Okulingana ne-Olanishi",
+    "colorTeal": "I-Teal",
+    "colorGray": "Okumpunga",
+    "colorYellow": "Okumthubi",
+    "colorAurora": "I-Aurora",
+    "colorSunset": "Ukushona kwelanga",
+    "colorOcean": "Ulwandle",
+    "colorForest": "Ihlathi",
+    "colorFire": "Umlilo",
+    "colorNeonCyan": "Neon cyan",
+    "colorNeonPink": "Neon phinki",
+    "colorNeonPurple": "Neon mfusa",
+    "colorNeonGreen": "Neon oluhlaza",
+    "colorRainbow": "Uthingo lwenkosazana",
+    "customColor": "Ngokwezifiso",
+    "customColorHint": "Khetha noma yimuphi umbala"
   }
 }

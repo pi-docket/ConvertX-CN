@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Recomandare inteligentă",
     "yourFrequentFormat": "Formatul tău frecvent"
+  },
+  "theme": {
+    "pickerTitle": "Temă",
+    "modeLabel": "Aparență",
+    "lightMode": "Deschis",
+    "darkMode": "Închis",
+    "styleSolid": "Solid",
+    "styleGradient": "Gradient",
+    "styleVivid": "Viu",
+    "colorGreen": "Verde",
+    "colorBlue": "Albastru",
+    "colorPurple": "Mov",
+    "colorPink": "Roz",
+    "colorOrange": "Portocaliu",
+    "colorTeal": "Turcoaz",
+    "colorGray": "Gri",
+    "colorYellow": "Galben",
+    "colorAurora": "Auroră",
+    "colorSunset": "Apus",
+    "colorOcean": "Ocean",
+    "colorForest": "Pădure",
+    "colorFire": "Foc",
+    "colorNeonCyan": "Neon cyan",
+    "colorNeonPink": "Neon roz",
+    "colorNeonPurple": "Neon mov",
+    "colorNeonGreen": "Neon verde",
+    "colorRainbow": "Curcubeu",
+    "customColor": "Personalizat",
+    "customColorHint": "Alegeți orice culoare"
   }
 }

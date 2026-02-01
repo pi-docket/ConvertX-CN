@@ -138,6 +138,34 @@
   },
   "inference": {
     "smartRecommend": "ការណែនាំឆ្លាតវៃ",
-    "yourFrequentFormat": "ទម្រង់ដែលអ្នកប្រើញឹកញាប់"
+    "yourFrequentFormat": "ទម្រង់ដែលអ្នកប្រើញឹកញាប់"  },
+  "theme": {
+    "pickerTitle": "ការបង្ហាញធីម",
+    "modeLabel": "លក្ខណៈ",
+    "lightMode": "ភ្លឺ",
+    "darkMode": "ងំះ",
+    "styleSolid": "សូលីដ",
+    "styleGradient": "ក្រ៉ាឌីអង់",
+    "styleVivid": "ជាក់រ៉៉ូស",
+    "colorGreen": "ប្រើងបាញ់ជឺរ",
+    "colorBlue": "ប្រើងជ្រា",
+    "colorPurple": "ប្រើងស្វាយ",
+    "colorPink": "ប្រើងស",
+    "colorOrange": "ប្រើងលើង",
+    "colorTeal": "ប្រើងលិចជ្រា",
+    "colorGray": "ប្រើងប្រជាង",
+    "colorYellow": "លើង",
+    "colorAurora": "អូរ៉ូរ៉ា",
+    "colorSunset": "ព្រះអាទិត្យលិច",
+    "colorOcean": "មហាសមុទ្រ",
+    "colorForest": "ព្រៃរ៉៉ូស",
+    "colorFire": "អង្គិស៍",
+    "colorNeonCyan": "នីអូងស្វាយខៀវ",
+    "colorNeonPink": "នីអូងផ្កាជូរា",
+    "colorNeonPurple": "នីអូងស្វាយ",
+    "colorNeonGreen": "នីអូងស្វាយបឣតង់",
+    "colorRainbow": "ឥន្ទ្ធនូ",
+    "customColor": "ផ្ទាល់ខ្លួន",
+    "customColorHint": "ជ្រើសរើសព័ឌណ៍ភើនូអ្វីមួយ"
   }
 }

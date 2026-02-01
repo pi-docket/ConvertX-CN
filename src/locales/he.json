@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "המלצה חכמה",
     "yourFrequentFormat": "הפורמט התכוף שלך"
+  },
+  "theme": {
+    "pickerTitle": "ערכת נושא",
+    "modeLabel": "מראה",
+    "lightMode": "בהיר",
+    "darkMode": "כהה",
+    "styleSolid": "אחיד",
+    "styleGradient": "מדרג",
+    "styleVivid": "חי",
+    "colorGreen": "ירוק",
+    "colorBlue": "כחול",
+    "colorPurple": "סגול",
+    "colorPink": "ורוד",
+    "colorOrange": "כתום",
+    "colorTeal": "טיל",
+    "colorGray": "אפור",
+    "colorYellow": "צהוב",
+    "colorAurora": "זוהר צפוני",
+    "colorSunset": "שקיעה",
+    "colorOcean": "אוקיינוס",
+    "colorForest": "יער",
+    "colorFire": "אש",
+    "colorNeonCyan": "ניאון ציאן",
+    "colorNeonPink": "ניאון ורוד",
+    "colorNeonPurple": "ניאון סגול",
+    "colorNeonGreen": "ניאון ירוק",
+    "colorRainbow": "קשת",
+    "customColor": "מותאם אישית",
+    "customColorHint": "בחר כל צבע"
   }
 }

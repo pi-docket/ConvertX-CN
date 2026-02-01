@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "智能推荐",
     "yourFrequentFormat": "常用格式"
+  },
+  "theme": {
+    "pickerTitle": "主题",
+    "modeLabel": "外观模式",
+    "lightMode": "浅色",
+    "darkMode": "深色",
+    "styleSolid": "单色",
+    "styleGradient": "渐变",
+    "styleVivid": "炒彩",
+    "colorGreen": "绿色",
+    "colorBlue": "蓝色",
+    "colorPurple": "紫色",
+    "colorPink": "粉色",
+    "colorOrange": "橙色",
+    "colorTeal": "青色",
+    "colorGray": "灰色",
+    "colorYellow": "黄色",
+    "colorAurora": "极光",
+    "colorSunset": "日落",
+    "colorOcean": "海洋",
+    "colorForest": "森林",
+    "colorFire": "火焰",
+    "colorNeonCyan": "霓虹青",
+    "colorNeonPink": "霓虹粉",
+    "colorNeonPurple": "霓虹紫",
+    "colorNeonGreen": "霓虹绿",
+    "colorRainbow": "彩虹",
+    "customColor": "自定义",
+    "customColorHint": "选择任意颜色"
   }
 }

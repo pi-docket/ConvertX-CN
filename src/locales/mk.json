@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Паметна препорака",
     "yourFrequentFormat": "Вашиот чест формат"
+  },
+  "theme": {
+    "pickerTitle": "Тема",
+    "modeLabel": "Изглед",
+    "lightMode": "Светла",
+    "darkMode": "Темна",
+    "styleSolid": "Солидна",
+    "styleGradient": "Градиент",
+    "styleVivid": "Жива",
+    "colorGreen": "Зелена",
+    "colorBlue": "Сина",
+    "colorPurple": "Виолетова",
+    "colorPink": "Розова",
+    "colorOrange": "Портокалова",
+    "colorTeal": "Тиркизна",
+    "colorGray": "Сива",
+    "colorYellow": "Жолта",
+    "colorAurora": "Аурора",
+    "colorSunset": "Залез",
+    "colorOcean": "Океан",
+    "colorForest": "Шума",
+    "colorFire": "Огон",
+    "colorNeonCyan": "Неон сијан",
+    "colorNeonPink": "Неон розова",
+    "colorNeonPurple": "Неон виолетова",
+    "colorNeonGreen": "Неон зелена",
+    "colorRainbow": "Дага",
+    "customColor": "Прилагодено",
+    "customColorHint": "Изберете било која боја"
   }
 }

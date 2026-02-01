@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Gomendio adimentsua",
     "yourFrequentFormat": "Zure formatu ohikoa"
+  },
+  "theme": {
+    "pickerTitle": "Gaia",
+    "modeLabel": "Itxura",
+    "lightMode": "Argia",
+    "darkMode": "Iluna",
+    "styleSolid": "Solidoa",
+    "styleGradient": "Gradientea",
+    "styleVivid": "Bizia",
+    "colorGreen": "Berdea",
+    "colorBlue": "Urdina",
+    "colorPurple": "Morea",
+    "colorPink": "Arrosa",
+    "colorOrange": "Laranja",
+    "colorTeal": "Berde-urdina",
+    "colorGray": "Grisa",
+    "colorYellow": "Horia",
+    "colorAurora": "Aurora",
+    "colorSunset": "Ilunabar",
+    "colorOcean": "Ozeano",
+    "colorForest": "Basoa",
+    "colorFire": "Sua",
+    "colorNeonCyan": "Neon zian",
+    "colorNeonPink": "Neon arrosa",
+    "colorNeonPurple": "Neon morea",
+    "colorNeonGreen": "Neon berdea",
+    "colorRainbow": "Ostadar",
+    "customColor": "Pertsonalizatua",
+    "customColorHint": "Aukeratu edozein kolore"
   }
 }

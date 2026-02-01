@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Pendekezo la Akili",
     "yourFrequentFormat": "Umbizo lako la mara kwa mara"
+  },
+  "theme": {
+    "pickerTitle": "Mandhari",
+    "modeLabel": "Muonekano",
+    "lightMode": "Mwanga",
+    "darkMode": "Giza",
+    "styleSolid": "Imara",
+    "styleGradient": "Upinde",
+    "styleVivid": "Hai",
+    "colorGreen": "Kijani",
+    "colorBlue": "Bluu",
+    "colorPurple": "Zambarau",
+    "colorPink": "Pinki",
+    "colorOrange": "Machungwa",
+    "colorTeal": "Kijani-bluu",
+    "colorGray": "Kijivu",
+    "colorYellow": "Njano",
+    "colorAurora": "Aurora",
+    "colorSunset": "Machweo",
+    "colorOcean": "Bahari",
+    "colorForest": "Msitu",
+    "colorFire": "Moto",
+    "colorNeonCyan": "Neon cyan",
+    "colorNeonPink": "Neon pinki",
+    "colorNeonPurple": "Neon zambarau",
+    "colorNeonGreen": "Neon kijani",
+    "colorRainbow": "Upinde wa mvua",
+    "customColor": "Maalum",
+    "customColorHint": "Chagua rangi yoyote"
   }
 }

@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Умная рекомендация",
     "yourFrequentFormat": "Ваш частый формат"
+  },
+  "theme": {
+    "pickerTitle": "Тема",
+    "modeLabel": "Внешний вид",
+    "lightMode": "Светлая",
+    "darkMode": "Тёмная",
+    "styleSolid": "Сплошной",
+    "styleGradient": "Градиент",
+    "styleVivid": "Яркий",
+    "colorGreen": "Зелёный",
+    "colorBlue": "Синий",
+    "colorPurple": "Фиолетовый",
+    "colorPink": "Розовый",
+    "colorOrange": "Оранжевый",
+    "colorTeal": "Бирюзовый",
+    "colorGray": "Серый",
+    "colorYellow": "Жёлтый",
+    "colorAurora": "Аврора",
+    "colorSunset": "Закат",
+    "colorOcean": "Океан",
+    "colorForest": "Лес",
+    "colorFire": "Огонь",
+    "colorNeonCyan": "Неон голубой",
+    "colorNeonPink": "Неон розовый",
+    "colorNeonPurple": "Неон фиолетовый",
+    "colorNeonGreen": "Неон зелёный",
+    "colorRainbow": "Радуга",
+    "customColor": "Пользовательский",
+    "customColorHint": "Выберите любой цвет"
   }
 }

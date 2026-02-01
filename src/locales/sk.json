@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Inteligentné odporúčanie",
     "yourFrequentFormat": "Váš častý formát"
+  },
+  "theme": {
+    "pickerTitle": "Téma",
+    "modeLabel": "Vzhľad",
+    "lightMode": "Svetlý",
+    "darkMode": "Tmavý",
+    "styleSolid": "Plný",
+    "styleGradient": "Prechod",
+    "styleVivid": "Živý",
+    "colorGreen": "Zelená",
+    "colorBlue": "Modrá",
+    "colorPurple": "Fialová",
+    "colorPink": "Rúžová",
+    "colorOrange": "Oranžová",
+    "colorTeal": "Tyrkysová",
+    "colorGray": "Sivá",
+    "colorYellow": "Žltá",
+    "colorAurora": "Polárna žiara",
+    "colorSunset": "Západ slnka",
+    "colorOcean": "Oceán",
+    "colorForest": "Les",
+    "colorFire": "Oheň",
+    "colorNeonCyan": "Neón azurová",
+    "colorNeonPink": "Neón rúžová",
+    "colorNeonPurple": "Neón fialová",
+    "colorNeonGreen": "Neón zelená",
+    "colorRainbow": "Dúha",
+    "customColor": "Vlastné",
+    "customColorHint": "Vyberte ľubovolnú farbu"
   }
 }

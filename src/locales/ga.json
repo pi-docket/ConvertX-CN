@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Moladh Cliste",
     "yourFrequentFormat": "Do fhormáid choitianta"
+  },
+  "theme": {
+    "pickerTitle": "Téama",
+    "modeLabel": "Cuma",
+    "lightMode": "Éadrom",
+    "darkMode": "Dorcha",
+    "styleSolid": "Soladach",
+    "styleGradient": "Grádán",
+    "styleVivid": "Beoga",
+    "colorGreen": "Glas",
+    "colorBlue": "Gorm",
+    "colorPurple": "Corcra",
+    "colorPink": "Baindearg",
+    "colorOrange": "Flánnbhuí",
+    "colorTeal": "Teal",
+    "colorGray": "Liath",
+    "colorYellow": "Buí",
+    "colorAurora": "Aurora",
+    "colorSunset": "Luigh na gréine",
+    "colorOcean": "Aigéan",
+    "colorForest": "Foraois",
+    "colorFire": "Tine",
+    "colorNeonCyan": "Neon cian",
+    "colorNeonPink": "Neon baindearg",
+    "colorNeonPurple": "Neon corcra",
+    "colorNeonGreen": "Neon glas",
+    "colorRainbow": "Tuar ceatha",
+    "customColor": "Saincheaptha",
+    "customColorHint": "Roghnaigh aon dath"
   }
 }

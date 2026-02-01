@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Pametna preporuka",
     "yourFrequentFormat": "Vaš česti format"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Izgled",
+    "lightMode": "Svijetla",
+    "darkMode": "Tamna",
+    "styleSolid": "Jednobojno",
+    "styleGradient": "Gradijent",
+    "styleVivid": "Živo",
+    "colorGreen": "Zelena",
+    "colorBlue": "Plava",
+    "colorPurple": "Ljubičasta",
+    "colorPink": "Roza",
+    "colorOrange": "Narančasta",
+    "colorTeal": "Tirkizna",
+    "colorGray": "Siva",
+    "colorYellow": "Žuta",
+    "colorAurora": "Aurora",
+    "colorSunset": "Zalazak sunca",
+    "colorOcean": "Ocean",
+    "colorForest": "Šuma",
+    "colorFire": "Vatra",
+    "colorNeonCyan": "Neon cijan",
+    "colorNeonPink": "Neon roza",
+    "colorNeonPurple": "Neon ljubičasta",
+    "colorNeonGreen": "Neon zelena",
+    "colorRainbow": "Duga",
+    "customColor": "Prilagođeno",
+    "customColorHint": "Odaberite bilo koju boju"
   }
 }

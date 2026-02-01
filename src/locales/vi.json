@@ -138,5 +138,34 @@
   "inference": {
     "smartRecommend": "Đề xuất thông minh",
     "yourFrequentFormat": "Định dạng thường dùng của bạn"
+  },
+  "theme": {
+    "pickerTitle": "Chủ đề",
+    "modeLabel": "Giao diện",
+    "lightMode": "Sáng",
+    "darkMode": "Tối",
+    "styleSolid": "Đơn sắc",
+    "styleGradient": "Chuyển màu",
+    "styleVivid": "Sống động",
+    "colorGreen": "Xanh lá",
+    "colorBlue": "Xanh dương",
+    "colorPurple": "Tím",
+    "colorPink": "Hồng",
+    "colorOrange": "Cam",
+    "colorTeal": "Xanh ngọc",
+    "colorGray": "Xám",
+    "colorYellow": "Vàng",
+    "colorAurora": "Cực quang",
+    "colorSunset": "Hoàng hôn",
+    "colorOcean": "Đại dương",
+    "colorForest": "Rừng",
+    "colorFire": "Lửa",
+    "colorNeonCyan": "Neon xanh lơ",
+    "colorNeonPink": "Neon hồng",
+    "colorNeonPurple": "Neon tím",
+    "colorNeonGreen": "Neon xanh lá",
+    "colorRainbow": "Cầu vồng",
+    "customColor": "Tùy chỉnh",
+    "customColorHint": "Chọn màu bất kỳ"
   }
 }

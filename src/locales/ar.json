@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "توصية ذكية",
     "yourFrequentFormat": "التنسيق المستخدم بكثرة"
+  },
+  "theme": {
+    "pickerTitle": "السمة",
+    "modeLabel": "المظهر",
+    "lightMode": "فاتح",
+    "darkMode": "داكن",
+    "styleSolid": "صلب",
+    "styleGradient": "تدرج",
+    "styleVivid": "حيوي",
+    "colorGreen": "أخضر",
+    "colorBlue": "أزرق",
+    "colorPurple": "بنفسجي",
+    "colorPink": "وردي",
+    "colorOrange": "برتقالي",
+    "colorTeal": "أزرق مخضر",
+    "colorGray": "رمادي",
+    "colorYellow": "أصفر",
+    "colorAurora": "الشفق",
+    "colorSunset": "غروب",
+    "colorOcean": "محيط",
+    "colorForest": "غابة",
+    "colorFire": "نار",
+    "colorNeonCyan": "سماوي نيون",
+    "colorNeonPink": "وردي نيون",
+    "colorNeonPurple": "بنفسجي نيون",
+    "colorNeonGreen": "أخضر نيون",
+    "colorRainbow": "قوس قزح",
+    "customColor": "مخصص",
+    "customColorHint": "اختر أي لون"
   }
 }

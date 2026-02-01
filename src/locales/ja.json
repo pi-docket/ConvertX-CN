@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "スマート推薦",
     "yourFrequentFormat": "よく使う形式"
+  },
+  "theme": {
+    "pickerTitle": "テーマ",
+    "modeLabel": "外観モード",
+    "lightMode": "ライト",
+    "darkMode": "ダーク",
+    "styleSolid": "ソリッド",
+    "styleGradient": "グラデーション",
+    "styleVivid": "ビビッド",
+    "colorGreen": "グリーン",
+    "colorBlue": "ブルー",
+    "colorPurple": "パープル",
+    "colorPink": "ピンク",
+    "colorOrange": "オレンジ",
+    "colorTeal": "ティール",
+    "colorGray": "グレー",
+    "colorYellow": "イエロー",
+    "colorAurora": "オーロラ",
+    "colorSunset": "サンセット",
+    "colorOcean": "オーシャン",
+    "colorForest": "フォレスト",
+    "colorFire": "ファイア",
+    "colorNeonCyan": "ネオンシアン",
+    "colorNeonPink": "ネオンピンク",
+    "colorNeonPurple": "ネオンパープル",
+    "colorNeonGreen": "ネオングリーン",
+    "colorRainbow": "レインボー",
+    "customColor": "カスタム",
+    "customColorHint": "任意の色を選択"
   }
 }

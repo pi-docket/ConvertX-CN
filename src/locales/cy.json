@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Argymhelliad Clyfar",
     "yourFrequentFormat": "Eich fformat aml"
+  },
+  "theme": {
+    "pickerTitle": "Thema",
+    "modeLabel": "Golwg",
+    "lightMode": "Golau",
+    "darkMode": "Tywyll",
+    "styleSolid": "Solet",
+    "styleGradient": "Graddiant",
+    "styleVivid": "Bywiog",
+    "colorGreen": "Gwyrdd",
+    "colorBlue": "Glas",
+    "colorPurple": "Porffor",
+    "colorPink": "Pinc",
+    "colorOrange": "Oren",
+    "colorTeal": "Gwyrddlas",
+    "colorGray": "Llwyd",
+    "colorYellow": "Melyn",
+    "colorAurora": "Aurora",
+    "colorSunset": "Machlud",
+    "colorOcean": "Cefnfor",
+    "colorForest": "Coedwig",
+    "colorFire": "Tân",
+    "colorNeonCyan": "Neon cyan",
+    "colorNeonPink": "Neon pinc",
+    "colorNeonPurple": "Neon porffor",
+    "colorNeonGreen": "Neon gwyrdd",
+    "colorRainbow": "Enfys",
+    "customColor": "Personol",
+    "customColorHint": "Dewiswch unrhyw liw"
   }
 }

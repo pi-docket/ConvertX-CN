@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Recomanació intel·ligent",
     "yourFrequentFormat": "El teu format freqüent"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Aparença",
+    "lightMode": "Clar",
+    "darkMode": "Fosc",
+    "styleSolid": "Sòlid",
+    "styleGradient": "Degradat",
+    "styleVivid": "Viu",
+    "colorGreen": "Verd",
+    "colorBlue": "Blau",
+    "colorPurple": "Porpra",
+    "colorPink": "Rosa",
+    "colorOrange": "Taronja",
+    "colorTeal": "Verd blavenc",
+    "colorGray": "Gris",
+    "colorYellow": "Groc",
+    "colorAurora": "Aurora",
+    "colorSunset": "Posta de sol",
+    "colorOcean": "Oceà",
+    "colorForest": "Bosc",
+    "colorFire": "Foc",
+    "colorNeonCyan": "Neó cian",
+    "colorNeonPink": "Neó rosa",
+    "colorNeonPurple": "Neó porpra",
+    "colorNeonGreen": "Neó verd",
+    "colorRainbow": "Arc de Sant Martí",
+    "customColor": "Personalitzat",
+    "customColorHint": "Trieu qualsevol color"
   }
 }

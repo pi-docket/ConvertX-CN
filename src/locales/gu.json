@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "સ્માર્ટ ભલામણ",
     "yourFrequentFormat": "તમારું વારંવારનું ફોર્મેટ"
+  },
+  "theme": {
+    "pickerTitle": "થીમ",
+    "modeLabel": "દેખાવ",
+    "lightMode": "હળવું",
+    "darkMode": "ઘાટું",
+    "styleSolid": "સોલિડ",
+    "styleGradient": "ગ્રેડિએન્ટ",
+    "styleVivid": "ચમકિલું",
+    "colorGreen": "લીલું",
+    "colorBlue": "વાદળી",
+    "colorPurple": "જાંબલી",
+    "colorPink": "ગુલાબી",
+    "colorOrange": "નારંગી",
+    "colorTeal": "ટીલ",
+    "colorGray": "રાખોડી",
+    "colorYellow": "પીળું",
+    "colorAurora": "ઓરોરા",
+    "colorSunset": "સૂર્યાસ્ત",
+    "colorOcean": "સાગર",
+    "colorForest": "જંગલ",
+    "colorFire": "અગ્નિ",
+    "colorNeonCyan": "નિઓન સાઇએન",
+    "colorNeonPink": "નિઓન ગુલાબી",
+    "colorNeonPurple": "નિઓન જાંબલી",
+    "colorNeonGreen": "નિઓન લીલું",
+    "colorRainbow": "ઇન્દ્રધનુષ",
+    "customColor": "કસ્ટમ",
+    "customColorHint": "કોઈપણ રંગ પસંદ કરો"
   }
 }

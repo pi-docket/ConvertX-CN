@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Išmanioji rekomendacija",
     "yourFrequentFormat": "Jūsų dažnas formatas"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Išvaizda",
+    "lightMode": "Šviesi",
+    "darkMode": "Tamsi",
+    "styleSolid": "Vientisas",
+    "styleGradient": "Gradientas",
+    "styleVivid": "Ryškus",
+    "colorGreen": "Žalia",
+    "colorBlue": "Mėlyna",
+    "colorPurple": "Violetine",
+    "colorPink": "Rožine",
+    "colorOrange": "Oranžinė",
+    "colorTeal": "Žalsvai mėlyna",
+    "colorGray": "Pilka",
+    "colorYellow": "Geltona",
+    "colorAurora": "Polėrinė paukštienė",
+    "colorSunset": "Saulydis",
+    "colorOcean": "Vandenynas",
+    "colorForest": "Miškas",
+    "colorFire": "Ugnis",
+    "colorNeonCyan": "Neon cian",
+    "colorNeonPink": "Neon rožine",
+    "colorNeonPurple": "Neon violetine",
+    "colorNeonGreen": "Neon žalia",
+    "colorRainbow": "Vaivėrykstė",
+    "customColor": "Pasirinktinis",
+    "customColorHint": "Pasirinkite bet kokią spalvą"
   }
 }

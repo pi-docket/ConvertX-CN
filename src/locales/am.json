@@ -138,5 +138,34 @@
   "inference": {
     "smartRecommend": "ብልጥ ምክር",
     "yourFrequentFormat": "የእርስዎ ተደጋጋሚ ቅርጸት"
+  },
+  "theme": {
+    "pickerTitle": "ጥይም",
+    "modeLabel": "መልክ",
+    "lightMode": "ብርሃን",
+    "darkMode": "ገወና",
+    "styleSolid": "ሰልይድ",
+    "styleGradient": "ሰመጠር",
+    "styleVivid": "ተነሻሽ",
+    "colorGreen": "አረንጓዴ",
+    "colorBlue": "ሰማያዊ",
+    "colorPurple": "ወይን ጠጅ",
+    "colorPink": "ሮዝ",
+    "colorOrange": "ብርቱካናማ",
+    "colorTeal": "አረንጓዴ-ሰማያዊ",
+    "colorGray": "ግራቻ",
+    "colorYellow": "ቢቻ",
+    "colorAurora": "አውሮራ",
+    "colorSunset": "ጥርው",
+    "colorOcean": "ውቅያኖስ",
+    "colorForest": "አጼያ",
+    "colorFire": "እሳት",
+    "colorNeonCyan": "ኔኦን ሰማያዊ",
+    "colorNeonPink": "ኔኦን ሮዝ",
+    "colorNeonPurple": "ኔኦን ወይን ጠጅ",
+    "colorNeonGreen": "ኔኦን አረንጓዴ",
+    "colorRainbow": "ቅስተ ደመና",
+    "customColor": "ብጁ",
+    "customColorHint": "ማንኛውንም ቀለም ይምረጡ"
   }
 }

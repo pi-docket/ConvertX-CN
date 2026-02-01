@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Smart Recommend",
     "yourFrequentFormat": "Your frequent format"
+  },
+  "theme": {
+    "pickerTitle": "Theme",
+    "modeLabel": "Appearance",
+    "lightMode": "Light",
+    "darkMode": "Dark",
+    "styleSolid": "Solid",
+    "styleGradient": "Gradient",
+    "styleVivid": "Vivid",
+    "colorGreen": "Green",
+    "colorBlue": "Blue",
+    "colorPurple": "Purple",
+    "colorPink": "Pink",
+    "colorOrange": "Orange",
+    "colorTeal": "Teal",
+    "colorGray": "Gray",
+    "colorYellow": "Yellow",
+    "colorAurora": "Aurora",
+    "colorSunset": "Sunset",
+    "colorOcean": "Ocean",
+    "colorForest": "Forest",
+    "colorFire": "Fire",
+    "colorNeonCyan": "Neon Cyan",
+    "colorNeonPink": "Neon Pink",
+    "colorNeonPurple": "Neon Purple",
+    "colorNeonGreen": "Neon Green",
+    "colorRainbow": "Rainbow",
+    "customColor": "Custom",
+    "customColorHint": "Pick any color"
   }
 }

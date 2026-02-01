@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Rekomandim i zgjuar",
     "yourFrequentFormat": "Formati juaj i shpeshtë"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Pamja",
+    "lightMode": "E hapur",
+    "darkMode": "E errët",
+    "styleSolid": "Solid",
+    "styleGradient": "Gradient",
+    "styleVivid": "E gjallë",
+    "colorGreen": "E gjelbër",
+    "colorBlue": "Blu",
+    "colorPurple": "Vjollcë",
+    "colorPink": "Rozë",
+    "colorOrange": "Portokalli",
+    "colorTeal": "Blu-e gjelbër",
+    "colorGray": "Gri",
+    "colorYellow": "E verdhë",
+    "colorAurora": "Aurora",
+    "colorSunset": "Perëndimi",
+    "colorOcean": "Oqeani",
+    "colorForest": "Pylli",
+    "colorFire": "Zjarri",
+    "colorNeonCyan": "Neon cian",
+    "colorNeonPink": "Neon rozë",
+    "colorNeonPurple": "Neon vjollcë",
+    "colorNeonGreen": "Neon e gjelbër",
+    "colorRainbow": "Ylberi",
+    "customColor": "E personalizuar",
+    "customColorHint": "Zgjidhni çdo ngjyrë"
   }
 }

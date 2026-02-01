@@ -6,6 +6,7 @@ import "./helpers/printVersions";
 import db from "./db/db";
 import { Jobs } from "./db/types";
 import { AUTO_DELETE_EVERY_N_HOURS, WEBROOT } from "./helpers/env";
+import { displayStartupInfo, WEB_PORT } from "./helpers/startupStatus";
 import { chooseConverter } from "./pages/chooseConverter";
 import { convert } from "./pages/convert";
 import { deleteFile } from "./pages/deleteFile";
@@ -81,9 +82,12 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-app.listen(3000);
+app.listen(WEB_PORT);
 
-console.log(`🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}${WEBROOT}`);
+// 顯示啟動資訊（動態偵測實際 Port 與服務狀態）
+// 在 production 環境或設定 SHOW_SERVICE_STATUS=true 時顯示詳細狀態表格
+const showVerbose = process.env.NODE_ENV === "production" || process.env.SHOW_SERVICE_STATUS === "true";
+displayStartupInfo(app.server, { showStatus: true, verbose: showVerbose });
 
 // 初始化推斷服務
 inferenceService.initialize().catch((error) => {

@@ -17,9 +17,7 @@ import {
   TranslationResult,
   normalizeLanguageCode,
 } from "./types";
-
-// llama-server 端點（與 VLM 使用相同的 server，預設 port 11785）
-const LLAMA_SERVER_URL = process.env.LLAMA_SERVER_URL || "http://127.0.0.1:11785";
+import { LLAMA_SERVER_URL } from "../startupStatus";
 
 // 翻譯超時時間（毫秒）
 const TRANSLATION_TIMEOUT = 60000;

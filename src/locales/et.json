@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Nutikas soovitus",
     "yourFrequentFormat": "Teie sage vorming"
+  },
+  "theme": {
+    "pickerTitle": "Teema",
+    "modeLabel": "Välimus",
+    "lightMode": "Hele",
+    "darkMode": "Tume",
+    "styleSolid": "Tasane",
+    "styleGradient": "Gradient",
+    "styleVivid": "Ere",
+    "colorGreen": "Roheline",
+    "colorBlue": "Sinine",
+    "colorPurple": "Lilla",
+    "colorPink": "Roosa",
+    "colorOrange": "Oranž",
+    "colorTeal": "Sinakasroheline",
+    "colorGray": "Hall",
+    "colorYellow": "Kollane",
+    "colorAurora": "Virmalised",
+    "colorSunset": "Päikeseloojang",
+    "colorOcean": "Ookean",
+    "colorForest": "Mets",
+    "colorFire": "Tuli",
+    "colorNeonCyan": "Neoon tsüaan",
+    "colorNeonPink": "Neoon roosa",
+    "colorNeonPurple": "Neoon lilla",
+    "colorNeonGreen": "Neoon roheline",
+    "colorRainbow": "Vikerkaar",
+    "customColor": "Kohandatud",
+    "customColorHint": "Valige mis tahes värv"
   }
 }

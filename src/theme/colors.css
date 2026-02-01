@@ -1,0 +1,484 @@
+/* ===== Theme Color System - Token Definitions ===== */
+/* This file defines color tokens for the advanced theme system */
+
+:root {
+  /* ===== Base Semantic Tokens ===== */
+  --bg-primary: var(--neutral-950);
+  --bg-panel: var(--neutral-900);
+  --bg-elevated: var(--neutral-800);
+  --text-primary: var(--neutral-100);
+  --text-secondary: var(--neutral-400);
+  --text-muted: var(--neutral-500);
+  --border-color: var(--neutral-700);
+  --border-light: var(--neutral-800);
+  
+  /* ===== Accent Semantic Tokens ===== */
+  --accent-main: var(--accent-500);
+  --accent-hover: var(--accent-400);
+  --accent-active: var(--accent-600);
+  --accent-muted: var(--accent-500);
+  
+  /* ===== Status Colors ===== */
+  --accent-success: oklch(72% 0.19 142);
+  --accent-error: oklch(65% 0.2 25);
+  --accent-warning: oklch(75% 0.18 85);
+  --accent-info: oklch(70% 0.15 250);
+  
+  /* ===== Gradient Tokens (for gradient themes) ===== */
+  --accent-gradient: linear-gradient(135deg, var(--accent-main), var(--accent-hover));
+  --accent-gradient-text: var(--accent-main);
+  
+  /* ===== Glow/Neon Tokens ===== */
+  --accent-glow: 0 0 20px color-mix(in oklch, var(--accent-main) 50%, transparent);
+  --accent-glow-intense: 0 0 30px color-mix(in oklch, var(--accent-main) 70%, transparent);
+}
+
+/* ===== Dark Mode Overrides ===== */
+:root[data-theme="dark"] {
+  --bg-primary: var(--neutral-950);
+  --bg-panel: var(--neutral-900);
+  --bg-elevated: var(--neutral-800);
+  --text-primary: var(--neutral-100);
+  --text-secondary: var(--neutral-400);
+  --text-muted: var(--neutral-500);
+  --border-color: var(--neutral-700);
+  --border-light: var(--neutral-800);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-primary: var(--neutral-950);
+    --bg-panel: var(--neutral-900);
+    --bg-elevated: var(--neutral-800);
+    --text-primary: var(--neutral-100);
+    --text-secondary: var(--neutral-400);
+    --text-muted: var(--neutral-500);
+    --border-color: var(--neutral-700);
+    --border-light: var(--neutral-800);
+  }
+}
+
+/* ===================================================================
+   COLOR PALETTES - Solid Themes
+   =================================================================== */
+
+/* ----- Green (Default - Lime) ----- */
+:root[data-color="green"],
+:root:not([data-color]) {
+  --accent-600: oklch(53.2% 0.157 131.589);
+  --accent-500: oklch(64.8% 0.2 131.684);
+  --accent-400: oklch(76.8% 0.233 130.85);
+}
+
+:root[data-theme="dark"][data-color="green"],
+:root[data-theme="dark"]:not([data-color]) {
+  --accent-600: oklch(64.8% 0.2 131.684);
+  --accent-500: oklch(76.8% 0.233 130.85);
+  --accent-400: oklch(84.1% 0.238 128.85);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-color="green"],
+  :root:not([data-theme="light"]):not([data-color]) {
+    --accent-600: oklch(64.8% 0.2 131.684);
+    --accent-500: oklch(76.8% 0.233 130.85);
+    --accent-400: oklch(84.1% 0.238 128.85);
+  }
+}
+
+/* ----- Blue ----- */
+:root[data-color="blue"] {
+  --accent-600: oklch(50% 0.18 250);
+  --accent-500: oklch(62% 0.21 250);
+  --accent-400: oklch(72% 0.18 250);
+}
+
+:root[data-theme="dark"][data-color="blue"] {
+  --accent-600: oklch(62% 0.21 250);
+  --accent-500: oklch(72% 0.18 250);
+  --accent-400: oklch(80% 0.14 250);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-color="blue"] {
+    --accent-600: oklch(62% 0.21 250);
+    --accent-500: oklch(72% 0.18 250);
+    --accent-400: oklch(80% 0.14 250);
+  }
+}
+
+/* ----- Purple ----- */
+:root[data-color="purple"] {
+  --accent-600: oklch(50% 0.2 300);
+  --accent-500: oklch(62% 0.22 300);
+  --accent-400: oklch(72% 0.19 300);
+}
+
+:root[data-theme="dark"][data-color="purple"] {
+  --accent-600: oklch(62% 0.22 300);
+  --accent-500: oklch(72% 0.19 300);
+  --accent-400: oklch(80% 0.15 300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-color="purple"] {
+    --accent-600: oklch(62% 0.22 300);
+    --accent-500: oklch(72% 0.19 300);
+    --accent-400: oklch(80% 0.15 300);
+  }
+}
+
+/* ----- Pink ----- */
+:root[data-color="pink"] {
+  --accent-600: oklch(55% 0.2 350);
+  --accent-500: oklch(68% 0.22 350);
+  --accent-400: oklch(78% 0.18 350);
+}
+
+:root[data-theme="dark"][data-color="pink"] {
+  --accent-600: oklch(68% 0.22 350);
+  --accent-500: oklch(78% 0.18 350);
+  --accent-400: oklch(85% 0.14 350);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-color="pink"] {
+    --accent-600: oklch(68% 0.22 350);
+    --accent-500: oklch(78% 0.18 350);
+    --accent-400: oklch(85% 0.14 350);
+  }
+}
+
+/* ----- Orange ----- */
+:root[data-color="orange"] {
+  --accent-600: oklch(58% 0.18 50);
+  --accent-500: oklch(70% 0.2 50);
+  --accent-400: oklch(80% 0.17 50);
+}
+
+:root[data-theme="dark"][data-color="orange"] {
+  --accent-600: oklch(70% 0.2 50);
+  --accent-500: oklch(80% 0.17 50);
+  --accent-400: oklch(87% 0.13 50);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-color="orange"] {
+    --accent-600: oklch(70% 0.2 50);
+    --accent-500: oklch(80% 0.17 50);
+    --accent-400: oklch(87% 0.13 50);
+  }
+}
+
+/* ----- Teal ----- */
+:root[data-color="teal"] {
+  --accent-600: oklch(52% 0.13 190);
+  --accent-500: oklch(65% 0.15 190);
+  --accent-400: oklch(75% 0.12 190);
+}
+
+:root[data-theme="dark"][data-color="teal"] {
+  --accent-600: oklch(65% 0.15 190);
+  --accent-500: oklch(75% 0.12 190);
+  --accent-400: oklch(83% 0.09 190);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-color="teal"] {
+    --accent-600: oklch(65% 0.15 190);
+    --accent-500: oklch(75% 0.12 190);
+    --accent-400: oklch(83% 0.09 190);
+  }
+}
+
+/* ----- Gray (Neutral Modern) ----- */
+:root[data-color="gray"] {
+  --accent-600: oklch(45% 0.02 260);
+  --accent-500: oklch(55% 0.02 260);
+  --accent-400: oklch(65% 0.02 260);
+}
+
+:root[data-theme="dark"][data-color="gray"] {
+  --accent-600: oklch(55% 0.02 260);
+  --accent-500: oklch(65% 0.02 260);
+  --accent-400: oklch(75% 0.02 260);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-color="gray"] {
+    --accent-600: oklch(55% 0.02 260);
+    --accent-500: oklch(65% 0.02 260);
+    --accent-400: oklch(75% 0.02 260);
+  }
+}
+
+/* ===================================================================
+   GRADIENT THEMES
+   =================================================================== */
+
+/* ----- Aurora Gradient (Blue → Purple → Green) ----- */
+:root[data-style="gradient"][data-color="aurora"] {
+  --accent-600: oklch(55% 0.18 250);
+  --accent-500: oklch(65% 0.2 280);
+  --accent-400: oklch(72% 0.18 150);
+  --accent-gradient: linear-gradient(135deg, 
+    oklch(65% 0.2 250) 0%, 
+    oklch(62% 0.22 300) 50%, 
+    oklch(70% 0.2 150) 100%
+  );
+  --accent-gradient-text: oklch(65% 0.2 280);
+}
+
+:root[data-theme="dark"][data-style="gradient"][data-color="aurora"] {
+  --accent-gradient: linear-gradient(135deg, 
+    oklch(72% 0.18 250) 0%, 
+    oklch(70% 0.2 300) 50%, 
+    oklch(78% 0.18 150) 100%
+  );
+  --accent-gradient-text: oklch(72% 0.18 280);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-style="gradient"][data-color="aurora"] {
+    --accent-gradient: linear-gradient(135deg, 
+      oklch(72% 0.18 250) 0%, 
+      oklch(70% 0.2 300) 50%, 
+      oklch(78% 0.18 150) 100%
+    );
+    --accent-gradient-text: oklch(72% 0.18 280);
+  }
+}
+
+/* ----- Sunset Gradient (Orange → Pink → Purple) ----- */
+:root[data-style="gradient"][data-color="sunset"] {
+  --accent-600: oklch(60% 0.2 50);
+  --accent-500: oklch(68% 0.22 350);
+  --accent-400: oklch(65% 0.2 300);
+  --accent-gradient: linear-gradient(135deg, 
+    oklch(70% 0.2 50) 0%, 
+    oklch(68% 0.22 350) 50%, 
+    oklch(62% 0.22 300) 100%
+  );
+  --accent-gradient-text: oklch(68% 0.2 20);
+}
+
+:root[data-theme="dark"][data-style="gradient"][data-color="sunset"] {
+  --accent-gradient: linear-gradient(135deg, 
+    oklch(78% 0.18 50) 0%, 
+    oklch(75% 0.2 350) 50%, 
+    oklch(72% 0.19 300) 100%
+  );
+  --accent-gradient-text: oklch(75% 0.18 20);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-style="gradient"][data-color="sunset"] {
+    --accent-gradient: linear-gradient(135deg, 
+      oklch(78% 0.18 50) 0%, 
+      oklch(75% 0.2 350) 50%, 
+      oklch(72% 0.19 300) 100%
+    );
+    --accent-gradient-text: oklch(75% 0.18 20);
+  }
+}
+
+/* ----- Ocean Gradient (Teal → Blue) ----- */
+:root[data-style="gradient"][data-color="ocean"] {
+  --accent-600: oklch(52% 0.15 200);
+  --accent-500: oklch(62% 0.18 220);
+  --accent-400: oklch(70% 0.2 250);
+  --accent-gradient: linear-gradient(135deg, 
+    oklch(65% 0.15 190) 0%, 
+    oklch(62% 0.18 220) 50%, 
+    oklch(60% 0.2 250) 100%
+  );
+  --accent-gradient-text: oklch(62% 0.18 220);
+}
+
+:root[data-theme="dark"][data-style="gradient"][data-color="ocean"] {
+  --accent-gradient: linear-gradient(135deg, 
+    oklch(75% 0.12 190) 0%, 
+    oklch(72% 0.16 220) 50%, 
+    oklch(70% 0.18 250) 100%
+  );
+  --accent-gradient-text: oklch(72% 0.16 220);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-style="gradient"][data-color="ocean"] {
+    --accent-gradient: linear-gradient(135deg, 
+      oklch(75% 0.12 190) 0%, 
+      oklch(72% 0.16 220) 50%, 
+      oklch(70% 0.18 250) 100%
+    );
+    --accent-gradient-text: oklch(72% 0.16 220);
+  }
+}
+
+/* ===================================================================
+   NEON THEMES
+   =================================================================== */
+
+/* ----- Cyber Neon ----- */
+:root[data-style="neon"][data-color="cyber"] {
+  --accent-600: oklch(70% 0.3 180);
+  --accent-500: oklch(80% 0.35 180);
+  --accent-400: oklch(88% 0.3 180);
+  --accent-glow: 0 0 15px oklch(80% 0.35 180 / 0.6),
+                 0 0 30px oklch(80% 0.35 180 / 0.3);
+  --accent-glow-intense: 0 0 20px oklch(80% 0.35 180 / 0.8),
+                         0 0 40px oklch(80% 0.35 180 / 0.5),
+                         0 0 60px oklch(80% 0.35 180 / 0.3);
+}
+
+:root[data-theme="dark"][data-style="neon"][data-color="cyber"],
+:root[data-style="neon"][data-color="cyber"] {
+  /* Neon always uses dark background for contrast */
+  --neutral-950: oklch(10% 0.02 260);
+  --neutral-900: oklch(14% 0.02 260);
+  --neutral-800: oklch(18% 0.02 260);
+}
+
+/* ----- Neon Pink ----- */
+:root[data-style="neon"][data-color="neon-pink"] {
+  --accent-600: oklch(65% 0.3 330);
+  --accent-500: oklch(75% 0.35 330);
+  --accent-400: oklch(85% 0.3 330);
+  --accent-glow: 0 0 15px oklch(75% 0.35 330 / 0.6),
+                 0 0 30px oklch(75% 0.35 330 / 0.3);
+  --accent-glow-intense: 0 0 20px oklch(75% 0.35 330 / 0.8),
+                         0 0 40px oklch(75% 0.35 330 / 0.5),
+                         0 0 60px oklch(75% 0.35 330 / 0.3);
+  --neutral-950: oklch(10% 0.02 260);
+  --neutral-900: oklch(14% 0.02 260);
+  --neutral-800: oklch(18% 0.02 260);
+}
+
+/* ----- Neon Purple ----- */
+:root[data-style="neon"][data-color="neon-purple"] {
+  --accent-600: oklch(60% 0.28 290);
+  --accent-500: oklch(70% 0.32 290);
+  --accent-400: oklch(80% 0.28 290);
+  --accent-glow: 0 0 15px oklch(70% 0.32 290 / 0.6),
+                 0 0 30px oklch(70% 0.32 290 / 0.3);
+  --accent-glow-intense: 0 0 20px oklch(70% 0.32 290 / 0.8),
+                         0 0 40px oklch(70% 0.32 290 / 0.5),
+                         0 0 60px oklch(70% 0.32 290 / 0.3);
+  --neutral-950: oklch(10% 0.02 260);
+  --neutral-900: oklch(14% 0.02 260);
+  --neutral-800: oklch(18% 0.02 260);
+}
+
+/* ----- RGB Flow (Rainbow) ----- */
+:root[data-style="neon"][data-color="rgb"] {
+  --accent-600: oklch(65% 0.25 0);
+  --accent-500: oklch(75% 0.28 120);
+  --accent-400: oklch(80% 0.25 240);
+  --accent-gradient: linear-gradient(90deg,
+    oklch(75% 0.28 0) 0%,
+    oklch(75% 0.28 60) 17%,
+    oklch(75% 0.28 120) 33%,
+    oklch(75% 0.28 180) 50%,
+    oklch(75% 0.28 240) 67%,
+    oklch(75% 0.28 300) 83%,
+    oklch(75% 0.28 360) 100%
+  );
+  --accent-glow: 0 0 15px oklch(75% 0.28 180 / 0.5);
+  --accent-glow-intense: 0 0 20px oklch(80% 0.3 180 / 0.7),
+                         0 0 40px oklch(75% 0.28 180 / 0.4);
+  --neutral-950: oklch(10% 0.02 260);
+  --neutral-900: oklch(14% 0.02 260);
+  --neutral-800: oklch(18% 0.02 260);
+}
+
+/* ===================================================================
+   CUSTOM COLOR SUPPORT
+   =================================================================== */
+
+:root[data-color="custom"] {
+  /* Custom colors are set via JavaScript using CSS custom properties */
+  /* --custom-hue is set dynamically */
+  --accent-600: oklch(53% 0.2 var(--custom-hue, 131));
+  --accent-500: oklch(65% 0.22 var(--custom-hue, 131));
+  --accent-400: oklch(77% 0.2 var(--custom-hue, 131));
+}
+
+:root[data-theme="dark"][data-color="custom"] {
+  --accent-600: oklch(65% 0.22 var(--custom-hue, 131));
+  --accent-500: oklch(77% 0.2 var(--custom-hue, 131));
+  --accent-400: oklch(85% 0.18 var(--custom-hue, 131));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-color="custom"] {
+    --accent-600: oklch(65% 0.22 var(--custom-hue, 131));
+    --accent-500: oklch(77% 0.2 var(--custom-hue, 131));
+    --accent-400: oklch(85% 0.18 var(--custom-hue, 131));
+  }
+}
+
+/* ===================================================================
+   STYLE-SPECIFIC CLASSES
+   =================================================================== */
+
+/* Gradient button style */
+:root[data-style="gradient"] .btn-gradient,
+:root[data-style="gradient"] .btn-primary {
+  background: var(--accent-gradient);
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+:root[data-style="gradient"] .btn-gradient:hover,
+:root[data-style="gradient"] .btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+/* Neon button style */
+:root[data-style="neon"] .btn-neon,
+:root[data-style="neon"] .btn-primary {
+  background: transparent;
+  border: 2px solid var(--accent-500);
+  color: var(--accent-500);
+  box-shadow: var(--accent-glow);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+:root[data-style="neon"] .btn-neon:hover,
+:root[data-style="neon"] .btn-primary:hover {
+  background: var(--accent-500);
+  color: var(--contrast);
+  box-shadow: var(--accent-glow-intense);
+}
+
+/* Gradient text effect */
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Neon text glow */
+:root[data-style="neon"] .accent-text,
+:root[data-style="neon"] .text-accent-500,
+:root[data-style="neon"] .text-accent-600 {
+  text-shadow: var(--accent-glow);
+}
+
+/* Header gradient for gradient themes */
+:root[data-style="gradient"] header nav,
+:root[data-style="gradient"] .header-gradient {
+  background: var(--neutral-900);
+  border-bottom: 2px solid transparent;
+  background-image: linear-gradient(var(--neutral-900), var(--neutral-900)), 
+                    var(--accent-gradient);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* Neon header border */
+:root[data-style="neon"] header nav,
+:root[data-style="neon"] .header-neon {
+  border-bottom: 1px solid var(--accent-500);
+  box-shadow: var(--accent-glow);
+}

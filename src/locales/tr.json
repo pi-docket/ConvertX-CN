@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Akıllı Öneri",
     "yourFrequentFormat": "Sık kullandığınız format"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Görünüm",
+    "lightMode": "Açık",
+    "darkMode": "Koyu",
+    "styleSolid": "Düz",
+    "styleGradient": "Gradyan",
+    "styleVivid": "Canlı",
+    "colorGreen": "Yeşil",
+    "colorBlue": "Mavi",
+    "colorPurple": "Mor",
+    "colorPink": "Pembe",
+    "colorOrange": "Turuncu",
+    "colorTeal": "Çam yeşili",
+    "colorGray": "Gri",
+    "colorYellow": "Sarı",
+    "colorAurora": "Kutup ışığı",
+    "colorSunset": "Gün batımı",
+    "colorOcean": "Okyanus",
+    "colorForest": "Orman",
+    "colorFire": "Ateş",
+    "colorNeonCyan": "Neon camgöbeği",
+    "colorNeonPink": "Neon pembe",
+    "colorNeonPurple": "Neon mor",
+    "colorNeonGreen": "Neon yeşil",
+    "colorRainbow": "Gökkuşağı",
+    "customColor": "Özel",
+    "customColorHint": "Herhangi bir renk seçin"
   }
 }

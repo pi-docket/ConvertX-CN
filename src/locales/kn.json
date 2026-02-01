@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "ಸ್ಮಾರ್ಟ್ ಶಿಫಾರಸು",
     "yourFrequentFormat": "ನಿಮ್ಮ ಆಗಾಗ್ಗೆ ಫಾರ್ಮ್ಯಾಟ್"
+  },
+  "theme": {
+    "pickerTitle": "ಥೀಮ್",
+    "modeLabel": "ನೋಟ",
+    "lightMode": "ಹಗುರ",
+    "darkMode": "ಗಾಢ",
+    "styleSolid": "ಘನ",
+    "styleGradient": "ಗ್ರೇಡಿಯೆಂಟ್",
+    "styleVivid": "ಸ್ಫುಟ",
+    "colorGreen": "ಹಸಿರು",
+    "colorBlue": "ನೀಲಿ",
+    "colorPurple": "ನೇರಳೆ",
+    "colorPink": "ಗುಲಾಬಿ",
+    "colorOrange": "ಕಿತ್ತಳೆ",
+    "colorTeal": "ನೀಲ-ಹಸಿರು",
+    "colorGray": "ಬೂದು",
+    "colorYellow": "ಹಳದಿ",
+    "colorAurora": "ಅರೋರಾ",
+    "colorSunset": "ಸೂರ್ಯಾಸ್ತ",
+    "colorOcean": "ಸಮುದ್ರ",
+    "colorForest": "ಕಾಡು",
+    "colorFire": "ಬೆಂಕಿ",
+    "colorNeonCyan": "ನಿಯಾನ್ ಸೈಯಾನ್",
+    "colorNeonPink": "ನಿಯಾನ್ ಗುಲಾಬಿ",
+    "colorNeonPurple": "ನಿಯಾನ್ ನೇರಳೆ",
+    "colorNeonGreen": "ನಿಯಾನ್ ಹಸಿರು",
+    "colorRainbow": "ಕಾಮನಬಿಲ್ಲು",
+    "customColor": "ಕಸ್ಟಮ್",
+    "customColorHint": "ಯಾವುದೇ ಬಣ್ಣ ಆಯ್ಕೆ ಮಾಡಿ"
   }
 }

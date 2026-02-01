@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "스마트 추천",
     "yourFrequentFormat": "자주 사용하는 형식"
+  },
+  "theme": {
+    "pickerTitle": "테마",
+    "modeLabel": "외관 모드",
+    "lightMode": "라이트",
+    "darkMode": "다크",
+    "styleSolid": "단색",
+    "styleGradient": "그라데이션",
+    "styleVivid": "비비드",
+    "colorGreen": "초록",
+    "colorBlue": "파랑",
+    "colorPurple": "보라",
+    "colorPink": "분홍",
+    "colorOrange": "주황",
+    "colorTeal": "청록",
+    "colorGray": "회색",
+    "colorYellow": "노랑",
+    "colorAurora": "오로라",
+    "colorSunset": "석양",
+    "colorOcean": "바다",
+    "colorForest": "숲",
+    "colorFire": "불꽃",
+    "colorNeonCyan": "네온 시안",
+    "colorNeonPink": "네온 핑크",
+    "colorNeonPurple": "네온 퍼플",
+    "colorNeonGreen": "네온 그린",
+    "colorRainbow": "무지개",
+    "customColor": "사용자 지정",
+    "customColorHint": "원하는 색상 선택"
   }
 }

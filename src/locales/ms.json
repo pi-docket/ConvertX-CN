@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Cadangan Pintar",
     "yourFrequentFormat": "Format kerap anda"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Penampilan",
+    "lightMode": "Cerah",
+    "darkMode": "Gelap",
+    "styleSolid": "Pepejal",
+    "styleGradient": "Gradien",
+    "styleVivid": "Terang",
+    "colorGreen": "Hijau",
+    "colorBlue": "Biru",
+    "colorPurple": "Ungu",
+    "colorPink": "Merah jambu",
+    "colorOrange": "Oren",
+    "colorTeal": "Hijau biru",
+    "colorGray": "Kelabu",
+    "colorYellow": "Kuning",
+    "colorAurora": "Aurora",
+    "colorSunset": "Matahari terbenam",
+    "colorOcean": "Lautan",
+    "colorForest": "Hutan",
+    "colorFire": "Api",
+    "colorNeonCyan": "Neon sian",
+    "colorNeonPink": "Neon merah jambu",
+    "colorNeonPurple": "Neon ungu",
+    "colorNeonGreen": "Neon hijau",
+    "colorRainbow": "Pelangi",
+    "customColor": "Tersuai",
+    "customColorHint": "Pilih sebarang warna"
   }
 }

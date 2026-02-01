@@ -138,5 +138,34 @@
   "inference": {
     "smartRecommend": "คำแนะนำอัจฉริยะ",
     "yourFrequentFormat": "รูปแบบที่คุณใช้บ่อย"
+  },
+  "theme": {
+    "pickerTitle": "ธีม",
+    "modeLabel": "รูปแบบ",
+    "lightMode": "สว่าง",
+    "darkMode": "มืด",
+    "styleSolid": "ทึบ",
+    "styleGradient": "ไล่เฉด",
+    "styleVivid": "สดใส",
+    "colorGreen": "เขียว",
+    "colorBlue": "น้ำเงิน",
+    "colorPurple": "ม่วง",
+    "colorPink": "ชมพู",
+    "colorOrange": "ส้ม",
+    "colorTeal": "เขียวอมน้ำเงิน",
+    "colorGray": "เทา",
+    "colorYellow": "เหลือง",
+    "colorAurora": "แสงเหนือ",
+    "colorSunset": "พระอาทิตย์ตก",
+    "colorOcean": "มหาสมุทร",
+    "colorForest": "ป่า",
+    "colorFire": "ไฟ",
+    "colorNeonCyan": "นีออนฟ้า",
+    "colorNeonPink": "นีออนชมพู",
+    "colorNeonPurple": "นีออนม่วง",
+    "colorNeonGreen": "นีออนเขียว",
+    "colorRainbow": "สายรุ้ง",
+    "customColor": "กำหนดเอง",
+    "customColorHint": "เลือกสีใดก็ได้"
   }
 }

@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "സ്മാർട്ട് ശുപാർശ",
     "yourFrequentFormat": "നിങ്ങളുടെ പതിവ് ഫോർമാറ്റ്"
+  },
+  "theme": {
+    "pickerTitle": "ഥീം",
+    "modeLabel": "കാട്ച",
+    "lightMode": "ലൈറ്റ്",
+    "darkMode": "ഡാർക്ക്",
+    "styleSolid": "സോളിഡ്",
+    "styleGradient": "ഗ്രേഡിയന്റ്",
+    "styleVivid": "ജീവസ്സുറ്റ",
+    "colorGreen": "പച്ച",
+    "colorBlue": "നീല",
+    "colorPurple": "നീലലോഹിതം",
+    "colorPink": "പിങ്ക്",
+    "colorOrange": "ഓറഞ്ച്",
+    "colorTeal": "ടീൽ",
+    "colorGray": "ഗ്രേ",
+    "colorYellow": "മഞ്ഞ",
+    "colorAurora": "ഓറോറ",
+    "colorSunset": "സൂർയാസ്തമയം",
+    "colorOcean": "സമുദ്രം",
+    "colorForest": "വനം",
+    "colorFire": "അഗ്നി",
+    "colorNeonCyan": "നിയോൺ സയാൻ",
+    "colorNeonPink": "നിയോൺ പിങ്ക്",
+    "colorNeonPurple": "നിയോൺ നീലലോഹിതം",
+    "colorNeonGreen": "നിയോൺ പച്ച",
+    "colorRainbow": "മഴവില്ല്",
+    "customColor": "കസ്റ്റം",
+    "customColorHint": "ഏത് നിറം തിരഞ്ഞെടുക്കുക"
   }
 }

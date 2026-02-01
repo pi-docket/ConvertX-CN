@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Slimme aanbeveling",
     "yourFrequentFormat": "Uw veelgebruikte formaat"
+  },
+  "theme": {
+    "pickerTitle": "Thema",
+    "modeLabel": "Weergave",
+    "lightMode": "Licht",
+    "darkMode": "Donker",
+    "styleSolid": "Effen",
+    "styleGradient": "Verloop",
+    "styleVivid": "Levendig",
+    "colorGreen": "Groen",
+    "colorBlue": "Blauw",
+    "colorPurple": "Paars",
+    "colorPink": "Roze",
+    "colorOrange": "Oranje",
+    "colorTeal": "Blauwgroen",
+    "colorGray": "Grijs",
+    "colorYellow": "Geel",
+    "colorAurora": "Noorderlicht",
+    "colorSunset": "Zonsondergang",
+    "colorOcean": "Oceaan",
+    "colorForest": "Bos",
+    "colorFire": "Vuur",
+    "colorNeonCyan": "Neon cyaan",
+    "colorNeonPink": "Neon roze",
+    "colorNeonPurple": "Neon paars",
+    "colorNeonGreen": "Neon groen",
+    "colorRainbow": "Regenboog",
+    "customColor": "Aangepast",
+    "customColorHint": "Kies een kleur"
   }
 }

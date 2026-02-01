@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "စမတ်အကြံပြုချက်",
     "yourFrequentFormat": "သင်မကြာခဏသုံးသောပုံစံ"
+  },
+  "theme": {
+    "pickerTitle": "အကြောင်းအရာ",
+    "modeLabel": "အသွင်အပြင်",
+    "lightMode": "အလင်း",
+    "darkMode": "အမှိုင်",
+    "styleSolid": "အပြည့်",
+    "styleGradient": "အရောင်ပြောင်း",
+    "styleVivid": "တောက်ပ",
+    "colorGreen": "အစိမ်း",
+    "colorBlue": "အပြာ",
+    "colorPurple": "ခရမ်း",
+    "colorPink": "ပန်း",
+    "colorOrange": "လိမ္မော်",
+    "colorTeal": "စိမ်းပြာ",
+    "colorGray": "မီး",
+    "colorYellow": "အဝါး",
+    "colorAurora": "အိုရိုရာ",
+    "colorSunset": "နေဝင်း",
+    "colorOcean": "သမုဒ္ဒရာ",
+    "colorForest": "သစ်",
+    "colorFire": "မီး",
+    "colorNeonCyan": "နီယွန်စိမ်းပြာ",
+    "colorNeonPink": "နီယွန်ပန်း",
+    "colorNeonPurple": "နီယွန်ခရမ်း",
+    "colorNeonGreen": "နီယွန်အစိမ်း",
+    "colorRainbow": "သက်တံ့",
+    "customColor": "စိတ်ကြိုက်",
+    "customColorHint": "အရောင်မျိုးမျိုးကိုရွေးပါ"
   }
 }

@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Inteligentna rekomendacja",
     "yourFrequentFormat": "Twój częsty format"
+  },
+  "theme": {
+    "pickerTitle": "Motyw",
+    "modeLabel": "Wygląd",
+    "lightMode": "Jasny",
+    "darkMode": "Ciemny",
+    "styleSolid": "Jednolity",
+    "styleGradient": "Gradient",
+    "styleVivid": "Żywy",
+    "colorGreen": "Zielony",
+    "colorBlue": "Niebieski",
+    "colorPurple": "Fioletowy",
+    "colorPink": "Różowy",
+    "colorOrange": "Pomarańczowy",
+    "colorTeal": "Morski",
+    "colorGray": "Szary",
+    "colorYellow": "Żółty",
+    "colorAurora": "Zorza",
+    "colorSunset": "Zachód słońca",
+    "colorOcean": "Ocean",
+    "colorForest": "Las",
+    "colorFire": "Ogień",
+    "colorNeonCyan": "Neon cyjan",
+    "colorNeonPink": "Neon różowy",
+    "colorNeonPurple": "Neon fioletowy",
+    "colorNeonGreen": "Neon zielony",
+    "colorRainbow": "Tęcza",
+    "customColor": "Niestandardowy",
+    "customColorHint": "Wybierz dowolny kolor"
   }
 }

@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Smart anbefaling",
     "yourFrequentFormat": "Ditt hyppige format"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Utseende",
+    "lightMode": "Lys",
+    "darkMode": "Mørk",
+    "styleSolid": "Ensfarget",
+    "styleGradient": "Gradient",
+    "styleVivid": "Levende",
+    "colorGreen": "Grønn",
+    "colorBlue": "Blå",
+    "colorPurple": "Lilla",
+    "colorPink": "Rosa",
+    "colorOrange": "Oransje",
+    "colorTeal": "Blågrønn",
+    "colorGray": "Grå",
+    "colorYellow": "Gul",
+    "colorAurora": "Nordlys",
+    "colorSunset": "Solnedgang",
+    "colorOcean": "Hav",
+    "colorForest": "Skog",
+    "colorFire": "Ild",
+    "colorNeonCyan": "Neon cyan",
+    "colorNeonPink": "Neon rosa",
+    "colorNeonPurple": "Neon lilla",
+    "colorNeonGreen": "Neon grønn",
+    "colorRainbow": "Regnbue",
+    "customColor": "Egendefinert",
+    "customColorHint": "Velg hvilken som helst farge"
   }
 }

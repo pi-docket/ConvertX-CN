@@ -13,6 +13,7 @@ import { ExecFileFn } from "./types";
 import { getArchiveFileName } from "../transfer";
 import { ensureSearchablePdf, cleanupOcrTempFile } from "../helpers/pdfOcr";
 import { getUserTranslationProvider, type TranslationProviderType } from "../helpers/translation";
+import { LLAMA_SERVER_URL } from "../helpers/startupStatus";
 
 /**
  * BabelDOC Content Engine
@@ -206,8 +207,8 @@ function getTranslationArgs(userId?: number): string[] {
     ? getUserTranslationProvider(userId)
     : "local";
 
-  // llama-server 的 OpenAI 相容 API 端點
-  const llamaServerUrl = process.env.LLAMA_SERVER_URL || "http://127.0.0.1:11785";
+  // llama-server 的 OpenAI 相容 API 端點（使用統一的設定）
+  const llamaServerUrl = LLAMA_SERVER_URL;
 
   switch (providerType) {
     case "local":

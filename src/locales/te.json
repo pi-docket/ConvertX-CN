@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "స్మార్ట్ సిఫార్సు",
     "yourFrequentFormat": "మీ తరచుగా ఫార్మాట్"
+  },
+  "theme": {
+    "pickerTitle": "థీమ్",
+    "modeLabel": "కనిపించడం",
+    "lightMode": "లైట్",
+    "darkMode": "డార్క్",
+    "styleSolid": "సాలిడ్",
+    "styleGradient": "గ్రేడియంట్",
+    "styleVivid": "స్పష్టంగా",
+    "colorGreen": "ఆకుపచ్చ",
+    "colorBlue": "నీలం",
+    "colorPurple": "వాయలెట్",
+    "colorPink": "పింక్",
+    "colorOrange": "నారంగి",
+    "colorTeal": "టీల్",
+    "colorGray": "గ్రే",
+    "colorYellow": "పసుపు",
+    "colorAurora": "అరోరా",
+    "colorSunset": "సూర్యాస్తమయం",
+    "colorOcean": "సముద్రం",
+    "colorForest": "అడవి",
+    "colorFire": "అగ్ని",
+    "colorNeonCyan": "నియాన్ సైయాన్",
+    "colorNeonPink": "నియాన్ పింక్",
+    "colorNeonPurple": "నియాన్ వాయలెట్",
+    "colorNeonGreen": "నియాన్ ఆకుపచ్చ",
+    "colorRainbow": "ఇంద్రధనుస్సు",
+    "customColor": "కస్టమ్",
+    "customColorHint": "ఏదైనా రంగును ఎంచుకోండి"
   }
 }

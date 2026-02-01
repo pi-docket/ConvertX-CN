@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Matalinong Rekomendasyon",
     "yourFrequentFormat": "Iyong madalas na format"
+  },
+  "theme": {
+    "pickerTitle": "Tema",
+    "modeLabel": "Hitsura",
+    "lightMode": "Maliwanag",
+    "darkMode": "Madilim",
+    "styleSolid": "Solid",
+    "styleGradient": "Gradient",
+    "styleVivid": "Makulay",
+    "colorGreen": "Berde",
+    "colorBlue": "Asul",
+    "colorPurple": "Lila",
+    "colorPink": "Pink",
+    "colorOrange": "Kahel",
+    "colorTeal": "Teal",
+    "colorGray": "Kulay-abo",
+    "colorYellow": "Dilaw",
+    "colorAurora": "Aurora",
+    "colorSunset": "Paglubog ng araw",
+    "colorOcean": "Karagatan",
+    "colorForest": "Gubat",
+    "colorFire": "Apoy",
+    "colorNeonCyan": "Neon cyan",
+    "colorNeonPink": "Neon pink",
+    "colorNeonPurple": "Neon lila",
+    "colorNeonGreen": "Neon berde",
+    "colorRainbow": "Bahaghari",
+    "customColor": "Custom",
+    "customColorHint": "Pumili ng anumang kulay"
   }
 }

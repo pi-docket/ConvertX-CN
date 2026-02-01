@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "ஸ்மார்ட் பரிந்துரை",
     "yourFrequentFormat": "உங்கள் அடிக்கடி வடிவமைப்பு"
+  },
+  "theme": {
+    "pickerTitle": "தீம்",
+    "modeLabel": "தோற்றம்",
+    "lightMode": "வெளிர்",
+    "darkMode": "இருட்டு",
+    "styleSolid": "திடமான",
+    "styleGradient": "சாய்வு",
+    "styleVivid": "உயிர்நதமான",
+    "colorGreen": "பச்சை",
+    "colorBlue": "நீலம்",
+    "colorPurple": "நேரக்கம்",
+    "colorPink": "இளங்கு",
+    "colorOrange": "ஆரஞ்சு",
+    "colorTeal": "டீல்",
+    "colorGray": "சாம்பல்",
+    "colorYellow": "மஞ்சள்",
+    "colorAurora": "ஆரோரா",
+    "colorSunset": "சூரியாஸ்தமம்",
+    "colorOcean": "கடல்",
+    "colorForest": "காடு",
+    "colorFire": "தீ",
+    "colorNeonCyan": "நியான் சையான்",
+    "colorNeonPink": "நியான் இளங்கு",
+    "colorNeonPurple": "நியான் நேரக்கம்",
+    "colorNeonGreen": "நியான் பச்சை",
+    "colorRainbow": "வானவில்",
+    "customColor": "தனிப்பயன்",
+    "customColorHint": "எந்த நிறத்தையும் தேர்ந்தெடுக்கவும்"
   }
 }

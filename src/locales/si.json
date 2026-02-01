@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "ස්මාර්ට් නිර්දේශය",
     "yourFrequentFormat": "ඔබේ නිතර ආකෘතිය"
+  },
+  "theme": {
+    "pickerTitle": "තියාපතිය",
+    "modeLabel": "පෙනුම",
+    "lightMode": "ආලෝකමය",
+    "darkMode": "අන්ධකාර",
+    "styleSolid": "දෘඩ",
+    "styleGradient": "ප්‍රවණය",
+    "styleVivid": "විවිඩ්",
+    "colorGreen": "කොළ",
+    "colorBlue": "නිල්",
+    "colorPurple": "දම්වැලි",
+    "colorPink": "රෝස්",
+    "colorOrange": "තැඹිලි",
+    "colorTeal": "ටීල්",
+    "colorGray": "අපුළු",
+    "colorYellow": "කහ",
+    "colorAurora": "ඔරෝරා",
+    "colorSunset": "සඳෙහිරිය",
+    "colorOcean": "සාගරය",
+    "colorForest": "වනය",
+    "colorFire": "ගිනි",
+    "colorNeonCyan": "නියොන් සයන්",
+    "colorNeonPink": "නියොන් රෝස්",
+    "colorNeonPurple": "නියොන් දම්වැලි",
+    "colorNeonGreen": "නියොන් කොළ",
+    "colorRainbow": "දීධ්ධනු",
+    "customColor": "කස්ටම්",
+    "customColorHint": "ඔනෑම පාටයක් තොරන්න"
   }
 }

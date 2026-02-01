@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Intelligens ajánlás",
     "yourFrequentFormat": "Gyakori formátumok"
+  },
+  "theme": {
+    "pickerTitle": "Téma",
+    "modeLabel": "Megjelenés",
+    "lightMode": "Világos",
+    "darkMode": "Sötét",
+    "styleSolid": "Egyszínű",
+    "styleGradient": "Színváltó",
+    "styleVivid": "Élénk",
+    "colorGreen": "Zöld",
+    "colorBlue": "Kék",
+    "colorPurple": "Lila",
+    "colorPink": "Rózsaszín",
+    "colorOrange": "Narancssárga",
+    "colorTeal": "Pávakék",
+    "colorGray": "Szürke",
+    "colorYellow": "Sárga",
+    "colorAurora": "Sarki fény",
+    "colorSunset": "Naplemente",
+    "colorOcean": "Óceán",
+    "colorForest": "Erdő",
+    "colorFire": "Tűz",
+    "colorNeonCyan": "Neon cián",
+    "colorNeonPink": "Neon rózsaszín",
+    "colorNeonPurple": "Neon lila",
+    "colorNeonGreen": "Neon zöld",
+    "colorRainbow": "Szivárvány",
+    "customColor": "Egyedi",
+    "customColorHint": "Válasszon bármilyen színt"
   }
 }

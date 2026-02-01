@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "Έξυπνη Σύσταση",
     "yourFrequentFormat": "Η συχνή σας μορφή"
+  },
+  "theme": {
+    "pickerTitle": "Θέμα",
+    "modeLabel": "Εμφάνιση",
+    "lightMode": "Φωτεινό",
+    "darkMode": "Σκοτεινό",
+    "styleSolid": "Συμπαγές",
+    "styleGradient": "Διαβάθμιση",
+    "styleVivid": "Έντονο",
+    "colorGreen": "Πράσινο",
+    "colorBlue": "Μπλε",
+    "colorPurple": "Μωβ",
+    "colorPink": "Ροζ",
+    "colorOrange": "Πορτοκαλί",
+    "colorTeal": "Κυανοπράσινο",
+    "colorGray": "Γκρι",
+    "colorYellow": "Κίτρινο",
+    "colorAurora": "Σέλας",
+    "colorSunset": "Ηλιοβασίλεμα",
+    "colorOcean": "Ωκεανός",
+    "colorForest": "Δάσος",
+    "colorFire": "Φωτιά",
+    "colorNeonCyan": "Νέον κυανό",
+    "colorNeonPink": "Νέον ροζ",
+    "colorNeonPurple": "Νέον μωβ",
+    "colorNeonGreen": "Νέον πράσινο",
+    "colorRainbow": "Ουράνιο τόξο",
+    "customColor": "Προσαρμοσμένο",
+    "customColorHint": "Επιλέξτε οποιοδήποτε χρώμα"
   }
 }

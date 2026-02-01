@@ -1,3 +1,6 @@
+/* ===== Theme System Base ===== */
+/* This file provides base neutral colors and imports the color system */
+
 /* ===== Light Mode (Default) ===== */
 :root {
   --contrast: oklch(100% 0 0);
@@ -13,10 +16,13 @@
   --neutral-200: oklch(26.9% 0 0);
   --neutral-100: oklch(21% 0.034 264.665);
   --neutral-50: oklch(13% 0.028 261.692);
-  /* Accent colors - lime */
+  /* Default accent colors - lime (set by colors.css) */
   --accent-600: oklch(53.2% 0.157 131.589);
   --accent-500: oklch(64.8% 0.2 131.684);
   --accent-400: oklch(76.8% 0.233 130.85);
+  /* Custom hue for user-defined colors */
+  --custom-hue: 131;
+  --custom-saturation: 0.2;
 }
 
 /* ===== Dark Mode Variables ===== */
@@ -34,7 +40,7 @@
   --neutral-200: oklch(92.8% 0.006 264.531);
   --neutral-100: oklch(96.7% 0.003 264.542);
   --neutral-50: oklch(98.5% 0.002 247.839);
-  /* Accent colors - lime (brighter for dark mode) */
+  /* Default accent colors - lime (brighter for dark mode, set by colors.css) */
   --accent-600: oklch(64.8% 0.2 131.684);
   --accent-500: oklch(76.8% 0.233 130.85);
   --accent-400: oklch(84.1% 0.238 128.85);
@@ -56,7 +62,7 @@
     --neutral-200: oklch(92.8% 0.006 264.531);
     --neutral-100: oklch(96.7% 0.003 264.542);
     --neutral-50: oklch(98.5% 0.002 247.839);
-    /* Accent colors - lime (brighter for dark mode) */
+    /* Default accent colors - lime (brighter for dark mode) */
     --accent-600: oklch(64.8% 0.2 131.684);
     --accent-500: oklch(76.8% 0.233 130.85);
     --accent-400: oklch(84.1% 0.238 128.85);

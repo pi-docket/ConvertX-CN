@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "स्मार्ट सिफारिस",
     "yourFrequentFormat": "तपाईंको बारम्बार ढाँचा"
+  },
+  "theme": {
+    "pickerTitle": "थिम",
+    "modeLabel": "देखावट",
+    "lightMode": "हल्का",
+    "darkMode": "गाढा",
+    "styleSolid": "ठोस",
+    "styleGradient": "ग्रेडियन्ट",
+    "styleVivid": "चमकिलो",
+    "colorGreen": "हरियो",
+    "colorBlue": "निलो",
+    "colorPurple": "बैँगनी",
+    "colorPink": "गुलाबी",
+    "colorOrange": "सुन्तला",
+    "colorTeal": "टिल",
+    "colorGray": "खैरो",
+    "colorYellow": "पहेंलो",
+    "colorAurora": "अरोरा",
+    "colorSunset": "सूर्यास्त",
+    "colorOcean": "समुद्र",
+    "colorForest": "जङ्गल",
+    "colorFire": "आगो",
+    "colorNeonCyan": "नियॉन सायन",
+    "colorNeonPink": "नियॉन गुलाबी",
+    "colorNeonPurple": "नियॉन बैँगनी",
+    "colorNeonGreen": "नियॉन हरियो",
+    "colorRainbow": "इन्द्रेणी",
+    "customColor": "कस्टम",
+    "customColorHint": "कुनै पनि रङ छान्नुहोस्"
   }
 }

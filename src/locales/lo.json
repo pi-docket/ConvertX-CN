@@ -139,5 +139,34 @@
   "inference": {
     "smartRecommend": "ຄຳແນະນຳອັດສະລິຍະ",
     "yourFrequentFormat": "ຮູບແບບທີ່ໃຊ້ເລື້ອຍໆ"
+  },
+  "theme": {
+    "pickerTitle": "ຘີມ",
+    "modeLabel": "ລັກສະນະ",
+    "lightMode": "ສະຫວ່າງ",
+    "darkMode": "ມືດ",
+    "styleSolid": "ເຕັມ",
+    "styleGradient": "ໄລ່ເຊດ",
+    "styleVivid": "ສົດໃສ",
+    "colorGreen": "ສີຂຽວ",
+    "colorBlue": "ສີຟ້າ",
+    "colorPurple": "ສີມ່ວງ",
+    "colorPink": "ສີຊມພູ",
+    "colorOrange": "ສີສົ້ມ",
+    "colorTeal": "ສີຂຽວຟ້າ",
+    "colorGray": "ສີເທົາ",
+    "colorYellow": "ສີເຫລືອງ",
+    "colorAurora": "ແສງເໜືອ",
+    "colorSunset": "ຕາເວັນຕົກດິນ",
+    "colorOcean": "ມະຫາສະມຸດ",
+    "colorForest": "ປ່າໄມ້",
+    "colorFire": "ໄຟ",
+    "colorNeonCyan": "ນີອອນຟ້າ",
+    "colorNeonPink": "ນີອອນຊມພູ",
+    "colorNeonPurple": "ນີອອນມ່ວງ",
+    "colorNeonGreen": "ນີອອນຂຽວ",
+    "colorRainbow": "ຮຸ້ງກິນນາມ",
+    "customColor": "ກຳຫົນເອງ",
+    "customColorHint": "ເລືອກສີໃດກໍໄດ້"
   }
 }
