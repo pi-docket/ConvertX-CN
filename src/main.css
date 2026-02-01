@@ -30,3 +30,20 @@
 @utility btn-secondary {
   @apply bg-neutral-400 text-contrast rounded-sm p-2 sm:p-4 hover:bg-neutral-300 cursor-pointer transition-colors;
 }
+
+/* Settings page status banner styles */
+@utility status-success {
+  @apply bg-green-700 text-white;
+}
+
+@utility status-error {
+  @apply bg-red-700 text-white;
+}
+
+@utility status-info {
+  @apply bg-neutral-700 text-neutral-200;
+}
+
+@utility status-loading {
+  @apply bg-neutral-700 text-neutral-300;
+}

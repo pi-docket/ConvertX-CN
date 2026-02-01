@@ -1,13 +1,62 @@
-// Settings page form handler - API Keys
+/**
+ * Settings Page Form Handler
+ *
+ * 設計原則：
+ * 1. 固定頁面頂部提示列 - 不閃爍、不隨 re-render 消失
+ * 2. API Key 為選填 - 未設定不報錯
+ * 3. 明確的成功/失敗回饋
+ */
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("api-keys-form");
+  const statusBanner = document.getElementById("settings-status-banner");
 
   if (!form) {
     console.warn("Settings form not found");
     return;
   }
 
-  // Get initial values for change detection
+  // 隱藏提示列的計時器（避免多次觸發）
+  let hideTimer = null;
+
+  // 顯示狀態提示列
+  function showStatus(type, message) {
+    if (!statusBanner) return;
+
+    // 清除之前的計時器
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+
+    // 移除所有狀態類別
+    statusBanner.classList.remove(
+      "hidden",
+      "status-success",
+      "status-error",
+      "status-info",
+      "status-loading",
+    );
+
+    // 設定新狀態
+    statusBanner.classList.add(`status-${type}`);
+    statusBanner.textContent = message;
+
+    // 成功或資訊訊息 5 秒後自動隱藏
+    if (type === "success" || type === "info") {
+      hideTimer = setTimeout(() => {
+        statusBanner.classList.add("hidden");
+      }, 5000);
+    }
+  }
+
+  // 隱藏狀態提示列
+  function hideStatus() {
+    if (statusBanner) {
+      statusBanner.classList.add("hidden");
+    }
+  }
+
+  // 取得初始值用於變更偵測
   const getInitialValues = () => ({
     openai_api_key: document.getElementById("initial-openai-key")?.value || "",
     deepseek_api_key: document.getElementById("initial-deepseek-key")?.value || "",
@@ -16,21 +65,21 @@ document.addEventListener("DOMContentLoaded", function () {
     translation_provider: document.getElementById("initial-translation-provider")?.value || "local",
   });
 
+  // 表單提交處理
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     e.stopPropagation();
 
     const formData = new FormData(form);
-    const statusEl = document.getElementById("settings-status");
     const submitBtn = form.querySelector('input[type="submit"]');
 
-    // Get i18n strings from data attributes
-    const successText = statusEl?.dataset.success || "Settings saved";
-    const errorText = statusEl?.dataset.error || "Failed to save settings";
-    const updatingText = statusEl?.dataset.updating || "Saving...";
-    const noChangesText = statusEl?.dataset.noChanges || "No changes to save";
+    // 取得 i18n 字串
+    const successText = statusBanner?.dataset.success || "設定已成功更新";
+    const errorText = statusBanner?.dataset.error || "設定更新失敗，請稍後再試";
+    const updatingText = statusBanner?.dataset.updating || "儲存中...";
+    const noChangesText = statusBanner?.dataset.noChanges || "沒有變更需要儲存";
 
-    // Get current form values
+    // 取得目前表單值
     const currentValues = {
       openai_api_key: formData.get("openai_api_key") || "",
       deepseek_api_key: formData.get("deepseek_api_key") || "",
@@ -39,10 +88,10 @@ document.addEventListener("DOMContentLoaded", function () {
       translation_provider: formData.get("translation_provider") || "local",
     };
 
-    // Get initial values
+    // 取得初始值
     const initialValues = getInitialValues();
 
-    // Check if any values have changed
+    // 檢查是否有變更
     const hasChanges =
       currentValues.openai_api_key !== initialValues.openai_api_key ||
       currentValues.deepseek_api_key !== initialValues.deepseek_api_key ||
@@ -50,94 +99,73 @@ document.addEventListener("DOMContentLoaded", function () {
       currentValues.processing_mode !== initialValues.processing_mode ||
       currentValues.translation_provider !== initialValues.translation_provider;
 
-    // If no changes, show message and return early
+    // 如果沒有變更，顯示提示並返回
     if (!hasChanges) {
-      if (statusEl) {
-        statusEl.classList.remove("hidden");
-        statusEl.className =
-          "rounded-md px-4 py-2 text-center text-sm transition-all bg-neutral-800 text-neutral-400";
-        statusEl.textContent = noChangesText;
-        setTimeout(() => {
-          statusEl.classList.add("hidden");
-        }, 2000);
-      }
+      showStatus("info", noChangesText);
       return false;
     }
 
-    // Show updating status
-    if (statusEl) {
-      statusEl.classList.remove("hidden");
-      statusEl.className =
-        "rounded-md px-4 py-2 text-center text-sm transition-all bg-neutral-800 text-neutral-400";
-      statusEl.textContent = updatingText;
-    }
+    // 顯示儲存中狀態
+    showStatus("loading", updatingText);
 
+    // 禁用提交按鈕
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.classList.add("opacity-60", "cursor-wait");
     }
 
     try {
-      // Calculate webroot - handle both /settings and /prefix/settings paths
+      // 計算 webroot 路徑
       const pathname = window.location.pathname;
-      const webroot = pathname.endsWith("/settings")
-        ? pathname.slice(0, -9) // Remove "/settings" (9 chars)
-        : "";
+      const webroot = pathname.endsWith("/settings") ? pathname.slice(0, -9) : "";
 
       const response = await fetch(`${webroot}/settings/api-keys`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "same-origin", // 確保傳送 cookie
         body: JSON.stringify(currentValues),
       });
 
-      if (statusEl) {
-        if (response.ok) {
-          // Success: green background
-          statusEl.className =
-            "rounded-md px-4 py-2 text-center text-sm transition-all bg-green-900/50 text-green-400 border border-green-800";
-          statusEl.textContent = "✓ " + successText;
+      if (response.ok) {
+        // 成功
+        showStatus("success", "✓ " + successText);
 
-          // Update initial values to current values (so next submit won't trigger if unchanged)
-          const initProcessingMode = document.getElementById("initial-processing-mode");
-          const initTranslationProvider = document.getElementById("initial-translation-provider");
-          const initOpenai = document.getElementById("initial-openai-key");
-          const initDeepseek = document.getElementById("initial-deepseek-key");
-          const initOtherLlm = document.getElementById("initial-other-llm-key");
+        // 更新初始值（避免重複提交相同值）
+        const initProcessingMode = document.getElementById("initial-processing-mode");
+        const initTranslationProvider = document.getElementById("initial-translation-provider");
+        const initOpenai = document.getElementById("initial-openai-key");
+        const initDeepseek = document.getElementById("initial-deepseek-key");
+        const initOtherLlm = document.getElementById("initial-other-llm-key");
 
-          if (initProcessingMode) initProcessingMode.value = currentValues.processing_mode;
-          if (initTranslationProvider)
-            initTranslationProvider.value = currentValues.translation_provider;
-          if (initOpenai) initOpenai.value = currentValues.openai_api_key;
-          if (initDeepseek) initDeepseek.value = currentValues.deepseek_api_key;
-          if (initOtherLlm) initOtherLlm.value = currentValues.other_llm_api_key;
-
-          // Auto-hide success message after 3 seconds
-          setTimeout(() => {
-            statusEl.classList.add("hidden");
-          }, 3000);
-        } else {
-          // Error: red background
-          statusEl.className =
-            "rounded-md px-4 py-2 text-center text-sm transition-all bg-red-900/50 text-red-400 border border-red-800";
-          statusEl.textContent = "✕ " + errorText;
-        }
+        if (initProcessingMode) initProcessingMode.value = currentValues.processing_mode;
+        if (initTranslationProvider)
+          initTranslationProvider.value = currentValues.translation_provider;
+        if (initOpenai) initOpenai.value = currentValues.openai_api_key;
+        if (initDeepseek) initDeepseek.value = currentValues.deepseek_api_key;
+        if (initOtherLlm) initOtherLlm.value = currentValues.other_llm_api_key;
+      } else {
+        // 失敗 - 顯示錯誤但不阻止使用
+        // API Key 為選填，空值不應該導致錯誤
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.message || errorText;
+        showStatus("error", "✕ " + errorMsg);
       }
     } catch (err) {
       console.error("Settings save error:", err);
-      if (statusEl) {
-        statusEl.className =
-          "rounded-md px-4 py-2 text-center text-sm transition-all bg-red-900/50 text-red-400 border border-red-800";
-        statusEl.textContent = "✕ " + errorText;
-      }
+      showStatus("error", "✕ " + errorText);
     } finally {
+      // 恢復提交按鈕
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.classList.remove("opacity-60", "cursor-wait");
       }
     }
 
-    return false; // Extra safety: prevent form submission
+    return false;
   });
+
+  // 初始化時隱藏狀態列
+  hideStatus();
 });

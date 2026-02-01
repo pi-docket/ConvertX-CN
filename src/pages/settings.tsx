@@ -96,6 +96,18 @@ export const settings = new Elysia()
               locale={locale}
               t={t}
             />
+            {/* Fixed Status Banner - 頁面頂部固定提示列 */}
+            <div
+              id="settings-status-banner"
+              class={`
+                fixed top-0 right-0 left-0 z-50 hidden px-4 py-3 text-center text-sm font-medium
+                shadow-lg
+              `}
+              data-success={t("settings", "updateSuccess")}
+              data-error={t("settings", "updateError")}
+              data-updating={t("settings", "updating")}
+              data-no-changes={t("settings", "noChanges")}
+            />
             <main
               class={`
                 w-full flex-1 px-2
@@ -347,17 +359,8 @@ export const settings = new Elysia()
                     </div>
                   </section>
 
-                  {/* Submit section with inline status */}
-                  <div class="flex flex-col gap-3 border-t border-neutral-800 pt-6">
-                    {/* Inline status message - appears above button */}
-                    <div
-                      id="settings-status"
-                      class="hidden rounded-md px-4 py-2 text-center text-sm transition-all"
-                      data-success={t("settings", "updateSuccess")}
-                      data-error={t("settings", "updateError")}
-                      data-updating={t("settings", "updating")}
-                      data-no-changes={t("settings", "noChanges")}
-                    />
+                  {/* Submit section - 簡化設計，狀態顯示在頁面頂部固定提示列 */}
+                  <div class="border-t border-neutral-800 pt-6">
                     <input
                       type="submit"
                       value={t("settings", "updateButton")}
