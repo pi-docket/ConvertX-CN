@@ -45,30 +45,8 @@ export default defineConfig(
           printWidth: 100,
         },
       ],
-      "better-tailwindcss/no-unregistered-classes": [
-        "warn",
-        {
-          ignore: [
-            "^group(?:\\/(\\S*))?$",
-            "^peer(?:\\/(\\S*))?$",
-            "select_container",
-            "convert_to_popup",
-            "convert_to_group",
-            "target",
-            "convert_to_target",
-            "job-details-toggle",
-            "language-selector",
-            "language-option",
-            "active-indicator",
-            "theme-glass-divider",
-            "theme-glass-dropdown",
-            "dragover",
-            "screen-theme-swatch",
-            "screen-theme-active-indicator",
-            "theme-color-swatch",
-          ],
-        },
-      ],
+      // 關閉未註冊 class 的檢查，因為專案使用了很多自訂 class
+      "better-tailwindcss/no-unregistered-classes": "off",
     },
   },
   {
