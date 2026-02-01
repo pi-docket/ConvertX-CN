@@ -5,7 +5,7 @@
  * 而不是顯示寫死的預設值。
  */
 
-import { version } from "../../package.json";
+import * as net from "node:net";
 import { WEBROOT } from "./env";
 
 // ==============================================================================
@@ -34,13 +34,6 @@ export interface ServiceStatus {
   status: "running" | "stopped" | "unknown";
   url?: string;
   message?: string;
-}
-
-export interface StartupInfo {
-  webUI: ServiceStatus;
-  apiServer: ServiceStatus;
-  llmServer: ServiceStatus;
-  startTime: Date;
 }
 
 // ==============================================================================
@@ -72,7 +65,6 @@ async function checkHttpHealth(url: string, timeoutMs = 3000): Promise<boolean> 
  */
 async function checkPortOpen(host: string, port: number, timeoutMs = 2000): Promise<boolean> {
   return new Promise((resolve) => {
-    const net = require("node:net");
     const socket = new net.Socket();
 
     const timer = setTimeout(() => {
@@ -161,7 +153,8 @@ export async function detectApiServerStatus(): Promise<ServiceStatus> {
   const url = `http://${host}:${port}`;
 
   // 檢查是否有設定 API Server
-  const apiServerEnabled = process.env.RAS_API_PORT !== undefined || process.env.ENABLE_RAS_API === "true";
+  const apiServerEnabled =
+    process.env.RAS_API_PORT !== undefined || process.env.ENABLE_RAS_API === "true";
 
   try {
     // 嘗試檢查 port
@@ -205,7 +198,9 @@ export async function detectApiServerStatus(): Promise<ServiceStatus> {
 /**
  * 獲取 Web UI 狀態（從 Elysia server 實例取得實際 port）
  */
-export function getWebUIStatus(server: { hostname: string | null; port: number } | null): ServiceStatus {
+export function getWebUIStatus(
+  server: { hostname?: string | null | undefined; port: number } | null,
+): ServiceStatus {
   if (!server) {
     return {
       name: "Web UI",
@@ -256,7 +251,9 @@ function getMaxLineLength(lines: string[]): number {
 /**
  * 輸出啟動摘要（表格格式）
  */
-export async function printStartupSummary(server: { hostname: string | null; port: number } | null): Promise<void> {
+export async function printStartupSummary(
+  server: { hostname?: string | null | undefined; port: number } | null,
+): Promise<void> {
   // 收集所有服務狀態
   const webUI = getWebUIStatus(server);
   const [apiServer, llmServer] = await Promise.all([
@@ -324,7 +321,9 @@ function printAdditionalInfo(apiServer: ServiceStatus, llmServer: ServiceStatus)
 /**
  * 簡易啟動訊息（向後相容）
  */
-export function printSimpleStartup(server: { hostname: string | null; port: number } | null): void {
+export function printSimpleStartup(
+  server: { hostname?: string | null | undefined; port: number } | null,
+): void {
   if (!server) {
     console.log("❌ Server failed to start");
     return;
@@ -356,7 +355,7 @@ export interface StartupDisplayOptions {
  * @param options - 顯示選項
  */
 export async function displayStartupInfo(
-  server: { hostname: string | null; port: number } | null,
+  server: { hostname?: string | null | undefined; port: number } | null,
   options: StartupDisplayOptions = {},
 ): Promise<void> {
   const isProduction = process.env.NODE_ENV === "production";

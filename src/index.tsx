@@ -86,8 +86,12 @@ app.listen(WEB_PORT);
 
 // 顯示啟動資訊（動態偵測實際 Port 與服務狀態）
 // 在 production 環境或設定 SHOW_SERVICE_STATUS=true 時顯示詳細狀態表格
-const showVerbose = process.env.NODE_ENV === "production" || process.env.SHOW_SERVICE_STATUS === "true";
-displayStartupInfo(app.server, { showStatus: true, verbose: showVerbose });
+const showVerbose =
+  process.env.NODE_ENV === "production" || process.env.SHOW_SERVICE_STATUS === "true";
+const serverInfo = app.server
+  ? { hostname: app.server.hostname ?? null, port: app.server.port ?? WEB_PORT }
+  : null;
+displayStartupInfo(serverInfo, { showStatus: true, verbose: showVerbose });
 
 // 初始化推斷服務
 inferenceService.initialize().catch((error) => {

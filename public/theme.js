@@ -1,66 +1,25 @@
 // ============================================================================
-// Theme System v2.0
+// Theme System v4.0 - Light/Dark Mode + Color Picker
 // ============================================================================
 // Features:
-// 1. Mode (light/dark) - Independent control
-// 2. Color (solid/gradient/vivid) - Independent control
+// 1. Mode (light/dark) - Simple toggle
+// 2. Color selection - Solid, gradient, neon, custom colors
 // 3. CSS Variables - Instant updates without page reload
 // 4. localStorage persistence
+// 5. System preference detection
 // ============================================================================
 
 (function () {
   const THEME_MODE_KEY = "themeMode";
   const THEME_COLOR_KEY = "themeColor";
+  const THEME_STYLE_KEY = "themeStyle";
+  const CUSTOM_HUE_KEY = "customHue";
 
-  // ============================================================================
-  // Color Definitions
-  // ============================================================================
-  const SOLID_COLORS = {
-    green: { hue: 131, chroma: 0.2 },
-    blue: { hue: 250, chroma: 0.21 },
-    purple: { hue: 300, chroma: 0.22 },
-    pink: { hue: 350, chroma: 0.22 },
-    orange: { hue: 50, chroma: 0.2 },
-    teal: { hue: 190, chroma: 0.15 },
-    gray: { hue: 260, chroma: 0.02 },
-    yellow: { hue: 95, chroma: 0.2 },
-  };
-
-  const GRADIENT_COLORS = {
-    aurora: {
-      gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #66bb6a 100%)",
-      primary: { hue: 260, chroma: 0.2 },
-    },
-    sunset: {
-      gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-      primary: { hue: 350, chroma: 0.22 },
-    },
-    ocean: {
-      gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-      primary: { hue: 200, chroma: 0.2 },
-    },
-    forest: {
-      gradient: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
-      primary: { hue: 160, chroma: 0.2 },
-    },
-    fire: {
-      gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      primary: { hue: 340, chroma: 0.25 },
-    },
-  };
-
-  const VIVID_COLORS = {
-    "neon-cyan": { hue: 180, chroma: 0.35, glow: true },
-    "neon-pink": { hue: 330, chroma: 0.35, glow: true },
-    "neon-purple": { hue: 290, chroma: 0.32, glow: true },
-    "neon-green": { hue: 150, chroma: 0.35, glow: true },
-    rainbow: {
-      gradient:
-        "linear-gradient(90deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff)",
-      primary: { hue: 0, chroma: 0.3 },
-      animated: true,
-    },
-  };
+  // Default values
+  const DEFAULT_HUE = 131;
+  const DEFAULT_CHROMA = 0.2;
+  const DEFAULT_COLOR = "green";
+  const DEFAULT_STYLE = "solid";
 
   // ============================================================================
   // State Management
@@ -75,10 +34,26 @@
 
   function getStoredColor() {
     try {
-      const stored = localStorage.getItem(THEME_COLOR_KEY);
-      if (stored) return JSON.parse(stored);
-    } catch (e) {}
-    return { id: "green", category: "solid" };
+      return localStorage.getItem(THEME_COLOR_KEY) || DEFAULT_COLOR;
+    } catch (e) {
+      return DEFAULT_COLOR;
+    }
+  }
+
+  function getStoredStyle() {
+    try {
+      return localStorage.getItem(THEME_STYLE_KEY) || DEFAULT_STYLE;
+    } catch (e) {
+      return DEFAULT_STYLE;
+    }
+  }
+
+  function getStoredCustomHue() {
+    try {
+      return parseInt(localStorage.getItem(CUSTOM_HUE_KEY), 10) || DEFAULT_HUE;
+    } catch (e) {
+      return DEFAULT_HUE;
+    }
   }
 
   function saveMode(mode) {
@@ -91,9 +66,21 @@
     } catch (e) {}
   }
 
-  function saveColor(colorData) {
+  function saveColor(color) {
     try {
-      localStorage.setItem(THEME_COLOR_KEY, JSON.stringify(colorData));
+      localStorage.setItem(THEME_COLOR_KEY, color);
+    } catch (e) {}
+  }
+
+  function saveStyle(style) {
+    try {
+      localStorage.setItem(THEME_STYLE_KEY, style);
+    } catch (e) {}
+  }
+
+  function saveCustomHue(hue) {
+    try {
+      localStorage.setItem(CUSTOM_HUE_KEY, String(hue));
     } catch (e) {}
   }
 
@@ -104,7 +91,7 @@
   }
 
   // ============================================================================
-  // CSS Variable Updates (Core - Makes everything instant)
+  // CSS Variable Updates
   // ============================================================================
   function applyMode(mode) {
     const root = document.documentElement;
@@ -117,95 +104,84 @@
       root.removeAttribute("data-theme");
     }
 
-    updateModeButtons();
     updateThemeIcons();
-
-    // Re-apply color for correct lightness
-    applyColor(getStoredColor());
+    applyColorTheme();
 
     window.dispatchEvent(new CustomEvent("themechange", { detail: { mode: getEffectiveMode() } }));
   }
 
-  function applyColor(colorData) {
+  function applyColorTheme() {
     const root = document.documentElement;
-    const { id, category, customHue, customChroma } = colorData;
-    const isDark = getEffectiveMode() === "dark";
+    const color = getStoredColor();
+    const style = getStoredStyle();
 
-    let hue,
-      chroma,
-      gradient = null,
-      glow = false,
-      animated = false;
+    // Set data attributes for CSS selectors
+    root.setAttribute("data-color", color);
+    root.setAttribute("data-style", style);
 
-    // Determine color values based on category
-    if (category === "custom" && customHue !== undefined) {
-      hue = customHue;
-      chroma = customChroma || 0.2;
-    } else if (category === "solid" && SOLID_COLORS[id]) {
-      hue = SOLID_COLORS[id].hue;
-      chroma = SOLID_COLORS[id].chroma;
-    } else if (category === "gradient" && GRADIENT_COLORS[id]) {
-      const gc = GRADIENT_COLORS[id];
-      hue = gc.primary.hue;
-      chroma = gc.primary.chroma;
-      gradient = gc.gradient;
-    } else if (category === "vivid" && VIVID_COLORS[id]) {
-      const vc = VIVID_COLORS[id];
-      hue = vc.hue || vc.primary?.hue || 180;
-      chroma = vc.chroma || vc.primary?.chroma || 0.35;
-      glow = vc.glow || false;
-      gradient = vc.gradient || null;
-      animated = vc.animated || false;
-    } else {
-      // Default to green
-      hue = 131;
-      chroma = 0.2;
+    // For custom colors, also set the CSS variable
+    if (color === "custom") {
+      const customHue = getStoredCustomHue();
+      root.style.setProperty("--custom-hue", String(customHue));
     }
 
-    // Apply CSS variables for accent colors
-    if (isDark) {
-      root.style.setProperty("--accent-600", `oklch(64% ${chroma} ${hue})`);
-      root.style.setProperty("--accent-500", `oklch(74% ${chroma} ${hue})`);
-      root.style.setProperty("--accent-400", `oklch(82% ${chroma * 0.9} ${hue})`);
-    } else {
-      root.style.setProperty("--accent-600", `oklch(52% ${chroma} ${hue})`);
-      root.style.setProperty("--accent-500", `oklch(64% ${chroma} ${hue})`);
-      root.style.setProperty("--accent-400", `oklch(76% ${chroma} ${hue})`);
+    // Update active swatch indicator
+    updateActiveSwatchIndicator(color);
+  }
+
+  function setColor(colorId, style) {
+    saveColor(colorId);
+    saveStyle(style);
+    applyColorTheme();
+
+    window.dispatchEvent(
+      new CustomEvent("themecolorchange", { detail: { color: colorId, style: style } }),
+    );
+  }
+
+  function setCustomColor(hexColor) {
+    // Convert hex to hue
+    const hue = hexToHue(hexColor);
+    saveCustomHue(hue);
+    setColor("custom", "solid");
+  }
+
+  function hexToHue(hex) {
+    // Remove # if present
+    hex = hex.replace(/^#/, "");
+
+    // Parse RGB
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const delta = max - min;
+
+    let hue = 0;
+    if (delta !== 0) {
+      if (max === r) {
+        hue = 60 * (((g - b) / delta) % 6);
+      } else if (max === g) {
+        hue = 60 * ((b - r) / delta + 2);
+      } else {
+        hue = 60 * ((r - g) / delta + 4);
+      }
     }
 
-    // Apply gradient if applicable
-    if (gradient) {
-      root.style.setProperty("--accent-gradient", gradient);
-      root.setAttribute("data-has-gradient", "true");
-    } else {
-      root.style.removeProperty("--accent-gradient");
-      root.removeAttribute("data-has-gradient");
-    }
+    if (hue < 0) hue += 360;
+    return Math.round(hue);
+  }
 
-    // Apply glow effect for vivid colors
-    if (glow) {
-      const glowColor = `oklch(75% ${chroma} ${hue} / 0.5)`;
-      root.style.setProperty("--accent-glow", `0 0 15px ${glowColor}, 0 0 30px ${glowColor}`);
-      root.setAttribute("data-has-glow", "true");
-    } else {
-      root.style.removeProperty("--accent-glow");
-      root.removeAttribute("data-has-glow");
-    }
-
-    // Apply animation class for rainbow
-    if (animated) {
-      root.setAttribute("data-animated", "true");
-    } else {
-      root.removeAttribute("data-animated");
-    }
-
-    // Store current color info
-    root.setAttribute("data-color", id);
-    root.setAttribute("data-color-category", category);
-
-    updateColorDots(id);
-
-    window.dispatchEvent(new CustomEvent("colorchange", { detail: colorData }));
+  function updateActiveSwatchIndicator(activeColor) {
+    // Remove active indicator from all swatches
+    document.querySelectorAll(".theme-color-swatch").forEach((swatch) => {
+      swatch.classList.remove("ring-2", "ring-white", "ring-offset-2", "ring-offset-neutral-900");
+      if (swatch.dataset.color === activeColor) {
+        swatch.classList.add("ring-2", "ring-white", "ring-offset-2", "ring-offset-neutral-900");
+      }
+    });
   }
 
   // ============================================================================
@@ -227,29 +203,68 @@
     }
   }
 
-  function updateModeButtons() {
-    const effectiveMode = getEffectiveMode();
-    document.querySelectorAll(".theme-mode-btn").forEach((btn) => {
-      const btnMode = btn.getAttribute("data-mode");
-      if (btnMode === effectiveMode) {
-        btn.classList.remove("bg-neutral-700", "text-neutral-300");
-        btn.classList.add("bg-accent-500", "text-contrast");
-      } else {
-        btn.classList.add("bg-neutral-700", "text-neutral-300");
-        btn.classList.remove("bg-accent-500", "text-contrast");
-      }
-    });
+  // ============================================================================
+  // Dropdown Management
+  // ============================================================================
+  let dropdownOpen = false;
+
+  function toggleDropdown() {
+    const dropdown = document.getElementById("theme-color-dropdown");
+    const arrow = document.getElementById("theme-dropdown-arrow");
+    const toggleBtn = document.getElementById("theme-dropdown-toggle");
+
+    if (!dropdown) {
+      console.warn("[theme.js] Dropdown element not found");
+      return;
+    }
+
+    dropdownOpen = !dropdownOpen;
+
+    if (dropdownOpen) {
+      // Show dropdown
+      dropdown.style.display = "block";
+      // Force reflow for animation
+      void dropdown.offsetHeight;
+      dropdown.style.opacity = "1";
+      dropdown.style.transform = "scale(1)";
+      if (arrow) arrow.style.transform = "rotate(180deg)";
+      if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "true");
+
+      // Update active indicator
+      updateActiveSwatchIndicator(getStoredColor());
+    } else {
+      // Hide dropdown with animation
+      dropdown.style.opacity = "0";
+      dropdown.style.transform = "scale(0.95)";
+      if (arrow) arrow.style.transform = "";
+      if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
+
+      // Hide after animation
+      setTimeout(() => {
+        if (!dropdownOpen) {
+          dropdown.style.display = "none";
+        }
+      }, 200);
+    }
   }
 
-  function updateColorDots(activeColor) {
-    document.querySelectorAll(".theme-color-dot").forEach((dot) => {
-      const dotColor = dot.getAttribute("data-color");
-      if (dotColor === activeColor) {
-        dot.classList.add("ring-2", "ring-white", "scale-110");
-      } else {
-        dot.classList.remove("ring-2", "ring-white", "scale-110");
-      }
-    });
+  function closeDropdown() {
+    if (!dropdownOpen) return;
+    dropdownOpen = false;
+
+    const dropdown = document.getElementById("theme-color-dropdown");
+    const arrow = document.getElementById("theme-dropdown-arrow");
+    const toggleBtn = document.getElementById("theme-dropdown-toggle");
+
+    if (dropdown) {
+      dropdown.style.opacity = "0";
+      dropdown.style.transform = "scale(0.95)";
+      setTimeout(() => {
+        if (dropdown) dropdown.style.display = "none";
+      }, 200);
+    }
+    if (arrow) arrow.style.transform = "";
+    if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
   }
 
   // ============================================================================
@@ -266,80 +281,13 @@
     setMode(newMode);
   }
 
-  function setColor(colorId, category) {
-    const colorData = { id: colorId, category: category };
-    saveColor(colorData);
-    applyColor(colorData);
-  }
-
-  function setCustomColor(hex) {
-    const hue = hexToHue(hex);
-    const colorData = { id: "custom", category: "custom", customHue: hue, customChroma: 0.2 };
-    saveColor(colorData);
-    applyColor(colorData);
-  }
-
-  function hexToHue(hex) {
-    hex = hex.replace(/^#/, "");
-    const r = parseInt(hex.substring(0, 2), 16) / 255;
-    const g = parseInt(hex.substring(2, 4), 16) / 255;
-    const b = parseInt(hex.substring(4, 6), 16) / 255;
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h = 0;
-    if (max !== min) {
-      const d = max - min;
-      switch (max) {
-        case r:
-          h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-          break;
-        case g:
-          h = ((b - r) / d + 2) / 6;
-          break;
-        case b:
-          h = ((r - g) / d + 4) / 6;
-          break;
-      }
-    }
-    return Math.round(h * 360);
-  }
-
-  function toggleDropdown() {
-    const dropdown = document.getElementById("theme-dropdown");
-    const toggle = document.getElementById("theme-toggle");
-    if (!dropdown) return;
-
-    const isHidden = dropdown.classList.contains("hidden");
-    if (isHidden) {
-      dropdown.classList.remove("hidden");
-      dropdown.classList.add("flex");
-      if (toggle) toggle.setAttribute("aria-expanded", "true");
-    } else {
-      dropdown.classList.add("hidden");
-      dropdown.classList.remove("flex");
-      if (toggle) toggle.setAttribute("aria-expanded", "false");
-    }
-  }
-
-  function closeDropdown() {
-    const dropdown = document.getElementById("theme-dropdown");
-    const toggle = document.getElementById("theme-toggle");
-    if (dropdown) {
-      dropdown.classList.add("hidden");
-      dropdown.classList.remove("flex");
-      if (toggle) toggle.setAttribute("aria-expanded", "false");
-    }
-  }
-
   // ============================================================================
   // Initialization
   // ============================================================================
   function init() {
     const mode = getStoredMode();
-    const colorData = getStoredColor();
-
     applyMode(mode);
-    applyColor(colorData);
+    applyColorTheme();
 
     // Listen for system preference changes
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
@@ -353,104 +301,89 @@
   (function () {
     const root = document.documentElement;
     const mode = getStoredMode();
-    const colorData = getStoredColor();
+    const color = getStoredColor();
+    const style = getStoredStyle();
 
     if (mode) {
       root.setAttribute("data-theme", mode);
     }
 
-    // Quick apply color
-    const { id, category, customHue, customChroma } = colorData;
-    let hue = 131,
-      chroma = 0.2;
+    root.setAttribute("data-color", color);
+    root.setAttribute("data-style", style);
 
-    if (category === "custom" && customHue) {
-      hue = customHue;
-      chroma = customChroma || 0.2;
-    } else if (category === "solid" && SOLID_COLORS[id]) {
-      hue = SOLID_COLORS[id].hue;
-      chroma = SOLID_COLORS[id].chroma;
-    } else if (category === "gradient" && GRADIENT_COLORS[id]) {
-      hue = GRADIENT_COLORS[id].primary.hue;
-      chroma = GRADIENT_COLORS[id].primary.chroma;
-    } else if (category === "vivid" && VIVID_COLORS[id]) {
-      hue = VIVID_COLORS[id].hue || VIVID_COLORS[id].primary?.hue || 180;
-      chroma = VIVID_COLORS[id].chroma || VIVID_COLORS[id].primary?.chroma || 0.35;
+    if (color === "custom") {
+      const customHue = getStoredCustomHue();
+      root.style.setProperty("--custom-hue", String(customHue));
     }
-
-    const isDark =
-      mode === "dark" || (!mode && window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-    if (isDark) {
-      root.style.setProperty("--accent-600", `oklch(64% ${chroma} ${hue})`);
-      root.style.setProperty("--accent-500", `oklch(74% ${chroma} ${hue})`);
-      root.style.setProperty("--accent-400", `oklch(82% ${chroma * 0.9} ${hue})`);
-    } else {
-      root.style.setProperty("--accent-600", `oklch(52% ${chroma} ${hue})`);
-      root.style.setProperty("--accent-500", `oklch(64% ${chroma} ${hue})`);
-      root.style.setProperty("--accent-400", `oklch(76% ${chroma} ${hue})`);
-    }
-
-    root.setAttribute("data-color", id);
-    root.setAttribute("data-color-category", category);
   })();
 
   // Event binding function
   function bindEvents() {
     init();
 
-    // Theme toggle button - opens dropdown
-    const themeToggle = document.getElementById("theme-toggle");
+    // Theme toggle button - click to toggle mode
+    document.addEventListener("click", function (e) {
+      const themeToggle = document.getElementById("theme-toggle");
+      const dropdownToggle = document.getElementById("theme-dropdown-toggle");
+      const dropdown = document.getElementById("theme-color-dropdown");
+      const container = document.getElementById("theme-picker-container");
 
-    if (themeToggle) {
-      themeToggle.addEventListener("click", function (e) {
+      // Check dropdown toggle FIRST (it's the smaller button)
+      if (dropdownToggle && (e.target === dropdownToggle || dropdownToggle.contains(e.target))) {
+        e.preventDefault();
         e.stopPropagation();
         toggleDropdown();
-      });
-    }
+        return;
+      }
 
-    // Mode buttons
-    document.querySelectorAll(".theme-mode-btn").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const mode = this.getAttribute("data-mode");
-        setMode(mode);
-      });
+      // Mode toggle (light/dark)
+      if (themeToggle && (e.target === themeToggle || themeToggle.contains(e.target))) {
+        e.preventDefault();
+        toggleMode();
+        return;
+      }
+
+      // Color swatch click
+      const swatch = e.target.closest(".theme-color-swatch");
+      if (swatch && dropdown && dropdown.contains(swatch)) {
+        e.preventDefault();
+        const colorId = swatch.dataset.color;
+        const style = swatch.dataset.style || "solid";
+        setColor(colorId, style);
+        return;
+      }
+
+      // Custom color input
+      const customColorInput = document.getElementById("theme-custom-color");
+      if (customColorInput && e.target === customColorInput) {
+        return; // Let the input handle its own events
+      }
+
+      // Click outside dropdown - close it
+      if (container && !container.contains(e.target)) {
+        closeDropdown();
+      }
     });
 
-    // Color dots
-    document.querySelectorAll(".theme-color-dot").forEach((dot) => {
-      dot.addEventListener("click", function () {
-        const colorId = this.getAttribute("data-color");
-        const category = this.getAttribute("data-category");
-        if (colorId && category) {
-          setColor(colorId, category);
-        }
-      });
+    // Custom color input change
+    document.addEventListener("input", function (e) {
+      if (e.target.id === "theme-custom-color") {
+        setCustomColor(e.target.value);
+      }
     });
 
-    // Custom color picker
-    const colorPicker = document.getElementById("theme-color-picker");
-    if (colorPicker) {
-      colorPicker.addEventListener("input", function () {
-        setCustomColor(this.value);
-      });
-    }
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", function (e) {
-      const dropdown = document.getElementById("theme-dropdown");
-      const toggle = document.getElementById("theme-toggle");
-      if (dropdown && toggle && !dropdown.contains(e.target) && !toggle.contains(e.target)) {
+    // Close dropdown on Escape key
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && dropdownOpen) {
         closeDropdown();
       }
     });
   }
 
-  // Execute when DOM is ready (handles both cases: before and after DOMContentLoaded)
+  // Execute when DOM is ready
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", bindEvents);
   } else {
-    // DOM is already ready
     bindEvents();
   }
 
@@ -458,10 +391,11 @@
   window.themeSystem = {
     setMode,
     toggleMode,
+    getEffectiveMode,
     setColor,
     setCustomColor,
-    getEffectiveMode,
     getStoredColor,
+    getStoredStyle,
   };
 
   // Legacy support

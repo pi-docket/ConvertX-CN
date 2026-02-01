@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.1.21](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.21) (2026-02-01)
+
+主題顏色系統重構版本。
+
+### ✨ Features
+
+- **主題顏色選擇器重構**：全新的顏色選擇 UI
+  - 亮/暗模式切換按鈕（太陽/月亮圖標）
+  - 下拉箭頭展開顏色選擇器
+  - 僅顯示色塊（無文字），點擊即時套用
+  - 支援單色、漸層、霓虹、自訂顏色
+  - 自訂顏色使用原生 Color Picker
+  - localStorage 持久化和系統偏好偵測
+
+- **新增主題顏色**：
+  - 單色：綠、藍、紫、粉、橙、青、灰、黃
+  - 漸層：極光、日落、海洋、森林、火焰
+  - 霓虹：霓虹青、霓虹粉、霓虹紫、霓虹綠、彩虹
+
+### 🐛 Bug Fixes
+
+- **TypeScript 類型修復**：修復 `startupStatus.ts` 中 server 參數類型不相容問題
+- **ESLint 修復**：移除未使用的 `version` 導入，將 `require()` 改為 ES module 導入
+
+### 📦 Build
+
+- **theme.js 重構**：從 v3.0 升級到 v4.0
+  - 新增顏色選擇功能（setColor、setCustomColor）
+  - 新增下拉選單管理（toggleDropdown、closeDropdown）
+  - 支援 data-color 和 data-style CSS 屬性選擇器
+
+- **colors.css 擴充**：新增 Yellow、Forest、Fire 漸層主題
+
+---
+
 ## [0.1.20](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.20) (2026-01-31)
 
 API Server 代理模式重構與部署優化版本。
