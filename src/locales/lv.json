@@ -125,7 +125,8 @@
     "vlmEngine": "Uses MinerU VLM inference engine",
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
-    "updating": "Saving..."
+    "updating": "Saving...",
+    "noChanges": "Nav izmaiņu, ko saglabāt"
   },
   "inference": {
     "smartRecommend": "Viedais ieteikums",

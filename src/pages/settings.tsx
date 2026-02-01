@@ -244,6 +244,7 @@ export const settings = new Elysia()
                       data-success={t("settings", "updateSuccess")}
                       data-error={t("settings", "updateError")}
                       data-updating={t("settings", "updating")}
+                      data-no-changes={t("settings", "noChanges")}
                     />
                     <input
                       type="submit"
@@ -251,6 +252,11 @@ export const settings = new Elysia()
                       class="w-full btn-primary cursor-pointer py-3 text-base font-medium"
                     />
                   </div>
+                  {/* Hidden field to store initial values for change detection */}
+                  <input type="hidden" id="initial-processing-mode" value={processingMode} />
+                  <input type="hidden" id="initial-openai-key" value={openaiKey} />
+                  <input type="hidden" id="initial-deepseek-key" value={deepseekKey} />
+                  <input type="hidden" id="initial-other-llm-key" value={otherLlmKey} />
                 </form>
               </article>
             </main>

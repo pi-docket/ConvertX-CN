@@ -125,7 +125,8 @@
     "vlmEngine": "Uses MinerU VLM inference engine",
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
-    "updating": "Saving..."
+    "updating": "Saving...",
+    "noChanges": "သိမ်းဆည်းရန် ပြောင်းလဲမှုများ မရှိပါ"
   },
   "inference": {
     "smartRecommend": "စမတ်အကြံပြုချက်",

@@ -125,7 +125,8 @@
     "vlmEngine": "Motor MinerU VLM inference",
     "updateSuccess": "Guardado",
     "updateError": "Error al guardar",
-    "updating": "Guardando..."
+    "updating": "Guardando...",
+    "noChanges": "No hay cambios que guardar"
   },
   "inference": {
     "smartRecommend": "Recomendación inteligente",

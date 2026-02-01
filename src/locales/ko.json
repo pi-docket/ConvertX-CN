@@ -125,7 +125,8 @@
     "vlmEngine": "MinerU VLM 추론 엔진 사용",
     "updateSuccess": "설정이 저장되었습니다",
     "updateError": "설정 저장에 실패했습니다",
-    "updating": "저장 중..."
+    "updating": "저장 중...",
+    "noChanges": "저장할 변경 사항이 없습니다"
   },
   "inference": {
     "smartRecommend": "스마트 추천",

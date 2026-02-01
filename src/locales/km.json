@@ -125,7 +125,8 @@
     "vlmEngine": "Uses MinerU VLM inference engine",
     "updateSuccess": "Settings saved",
     "updateError": "Failed to save settings",
-    "updating": "Saving..."
+    "updating": "Saving...",
+    "noChanges": "គ្មានការផ្លាស់ប្តូរដើម្បីរក្សាទុក"
   },
   "inference": {
     "smartRecommend": "ការណែនាំឆ្លាតវៃ",

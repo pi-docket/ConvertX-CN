@@ -60,9 +60,17 @@ export function getUserProcessingMode(userId: number): ProcessingMode {
  * 設定使用者的處理模式
  * @param userId - 使用者 ID
  * @param mode - 處理模式
+ * @returns 是否有實際變更
  */
-export function setUserProcessingMode(userId: number, mode: ProcessingMode): void {
+export function setUserProcessingMode(userId: number, mode: ProcessingMode): boolean {
   ensureSettingsTable();
+
+  // 先取得目前的值，只在值變化時才更新
+  const currentMode = getUserProcessingMode(userId);
+  if (currentMode === mode) {
+    // 值沒有變化，不需要更新
+    return false;
+  }
 
   const now = new Date().toISOString();
   const existing = db
@@ -83,6 +91,7 @@ export function setUserProcessingMode(userId: number, mode: ProcessingMode): voi
   }
 
   console.log(`[CONFIG] User ${userId} processing mode set to: ${mode}`);
+  return true;
 }
 
 /**

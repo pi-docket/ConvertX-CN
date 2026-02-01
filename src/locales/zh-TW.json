@@ -125,7 +125,8 @@
     "vlmEngine": "使用 MinerU VLM 推理引擎",
     "updateSuccess": "設定已儲存",
     "updateError": "儲存設定失敗",
-    "updating": "儲存中..."
+    "updating": "儲存中...",
+    "noChanges": "沒有變更需要儲存"
   },
   "inference": {
     "smartRecommend": "智慧推薦",

@@ -125,7 +125,8 @@
     "vlmEngine": "Verwendet MinerU VLM Inference Engine",
     "updateSuccess": "Einstellungen gespeichert",
     "updateError": "Speichern fehlgeschlagen",
-    "updating": "Speichern..."
+    "updating": "Speichern...",
+    "noChanges": "Keine Änderungen zu speichern"
   },
   "inference": {
     "smartRecommend": "Intelligente Empfehlung",

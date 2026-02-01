@@ -125,7 +125,8 @@
     "vlmEngine": "MinerU VLM 推論エンジンを使用",
     "updateSuccess": "設定を保存しました",
     "updateError": "設定の保存に失敗しました",
-    "updating": "保存中..."
+    "updating": "保存中...",
+    "noChanges": "保存する変更はありません"
   },
   "inference": {
     "smartRecommend": "スマート推薦",

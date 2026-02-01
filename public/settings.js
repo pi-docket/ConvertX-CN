@@ -7,6 +7,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
+  // Get initial values for change detection
+  const getInitialValues = () => ({
+    openai_api_key: document.getElementById("initial-openai-key")?.value || "",
+    deepseek_api_key: document.getElementById("initial-deepseek-key")?.value || "",
+    other_llm_api_key: document.getElementById("initial-other-llm-key")?.value || "",
+    processing_mode: document.getElementById("initial-processing-mode")?.value || "pipeline",
+  });
+
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -14,12 +22,44 @@ document.addEventListener("DOMContentLoaded", function () {
     const formData = new FormData(form);
     const statusEl = document.getElementById("settings-status");
     const submitBtn = form.querySelector('input[type="submit"]');
-    const originalValue = submitBtn?.value || "Update";
 
     // Get i18n strings from data attributes
     const successText = statusEl?.dataset.success || "Settings saved";
     const errorText = statusEl?.dataset.error || "Failed to save settings";
     const updatingText = statusEl?.dataset.updating || "Saving...";
+    const noChangesText = statusEl?.dataset.noChanges || "No changes to save";
+
+    // Get current form values
+    const currentValues = {
+      openai_api_key: formData.get("openai_api_key") || "",
+      deepseek_api_key: formData.get("deepseek_api_key") || "",
+      other_llm_api_key: formData.get("other_llm_api_key") || "",
+      processing_mode: formData.get("processing_mode") || "pipeline",
+    };
+
+    // Get initial values
+    const initialValues = getInitialValues();
+
+    // Check if any values have changed
+    const hasChanges =
+      currentValues.openai_api_key !== initialValues.openai_api_key ||
+      currentValues.deepseek_api_key !== initialValues.deepseek_api_key ||
+      currentValues.other_llm_api_key !== initialValues.other_llm_api_key ||
+      currentValues.processing_mode !== initialValues.processing_mode;
+
+    // If no changes, show message and return early
+    if (!hasChanges) {
+      if (statusEl) {
+        statusEl.classList.remove("hidden");
+        statusEl.className =
+          "rounded-md px-4 py-2 text-center text-sm transition-all bg-neutral-800 text-neutral-400";
+        statusEl.textContent = noChangesText;
+        setTimeout(() => {
+          statusEl.classList.add("hidden");
+        }, 2000);
+      }
+      return false;
+    }
 
     // Show updating status
     if (statusEl) {
@@ -46,12 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          openai_api_key: formData.get("openai_api_key") || "",
-          deepseek_api_key: formData.get("deepseek_api_key") || "",
-          other_llm_api_key: formData.get("other_llm_api_key") || "",
-          processing_mode: formData.get("processing_mode") || "pipeline",
-        }),
+        body: JSON.stringify(currentValues),
       });
 
       if (statusEl) {
@@ -60,6 +95,17 @@ document.addEventListener("DOMContentLoaded", function () {
           statusEl.className =
             "rounded-md px-4 py-2 text-center text-sm transition-all bg-green-900/50 text-green-400 border border-green-800";
           statusEl.textContent = "✓ " + successText;
+
+          // Update initial values to current values (so next submit won't trigger if unchanged)
+          const initProcessingMode = document.getElementById("initial-processing-mode");
+          const initOpenai = document.getElementById("initial-openai-key");
+          const initDeepseek = document.getElementById("initial-deepseek-key");
+          const initOtherLlm = document.getElementById("initial-other-llm-key");
+
+          if (initProcessingMode) initProcessingMode.value = currentValues.processing_mode;
+          if (initOpenai) initOpenai.value = currentValues.openai_api_key;
+          if (initDeepseek) initDeepseek.value = currentValues.deepseek_api_key;
+          if (initOtherLlm) initOtherLlm.value = currentValues.other_llm_api_key;
 
           // Auto-hide success message after 3 seconds
           setTimeout(() => {

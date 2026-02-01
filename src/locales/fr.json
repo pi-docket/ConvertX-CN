@@ -125,7 +125,8 @@
     "vlmEngine": "Moteur MinerU VLM inference",
     "updateSuccess": "Enregistre",
     "updateError": "Echec",
-    "updating": "Enregistrement..."
+    "updating": "Enregistrement...",
+    "noChanges": "Aucune modification à enregistrer"
   },
   "inference": {
     "smartRecommend": "Recommandation intelligente",
