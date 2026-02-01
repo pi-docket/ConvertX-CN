@@ -17,7 +17,7 @@
   --screen-border: transparent;
   --screen-text-shadow: none;
   --screen-glow: none;
-  
+
   /* ===== Glassmorphism Variables ===== */
   --glass-bg: rgba(20, 20, 20, 0.75);
   --glass-bg-hover: rgba(255, 255, 255, 0.1);
@@ -55,12 +55,30 @@
   margin: 0;
 }
 
+/* Dropdown scrollbar styling */
+.theme-glass-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.theme-glass-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.theme-glass-dropdown::-webkit-scrollbar-thumb {
+  background: var(--glass-divider);
+  border-radius: 3px;
+}
+
+.theme-glass-dropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border);
+}
+
 /* Fallback for browsers without backdrop-filter support */
 @supports not (backdrop-filter: blur(20px)) {
   .theme-glass-dropdown {
     background: rgba(20, 20, 20, 0.95);
   }
-  
+
   :root[data-theme="light"] .theme-glass-dropdown {
     background: rgba(255, 255, 255, 0.95);
   }

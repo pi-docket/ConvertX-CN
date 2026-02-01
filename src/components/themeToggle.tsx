@@ -303,7 +303,7 @@ export const ThemeToggle = ({
         id="theme-color-dropdown"
         class={`
           theme-glass-dropdown
-          fixed z-[9999] w-[280px] overflow-hidden rounded-xl
+          fixed w-[280px] rounded-xl
           border border-white/20 shadow-2xl
         `}
         style={{
@@ -313,6 +313,10 @@ export const ThemeToggle = ({
           transition: "opacity 200ms ease-out, transform 200ms ease-out",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
+          zIndex: 2147483647,
+          maxHeight: "min(85vh, 700px)",
+          overflowY: "auto",
+          overflowX: "hidden",
         }}
         role="menu"
         aria-orientation="vertical"
@@ -504,10 +508,11 @@ export const ThemeToggle = ({
           {/* Advanced Color Picker Panel (Figma/Linear Style) */}
           <div
             id="advanced-picker-panel"
-            class="mt-3 overflow-hidden"
+            class="mt-3"
             style={{
               display: "none",
               maxHeight: "0",
+              overflow: "visible",
               transition: "max-height 300ms ease-out",
             }}
           >

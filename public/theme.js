@@ -269,32 +269,47 @@
 
   function positionDropdown(dropdown, toggleBtn) {
     if (!dropdown || !toggleBtn) return;
-    
+
     const rect = toggleBtn.getBoundingClientRect();
-    const dropdownHeight = dropdown.offsetHeight || 400;
-    const dropdownWidth = dropdown.offsetWidth || 280;
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
+    const dropdownWidth = 280;
     
-    // Calculate position
+    // Reset position first to get accurate height measurement
+    dropdown.style.top = "0";
+    dropdown.style.left = "0";
+    
+    // Force layout to get accurate height
+    const dropdownHeight = dropdown.scrollHeight || dropdown.offsetHeight || 400;
+    
+    // Max height is 85vh or 700px, whichever is smaller
+    const maxHeight = Math.min(viewportHeight * 0.85, 700);
+
+    // Calculate position - prefer below the button
     let top = rect.bottom + 8;
     let left = rect.right - dropdownWidth;
-    
-    // Ensure dropdown doesn't go off-screen (bottom)
-    if (top + dropdownHeight > viewportHeight - 16) {
-      top = rect.top - dropdownHeight - 8;
+
+    // If dropdown would overflow bottom, position above the button
+    if (top + Math.min(dropdownHeight, maxHeight) > viewportHeight - 16) {
+      // Check if there's more space above
+      if (rect.top > viewportHeight - rect.bottom) {
+        top = Math.max(16, rect.top - Math.min(dropdownHeight, maxHeight) - 8);
+      } else {
+        // Keep below but constrain to viewport
+        top = Math.max(16, viewportHeight - Math.min(dropdownHeight, maxHeight) - 16);
+      }
     }
-    
+
     // Ensure dropdown doesn't go off-screen (left)
     if (left < 16) {
       left = 16;
     }
-    
+
     // Ensure dropdown doesn't go off-screen (right)
     if (left + dropdownWidth > viewportWidth - 16) {
       left = viewportWidth - dropdownWidth - 16;
     }
-    
+
     dropdown.style.top = `${top}px`;
     dropdown.style.left = `${left}px`;
   }
@@ -314,10 +329,10 @@
     if (dropdownOpen) {
       // Show dropdown
       dropdown.style.display = "block";
-      
+
       // Position the fixed dropdown relative to the toggle button
       positionDropdown(dropdown, toggleBtn);
-      
+
       // Force reflow for animation
       void dropdown.offsetHeight;
       dropdown.style.opacity = "1";

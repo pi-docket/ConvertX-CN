@@ -67,26 +67,26 @@
       const dropdownWidth = dropdown.offsetWidth || 180;
       const viewportHeight = window.innerHeight;
       const viewportWidth = window.innerWidth;
-      
+
       // Calculate position
       let top = rect.bottom + 8;
       let left = rect.right - dropdownWidth;
-      
+
       // Ensure dropdown doesn't go off-screen (bottom)
       if (top + dropdownHeight > viewportHeight - 16) {
         top = rect.top - dropdownHeight - 8;
       }
-      
+
       // Ensure dropdown doesn't go off-screen (left)
       if (left < 16) {
         left = 16;
       }
-      
+
       // Ensure dropdown doesn't go off-screen (right)
       if (left + dropdownWidth > viewportWidth - 16) {
         left = viewportWidth - dropdownWidth - 16;
       }
-      
+
       dropdown.style.top = `${top}px`;
       dropdown.style.left = `${left}px`;
     }

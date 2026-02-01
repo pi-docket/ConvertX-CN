@@ -59,13 +59,14 @@ export const LanguageSelector = ({
         id="language-dropdown"
         class={`
           theme-glass-dropdown
-          fixed z-[9999] scrollbar hidden max-h-[320px] min-w-[180px] flex-col
+          fixed scrollbar hidden max-h-[320px] min-w-[180px] flex-col
           overflow-y-auto rounded-xl border border-white/20 shadow-2xl
           scrollbar-thumb-neutral-600 scrollbar-track-transparent
         `}
         style={{
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
+          zIndex: 2147483647,
         }}
         role="menu"
       >
