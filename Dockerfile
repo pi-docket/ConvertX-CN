@@ -660,7 +660,7 @@ ENV TORCH_DEVICE="cpu"
 # 📌 提供 OpenAI 相容 API，讓 MinerU 使用 vlm-http-client 後端
 # 📌 CPU-only 編譯，無需 CUDA
 # ------------------------------------------------------------------------------
-ARG LLAMA_CPP_VERSION=b5234
+ARG LLAMA_CPP_VERSION=b7898
 RUN set -ex && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
