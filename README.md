@@ -152,12 +152,12 @@ docker run -d \
 
 ### 為什麼推薦使用 Docker？
 
-| 功能               | Docker 環境        | Host 環境（Debian/Ubuntu） |
-| ------------------ | ------------------ | -------------------------- |
-| 基本轉檔           | ✅ 完整支援        | ✅ 需手動安裝依賴          |
-| PDF 翻譯           | ✅ 完整支援        | ⚠️ 需額外設定               |
-| MinerU VLM 模式    | ✅ 完整支援        | ❌ 需編譯 llama.cpp        |
-| llama.cpp server   | ✅ 自動啟動        | ⚠️ 需手動編譯與設定        |
+| 功能             | Docker 環境 | Host 環境（Debian/Ubuntu） |
+| ---------------- | ----------- | -------------------------- |
+| 基本轉檔         | ✅ 完整支援 | ✅ 需手動安裝依賴          |
+| PDF 翻譯         | ✅ 完整支援 | ⚠️ 需額外設定              |
+| MinerU VLM 模式  | ✅ 完整支援 | ❌ 需編譯 llama.cpp        |
+| llama.cpp server | ✅ 自動啟動 | ⚠️ 需手動編譯與設定        |
 
 ### Host 環境常見問題
 
@@ -169,6 +169,7 @@ cannot open shared object file: No such file or directory
 ```
 
 **這是因為：**
+
 - `llama-server` 是 llama.cpp 編譯產生的執行檔
 - `libmtmd.so` 是多模態支援的動態連結庫，需要與 llama-server 一起編譯
 - Host 環境通常沒有這些預編譯的動態庫
@@ -176,11 +177,13 @@ cannot open shared object file: No such file or directory
 **解決方案（擇一）：**
 
 1. **使用 Docker（推薦）**
+
    ```bash
    docker pull convertx/convertx-cn:latest
    ```
 
 2. **從源碼編譯 llama.cpp**
+
    ```bash
    git clone https://github.com/ggml-org/llama.cpp
    cd llama.cpp
