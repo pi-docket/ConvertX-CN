@@ -230,9 +230,9 @@ export const settings = new Elysia()
                           <span class="text-sm font-medium text-neutral-200">VLM</span>
                           <span
                             class={`
-                            text-xs
-                            ${vlmStatus.available ? "text-neutral-500" : "text-neutral-600"}
-                          `}
+                              text-xs
+                              ${vlmStatus.available ? "text-neutral-500" : "text-neutral-600"}
+                            `}
                           >
                             {vlmStatus.available ? "✓" : "✗"}
                           </span>

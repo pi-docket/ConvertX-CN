@@ -178,9 +178,9 @@ export const root = new Elysia()
                 {/* 格式選單 - 獨立於 article 外，避免 stacking context 問題 */}
                 <div
                   class={`
-                  select_container relative z-50 px-2
-                  sm:px-4
-                `}
+                    select_container relative z-50 px-2
+                    sm:px-4
+                  `}
                 >
                   <article
                     class={`
@@ -243,9 +243,9 @@ export const root = new Elysia()
                 {/* 轉換按鈕 - z-index 較低 */}
                 <div
                   class={`
-                  convert-button-wrapper relative z-10 mt-4 px-2
-                  sm:px-4
-                `}
+                    convert-button-wrapper relative z-10 mt-4 px-2
+                    sm:px-4
+                  `}
                 >
                   <input
                     class={`
