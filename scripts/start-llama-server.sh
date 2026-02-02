@@ -42,7 +42,16 @@ LLAMA_PATH="/usr/local/bin/llama-server"
 # 伺服器設定
 HOST="${LLAMA_SERVER_HOST:-127.0.0.1}"
 PORT="${LLAMA_SERVER_PORT:-11785}"
-CTX_SIZE="${LLAMA_CTX_SIZE:-4096}"
+
+# VLM 圖片處理配置（核心參數）
+# Context Size: VLM 需要較大的 context 來處理圖片 token
+CTX_SIZE="${LLAMA_CTX_SIZE:-16384}"
+# Batch Size: 處理圖片時的 batch 大小
+BATCH_SIZE="${LLAMA_BATCH_SIZE:-2048}"
+# Micro Batch Size: 實際處理的 batch 大小
+UBATCH_SIZE="${LLAMA_UBATCH_SIZE:-512}"
+# Image Max Tokens: 限制每張圖片的最大 token 數（避免大圖片導致 OOM）
+IMAGE_MAX_TOKENS="${LLAMA_IMAGE_MAX_TOKENS:-4096}"
 
 # ==============================================================================
 # 依賴檢查函數
@@ -139,13 +148,29 @@ log_info "   主模型：$(basename $MAIN_MODEL)"
 log_info "   視覺投影器：$(basename $MMPROJ_MODEL)"
 log_info "   監聽：$HOST:$PORT"
 log_info "   Context Size：$CTX_SIZE"
+log_info "   Batch Size：$BATCH_SIZE"
+log_info "   Image Max Tokens：$IMAGE_MAX_TOKENS"
 echo ""
 
+# 啟動參數說明：
+# -c: Context size - VLM 需要較大的 context 來處理圖片 token
+# -b: Batch size - prompt/image 處理時的 batch 大小
+# -ub: Micro batch size - 實際處理的 batch 大小
+# --image-max-tokens: 限制每張圖片的最大 token 數，避免大圖片 OOM
+# --flash-attn off: CPU 模式下禁用 Flash Attention
+# --cache-type-k/v q8_0: 使用量化的 KV cache 減少記憶體使用
+# -ngl 0: 不使用 GPU
 exec "$LLAMA_PATH" \
     -m "$MAIN_MODEL" \
     --mmproj "$MMPROJ_MODEL" \
     --host "$HOST" \
     --port "$PORT" \
     -c "$CTX_SIZE" \
+    -b "$BATCH_SIZE" \
+    -ub "$UBATCH_SIZE" \
+    --image-max-tokens "$IMAGE_MAX_TOKENS" \
+    --flash-attn off \
+    --cache-type-k q8_0 \
+    --cache-type-v q8_0 \
     -ngl 0 \
     --log-disable

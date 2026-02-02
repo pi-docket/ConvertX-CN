@@ -164,86 +164,99 @@ export const root = new Elysia()
                 class="relative mx-auto mb-[35vh] w-full max-w-4xl"
               >
                 <input type="hidden" name="file_names" id="file_names" />
-                <article class="article w-full">
+                {/* 搜尋欄區塊 - 不使用透明度以避免創建新的 stacking context */}
+                <article class="article w-full !bg-neutral-800">
                   <input
                     type="search"
                     name="convert_to_search"
                     placeholder={t("convert", "searchConversions")}
                     autocomplete="off"
-                    class="w-full rounded-sm bg-neutral-800 p-4"
+                    class="w-full rounded-sm bg-neutral-700 p-4"
                   />
-                  <div class="select_container relative">
-                    <article
-                      class={`
-                        convert_to_popup absolute z-2 m-0 hidden h-[30vh] max-h-[50vh] w-full
-                        flex-col overflow-x-hidden overflow-y-auto rounded bg-neutral-800
-                        sm:h-[30vh]
-                      `}
-                    >
-                      {Object.entries(getAllTargets()).map(([converter, targets]) => (
-                        <article
-                          class={`
-                            convert_to_group flex w-full flex-col border-b border-neutral-700 p-4
-                          `}
-                          data-converter={converter}
-                        >
-                          <header class="mb-2 w-full text-xl font-bold" safe>
-                            {converter}
-                          </header>
-                          <ul class={`convert_to_target flex flex-row flex-wrap gap-1`}>
-                            {targets.map((target) => (
-                              <button
-                                // https://stackoverflow.com/questions/121499/when-a-blur-event-occurs-how-can-i-find-out-which-element-focus-went-to#comment82388679_33325953
-                                tabindex={0}
-                                class={`
-                                  target rounded bg-neutral-700 p-1 text-base
-                                  hover:bg-neutral-600
-                                `}
-                                data-value={`${target},${converter}`}
-                                data-target={target}
-                                data-converter={converter}
-                                type="button"
-                                safe
-                              >
-                                {target}
-                              </button>
-                            ))}
-                          </ul>
-                        </article>
-                      ))}
-                    </article>
-
-                    {/* Hidden element which determines the format to convert the file too and the converter to use */}
-                    <select
-                      name="convert_to"
-                      aria-label={t("convert", "convertTo")}
-                      required
-                      hidden
-                    >
-                      <option selected disabled value="">
-                        {t("convert", "convertTo")}
-                      </option>
-                      {Object.entries(getAllTargets()).map(([converter, targets]) => (
-                        <optgroup label={converter}>
-                          {targets.map((target) => (
-                            <option value={`${target},${converter}`} safe>
-                              {target}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))}
-                    </select>
-                  </div>
                 </article>
-                <input
+
+                {/* 格式選單 - 獨立於 article 外，避免 stacking context 問題 */}
+                <div
                   class={`
-                    w-full btn-primary opacity-100
-                    disabled:cursor-not-allowed disabled:opacity-50
-                  `}
-                  type="submit"
-                  value={t("convert", "convertButton")}
-                  disabled
-                />
+                  select_container relative z-50 px-2
+                  sm:px-4
+                `}
+                >
+                  <article
+                    class={`
+                      convert_to_popup absolute top-0 left-0 z-50 m-0 hidden h-[30vh] max-h-[50vh]
+                      w-full flex-col overflow-x-hidden overflow-y-auto rounded-sm border
+                      border-neutral-700 bg-neutral-800 shadow-xl
+                      sm:h-[30vh]
+                    `}
+                  >
+                    {Object.entries(getAllTargets()).map(([converter, targets]) => (
+                      <article
+                        class={`
+                          convert_to_group flex w-full flex-col border-b border-neutral-700 p-4
+                        `}
+                        data-converter={converter}
+                      >
+                        <header class="mb-2 w-full text-xl font-bold" safe>
+                          {converter}
+                        </header>
+                        <ul class={`convert_to_target flex flex-row flex-wrap gap-1`}>
+                          {targets.map((target) => (
+                            <button
+                              // https://stackoverflow.com/questions/121499/when-a-blur-event-occurs-how-can-i-find-out-which-element-focus-went-to#comment82388679_33325953
+                              tabindex={0}
+                              class={`
+                                target rounded bg-neutral-700 p-1 text-base
+                                hover:bg-neutral-600
+                              `}
+                              data-value={`${target},${converter}`}
+                              data-target={target}
+                              data-converter={converter}
+                              type="button"
+                              safe
+                            >
+                              {target}
+                            </button>
+                          ))}
+                        </ul>
+                      </article>
+                    ))}
+                  </article>
+
+                  {/* Hidden element which determines the format to convert the file too and the converter to use */}
+                  <select name="convert_to" aria-label={t("convert", "convertTo")} required hidden>
+                    <option selected disabled value="">
+                      {t("convert", "convertTo")}
+                    </option>
+                    {Object.entries(getAllTargets()).map(([converter, targets]) => (
+                      <optgroup label={converter}>
+                        {targets.map((target) => (
+                          <option value={`${target},${converter}`} safe>
+                            {target}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 轉換按鈕 - z-index 較低 */}
+                <div
+                  class={`
+                  convert-button-wrapper relative z-10 mt-4 px-2
+                  sm:px-4
+                `}
+                >
+                  <input
+                    class={`
+                      w-full btn-primary opacity-100
+                      disabled:cursor-not-allowed disabled:opacity-50
+                    `}
+                    type="submit"
+                    value={t("convert", "convertButton")}
+                    disabled
+                  />
+                </div>
               </form>
             </main>
             <script src="script.js" defer />

@@ -14,6 +14,7 @@ import { getArchiveFileName } from "../transfer";
 import { ensureSearchablePdf, cleanupOcrTempFile } from "../helpers/pdfOcr";
 import { getUserTranslationProvider, type TranslationProviderType } from "../helpers/translation";
 import { LLAMA_SERVER_URL } from "../helpers/startupStatus";
+import { ensureVlmServer, markVlmUsed } from "../helpers/vlmServer";
 
 /**
  * BabelDOC Content Engine
@@ -408,7 +409,20 @@ export async function convert(
   let ocrTempFile: string | undefined;
 
   try {
-    // 0. 自動偵測掃描版 PDF 並進行 OCR 處理
+    // 0. 檢查是否使用本地翻譯服務，如果是則按需啟動 VLM server
+    const providerType: TranslationProviderType = userId
+      ? getUserTranslationProvider(userId)
+      : "local";
+
+    if (providerType === "local") {
+      console.log(`[BabelDOC] Using local translation, ensuring VLM server is running...`);
+      const vlmStarted = await ensureVlmServer();
+      if (!vlmStarted) {
+        console.warn(`[BabelDOC] ⚠️ Failed to start VLM server, translation may fail`);
+      }
+    }
+
+    // 1. 自動偵測掃描版 PDF 並進行 OCR 處理
     console.log(`[BabelDOC] Checking if PDF needs OCR...`);
     const ocrResult = await ensureSearchablePdf(filePath, execFile);
     const inputPdf = ocrResult.path;
@@ -418,15 +432,15 @@ export async function convert(
       console.log(`[BabelDOC] ✅ Scanned PDF detected and OCR'd automatically`);
     }
 
-    // 1. 檢查資源（警告但不阻止）
+    // 2. 檢查資源（警告但不阻止）
     checkResourcesExist();
 
-    // 2. 提取目標語言和輸出格式
+    // 3. 提取目標語言和輸出格式
     const { lang: targetLang, format: outputFormat } = extractTargetInfo(convertTo);
     const outputExt = getOutputExtension(outputFormat);
     console.log(`[BabelDOC] Translating to: ${targetLang}, format: ${outputFormat}`);
 
-    // 3. 建立臨時輸出目錄
+    // 4. 建立臨時輸出目錄
     const outputDir = dirname(targetPath);
     const inputFileName = basename(filePath, `.${fileType}`);
     const tempDir = join(outputDir, `${inputFileName}_babeldoc_${Date.now()}`);
@@ -435,22 +449,27 @@ export async function convert(
       mkdirSync(tempDir, { recursive: true });
     }
 
-    // 4. 建立封裝用目錄
+    // 5. 建立封裝用目錄
     const archiveDir = join(tempDir, "archive");
     mkdirSync(archiveDir, { recursive: true });
 
-    // 5. 設定 BabelDOC 輸出路徑（依輸出格式決定副檔名）
+    // 6. 設定 BabelDOC 輸出路徑（依輸出格式決定副檔名）
     const translatedFilePath = join(tempDir, `${inputFileName}-translated.${outputExt}`);
 
-    // 6. 執行 babeldoc 翻譯（使用 OCR 處理後的 PDF，根據使用者設定選擇翻譯服務）
+    // 7. 執行 babeldoc 翻譯（使用 OCR 處理後的 PDF，根據使用者設定選擇翻譯服務）
     await runBabelDoc(inputPdf, translatedFilePath, targetLang, outputFormat, execFile, userId);
 
-    // 7. 複製翻譯後的檔案到封裝目錄
+    // 7.5. 標記 VLM 正在使用中，防止閒置超時（長時間翻譯時）
+    if (providerType === "local") {
+      markVlmUsed();
+    }
+
+    // 8. 複製翻譯後的檔案到封裝目錄
     const translatedDest = join(archiveDir, `translated-${targetLang}.${outputExt}`);
     copyFileSync(translatedFilePath, translatedDest);
     console.log(`[BabelDOC] Copied translated ${outputFormat.toUpperCase()} to archive`);
 
-    // 8. 檢查是否有其他 BabelDOC 產生的輔助檔案
+    // 9. 檢查是否有其他 BabelDOC 產生的輔助檔案
     const translatedBaseName = `${inputFileName}-translated.${outputExt}`;
     const tempFiles = readdirSync(tempDir);
     for (const file of tempFiles) {

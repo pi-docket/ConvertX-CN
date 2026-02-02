@@ -170,28 +170,32 @@ export const settings = new Elysia()
                       <h2 class="text-sm font-medium text-neutral-400" safe>
                         {t("settings", "mineruProcessingMode")}
                       </h2>
-                      {/* Effective mode indicator */}
-                      <span class="text-xs text-neutral-500">
-                        <span safe>{t("settings", "effectiveMode")}</span>:{" "}
-                        <span class="font-medium text-neutral-300">
+                      {/* Effective mode indicator - 顯示目前生效的模式（按下更新後才變更） */}
+                      <span id="effective-mode-indicator" class="text-xs text-neutral-500">
+                        <span id="effective-mode-value" class="font-medium text-neutral-300">
                           {effectiveMode.mode === "pipeline" ? "Pipeline" : "VLM"}
                         </span>
                       </span>
                     </div>
 
                     {/* Fallback notice - only show when VLM is selected but unavailable */}
-                    {effectiveMode.isAutoFallback && (
-                      <div class="rounded-md bg-neutral-800/30 px-3 py-2 text-xs text-neutral-500">
-                        <span safe>{t("settings", "vlmFallbackActive")}</span>
-                      </div>
-                    )}
+                    <div
+                      id="vlm-fallback-notice"
+                      class={`
+                        rounded-md bg-neutral-800/30 px-3 py-2 text-xs text-neutral-500
+                        ${effectiveMode.isAutoFallback ? "" : "hidden"}
+                      `}
+                    >
+                      <span safe>{t("settings", "vlmFallbackActive")}</span>
+                    </div>
 
                     <div class="flex flex-col gap-2">
-                      {/* Pipeline Lite Option */}
+                      {/* Pipeline Option */}
                       <label
+                        id="processing-mode-pipeline-label"
                         class={`
                           flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors
-                          ${effectiveMode.mode === "pipeline" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
+                          ${processingMode === "pipeline" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
                         `}
                       >
                         <input
@@ -202,23 +206,17 @@ export const settings = new Elysia()
                           class="mt-0.5 h-4 w-4 accent-neutral-400"
                         />
                         <div class="flex flex-col gap-0.5">
-                          <span class="text-sm font-medium text-neutral-200" safe>
-                            {t("settings", "pipelineMode")}
-                          </span>
-                          <span class="text-xs text-neutral-500" safe>
-                            {t("settings", "pipelineModeDesc")}
-                          </span>
-                          <span class="mt-0.5 text-xs text-neutral-600" safe>
-                            {t("settings", "pipelineEngine")}
-                          </span>
+                          <span class="text-sm font-medium text-neutral-200">Pipeline</span>
+                          <span class="text-xs text-neutral-500">OCR</span>
                         </div>
                       </label>
 
                       {/* VLM Option */}
                       <label
+                        id="processing-mode-vlm-label"
                         class={`
                           flex cursor-pointer items-start gap-3 rounded-md p-3 transition-colors
-                          ${effectiveMode.mode === "vlm" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
+                          ${processingMode === "vlm" ? "bg-neutral-800" : "bg-neutral-800/30 hover:bg-neutral-800/50"}
                         `}
                       >
                         <input
@@ -229,26 +227,14 @@ export const settings = new Elysia()
                           class="mt-0.5 h-4 w-4 accent-neutral-400"
                         />
                         <div class="flex flex-col gap-0.5">
-                          <span class="text-sm font-medium text-neutral-200" safe>
-                            {t("settings", "vlmMode")}
-                          </span>
-                          <span class="text-xs text-neutral-500" safe>
-                            {t("settings", "vlmModeDesc")}
-                          </span>
-                          <span class="mt-0.5 text-xs text-neutral-600" safe>
-                            {t("settings", "vlmEngine")}
-                          </span>
-                          {/* VLM Status - subtle inline indicator */}
+                          <span class="text-sm font-medium text-neutral-200">VLM</span>
                           <span
                             class={`
-                              mt-1 text-xs
-                              ${vlmStatus.available ? "text-neutral-500" : "text-neutral-600"}
-                            `}
-                            safe
+                            text-xs
+                            ${vlmStatus.available ? "text-neutral-500" : "text-neutral-600"}
+                          `}
                           >
-                            {vlmStatus.available
-                              ? t("settings", "vlmStatusAvailable")
-                              : t("settings", "vlmStatusUnavailable")}
+                            {vlmStatus.available ? "✓" : "✗"}
                           </span>
                         </div>
                       </label>

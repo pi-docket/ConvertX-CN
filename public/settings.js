@@ -65,6 +65,49 @@ document.addEventListener("DOMContentLoaded", function () {
     translation_provider: document.getElementById("initial-translation-provider")?.value || "local",
   });
 
+  // 更新 effectiveMode 顯示（僅在儲存成功後調用）
+  function updateEffectiveModeDisplay(mode) {
+    const effectiveModeValue = document.getElementById("effective-mode-value");
+    const fallbackNotice = document.getElementById("vlm-fallback-notice");
+
+    if (effectiveModeValue) {
+      effectiveModeValue.textContent = mode === "vlm" ? "VLM" : "Pipeline";
+    }
+
+    // 隱藏 fallback 提示（因為已經手動選擇）
+    if (fallbackNotice) {
+      fallbackNotice.classList.add("hidden");
+    }
+  }
+
+  // 更新選項高亮樣式（即時響應，但不更新「生效中」文字）
+  function updateOptionHighlight(selectedMode) {
+    const pipelineLabel = document.getElementById("processing-mode-pipeline-label");
+    const vlmLabel = document.getElementById("processing-mode-vlm-label");
+
+    if (pipelineLabel && vlmLabel) {
+      if (selectedMode === "pipeline") {
+        pipelineLabel.classList.remove("bg-neutral-800/30", "hover:bg-neutral-800/50");
+        pipelineLabel.classList.add("bg-neutral-800");
+        vlmLabel.classList.remove("bg-neutral-800");
+        vlmLabel.classList.add("bg-neutral-800/30", "hover:bg-neutral-800/50");
+      } else {
+        vlmLabel.classList.remove("bg-neutral-800/30", "hover:bg-neutral-800/50");
+        vlmLabel.classList.add("bg-neutral-800");
+        pipelineLabel.classList.remove("bg-neutral-800");
+        pipelineLabel.classList.add("bg-neutral-800/30", "hover:bg-neutral-800/50");
+      }
+    }
+  }
+
+  // 監聽處理模式選項變更，即時更新選項高亮（不更新「生效中」）
+  const processingModeRadios = form.querySelectorAll('input[name="processing_mode"]');
+  processingModeRadios.forEach((radio) => {
+    radio.addEventListener("change", function () {
+      updateOptionHighlight(this.value);
+    });
+  });
+
   // 表單提交處理
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -145,6 +188,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (initOpenai) initOpenai.value = currentValues.openai_api_key;
         if (initDeepseek) initDeepseek.value = currentValues.deepseek_api_key;
         if (initOtherLlm) initOtherLlm.value = currentValues.other_llm_api_key;
+
+        // 即時更新 effectiveMode 顯示
+        updateEffectiveModeDisplay(currentValues.processing_mode);
       } else {
         // 失敗 - 顯示錯誤但不阻止使用
         // API Key 為選填，空值不應該導致錯誤

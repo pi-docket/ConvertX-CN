@@ -5,9 +5,11 @@
  * - 預設為 pipeline（穩定相容）
  * - 設定會持久化到資料庫
  * - 後端啟動時讀取使用者設定
+ * - 支持按需啟動 VLM server
  */
 
 import db from "../db/db";
+import { ensureVlmServer, isVlmHealthy } from "./vlmServer";
 
 // 處理模式類型
 export type ProcessingMode = "pipeline" | "vlm";
@@ -95,7 +97,8 @@ export function setUserProcessingMode(userId: number, mode: ProcessingMode): boo
 }
 
 /**
- * 檢查 VLM 是否可用
+ * 檢查 VLM 服務可用性（不自動啟動）
+ * 僅檢查當前狀態，如需按需啟動請使用 ensureVlmAvailability()
  * @returns VLM 可用狀態和訊息
  */
 export async function checkVlmAvailability(): Promise<{
@@ -106,7 +109,8 @@ export async function checkVlmAvailability(): Promise<{
     | "server_unreachable"
     | "not_installed"
     | "model_missing"
-    | "fallback_active";
+    | "fallback_active"
+    | "on_demand_available";
   message: string;
 }> {
   // 檢查是否已經啟用了回退模式（由 entrypoint.sh 設定）
@@ -126,6 +130,26 @@ export async function checkVlmAvailability(): Promise<{
       fallback: false,
       reason: "not_installed",
       message: "VLM service not installed on this system",
+    };
+  }
+
+  // 按需啟動模式：VLM 可能當前未運行但可以啟動
+  if (process.env.VLM_ON_DEMAND === "true") {
+    // 先檢查是否已經在運行
+    if (await isVlmHealthy()) {
+      return {
+        available: true,
+        fallback: false,
+        reason: "available",
+        message: "VLM server is running",
+      };
+    }
+    // 未運行但可以按需啟動
+    return {
+      available: true,
+      fallback: false,
+      reason: "on_demand_available",
+      message: "VLM server available (on-demand, not currently running)",
     };
   }
 
@@ -161,6 +185,53 @@ export async function checkVlmAvailability(): Promise<{
       message: `VLM server unreachable: ${error instanceof Error ? error.message : "Unknown error"}`,
     };
   }
+}
+
+/**
+ * 確保 VLM 服務可用（按需啟動）
+ * 如果 VLM 未運行，會嘗試啟動它
+ */
+export async function ensureVlmAvailability(): Promise<{
+  available: boolean;
+  fallback: boolean;
+  reason: string;
+  message: string;
+}> {
+  // 先檢查基本狀態
+  const status = await checkVlmAvailability();
+
+  // 如果已經可用（正在運行）或完全不可用（未安裝/回退），直接返回
+  if (
+    status.reason === "available" ||
+    status.reason === "fallback_active" ||
+    status.reason === "not_installed"
+  ) {
+    return status;
+  }
+
+  // 按需啟動模式或服務器不可達：嘗試啟動
+  if (status.reason === "on_demand_available" || status.reason === "server_unreachable") {
+    console.log("[VLM] 嘗試按需啟動 VLM server...");
+    const started = await ensureVlmServer();
+
+    if (started) {
+      return {
+        available: true,
+        fallback: false,
+        reason: "available",
+        message: "VLM server started successfully (on-demand)",
+      };
+    }
+
+    return {
+      available: false,
+      fallback: false,
+      reason: "server_unreachable",
+      message: "Failed to start VLM server on-demand",
+    };
+  }
+
+  return status;
 }
 
 /**

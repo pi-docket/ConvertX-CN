@@ -499,32 +499,62 @@ function autoSelectEngine(format, engine) {
   // 尋找對應的目標按鈕
   const targetButtons = document.querySelectorAll(".target");
 
+  // 收集所有匹配格式的按鈕和它們的引擎
+  const matchingButtons = [];
   for (const button of targetButtons) {
     const targetFormat = button.dataset.target;
     const converter = button.dataset.converter;
 
-    // 優先匹配格式和引擎
-    if (
-      targetFormat === format &&
-      converter &&
-      converter.toLowerCase().includes(engine.toLowerCase())
-    ) {
-      // 模擬點擊
-      button.click();
-      console.log(`🎯 Auto-selected: ${format} using ${converter}`);
-      return;
+    if (targetFormat && targetFormat.toLowerCase() === format.toLowerCase()) {
+      // 檢查按鈕是否可見（引擎可用）
+      const isVisible = !button.classList.contains("hidden") && button.offsetParent !== null;
+
+      matchingButtons.push({
+        button,
+        converter: converter || "",
+        isVisible,
+        // 計算引擎匹配分數
+        engineMatch:
+          converter && engine
+            ? converter.toLowerCase() === engine.toLowerCase()
+              ? 2 // 完全匹配
+              : converter.toLowerCase().includes(engine.toLowerCase())
+                ? 1 // 部分匹配
+                : 0 // 不匹配
+            : 0,
+      });
     }
   }
 
-  // 如果沒有精確匹配，只匹配格式
-  for (const button of targetButtons) {
-    const targetFormat = button.dataset.target;
+  if (matchingButtons.length === 0) {
+    console.log(`🎯 No matching format found: ${format}`);
+    return;
+  }
 
-    if (targetFormat === format) {
-      button.click();
-      console.log(`🎯 Auto-selected format: ${format}`);
-      return;
+  // 按優先級排序：可見性 > 引擎匹配度
+  matchingButtons.sort((a, b) => {
+    // 優先選擇可見的按鈕
+    if (a.isVisible !== b.isVisible) {
+      return a.isVisible ? -1 : 1;
     }
+    // 然後按引擎匹配度排序
+    return b.engineMatch - a.engineMatch;
+  });
+
+  // 選擇最佳匹配
+  const best = matchingButtons[0];
+  if (best && best.isVisible) {
+    best.button.click();
+    console.log(`🎯 Auto-selected: ${format} using ${best.converter}`);
+  } else if (matchingButtons.some((b) => b.isVisible)) {
+    // 選擇第一個可見的按鈕
+    const firstVisible = matchingButtons.find((b) => b.isVisible);
+    if (firstVisible) {
+      firstVisible.button.click();
+      console.log(`🎯 Auto-selected format: ${format} using ${firstVisible.converter}`);
+    }
+  } else {
+    console.log(`🎯 No visible button for format: ${format}`);
   }
 }
 
