@@ -16,6 +16,11 @@
 - **記憶體管理優化**：移除未使用的 `getTask` 導出函數
 - **程式碼清理**：移除未使用的導入（`join`、`WEBROOT`）
 - **參數命名修正**：將未使用的 `memoryInfo` 參數重命名為 `_memoryInfo`
+- **E2E 測試修復**：使用 `test.skipIf()` 優雅跳過缺少工具的測試
+
+### 🔧 Docker
+
+- **xvfb-run 安裝驗證**：在 Dockerfile 中添加 xvfb-run 可用性檢查，確保 Inkscape 和 Calibre 的 headless 模式正確運作
 
 ### 🌐 Translations
 

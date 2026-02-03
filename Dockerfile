@@ -279,7 +279,9 @@ RUN set -ex && \
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
   inkscape libheif-examples libjxl-tools xauth xvfb && \
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/* && \
+  # 驗證 xvfb-run 可用
+  which xvfb-run && echo "✅ xvfb-run 安裝成功"
 
 # 4.9.1 ImageMagick 7 - 從源碼編譯安裝
 # 📦 版本 7.1.1-47 - 官方最新穩定版
