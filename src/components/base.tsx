@@ -107,6 +107,8 @@ export const BaseHtml = ({
       <link rel="manifest" href={`${webroot}/site.webmanifest`} />
       <script>{`window.__TRANSLATIONS__ = ${JSON.stringify(getTranslations(locale))};`}</script>
       <script src={`${webroot}/theme.js`} />
+      {/* 🧠 記憶體生命週期管理 - 必須在其他腳本之前載入 */}
+      <script src={`${webroot}/memoryLifecycle.js`} />
       <script src={`${webroot}/i18n.js`} defer />
       <script src={`${webroot}/inference.js`} defer />
     </head>

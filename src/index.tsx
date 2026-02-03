@@ -26,6 +26,7 @@ import { inferenceService } from "./inference";
 import { enginesApi } from "./pages/enginesApi";
 import { convertersApi } from "./pages/convertersApi";
 import { rasApi } from "./pages/rasApi";
+import { memoryDiagnostics } from "./pages/memoryDiagnostics";
 
 export const uploadsDir = "./data/uploads/";
 export const outputDir = "./data/output/";
@@ -65,6 +66,7 @@ const app = new Elysia({
   .use(enginesApi)
   .use(convertersApi)
   .use(rasApi)
+  .use(memoryDiagnostics)
   .onError(({ error }) => {
     console.error(error);
   });

@@ -25,7 +25,7 @@ function ResultsArticle({
   return (
     <article class="article">
       <div class="mb-4 flex items-center justify-between">
-        <h1 class="text-xl">{t("results", "title")}</h1>
+        <h1 class="text-xl" safe>{t("results", "title")}</h1>
         <div class="flex flex-row gap-4">
           <a
             style={files.length !== job.num_files ? "pointer-events: none;" : ""}
@@ -33,7 +33,7 @@ function ResultsArticle({
             href={`${WEBROOT}/delete/${job.id}`}
             {...(files.length !== job.num_files ? { disabled: true, "aria-busy": "true" } : "")}
           >
-            <DeleteIcon /> <p>{t("common", "delete")}</p>
+            <DeleteIcon /> <p safe>{t("common", "delete")}</p>
           </a>
           <a
             style={files.length !== job.num_files ? "pointer-events: none;" : ""}
@@ -42,10 +42,10 @@ function ResultsArticle({
             class="flex btn-primary flex-row gap-2 text-contrast"
             {...(files.length !== job.num_files ? { disabled: true, "aria-busy": "true" } : "")}
           >
-            <DownloadIcon /> <p>{t("results", "downloadTar")}</p>
+            <DownloadIcon /> <p safe>{t("results", "downloadTar")}</p>
           </a>
           <button class="flex btn-primary flex-row gap-2 text-contrast" onclick="downloadAll()">
-            <DownloadIcon /> <p>{t("results", "downloadAll")}</p>
+            <DownloadIcon /> <p safe>{t("results", "downloadAll")}</p>
           </button>
         </div>
       </div>
@@ -76,7 +76,7 @@ function ResultsArticle({
                 sm:px-4
               `}
             >
-              {t("results", "convertedFileName")}
+              <span safe>{t("results", "convertedFileName")}</span>
             </th>
             <th
               class={`
@@ -84,7 +84,7 @@ function ResultsArticle({
                 sm:px-4
               `}
             >
-              {t("results", "status")}
+              <span safe>{t("results", "status")}</span>
             </th>
             <th
               class={`
@@ -92,7 +92,7 @@ function ResultsArticle({
                 sm:px-4
               `}
             >
-              {t("results", "actions")}
+              <span safe>{t("results", "actions")}</span>
             </th>
           </tr>
         </thead>
@@ -221,6 +221,39 @@ export const results = new Elysia()
         .all(params.jobId);
 
       return <ResultsArticle job={job} files={files} outputPath={outputPath} t={t} />;
+    },
+    { auth: true },
+  )
+  .get(
+    "/progress-json/:jobId",
+    async ({ set, params, user }) => {
+      const job = db
+        .query("SELECT * FROM jobs WHERE user_id = ? AND id = ?")
+        .as(Jobs)
+        .get(user.id, params.jobId);
+
+      if (!job) {
+        set.status = 404;
+        return { error: "Job not found" };
+      }
+
+      const files = db
+        .query("SELECT * FROM file_names WHERE job_id = ?")
+        .as(Filename)
+        .all(params.jobId);
+
+      return {
+        jobId: job.id,
+        status: job.status,
+        totalFiles: job.num_files,
+        completedFiles: files.length,
+        progress: job.num_files > 0 ? Math.round((files.length / job.num_files) * 100) : 0,
+        files: files.map((f) => ({
+          fileName: f.file_name,
+          outputFileName: f.output_file_name,
+          status: f.status,
+        })),
+      };
     },
     { auth: true },
   );

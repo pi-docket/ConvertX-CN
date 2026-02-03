@@ -3,6 +3,7 @@ import db from "../db/db";
 import { MAX_CONVERT_PROCESS } from "../helpers/env";
 import { normalizeFiletype, normalizeOutputFiletype } from "../helpers/normalizeFiletype";
 import { isMultiOutputTask, autoPackageMultiOutput } from "../transfer";
+import { createTask, startTask, finishTask, getMemoryReport } from "../helpers/memoryLifecycle";
 import { convert as convertassimp, properties as propertiesassimp } from "./assimp";
 import { convert as convertCalibre, properties as propertiesCalibre } from "./calibre";
 import { convert as convertDasel, properties as propertiesDasel } from "./dasel";
@@ -211,6 +212,13 @@ export async function handleConvert(
   jobId: Cookie<string | undefined>,
   userId?: number,
 ) {
+  // 🧠 等級二：建立轉換任務上下文
+  const task = createTask("conversion");
+  const taskId = task.taskId;
+  startTask(taskId);
+
+  console.log(`[MemoryLifecycle] Starting conversion job ${jobId.value}, task ${taskId}`);
+
   const query = db.query(
     "INSERT INTO file_names (job_id, file_name, output_file_name, status) VALUES (?1, ?2, ?3, ?4)",
   );
@@ -222,45 +230,60 @@ export async function handleConvert(
   // Special handling for PDF Packager - uses custom output filename
   const isPdfPackager = converterName === "PDF Packager";
 
-  for (const chunk of chunks(fileNames, MAX_CONVERT_PROCESS)) {
-    const toProcess: Promise<string>[] = [];
-    for (const fileName of chunk) {
-      const filePath = `${userUploadsDir}${fileName}`;
-      const fileTypeOrig = fileName.split(".").pop() ?? "";
-      const fileType = normalizeFiletype(fileTypeOrig);
-      const newFileExt = normalizeOutputFiletype(convertTo);
-      let newFileName: string;
+  try {
+    for (const chunk of chunks(fileNames, MAX_CONVERT_PROCESS)) {
+      const toProcess: Promise<string>[] = [];
+      for (const fileName of chunk) {
+        const filePath = `${userUploadsDir}${fileName}`;
+        const fileTypeOrig = fileName.split(".").pop() ?? "";
+        const fileType = normalizeFiletype(fileTypeOrig);
+        const newFileExt = normalizeOutputFiletype(convertTo);
+        let newFileName: string;
 
-      // PDF Packager uses its own output filename format: pack_<chip>.tar or pack_<chip>.pdf
-      if (isPdfPackager) {
-        newFileName = getPdfPackagerOutputFileName(convertTo);
-      } else {
-        newFileName = fileName.replace(
-          new RegExp(`${fileTypeOrig}(?!.*${fileTypeOrig})`),
-          newFileExt,
-        );
+        // PDF Packager uses its own output filename format: pack_<chip>.tar or pack_<chip>.pdf
+        if (isPdfPackager) {
+          newFileName = getPdfPackagerOutputFileName(convertTo);
+        } else {
+          newFileName = fileName.replace(
+            new RegExp(`${fileTypeOrig}(?!.*${fileTypeOrig})`),
+            newFileExt,
+          );
 
-        // For archive output converters, the actual file will have .tar extension
-        if (isArchiveOutput) {
-          newFileName = `${newFileName}.tar`;
+          // For archive output converters, the actual file will have .tar extension
+          if (isArchiveOutput) {
+            newFileName = `${newFileName}.tar`;
+          }
         }
-      }
 
-      const targetPath = `${userOutputDir}${newFileName.replace(/\.tar$/, "")}`;
-      toProcess.push(
-        new Promise((resolve, reject) => {
-          mainConverter(filePath, fileType, convertTo, targetPath, { userId }, converterName)
-            .then((r) => {
-              if (jobId.value) {
-                query.run(jobId.value, fileName, newFileName, r);
-              }
-              resolve(r);
-            })
-            .catch((c) => reject(c));
-        }),
-      );
+        const targetPath = `${userOutputDir}${newFileName.replace(/\.tar$/, "")}`;
+        toProcess.push(
+          new Promise((resolve, reject) => {
+            mainConverter(filePath, fileType, convertTo, targetPath, { userId, taskId }, converterName)
+              .then((r) => {
+                if (jobId.value) {
+                  query.run(jobId.value, fileName, newFileName, r);
+                }
+                resolve(r);
+              })
+              .catch((c) => reject(c));
+          }),
+        );
+      }
+      await Promise.all(toProcess);
     }
-    await Promise.all(toProcess);
+
+    // 🧠 等級二：任務完成，清理資源
+    await finishTask(taskId, "completed");
+    console.log(`[MemoryLifecycle] Conversion job ${jobId.value} completed, task ${taskId} cleaned`);
+
+    // 輸出記憶體報告（除錯用）
+    const report = getMemoryReport();
+    console.log(`[MemoryLifecycle] Post-conversion memory: ${report.memory.current.heapUsedMB}MB heap`);
+  } catch (error) {
+    // 🧠 等級二：任務失敗，清理資源
+    await finishTask(taskId, "failed");
+    console.error(`[MemoryLifecycle] Conversion job ${jobId.value} failed, task ${taskId} cleaned`);
+    throw error;
   }
 }
 

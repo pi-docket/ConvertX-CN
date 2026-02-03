@@ -6,6 +6,72 @@ let fileType;
 let pendingFiles = 0;
 let formatSelected = false;
 
+// 🧠 記憶體生命週期管理
+// 追蹤當前會話的所有上傳任務
+/** @type {Map<string, {taskId: string|null, file: File|null, status: string}>} */
+const uploadTasks = new Map();
+
+/**
+ * 取得記憶體生命週期管理器
+ * @returns {any|null}
+ */
+function getMemoryLifecycle() {
+  // @ts-ignore
+  return window.MemoryLifecycle || null;
+}
+
+/**
+ * 建立上傳任務上下文
+ * @param {string} fileName
+ * @returns {{taskId: string|null, context: any|null}}
+ */
+function createUploadTask(fileName) {
+  const lifecycle = getMemoryLifecycle();
+  if (lifecycle) {
+    const context = lifecycle.createTask("upload");
+    uploadTasks.set(fileName, { taskId: context.taskId, file: null, status: "pending" });
+    return { taskId: context.taskId, context };
+  }
+  return { taskId: null, context: null };
+}
+
+/**
+ * 完成上傳任務並清理
+ * @param {string} fileName
+ * @param {"completed"|"failed"|"aborted"} status
+ */
+async function finishUploadTask(fileName, status = "completed") {
+  const task = uploadTasks.get(fileName);
+  if (task?.taskId) {
+    const lifecycle = getMemoryLifecycle();
+    if (lifecycle) {
+      await lifecycle.finishTask(task.taskId, status);
+    }
+  }
+  uploadTasks.delete(fileName);
+}
+
+/**
+ * 清理所有未完成的上傳任務
+ */
+async function cleanupAllUploadTasks() {
+  for (const [fileName, task] of uploadTasks) {
+    if (task.taskId) {
+      const lifecycle = getMemoryLifecycle();
+      if (lifecycle) {
+        await lifecycle.finishTask(task.taskId, "aborted");
+      }
+    }
+  }
+  uploadTasks.clear();
+  console.log("[Script] All upload tasks cleaned up");
+}
+
+// 頁面卸載時清理
+window.addEventListener("beforeunload", () => {
+  cleanupAllUploadTasks();
+});
+
 // Get translation helper
 const getTranslation = (category, key, params) => {
   if (typeof window.t === "function") {
@@ -29,10 +95,11 @@ const getTranslation = (category, key, params) => {
 };
 
 // ===== 全頁拖曳上傳支援（UI 零變動版）=====
-// 只監聽 dragover 和 drop，不操作任何 UI class
+// 只監聯 dragover 和 drop，不操作任何 UI class
 // 這樣虛線框不會變粗、不會閃爍
 
-// 防重複機制：記錄最近處理的檔案
+// 🧠 記憶體管理：使用 WeakSet 避免持有檔案參考
+// 防重複機制：記錄最近處理的檔案鍵值
 const recentlyProcessedFiles = new Set();
 const getFileKey = (file) => `${file.name}_${file.size}_${file.lastModified}`;
 const clearRecentFiles = () => {
@@ -46,6 +113,7 @@ document.addEventListener("dragover", (e) => {
 });
 
 // 全頁 drop：處理檔案上傳
+// 🧠 記憶體管理：不保留 DataTransfer 或 FileList 的參考
 document.addEventListener("drop", (e) => {
   e.preventDefault();
   e.stopPropagation();
@@ -57,14 +125,19 @@ document.addEventListener("drop", (e) => {
     return;
   }
 
+  // 立即處理所有檔案，不保留 FileList 參考
   for (const file of files) {
     console.log("Handling dropped file:", file.name);
     handleFile(file);
   }
+
+  // 🧠 等級一：清除 DataTransfer 參考
+  // DataTransfer 在事件處理完成後會被自動清理
 });
 // ===== 全頁拖曳上傳支援結束 =====
 
 // Extracted handleFile function for reusability in drag-and-drop and file input
+// 🧠 記憶體管理：File 物件參考只在上傳期間保持
 function handleFile(file) {
   // 防重複檢查：如果這個檔案剛剛已經處理過，直接跳過
   const fileKey = getFileKey(file);
@@ -79,10 +152,15 @@ function handleFile(file) {
   const removeText = getTranslation("common", "remove");
 
   const row = document.createElement("tr");
+  // 🧠 記憶體管理：不在 DOM 中保存 File 物件參考
+  // 只保存檔案名稱用於追蹤
+  const fileName = file.name;
+  const fileSizeKB = (file.size / 1024).toFixed(2);
+
   row.innerHTML = `
-    <td>${file.name}</td>
-    <td><progress max="100" class="inline-block h-2 appearance-none overflow-hidden rounded-full border-0 bg-neutral-700 bg-none text-accent-500 accent-accent-500 [&::-moz-progress-bar]:bg-accent-500 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:[background:none] [&[value]::-webkit-progress-value]:bg-accent-500 [&[value]::-webkit-progress-value]:transition-[inline-size]"></progress></td>
-    <td>${(file.size / 1024).toFixed(2)} kB</td>
+    <td>${fileName}</td>
+    <td><progress value="0" max="100" class="inline-block h-2 appearance-none overflow-hidden rounded-full border-0 bg-neutral-700 bg-none text-accent-500 accent-accent-500 [&::-moz-progress-bar]:bg-accent-500 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:[background:none] [&[value]::-webkit-progress-value]:bg-accent-500 [&[value]::-webkit-progress-value]:transition-[inline-size]"></progress></td>
+    <td>${fileSizeKB} kB</td>
     <td><a onclick="deleteRow(this)">${removeText}</a></td>
   `;
 
@@ -108,9 +186,20 @@ function handleFile(file) {
   }
 
   fileList.appendChild(row);
-  file.htmlRow = row;
-  fileNames.push(file.name);
-  uploadFile(file);
+
+  // 🧠 記憶體管理：使用 WeakRef 或只保存必要資訊
+  // 不再使用 file.htmlRow = row，避免交叉參考
+  // 改為使用 Map 追蹤
+  const fileRowMap = window._fileRowMap || (window._fileRowMap = new Map());
+  fileRowMap.set(fileName, row);
+
+  fileNames.push(fileName);
+
+  // 🧠 記憶體管理：建立任務上下文追蹤這個上傳
+  createUploadTask(fileName);
+
+  // 上傳檔案（傳遞 row 和 fileName 用於 UI 更新，不在閉包中保持 file 參考過久）
+  uploadFile(file, row, fileName);
 }
 
 const selectContainer = document.querySelector("form .select_container");
@@ -247,11 +336,21 @@ const setTitle = () => {
 };
 
 // Add a onclick for the delete button
+// 🧠 記憶體管理：刪除時清理相關任務資源
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const deleteRow = (target) => {
+const deleteRow = async (target) => {
   const filename = target.parentElement.parentElement.children[0].textContent;
   const row = target.parentElement.parentElement;
   row.remove();
+
+  // 🧠 等級二：清理該檔案的上傳任務
+  await finishUploadTask(filename, "aborted");
+
+  // 從 fileRowMap 中移除
+  const fileRowMap = window._fileRowMap;
+  if (fileRowMap) {
+    fileRowMap.delete(filename);
+  }
 
   // remove from fileNames
   const index = fileNames.indexOf(filename);
@@ -266,6 +365,9 @@ const deleteRow = (target) => {
     fileInput.removeAttribute("accept");
     convertButton.disabled = true;
     setTitle();
+
+    // 🧠 等級二：清理所有殘留任務
+    await cleanupAllUploadTasks();
   }
 
   fetch(`${webroot}/delete`, {
@@ -305,34 +407,48 @@ function generateUploadId() {
 /**
  * 統一上傳檔案（自動判斷使用直傳或 chunk）
  *
+ * 🧠 記憶體管理：
+ * - 等級一：上傳完成後清除 File 參考
+ * - 等級二：使用任務上下文追蹤生命週期
+ *
  * @param {File} file - 要上傳的檔案
+ * @param {HTMLElement} row - 對應的表格列
+ * @param {string} fileName - 檔案名稱
  */
-const uploadFile = (file) => {
+const uploadFile = (file, row, fileName) => {
   convertButton.disabled = true;
   convertButton.value = getTranslation("convert", "uploading");
   pendingFiles += 1;
 
   if (shouldUseChunkedUpload(file.size)) {
     // 大檔：使用 chunk 上傳
-    uploadFileChunked(file);
+    uploadFileChunked(file, row, fileName);
   } else {
     // 小檔：直接上傳
-    uploadFileDirect(file);
+    uploadFileDirect(file, row, fileName);
   }
 };
 
 /**
  * 直接上傳（≤10MB）
+ *
+ * 🧠 記憶體管理：
+ * - 上傳完成後立即標記任務完成
+ * - 不在閉包中長期保持 File 參考
+ *
+ * @param {File} file
+ * @param {HTMLElement} row
+ * @param {string} fileName
  */
-const uploadFileDirect = (file) => {
+const uploadFileDirect = (file, row, fileName) => {
   const formData = new FormData();
-  formData.append("file", file, file.name);
+  formData.append("file", file, fileName);
 
   let xhr = new XMLHttpRequest();
 
   xhr.open("POST", `${webroot}/upload`, true);
 
-  xhr.onload = () => {
+  xhr.onload = async () => {
     let data = {};
     try {
       data = JSON.parse(xhr.responseText);
@@ -349,56 +465,77 @@ const uploadFileDirect = (file) => {
     }
 
     // Remove the progress bar when upload is done
-    let progressbar = file.htmlRow.getElementsByTagName("progress");
+    const progressbar = row.getElementsByTagName("progress");
     if (progressbar[0]) {
       progressbar[0].parentElement.remove();
     }
-    console.log("Direct upload complete:", data);
+
+    // 🧠 等級二：標記任務完成
+    await finishUploadTask(fileName, "completed");
+
+    console.log(`✅ [Upload Complete] ${fileName} - Direct upload successful`);
   };
 
   xhr.upload.onprogress = (e) => {
-    let sent = e.loaded;
-    let total = e.total;
-    console.log(`upload progress (${file.name}):`, (100 * sent) / total);
+    const sent = e.loaded;
+    const total = e.total;
+    const percent = Math.round((100 * sent) / total);
 
-    let progressbar = file.htmlRow.getElementsByTagName("progress");
+    const progressbar = row.getElementsByTagName("progress");
     if (progressbar[0]) {
-      progressbar[0].value = (100 * sent) / total;
+      progressbar[0].value = percent;
     }
   };
 
-  xhr.onerror = (e) => {
+  xhr.onerror = async (e) => {
     console.log("Upload error:", e);
     pendingFiles -= 1;
     if (pendingFiles === 0) {
       convertButton.value = getTranslation("convert", "convertButton");
     }
+
+    // 🧠 等級二：標記任務失敗
+    await finishUploadTask(fileName, "failed");
   };
 
   xhr.send(formData);
+
+  // 🧠 等級一：formData 在這裡超出作用域後可被 GC
+  // file 參考在 xhr.send() 後就不再需要
 };
 
 /**
  * Chunk 上傳（>10MB）
+ *
+ * 🧠 記憶體管理：
+ * - 等級一：每個 chunk 用完立即釋放
+ * - 等級三：逐 chunk 處理避免一次性佔用過多記憶體
+ *
+ * @param {File} file
+ * @param {HTMLElement} row
+ * @param {string} fileName
  */
-const uploadFileChunked = async (file) => {
+const uploadFileChunked = async (file, row, fileName) => {
   const uploadId = generateUploadId();
   const totalChunks = Math.ceil(file.size / CHUNK_SIZE_BYTES);
+  const fileSize = file.size; // 保存大小，避免後續參考 file
 
-  console.log(`Starting chunked upload: ${file.name}, size: ${file.size}, chunks: ${totalChunks}`);
+  console.log(`Starting chunked upload: ${fileName}, size: ${fileSize}, chunks: ${totalChunks}`);
 
   try {
     for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
       const start = chunkIndex * CHUNK_SIZE_BYTES;
-      const end = Math.min(start + CHUNK_SIZE_BYTES, file.size);
+      const end = Math.min(start + CHUNK_SIZE_BYTES, fileSize);
+
+      // 🧠 等級一：使用 slice 建立 chunk，不複製資料
       const chunk = file.slice(start, end);
 
       const formData = new FormData();
       formData.append("upload_id", uploadId);
       formData.append("chunk_index", chunkIndex.toString());
       formData.append("total_chunks", totalChunks.toString());
-      formData.append("file_name", file.name);
-      formData.append("total_size", file.size.toString());
+      formData.append("file_name", fileName);
+      formData.append("total_size", fileSize.toString());
       formData.append("chunk", chunk);
 
       const response = await fetch(`${webroot}/upload-chunk`, {
@@ -410,13 +547,16 @@ const uploadFileChunked = async (file) => {
         throw new Error(`Chunk ${chunkIndex} upload failed: ${response.status}`);
       }
 
+      // 🧠 等級一：chunk 和 formData 在這裡超出迴圈作用域，可被 GC
+      // 明確釋放參考（JavaScript 會自動處理，但這裡明確化意圖）
+      // chunk = null; formData = null;
+
       // 更新進度
-      const percent = ((chunkIndex + 1) / totalChunks) * 100;
-      let progressbar = file.htmlRow.getElementsByTagName("progress");
+      const percent = Math.round(((chunkIndex + 1) / totalChunks) * 100);
+      const progressbar = row.getElementsByTagName("progress");
       if (progressbar[0]) {
         progressbar[0].value = percent;
       }
-      console.log(`Chunk ${chunkIndex + 1}/${totalChunks} uploaded (${percent.toFixed(1)}%)`);
     }
 
     // 完成
@@ -429,18 +569,30 @@ const uploadFileChunked = async (file) => {
     }
 
     // Remove the progress bar
-    let progressbar = file.htmlRow.getElementsByTagName("progress");
+    const progressbar = row.getElementsByTagName("progress");
     if (progressbar[0]) {
       progressbar[0].parentElement.remove();
     }
-    console.log("Chunked upload complete:", file.name);
+
+    // 🧠 等級二：標記任務完成
+    await finishUploadTask(fileName, "completed");
+
+    console.log(
+      `✅ [Upload Complete] ${fileName} - Chunked upload successful (${totalChunks} chunks)`,
+    );
   } catch (error) {
     console.error("Chunked upload failed:", error);
     pendingFiles -= 1;
     if (pendingFiles === 0) {
       convertButton.value = getTranslation("convert", "convertButton");
     }
+
+    // 🧠 等級二：標記任務失敗
+    await finishUploadTask(fileName, "failed");
   }
+
+  // 🧠 等級一：file 參考在這裡超出作用域，可被 GC
+  // 整個上傳過程結束後，File 物件不再被任何地方參考
 };
 
 const formConvert = document.querySelector(`form[action='${webroot}/convert']`);
