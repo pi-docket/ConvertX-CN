@@ -983,13 +983,13 @@ ENV MINERU_MODEL_SOURCE="local"
 ENV MINERU_CONFIG="/root/mineru.json"
 ENV MINERU_MODELS_DIR="/opt/convertx/models/mineru"
 # 📌 MinerU 後端配置：
-#   - vlm-http-client: 連接 llama.cpp server（預設，高精度 VLM 模式）
-#   - pipeline: 純 OCR 模式（如需停用 VLM）
-# 📌 VLM 模式說明：
-#   - llama.cpp server 會在背景自動啟動
+#   - pipeline: 純 OCR 模式（預設，穩定無需額外依賴）
+#   - vlm-http-client: 連接 llama.cpp server（高精度 VLM 模式，需要設定環境變數啟用）
+# 📌 VLM 模式說明（需設定 MINERU_BACKEND=vlm-http-client 啟用）：
+#   - llama.cpp server 會按需自動啟動
 #   - 載入 GGUF 格式 VLM 模型
 #   - 提供 OpenAI 相容 API 供 MinerU 使用
-ENV MINERU_BACKEND="vlm-http-client"
+ENV MINERU_BACKEND="pipeline"
 ENV MINERU_VLM_URL="http://127.0.0.1:11785/v1"
 
 # llama.cpp server 配置
