@@ -220,13 +220,14 @@ export const root = new Elysia()
                               class={`
                                 target rounded-lg px-3 py-1.5 text-sm font-medium transition-all
                                 duration-150
-                                hover:brightness-95
-                                active:brightness-90
+                                hover:scale-[1.02]
+                                active:scale-[0.98]
                               `}
                               style={{
-                                background: "rgba(0, 0, 0, 0.04)",
-                                border: "none",
-                                color: "inherit",
+                                background: "var(--neutral-800, rgba(38, 38, 38, 0.8))",
+                                border: "1px solid var(--glass-border)",
+                                color: "var(--glass-text)",
+                                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
                               }}
                               data-value={`${target},${converter}`}
                               data-target={target}

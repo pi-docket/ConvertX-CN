@@ -51,7 +51,8 @@ type ScreenThemeI18nKey =
   | "screenThemeTwilight"
   | "screenThemeForest"
   | "screenThemePeach"
-  | "screenThemeCyber";
+  | "screenThemeCyber"
+  | "screenThemePrismatic";
 
 // Screen theme definitions (full-screen background themes)
 interface ScreenTheme {
@@ -127,6 +128,12 @@ const SCREEN_THEMES: ScreenTheme[] = [
     preview:
       "linear-gradient(135deg, oklch(45% 0.2 180), oklch(40% 0.18 200), oklch(35% 0.15 220))",
     i18nKey: "screenThemeCyber",
+  },
+  {
+    id: "prismatic",
+    preview:
+      "linear-gradient(135deg, oklch(70% 0.18 220), oklch(75% 0.15 180), oklch(80% 0.2 330))",
+    i18nKey: "screenThemePrismatic",
   },
 ];
 

@@ -119,13 +119,22 @@ export const Header = ({
 
   return (
     <header class="w-full p-4">
-      <nav class={`
-        theme-glass-nav mx-auto flex max-w-4xl items-center justify-between rounded-2xl p-4
-      `}>
+      <nav
+        class={`
+          mx-auto flex max-w-4xl items-center justify-between rounded-2xl bg-neutral-800/90 p-4
+          backdrop-blur-xl
+        `}
+        style={{
+          border: "1px solid var(--screen-border, var(--neutral-700))",
+          boxShadow: "var(--screen-glow, 0 4px 16px rgba(0, 0, 0, 0.1))",
+        }}
+      >
         <ul class="flex items-center">
           <li>
             <strong>
-              <a href={`${webroot}/`}>ConvertX-CN</a>
+              <a href={`${webroot}/`} class="text-neutral-100">
+                ConvertX-CN
+              </a>
             </strong>
           </li>
         </ul>

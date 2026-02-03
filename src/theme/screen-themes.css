@@ -62,35 +62,6 @@
 }
 
 /* ============================================================================
-   Apple HIG Glassmorphism Navigation Bar
-   ============================================================================ */
-.theme-glass-nav {
-  /* Light Mode - Apple 風格淡白色半透明 */
-  background: rgba(245, 245, 247, 0.72);
-  border: 0.5px solid rgba(0, 0, 0, 0.06);
-  border-radius: 16px;
-  box-shadow:
-    0 0 0 0.5px rgba(0, 0, 0, 0.04),
-    0 4px 16px rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.06);
-  color: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-/* Dark Mode */
-:root:not([data-theme="light"]) .theme-glass-nav {
-  background: rgba(30, 30, 34, 0.85);
-  border: 0.5px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 0 0 0.5px rgba(255, 255, 255, 0.08),
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 1px 3px rgba(0, 0, 0, 0.2);
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* ============================================================================
    Apple HIG Glassmorphism Dropdown Styles
    ============================================================================ */
 .theme-glass-dropdown {
@@ -110,35 +81,26 @@
   transition: var(--glass-transition);
 }
 
-/* 格式選單專用 - Apple macOS/iOS 26 風格玻璃效果 */
+/* 格式選單專用 - 使用 absolute 定位，高透明度玻璃效果 */
 .theme-glass-panel {
-  /* Apple 風格：淡白色半透明背景 + 強模糊 */
-  background: rgba(245, 245, 247, 0.72);
-  border: 0.5px solid rgba(0, 0, 0, 0.06);
-  border-radius: 14px;
-  box-shadow:
-    0 0 0 0.5px rgba(0, 0, 0, 0.04),
-    0 4px 16px rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.06);
-  color: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow), var(--glass-inset-highlight);
+  color: var(--glass-text);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
   /* 使用 absolute 定位，相對於父容器 */
   position: absolute;
   z-index: 100;
   isolation: isolate;
-  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: var(--glass-transition);
 }
 
-/* Dark Mode */
-:root:not([data-theme="light"]) .theme-glass-panel {
-  background: rgba(40, 40, 44, 0.75);
-  border: 0.5px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 0 0 0.5px rgba(255, 255, 255, 0.06),
-    0 4px 16px rgba(0, 0, 0, 0.25),
-    0 1px 3px rgba(0, 0, 0, 0.15);
-  color: rgba(255, 255, 255, 0.9);
+:root[data-theme="light"] .theme-glass-panel {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
 }
 
 .theme-glass-panel::-webkit-scrollbar {
@@ -553,6 +515,40 @@
   --screen-bg-card: oklch(40% 0.05 195 / 85%);
   --screen-bg-overlay: oklch(35% 0.06 190 / 40%);
   --screen-border: oklch(55% 0.12 185 / 45%);
+}
+
+/* ============================================================================
+   SCREEN THEME: Prismatic (炫彩 - 藍青粉漸變)
+   ============================================================================ */
+:root[data-screen-theme="prismatic"] {
+  --screen-theme: prismatic;
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(65% 0.18 220) 0%,
+    oklch(75% 0.15 180) 35%,
+    oklch(80% 0.12 160) 50%,
+    oklch(78% 0.18 330) 75%,
+    oklch(75% 0.2 310) 100%
+  );
+  --screen-bg-card: oklch(25% 0.06 220 / 75%);
+  --screen-bg-overlay: oklch(20% 0.08 200 / 50%);
+  --screen-border: oklch(70% 0.15 200 / 40%);
+  --screen-glow: 0 0 40px oklch(70% 0.2 200 / 30%);
+  --screen-text-shadow: none;
+}
+
+:root[data-theme="light"][data-screen-theme="prismatic"] {
+  --screen-bg-page: linear-gradient(
+    135deg,
+    oklch(75% 0.15 220) 0%,
+    oklch(85% 0.12 180) 35%,
+    oklch(90% 0.1 160) 50%,
+    oklch(88% 0.15 330) 75%,
+    oklch(85% 0.18 310) 100%
+  );
+  --screen-bg-card: oklch(98% 0.02 220 / 70%);
+  --screen-bg-overlay: oklch(95% 0.04 200 / 45%);
+  --screen-border: oklch(60% 0.12 200 / 35%);
 }
 
 /* ============================================================================
