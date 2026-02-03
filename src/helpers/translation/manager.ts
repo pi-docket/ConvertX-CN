@@ -2,10 +2,16 @@
  * Translation Service Manager
  *
  * 統一管理翻譯服務的選擇和使用。
- * 根據使用者設定自動選擇合適的翻譯服務。
+ * 根據環境變數自動選擇合適的翻譯服務。
+ *
+ * 環境變數：
+ * - BABELDOC_ENGINE: 翻譯引擎（local | openai | deepseek | custom）
+ * - OPENAI_API_KEY: OpenAI API 金鑰
+ * - DEEPSEEK_API_KEY: DeepSeek API 金鑰
+ * - OTHER_LLM_API_KEY: 自訂 LLM API 金鑰
+ * - CUSTOM_LLM_BASE_URL: 自訂 API 端點
  */
 
-import db from "../../db/db";
 import {
   TranslationProvider,
   TranslationProviderType,
@@ -19,85 +25,47 @@ import {
   createDeepSeekProvider,
   createCustomAPIProvider,
 } from "./apiProviders";
-import { getUserApiKey, API_KEY_NAMES } from "../apiKeys";
-
-// 設定 key
-const TRANSLATION_PROVIDER_KEY = "translation_provider";
 
 /**
- * 確保 settings 表存在
+ * 從環境變數取得設定的翻譯服務
+ * @returns 翻譯服務類型
  */
-function ensureSettingsTable(): void {
-  db.query(
-    `
-    CREATE TABLE IF NOT EXISTS settings (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      key TEXT NOT NULL,
-      value TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL,
-      UNIQUE(user_id, key)
-    )
-  `,
-  ).run();
+export function getConfiguredTranslationProvider(): TranslationProviderType {
+  const engine = process.env.BABELDOC_ENGINE?.toLowerCase();
+
+  switch (engine) {
+    case "openai":
+      return "openai";
+    case "deepseek":
+      return "deepseek";
+    case "custom":
+      return "custom";
+    case "local":
+    default:
+      return DEFAULT_TRANSLATION_PROVIDER;
+  }
 }
 
 /**
  * 取得使用者的翻譯服務設定
+ * @deprecated 翻譯服務現在由環境變數控制，userId 參數已忽略
  */
-export function getUserTranslationProvider(userId: number): TranslationProviderType {
-  ensureSettingsTable();
-
-  const result = db
-    .query("SELECT value FROM settings WHERE user_id = ? AND key = ?")
-    .get(userId, TRANSLATION_PROVIDER_KEY) as { value: string } | null;
-
-  if (result?.value) {
-    const value = result.value as TranslationProviderType;
-    if (["local", "openai", "deepseek", "custom"].includes(value)) {
-      return value;
-    }
-  }
-
-  return DEFAULT_TRANSLATION_PROVIDER;
+export function getUserTranslationProvider(_userId: number): TranslationProviderType {
+  return getConfiguredTranslationProvider();
 }
 
 /**
- * 設定使用者的翻譯服務
+ * 設定使用者的翻譯服務（已停用）
+ * @deprecated 翻譯服務現在由環境變數控制，此函數不再有效
  */
 export function setUserTranslationProvider(
-  userId: number,
-  provider: TranslationProviderType,
+  _userId: number,
+  _provider: TranslationProviderType,
 ): boolean {
-  ensureSettingsTable();
-
-  // 檢查當前值
-  const currentProvider = getUserTranslationProvider(userId);
-  if (currentProvider === provider) {
-    return false; // 沒有變更
-  }
-
-  const now = new Date().toISOString();
-  const existing = db
-    .query("SELECT id FROM settings WHERE user_id = ? AND key = ?")
-    .get(userId, TRANSLATION_PROVIDER_KEY);
-
-  if (existing) {
-    db.query("UPDATE settings SET value = ?, updated_at = ? WHERE user_id = ? AND key = ?").run(
-      provider,
-      now,
-      userId,
-      TRANSLATION_PROVIDER_KEY,
-    );
-  } else {
-    db.query(
-      "INSERT INTO settings (user_id, key, value, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-    ).run(userId, TRANSLATION_PROVIDER_KEY, provider, now, now);
-  }
-
-  console.log(`[Translation] User ${userId} translation provider set to: ${provider}`);
-  return true;
+  console.warn(
+    "[Translation] setUserTranslationProvider is deprecated. Use BABELDOC_ENGINE environment variable.",
+  );
+  return false;
 }
 
 /**
@@ -105,12 +73,11 @@ export function setUserTranslationProvider(
  */
 export class TranslationServiceManager {
   private providers: Map<TranslationProviderType, TranslationProvider> = new Map();
-  private userId: number;
   private preferredProvider: TranslationProviderType;
 
-  constructor(userId: number) {
-    this.userId = userId;
-    this.preferredProvider = getUserTranslationProvider(userId);
+  constructor(_userId?: number) {
+    // userId 參數保留以維持相容性，但已不再使用
+    this.preferredProvider = getConfiguredTranslationProvider();
   }
 
   /**
@@ -132,7 +99,7 @@ export class TranslationServiceManager {
         break;
 
       case "openai": {
-        const openaiKey = getUserApiKey(this.userId, API_KEY_NAMES.OPENAI);
+        const openaiKey = process.env.OPENAI_API_KEY;
         if (openaiKey) {
           provider = createOpenAIProvider({
             type: "openai",
@@ -143,7 +110,7 @@ export class TranslationServiceManager {
       }
 
       case "deepseek": {
-        const deepseekKey = getUserApiKey(this.userId, API_KEY_NAMES.DEEPSEEK);
+        const deepseekKey = process.env.DEEPSEEK_API_KEY;
         if (deepseekKey) {
           provider = createDeepSeekProvider({
             type: "deepseek",
@@ -154,7 +121,7 @@ export class TranslationServiceManager {
       }
 
       case "custom": {
-        const customKey = getUserApiKey(this.userId, API_KEY_NAMES.OTHER_LLM);
+        const customKey = process.env.OTHER_LLM_API_KEY;
         const customBaseUrl = process.env.CUSTOM_LLM_BASE_URL;
         if (customKey && customBaseUrl) {
           provider = createCustomAPIProvider({
@@ -178,11 +145,11 @@ export class TranslationServiceManager {
    * 取得最佳可用的翻譯服務
    *
    * 優先順序：
-   * 1. 使用者偏好的服務（如果可用）
+   * 1. 環境變數設定的服務（如果可用）
    * 2. 本地翻譯服務（預設 fallback）
    */
   async getBestProvider(): Promise<TranslationProvider> {
-    // 嘗試使用者偏好的服務
+    // 嘗試環境變數設定的服務
     const preferred = this.getOrCreateProvider(this.preferredProvider);
     if (preferred && (await preferred.isAvailable())) {
       return preferred;
@@ -245,7 +212,7 @@ export class TranslationServiceManager {
 /**
  * 建立翻譯服務管理器
  */
-export function createTranslationManager(userId: number): TranslationServiceManager {
+export function createTranslationManager(userId?: number): TranslationServiceManager {
   return new TranslationServiceManager(userId);
 }
 
@@ -254,26 +221,12 @@ export function createTranslationManager(userId: number): TranslationServiceMana
  * 用於匿名使用者或系統任務
  */
 export async function getDefaultTranslationProvider(): Promise<TranslationProvider> {
-  // 優先使用本地翻譯
-  const local = createLocalTranslationProvider();
-  if (await local.isAvailable()) {
-    return local;
-  }
+  const manager = new TranslationServiceManager();
 
-  // 檢查環境變數中的 API Key
-  if (process.env.OPENAI_API_KEY) {
-    return createOpenAIProvider({
-      type: "openai",
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+  try {
+    return await manager.getBestProvider();
+  } catch {
+    // 如果都失敗，返回 local（即使可能不可用）
+    return createLocalTranslationProvider();
   }
-
-  if (process.env.DEEPSEEK_API_KEY) {
-    return createDeepSeekProvider({
-      type: "deepseek",
-      apiKey: process.env.DEEPSEEK_API_KEY,
-    });
-  }
-
-  throw new Error("沒有可用的翻譯服務。");
 }

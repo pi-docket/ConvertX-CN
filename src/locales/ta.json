@@ -27,8 +27,7 @@
     "login": "உள்நுழை",
     "register": "பதிவு செய்",
     "language": "மொழி",
-    "toggleTheme": "தீம் மாற்று",
-    "settings": "அமைப்புகள்"
+    "toggleTheme": "தீம் மாற்று"
   },
   "convert": {
     "title": "மாற்று",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "அமைப்புகள்",
-    "otherLlmApiKey": "மற்ற LLM API சாவி",
-    "updateButton": "Update",
-    "processingMode": "செயலாக்க முறை",
-    "mineruProcessingMode": "MinerU செயலாக்க முறை",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "சேமிக்க மாற்றங்கள் இல்லை",
-    "translationService": "மொழிபெயர்ப்பு சேவை (BabelDOC)",
-    "translationServiceDesc": "BabelDOC உடன் PDF மொழிபெயர்ப்புக்கு மொழிபெயர்ப்பு என்ஜினை தேர்ந்தெடுக்கவும்",
-    "localTranslation": "உள்ளை உள்ளூர் மொழிபெயர்ப்பு",
-    "localTranslationDesc": "உள்ளூர் llama-server பயன்படுத்துகிறது, API சாவி தேவையில்லை, ஆஃப்லைனில் செயல்படும்",
-    "openaiTranslationDesc": "OpenAI API பயன்படுத்துகிறது, மேலே உள்ள API சாவி தேவை",
-    "deepseekTranslationDesc": "DeepSeek API பயன்படுத்துகிறது, மேலே உள்ள API சாவி தேவை",
-    "customApiTranslation": "தனிப்பயன் API",
-    "customApiTranslationDesc": "தனிப்பயன் OpenAI-உடன்படும் API எண்ட்பாயின்ட் பயன்படுத்துகிறது"
   },
   "inference": {
     "smartRecommend": "ஸ்மார்ட் பரிந்துரை",

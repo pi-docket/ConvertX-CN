@@ -27,8 +27,7 @@
     "login": "Kirjaudu sisään",
     "register": "Rekisteröidy",
     "language": "Kieli",
-    "toggleTheme": "Vaihda teemaa",
-    "settings": "Asetukset"
+    "toggleTheme": "Vaihda teemaa"
   },
   "convert": {
     "title": "Muunna",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Asetukset",
-    "otherLlmApiKey": "Muu LLM API-avain",
-    "updateButton": "Update",
-    "processingMode": "Käsittelytila",
-    "mineruProcessingMode": "MinerU-käsittelytila",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Ei tallennettavia muutoksia",
-    "translationService": "Käännöspalvelu (BabelDOC)",
-    "translationServiceDesc": "Valitse käännösmoottori PDF-käännökseen BabelDOC:lla",
-    "localTranslation": "Sisäänrakennettu paikallinen käännös",
-    "localTranslationDesc": "Käyttää paikallista llama-palvelinta, ei vaadi API-avainta, toimii offline",
-    "openaiTranslationDesc": "Käyttää OpenAI API:a, vaatii yllä olevan API-avaimen",
-    "deepseekTranslationDesc": "Käyttää DeepSeek API:a, vaatii yllä olevan API-avaimen",
-    "customApiTranslation": "Mukautettu API",
-    "customApiTranslationDesc": "Käyttää mukautettua OpenAI-yhteensopivaa API-päätepistettä"
   },
   "inference": {
     "smartRecommend": "Älykäs suositus",

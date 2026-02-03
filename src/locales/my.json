@@ -27,8 +27,7 @@
     "login": "ဝင်",
     "register": "စာရင်းသွင်း",
     "language": "ဘာသာစကား",
-    "toggleTheme": "အခြောွနာ ပြောင်းရန်",
-    "settings": "ဆက်တင်များ"
+    "toggleTheme": "အခြောွနာ ပြောင်းရန်"
   },
   "convert": {
     "title": "ပြောင်း",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "ဆက်တင်များ",
-    "otherLlmApiKey": "အခြား LLM API သော့",
-    "updateButton": "Update",
-    "processingMode": "လုပ်ဆောင်မှုမုဒ်",
-    "mineruProcessingMode": "MinerU လုပ်ဆောင်မှုမုဒ်",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "သိမ်ဆည်းရန် ပြောင်းလဲမှုများ မရှိပါ",
-    "translationService": "ဘာသာပြန်ဝန်ဆောင်ရွက် (BabelDOC)",
-    "translationServiceDesc": "BabelDOC နဲ့ PDF ဘာသာပြန်ရန် ဘာသာပြန်အင်ဂျင်ကို ရွေးပါ",
-    "localTranslation": "ပါဝင်ပါရှိ ပြည်ဝင်ဘာသာပြန်",
-    "localTranslationDesc": "ပြည်ဝင် llama-server အသုံးပြုသည်၊ API သော့ မလိုယ်ပါ၊ အော့ဖ်လိုင်း အလုပ်လုပ်သည်",
-    "openaiTranslationDesc": "OpenAI API အသုံးပြုသည်၊ အထက်ရှိ API သော့ လိုအပ်သည်",
-    "deepseekTranslationDesc": "DeepSeek API အသုံးပြုသည်၊ အထက်ရှိ API သော့ လိုအပ်သည်",
-    "customApiTranslation": "စိတ်ကြိုက် API",
-    "customApiTranslationDesc": "OpenAI နဲ့ အံဝင်တူညီ စိတ်ကြိုက် API endpoint အသုံးပြုသည်"
   },
   "inference": {
     "smartRecommend": "စမတ်အကြံပြုချက်",

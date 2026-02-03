@@ -5,7 +5,6 @@ import {
   defaultLocale,
 } from "../i18n/index";
 import { LanguageSelector } from "./languageSelector";
-import { SettingsButton } from "./settingsButton";
 import { ThemeToggle } from "./themeToggle";
 
 export const Header = ({
@@ -37,6 +36,7 @@ export const Header = ({
                 hover:text-accent-500 hover:underline
               `}
               href={`${webroot}/history`}
+              safe
             >
               {t("nav", "history")}
             </a>
@@ -50,6 +50,7 @@ export const Header = ({
                 hover:text-accent-500 hover:underline
               `}
               href={`${webroot}/account`}
+              safe
             >
               {t("nav", "account")}
             </a>
@@ -63,14 +64,10 @@ export const Header = ({
                 hover:text-accent-500 hover:underline
               `}
               href={`${webroot}/logoff`}
+              safe
             >
               {t("nav", "logout")}
             </a>
-          </li>
-        ) : null}
-        {!allowUnauthenticated ? (
-          <li>
-            <SettingsButton webroot={webroot} locale={locale} t={t} />
           </li>
         ) : null}
         <li>
@@ -91,6 +88,7 @@ export const Header = ({
               hover:text-accent-500 hover:underline
             `}
             href={`${webroot}/login`}
+            safe
           >
             {t("nav", "login")}
           </a>
@@ -103,6 +101,7 @@ export const Header = ({
                 hover:text-accent-500 hover:underline
               `}
               href={`${webroot}/register`}
+              safe
             >
               {t("nav", "register")}
             </a>
@@ -120,8 +119,10 @@ export const Header = ({
 
   return (
     <header class="w-full p-4">
-      <nav class={`mx-auto flex max-w-4xl justify-between rounded-sm bg-neutral-900 p-4`}>
-        <ul>
+      <nav class={`
+        theme-glass-nav mx-auto flex max-w-4xl items-center justify-between rounded-2xl p-4
+      `}>
+        <ul class="flex items-center">
           <li>
             <strong>
               <a href={`${webroot}/`}>ConvertX-CN</a>

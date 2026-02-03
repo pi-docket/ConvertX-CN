@@ -27,8 +27,7 @@
     "login": "Bejelentkezés",
     "register": "Regisztráció",
     "language": "Nyelv",
-    "toggleTheme": "Téma váltás",
-    "settings": "Beállítások"
+    "toggleTheme": "Téma váltás"
   },
   "convert": {
     "title": "Konvertálás",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Beállítások",
-    "otherLlmApiKey": "Más LLM API-kulcs",
-    "updateButton": "Update",
-    "processingMode": "Feldolgozási mód",
-    "mineruProcessingMode": "MinerU feldolgozási mód",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Nincs mentendő módosítás",
-    "translationService": "Fordítási szolgáltatás (BabelDOC)",
-    "translationServiceDesc": "Válassza ki a fordító motort a PDF fordításhoz BabelDOC-kal",
-    "localTranslation": "Beépített helyi fordítás",
-    "localTranslationDesc": "Helyi llama-servert használ, nem igényel API kulcsot, offline működik",
-    "openaiTranslationDesc": "OpenAI API-t használ, fenti API kulcs szükséges",
-    "deepseekTranslationDesc": "DeepSeek API-t használ, fenti API kulcs szükséges",
-    "customApiTranslation": "Egyéni API",
-    "customApiTranslationDesc": "Egyéni OpenAI-kompatibilis API végpontot használ"
   },
   "inference": {
     "smartRecommend": "Intelligens ajánlás",

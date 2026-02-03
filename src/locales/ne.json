@@ -27,8 +27,7 @@
     "login": "लग इन",
     "register": "दर्ता गर्नुहोस्",
     "language": "भाषा",
-    "toggleTheme": "थिम बदल्नुहोस्",
-    "settings": "सेटिङ्हरू"
+    "toggleTheme": "थिम बदल्नुहोस्"
   },
   "convert": {
     "title": "रूपान्तरण गर्नुहोस्",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "सेटिङ्हरू",
-    "otherLlmApiKey": "अन्य LLM API कुञ्जी",
-    "updateButton": "Update",
-    "processingMode": "प्रशोधन मोड",
-    "mineruProcessingMode": "MinerU प्रशोधन मोड",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "बचत गर्न कुनै परिवर्तनहरू छैनन्",
-    "translationService": "अनुवाद सेवा (BabelDOC)",
-    "translationServiceDesc": "BabelDOC सँग PDF अनुवादको लागि अनुवाद इन्जिन छनौट गर्नुहोस्",
-    "localTranslation": "बिल्ट-इन स्थानीय अनुवाद",
-    "localTranslationDesc": "स्थानीय llama-server प्रयोग गर्छ, API कुञ्जी आवश्यक छैन, अफलाइन काम गर्छ",
-    "openaiTranslationDesc": "OpenAI API प्रयोग गर्छ, माथिको API कुञ्जी आवश्यक",
-    "deepseekTranslationDesc": "DeepSeek API प्रयोग गर्छ, माथिको API कुञ्जी आवश्यक",
-    "customApiTranslation": "कस्टम API",
-    "customApiTranslationDesc": "कस्टम OpenAI-संगत API एन्डपोइन्ट प्रयोग गर्छ"
   },
   "inference": {
     "smartRecommend": "स्मार्ट सिफारिस",

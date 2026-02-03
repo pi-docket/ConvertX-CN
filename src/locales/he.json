@@ -27,8 +27,7 @@
     "login": "התחבר",
     "register": "הירשם",
     "language": "שפה",
-    "toggleTheme": "החלף ערכת נושא",
-    "settings": "הגדרות"
+    "toggleTheme": "החלף ערכת נושא"
   },
   "convert": {
     "title": "המר",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "הגדרות",
-    "otherLlmApiKey": "מפתח API אחר של LLM",
-    "updateButton": "Update",
-    "processingMode": "מצב עיבוד",
-    "mineruProcessingMode": "מצב עיבוד MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "אין שינויים לשמירה",
-    "translationService": "שירות תרגום (BabelDOC)",
-    "translationServiceDesc": "בחר מנוע תרגום לתרגום PDF עם BabelDOC",
-    "localTranslation": "תרגום מקומי מובנה",
-    "localTranslationDesc": "משתמש ב-llama-server מקומי, לא דרוש מפתח API, עובד במצב לא מקוון",
-    "openaiTranslationDesc": "משתמש ב-OpenAI API, דרוש מפתח API למעלה",
-    "deepseekTranslationDesc": "משתמש ב-DeepSeek API, דרוש מפתח API למעלה",
-    "customApiTranslation": "API מותאם אישית",
-    "customApiTranslationDesc": "משתמש בנקודת קצה API מותאמת אישית תואמת OpenAI"
   },
   "inference": {
     "smartRecommend": "המלצה חכמה",

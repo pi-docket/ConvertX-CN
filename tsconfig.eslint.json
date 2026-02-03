@@ -3,5 +3,5 @@
     "noEmit": true
   },
   "extends": "./tsconfig.json",
-  "include": ["src", "tests", "eslint.config.ts", "package.json"]
+  "include": ["src", "tests", "scripts", "eslint.config.ts", "package.json"]
 }

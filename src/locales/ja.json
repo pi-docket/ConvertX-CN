@@ -27,8 +27,7 @@
     "login": "ログイン",
     "register": "登録",
     "language": "言語",
-    "toggleTheme": "テーマ切替",
-    "settings": "設定"
+    "toggleTheme": "テーマ切替"
   },
   "convert": {
     "title": "変換",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "設定",
-    "otherLlmApiKey": "その他のLLM APIキー",
-    "updateButton": "更新",
-    "processingMode": "処理モード",
-    "mineruProcessingMode": "MinerU 処理モード",
-    "apiKeysSection": "API キー",
-    "vlmRequirement": "ローカル llama-server が必要",
-    "vlmFallbackActive": "VLM が利用できないため、Pipeline モードに切り替えました",
-    "updateSuccess": "設定を保存しました",
-    "updateError": "設定の保存に失敗しました",
-    "updating": "保存中...",
-    "noChanges": "保存する変更はありません",
-    "translationService": "翻訳サービス（BabelDOC）",
-    "translationServiceDesc": "BabelDOC PDF翻訳で使用する翻訳エンジンを選択",
-    "localTranslation": "内蔵ローカル翻訳",
-    "localTranslationDesc": "ローカル llama-server を使用、API キー不要、オフライン動作可能",
-    "openaiTranslationDesc": "OpenAI API を使用、上記で API キーの設定が必要",
-    "deepseekTranslationDesc": "DeepSeek API を使用、上記で API キーの設定が必要",
-    "customApiTranslation": "カスタム API",
-    "customApiTranslationDesc": "カスタム OpenAI 互換 API エンドポイントを使用"
   },
   "inference": {
     "smartRecommend": "スマート推薦",

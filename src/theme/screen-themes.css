@@ -18,74 +18,217 @@
   --screen-text-shadow: none;
   --screen-glow: none;
 
-  /* ===== Glassmorphism Variables ===== */
-  --glass-bg: rgba(20, 20, 20, 0.75);
-  --glass-bg-hover: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  --glass-blur: blur(20px);
-  --glass-text: rgba(255, 255, 255, 0.9);
-  --glass-text-muted: rgba(255, 255, 255, 0.6);
-  --glass-divider: rgba(255, 255, 255, 0.1);
+  /* ===== Apple HIG Glassmorphism Variables (Dark Mode) ===== */
+  /* 參考：macOS Big Sur / iOS 15+ 風格 */
+  --glass-bg: rgba(30, 30, 30, 0.18);
+  --glass-bg-secondary: rgba(40, 40, 40, 0.12);
+  --glass-bg-hover: rgba(255, 255, 255, 0.08);
+  --glass-bg-active: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-border-highlight: rgba(255, 255, 255, 0.35);
+  --glass-shadow: 0 8px 30px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
+  --glass-shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.35), 0 6px 16px rgba(0, 0, 0, 0.2);
+  --glass-inset-highlight:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --glass-blur: blur(24px) saturate(160%);
+  --glass-blur-light: blur(16px) saturate(140%);
+  --glass-text: rgba(255, 255, 255, 0.95);
+  --glass-text-secondary: rgba(255, 255, 255, 0.75);
+  --glass-text-muted: rgba(255, 255, 255, 0.55);
+  --glass-divider: rgba(255, 255, 255, 0.12);
+  --glass-divider-strong: rgba(255, 255, 255, 0.2);
+  /* Apple 風格過渡動畫 */
+  --glass-transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --glass-transition-fast: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 :root[data-theme="light"] {
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-bg-hover: rgba(0, 0, 0, 0.05);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  /* ===== Apple HIG Glassmorphism Variables (Light Mode) ===== */
+  --glass-bg: rgba(255, 255, 255, 0.18);
+  --glass-bg-secondary: rgba(255, 255, 255, 0.12);
+  --glass-bg-hover: rgba(0, 0, 0, 0.04);
+  --glass-bg-active: rgba(0, 0, 0, 0.08);
+  --glass-border: rgba(0, 0, 0, 0.12);
+  --glass-border-highlight: rgba(255, 255, 255, 0.8);
+  --glass-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --glass-shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.18), 0 6px 16px rgba(0, 0, 0, 0.1);
+  --glass-inset-highlight:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
   --glass-text: rgba(0, 0, 0, 0.9);
-  --glass-text-muted: rgba(0, 0, 0, 0.6);
-  --glass-divider: rgba(0, 0, 0, 0.1);
+  --glass-text-secondary: rgba(0, 0, 0, 0.75);
+  --glass-text-muted: rgba(0, 0, 0, 0.5);
+  --glass-divider: rgba(0, 0, 0, 0.08);
+  --glass-divider-strong: rgba(0, 0, 0, 0.15);
 }
 
 /* ============================================================================
-   Glassmorphism Dropdown Styles
+   Apple HIG Glassmorphism Navigation Bar
+   ============================================================================ */
+.theme-glass-nav {
+  /* Light Mode - Apple 風格淡白色半透明 */
+  background: rgba(245, 245, 247, 0.72);
+  border: 0.5px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Dark Mode */
+:root:not([data-theme="light"]) .theme-glass-nav {
+  background: rgba(30, 30, 34, 0.85);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* ============================================================================
+   Apple HIG Glassmorphism Dropdown Styles
    ============================================================================ */
 .theme-glass-dropdown {
   background: var(--glass-bg);
-  border-color: var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow), var(--glass-inset-highlight);
   color: var(--glass-text);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   /* 確保 dropdown 使用 fixed 定位並處於最高層級，不受父層 stacking context 影響 */
   position: fixed;
   z-index: 2147483647;
   /* 使用 isolation 確保建立獨立的 stacking context */
   isolation: isolate;
+  /* Apple 風格過渡動畫 */
+  transition: var(--glass-transition);
+}
+
+/* 格式選單專用 - Apple macOS/iOS 26 風格玻璃效果 */
+.theme-glass-panel {
+  /* Apple 風格：淡白色半透明背景 + 強模糊 */
+  background: rgba(245, 245, 247, 0.72);
+  border: 0.5px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  /* 使用 absolute 定位，相對於父容器 */
+  position: absolute;
+  z-index: 100;
+  isolation: isolate;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Dark Mode */
+:root:not([data-theme="light"]) .theme-glass-panel {
+  background: rgba(40, 40, 44, 0.75);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.06),
+    0 4px 16px rgba(0, 0, 0, 0.25),
+    0 1px 3px rgba(0, 0, 0, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.theme-glass-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.theme-glass-panel::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.theme-glass-panel::-webkit-scrollbar-thumb {
+  background: var(--glass-divider-strong);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.theme-glass-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-text-muted);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.theme-glass-dropdown:hover,
+.theme-glass-panel:hover {
+  box-shadow: var(--glass-shadow-elevated), var(--glass-inset-highlight);
 }
 
 .theme-glass-dropdown .theme-glass-divider {
   height: 1px;
   background: var(--glass-divider);
-  margin: 0;
+  margin: 4px 0;
 }
 
-/* Dropdown scrollbar styling */
+/* Apple HIG 風格選項項目 */
+.theme-glass-dropdown .glass-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 2px 6px;
+  transition: var(--glass-transition-fast);
+  cursor: pointer;
+}
+
+.theme-glass-dropdown .glass-item:hover {
+  background: var(--glass-bg-hover);
+}
+
+.theme-glass-dropdown .glass-item:active {
+  background: var(--glass-bg-active);
+  transform: scale(0.98);
+}
+
+.theme-glass-dropdown .glass-item.selected {
+  background: var(--glass-bg-active);
+  color: var(--accent-500);
+}
+
+/* Dropdown scrollbar styling - Apple 風格 */
 .theme-glass-dropdown::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .theme-glass-dropdown::-webkit-scrollbar-track {
   background: transparent;
+  margin: 8px 0;
 }
 
 .theme-glass-dropdown::-webkit-scrollbar-thumb {
-  background: var(--glass-divider);
-  border-radius: 3px;
+  background: var(--glass-divider-strong);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 .theme-glass-dropdown::-webkit-scrollbar-thumb:hover {
-  background: var(--glass-border);
+  background: var(--glass-text-muted);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 /* Fallback for browsers without backdrop-filter support */
-@supports not (backdrop-filter: blur(20px)) {
+@supports not (backdrop-filter: blur(24px)) {
   .theme-glass-dropdown {
-    background: rgba(20, 20, 20, 0.95);
+    background: rgba(30, 30, 30, 0.92);
+    box-shadow: var(--glass-shadow);
   }
 
   :root[data-theme="light"] .theme-glass-dropdown {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.92);
   }
 }
 

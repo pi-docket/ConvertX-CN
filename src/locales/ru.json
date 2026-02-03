@@ -27,8 +27,7 @@
     "login": "Войти",
     "register": "Регистрация",
     "language": "Язык",
-    "toggleTheme": "Сменить тему",
-    "settings": "Настройки"
+    "toggleTheme": "Сменить тему"
   },
   "convert": {
     "title": "Конвертировать",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} кБ"
-  },
-  "settings": {
-    "title": "Настройки",
-    "otherLlmApiKey": "Другой ключ API LLM",
-    "updateButton": "Обновить",
-    "processingMode": "Режим обработки",
-    "mineruProcessingMode": "Режим обработки MinerU",
-    "apiKeysSection": "API ключи",
-    "vlmRequirement": "Требуется локальный llama-server",
-    "vlmFallbackActive": "VLM недоступен, используется режим Pipeline",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Нет изменений для сохранения",
-    "translationService": "Сервис перевода (BabelDOC)",
-    "translationServiceDesc": "Выберите движок перевода для перевода PDF с BabelDOC",
-    "localTranslation": "Встроенный локальный перевод",
-    "localTranslationDesc": "Использует локальный llama-server, не требует API-ключа, работает офлайн",
-    "openaiTranslationDesc": "Использует API OpenAI, требуется API-ключ выше",
-    "deepseekTranslationDesc": "Использует API DeepSeek, требуется API-ключ выше",
-    "customApiTranslation": "Пользовательский API",
-    "customApiTranslationDesc": "Использует пользовательскую конечную точку API, совместимую с OpenAI"
   },
   "inference": {
     "smartRecommend": "Умная рекомендация",

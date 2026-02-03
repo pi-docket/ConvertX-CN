@@ -27,8 +27,7 @@
     "login": "Connexion",
     "register": "S'inscrire",
     "language": "Langue",
-    "toggleTheme": "Changer le thème",
-    "settings": "Paramètres"
+    "toggleTheme": "Changer le thème"
   },
   "convert": {
     "title": "Convertir",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} ko"
-  },
-  "settings": {
-    "title": "Paramètres",
-    "otherLlmApiKey": "Autre clé API LLM",
-    "updateButton": "Mettre à jour",
-    "processingMode": "Mode de traitement",
-    "mineruProcessingMode": "Mode de traitement MinerU",
-    "apiKeysSection": "Clés API",
-    "vlmRequirement": "Nécessite llama-server local",
-    "vlmFallbackActive": "VLM indisponible, mode Pipeline activé",
-    "updateSuccess": "Enregistre",
-    "updateError": "Echec",
-    "updating": "Enregistrement...",
-    "noChanges": "Aucune modification à enregistrer",
-    "translationService": "Service de traduction (BabelDOC)",
-    "translationServiceDesc": "Choisissez le moteur de traduction pour la traduction PDF avec BabelDOC",
-    "localTranslation": "Traduction locale intégrée",
-    "localTranslationDesc": "Utilise llama-server local, pas de clé API requise, fonctionne hors ligne",
-    "openaiTranslationDesc": "Utilise l'API OpenAI, nécessite la clé API ci-dessus",
-    "deepseekTranslationDesc": "Utilise l'API DeepSeek, nécessite la clé API ci-dessus",
-    "customApiTranslation": "API personnalisée",
-    "customApiTranslationDesc": "Utilise un point de terminaison API compatible OpenAI personnalisé"
   },
   "inference": {
     "smartRecommend": "Recommandation intelligente",

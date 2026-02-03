@@ -233,15 +233,17 @@ export const ThemeToggle = ({
   return (
     <div id="theme-picker-container" class="relative">
       {/* Main toggle button with dropdown arrow */}
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-0.5">
         {/* Mode toggle button (light/dark) */}
         <button
           type="button"
           id="theme-toggle"
           class={`
-            flex items-center text-accent-600 transition-all
-            hover:text-accent-500
+            flex items-center rounded-lg p-1.5 transition-all
+            hover:bg-[var(--glass-bg-hover)]
+            active:scale-[0.95]
           `}
+          style={{ color: "var(--accent-500)" }}
           aria-label={t("theme", "modeLabel")}
           title={t("theme", "modeLabel")}
         >
@@ -253,7 +255,7 @@ export const ThemeToggle = ({
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="hidden h-6 w-6"
+            class="hidden h-5 w-5"
           >
             <path
               stroke-linecap="round"
@@ -269,7 +271,7 @@ export const ThemeToggle = ({
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="hidden h-6 w-6"
+            class="hidden h-5 w-5"
           >
             <path
               stroke-linecap="round"
@@ -284,9 +286,11 @@ export const ThemeToggle = ({
           type="button"
           id="theme-dropdown-toggle"
           class={`
-            flex items-center p-1 text-accent-600 transition-all
-            hover:text-accent-500
+            flex items-center rounded-lg p-1.5 transition-all
+            hover:bg-[var(--glass-bg-hover)]
+            active:scale-[0.95]
           `}
+          style={{ color: "var(--glass-text-muted)" }}
           aria-label={t("theme", "pickerTitle")}
           aria-expanded="false"
           aria-haspopup="true"
@@ -297,7 +301,7 @@ export const ThemeToggle = ({
             viewBox="0 0 24 24"
             stroke-width="2"
             stroke="currentColor"
-            class="h-4 w-4 transition-transform duration-200"
+            class="h-3.5 w-3.5 transition-transform duration-200"
             id="theme-dropdown-arrow"
           >
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -305,17 +309,18 @@ export const ThemeToggle = ({
         </button>
       </div>
 
-      {/* Figma/Linear Style Color Picker Dropdown - Glassmorphism */}
+      {/* Apple HIG Style Color Picker Dropdown - Glassmorphism */}
       <div
         id="theme-color-dropdown"
-        class={`theme-glass-dropdown fixed w-[280px] rounded-xl border border-white/20 shadow-2xl`}
+        class={`theme-glass-dropdown fixed w-[300px]`}
         style={{
           display: "none",
           opacity: 0,
-          transform: "scale(0.95) translateY(-8px)",
-          transition: "opacity 200ms ease-out, transform 200ms ease-out",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
+          transform: "scale(0.96) translateY(-4px)",
+          transition:
+            "opacity 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          backdropFilter: "var(--glass-blur)",
+          WebkitBackdropFilter: "var(--glass-blur)",
           zIndex: 2147483647,
           maxHeight: "min(85vh, 700px)",
           overflowY: "auto",
@@ -326,12 +331,12 @@ export const ThemeToggle = ({
       >
         {/* ========================================
             1. Screen Theme Section (Full-Screen Themes)
-            位置：最上方（無標題）
+            位置：最上方（無標題）- Apple HIG 風格
             ======================================== */}
-        <div class="p-3">
-          {/* Screen theme swatches grid - 無標題 */}
+        <div class="p-3.5">
+          {/* Screen theme swatches grid - Apple 風格圓角按鈕 */}
           <div
-            class="grid grid-cols-6 gap-2"
+            class="grid grid-cols-6 gap-2.5"
             role="group"
             aria-label={t("theme", "screenThemeTitle")}
           >
@@ -339,23 +344,22 @@ export const ThemeToggle = ({
               <button
                 type="button"
                 class={`
-                  screen-theme-swatch group relative h-9 w-9 cursor-pointer rounded-lg border-2
-                  border-transparent transition-all duration-200
-                  hover:scale-110 hover:border-white/50
-                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2 focus:outline-none
-                  ${
-                    themeDef.id === "neon-night"
-                      ? `shadow-[inset_0_0_8px_oklch(60%_0.25_300_/_40%)]`
-                      : ""
-                  }
+                  screen-theme-swatch group relative h-10 w-10 cursor-pointer rounded-xl
+                  transition-all duration-150
+                  hover:scale-105
+                  focus:ring-2 focus:ring-[var(--accent-500)] focus:ring-offset-2 focus:outline-none
+                  active:scale-95
                 `}
-                data-screen-theme={themeDef.id}
                 style={{
                   background:
-                    themeDef.id === "none"
-                      ? "linear-gradient(135deg, var(--neutral-700), var(--neutral-800))"
-                      : themeDef.preview,
+                    themeDef.id === "none" ? "var(--glass-bg-secondary)" : themeDef.preview,
+                  border: "1.5px solid var(--glass-border)",
+                  boxShadow:
+                    themeDef.id === "neon-night"
+                      ? "inset 0 0 8px oklch(60% 0.25 300 / 40%), 0 2px 4px rgba(0,0,0,0.1)"
+                      : "0 2px 4px rgba(0,0,0,0.1)",
                 }}
+                data-screen-theme={themeDef.id}
                 aria-label={t("theme", themeDef.i18nKey)}
                 title={t("theme", themeDef.i18nKey)}
                 role="menuitem"
@@ -364,7 +368,8 @@ export const ThemeToggle = ({
                 {themeDef.id === "none" && (
                   <div class="absolute inset-0 flex items-center justify-center">
                     <svg
-                      class="h-4 w-4 text-neutral-400"
+                      class="h-4 w-4"
+                      style={{ color: "var(--glass-text-muted)" }}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -378,33 +383,36 @@ export const ThemeToggle = ({
                     </svg>
                   </div>
                 )}
-                {/* Glow effect on hover */}
+                {/* Glow effect on hover - Apple 風格柔和光暈 */}
                 <div
                   class={`
-                    pointer-events-none absolute inset-0 rounded-lg opacity-0 transition-opacity
-                    duration-200
+                    pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity
+                    duration-150
                     group-hover:opacity-100
                   `}
                   style={{
                     boxShadow:
                       themeDef.id === "neon-night"
-                        ? "0 0 15px 3px oklch(60% 0.25 300 / 40%)"
-                        : "0 0 15px 3px rgba(255, 255, 255, 0.25)",
+                        ? "0 0 12px 2px oklch(60% 0.25 300 / 35%)"
+                        : "0 0 10px 2px rgba(255, 255, 255, 0.2)",
                   }}
                 />
-                {/* Active indicator (checkmark) */}
+                {/* Active indicator (checkmark) - Apple 風格 */}
                 <div
                   class={`
                     screen-theme-active-indicator absolute inset-0 flex items-center justify-center
-                    opacity-0 transition-opacity
+                    rounded-xl opacity-0 transition-opacity
                   `}
+                  style={{
+                    background: "rgba(0, 0, 0, 0.3)",
+                  }}
                 >
                   <svg
                     class="h-4 w-4 text-white drop-shadow-lg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    stroke-width="3"
+                    stroke-width="2.5"
                   >
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
@@ -415,59 +423,64 @@ export const ThemeToggle = ({
         </div>
 
         {/* ========================================
-            2. Preset Colors Section (Accent Colors)
+            2. Preset Colors Section (Accent Colors) - Apple HIG 風格
             ======================================== */}
         <div class="theme-glass-divider" />
 
-        <div class="p-3">
-          {/* Color swatches grid with glow effect - 無標題 */}
-          <div class="grid grid-cols-5 gap-2" role="group" aria-label={t("theme", "pickerTitle")}>
+        <div class="p-3.5">
+          {/* Color swatches grid with glow effect - Apple 風格 */}
+          <div class="grid grid-cols-5 gap-2.5" role="group" aria-label={t("theme", "pickerTitle")}>
             {THEME_COLORS.map((colorDef) => (
               <button
                 type="button"
                 class={`
-                  theme-color-swatch group relative h-10 w-10 cursor-pointer rounded-lg border-2
-                  border-transparent transition-all duration-200
-                  hover:scale-110 hover:border-white/50
-                  focus:ring-2 focus:ring-accent-500 focus:ring-offset-2
-                  focus:ring-offset-neutral-900 focus:outline-none
+                  theme-color-swatch group relative h-11 w-11 cursor-pointer rounded-xl
+                  transition-all duration-150
+                  hover:scale-105
+                  focus:ring-2 focus:ring-[var(--accent-500)] focus:ring-offset-2 focus:outline-none
+                  active:scale-95
                 `}
                 data-color={colorDef.id}
                 data-style={colorDef.style}
                 data-hue={colorDef.hue}
                 style={{
                   background: colorDef.gradient || colorDef.color,
+                  border: "1.5px solid var(--glass-border)",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
                 }}
                 aria-label={t("theme", colorDef.i18nKey)}
                 title={t("theme", colorDef.i18nKey)}
                 role="menuitem"
               >
-                {/* Glow effect on hover */}
+                {/* Glow effect on hover - Apple 風格柔和光暈 */}
                 <div
                   class={`
-                    pointer-events-none absolute inset-0 rounded-lg opacity-0 transition-opacity
-                    duration-200
+                    pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity
+                    duration-150
                     group-hover:opacity-100
                   `}
                   style={{
                     boxShadow: colorDef.gradient
-                      ? "0 0 20px 4px rgba(255, 255, 255, 0.3)"
-                      : `0 0 20px 4px ${colorDef.color}`,
+                      ? "0 0 16px 3px rgba(255, 255, 255, 0.25)"
+                      : `0 0 16px 3px ${colorDef.color}`,
                   }}
                 />
-                {/* Active indicator (checkmark) */}
+                {/* Active indicator (checkmark) - Apple 風格 */}
                 <div
                   class={`
-                    active-indicator absolute inset-0 flex items-center justify-center opacity-0
-                    transition-opacity
+                    active-indicator absolute inset-0 flex items-center justify-center rounded-xl
+                    opacity-0 transition-opacity
                   `}
+                  style={{
+                    background: "rgba(0, 0, 0, 0.3)",
+                  }}
                 >
                   <svg
                     class="h-5 w-5 text-white drop-shadow-lg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    stroke-width="3"
+                    stroke-width="2.5"
                   >
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
@@ -478,24 +491,27 @@ export const ThemeToggle = ({
         </div>
 
         {/* ========================================
-            3. Custom Color Section
+            3. Custom Color Section - Apple HIG 風格
             ======================================== */}
         <div class="theme-glass-divider" />
 
-        <div class="p-3">
+        <div class="p-3.5">
           <button
             type="button"
             id="advanced-picker-toggle"
             class={`
-              flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm
-              transition-colors
-              hover:bg-white/10
+              flex w-full items-center justify-between rounded-xl px-3.5 py-3 text-sm font-medium
+              transition-all duration-150
+              hover:bg-[var(--glass-bg-hover)]
+              active:scale-[0.98] active:bg-[var(--glass-bg-active)]
             `}
+            style={{ color: "var(--glass-text)" }}
           >
-            <span class="flex items-center gap-2">
+            <span class="flex items-center gap-2.5">
               {/* Palette icon */}
               <svg
-                class="h-4 w-4"
+                class="h-4.5 w-4.5"
+                style={{ color: "var(--accent-500)" }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -511,6 +527,7 @@ export const ThemeToggle = ({
             </span>
             <svg
               class="h-4 w-4 transition-transform duration-200"
+              style={{ color: "var(--glass-text-muted)" }}
               id="advanced-picker-arrow"
               fill="none"
               viewBox="0 0 24 24"
@@ -521,19 +538,19 @@ export const ThemeToggle = ({
             </svg>
           </button>
 
-          {/* Advanced Color Picker Panel (Figma/Linear Style) */}
+          {/* Advanced Color Picker Panel (Apple HIG Style) */}
           <div
             id="advanced-picker-panel"
-            class="mt-3"
+            class="mt-4"
             style={{
               display: "none",
               maxHeight: "0",
               overflow: "visible",
-              transition: "max-height 300ms ease-out",
+              transition: "max-height 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94)",
             }}
           >
             {/* Hue Ring Container */}
-            <div class="relative mx-auto mb-4" style={{ width: "180px", height: "180px" }}>
+            <div class="relative mx-auto mb-5" style={{ width: "180px", height: "180px" }}>
               {/* Hue Ring (CSS Conic Gradient) */}
               <div
                 id="hue-ring"
@@ -543,6 +560,7 @@ export const ThemeToggle = ({
                   WebkitMask:
                     "radial-gradient(circle at center, transparent 60px, black 60px, black 90px, transparent 90px)",
                   mask: "radial-gradient(circle at center, transparent 60px, black 60px, black 90px, transparent 90px)",
+                  boxShadow: "inset 0 0 0 1px var(--glass-border)",
                 }}
               />
               {/* Hue Indicator */}
@@ -643,8 +661,8 @@ export const ThemeToggle = ({
               </div>
             </div>
 
-            {/* HEX Input with Copy */}
-            <div class="flex gap-2">
+            {/* HEX Input with Copy - Apple HIG 風格 */}
+            <div class="flex gap-2.5">
               <div class="relative flex-1">
                 <input
                   type="text"
@@ -652,18 +670,23 @@ export const ThemeToggle = ({
                   value="#A5D601"
                   maxlength="7"
                   class={`
-                    w-full rounded-lg border px-3 py-2 font-mono text-sm uppercase transition-colors
-                    focus:border-accent-500 focus:outline-none
+                    border-1.5 w-full rounded-xl px-3.5 py-2.5 font-mono text-sm uppercase
+                    transition-all duration-150
+                    focus:border-[var(--accent-500)] focus:ring-2 focus:ring-[var(--accent-500)]/20
+                    focus:outline-none
                   `}
                   style={{
-                    background: "var(--glass-bg)",
+                    background: "var(--glass-bg-secondary)",
                     borderColor: "var(--glass-border)",
                     color: "var(--glass-text)",
                   }}
                   placeholder="#000000"
                 />
                 <span
-                  class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-xs"
+                  class={`
+                    pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-xs
+                    font-medium
+                  `}
                   style={{ color: "var(--glass-text-muted)" }}
                 >
                   HEX
@@ -673,11 +696,13 @@ export const ThemeToggle = ({
                 type="button"
                 id="hex-copy-btn"
                 class={`
-                  flex items-center justify-center rounded-lg border px-3 transition-colors
-                  hover:opacity-80
+                  border-1.5 flex items-center justify-center rounded-xl px-3.5 transition-all
+                  duration-150
+                  hover:bg-[var(--glass-bg-hover)]
+                  active:scale-95
                 `}
                 style={{
-                  background: "var(--glass-bg)",
+                  background: "var(--glass-bg-secondary)",
                   borderColor: "var(--glass-border)",
                 }}
                 title="複製 HEX 碼"
@@ -696,9 +721,12 @@ export const ThemeToggle = ({
               </button>
             </div>
 
-            {/* Color Preview */}
-            <div class="mt-3 flex items-center gap-3">
-              <div class="relative h-10 flex-1 overflow-hidden rounded-lg">
+            {/* Color Preview - Apple HIG 風格 */}
+            <div class="mt-4 flex items-center gap-3">
+              <div
+                class="relative h-11 flex-1 overflow-hidden rounded-xl"
+                style={{ border: "1.5px solid var(--glass-border)" }}
+              >
                 {/* Checkerboard */}
                 <div
                   id="preview-checkerboard"
@@ -720,10 +748,15 @@ export const ThemeToggle = ({
                 type="button"
                 id="apply-custom-color"
                 class={`
-                  rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium text-neutral-900
-                  transition-colors
-                  hover:bg-accent-500
+                  rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-150
+                  hover:opacity-90
+                  active:scale-95
                 `}
+                style={{
+                  background: "var(--accent-500)",
+                  color: "var(--contrast)",
+                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                }}
                 safe
               >
                 {t("theme", "applyColor")}

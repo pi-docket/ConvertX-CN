@@ -27,8 +27,7 @@
     "login": "تسجيل الدخول",
     "register": "التسجيل",
     "language": "اللغة",
-    "toggleTheme": "تبديل المظهر",
-    "settings": "الإعدادات"
+    "toggleTheme": "تبديل المظهر"
   },
   "convert": {
     "title": "تحويل",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} كيلوبايت"
-  },
-  "settings": {
-    "title": "الإعدادات",
-    "otherLlmApiKey": "مفتاح API آخر لـ LLM",
-    "updateButton": "تحديث",
-    "processingMode": "وضع المعالجة",
-    "mineruProcessingMode": "وضع معالجة MinerU",
-    "apiKeysSection": "مفاتيح API",
-    "vlmRequirement": "يتطلب llama-server محلي",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "لا توجد تغييرات لحفظها",
-    "translationService": "خدمة الترجمة (BabelDOC)",
-    "translationServiceDesc": "اختر محرك الترجمة لترجمة PDF مع BabelDOC",
-    "localTranslation": "الترجمة المحلية المدمجة",
-    "localTranslationDesc": "يستخدم llama-server محلي، لا يتطلب مفتاح API، يعمل بدون اتصال",
-    "openaiTranslationDesc": "يستخدم OpenAI API، يتطلب مفتاح API أعلاه",
-    "deepseekTranslationDesc": "يستخدم DeepSeek API، يتطلب مفتاح API أعلاه",
-    "customApiTranslation": "API مخصص",
-    "customApiTranslationDesc": "يستخدم نقطة نهاية API متوافقة مع OpenAI مخصصة"
   },
   "inference": {
     "smartRecommend": "توصية ذكية",

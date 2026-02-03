@@ -27,8 +27,7 @@
     "login": "Ngena",
     "register": "Bhalisa",
     "language": "Ulimi",
-    "toggleTheme": "Shintsha ithimu",
-    "settings": "Izilungiselelo"
+    "toggleTheme": "Shintsha ithimu"
   },
   "convert": {
     "title": "Guqula",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Izilungiselelo",
-    "otherLlmApiKey": "Okunye ukhiye we-API we-LLM",
-    "updateButton": "Update",
-    "processingMode": "Imodi Yokucubungula",
-    "mineruProcessingMode": "Imodi Yokucubungula ye-MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Azikho izinguquko zokugcina",
-    "translationService": "Isevisi Yokuhumusha (BabelDOC)",
-    "translationServiceDesc": "Khetha injini yokuhumusha yokuhumusha i-PDF nge-BabelDOC",
-    "localTranslation": "Ukuhumusha kwangaphakathi kwendawo",
-    "localTranslationDesc": "Isebenzisa i-llama-server yasendaweni, akudingeki ukhiye we-API, isebenza ngaphandle kwe-inthanethi",
-    "openaiTranslationDesc": "Isebenzisa i-OpenAI API, idinga ukhiye we-API ongenhla",
-    "deepseekTranslationDesc": "Isebenzisa i-DeepSeek API, idinga ukhiye we-API ongenhla",
-    "customApiTranslation": "I-API yangokwezifiso",
-    "customApiTranslationDesc": "Isebenzisa iphoyinti lokugcina le-API ehambisana ne-OpenAI yangokwezifiso"
   },
   "inference": {
     "smartRecommend": "Isiphakamiso Esihlakaniphile",

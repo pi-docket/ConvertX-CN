@@ -27,8 +27,7 @@
     "login": "Přihlásit",
     "register": "Registrovat",
     "language": "Jazyk",
-    "toggleTheme": "Přepnout motiv",
-    "settings": "Nastavení"
+    "toggleTheme": "Přepnout motiv"
   },
   "convert": {
     "title": "Převést",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Nastavení",
-    "otherLlmApiKey": "Jiný klíč API LLM",
-    "updateButton": "Update",
-    "processingMode": "Režim zpracování",
-    "mineruProcessingMode": "Režim zpracování MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Žádné změny k uložení",
-    "translationService": "Překladatelská služba (BabelDOC)",
-    "translationServiceDesc": "Vyberte překladový stroj pro překlad PDF pomocí BabelDOC",
-    "localTranslation": "Vestavěný lokální překlad",
-    "localTranslationDesc": "Používá lokální llama-server, nevyžaduje API klíč, funguje offline",
-    "openaiTranslationDesc": "Používá OpenAI API, vyžaduje výše uvedený API klíč",
-    "deepseekTranslationDesc": "Používá DeepSeek API, vyžaduje výše uvedený API klíč",
-    "customApiTranslation": "Vlastní API",
-    "customApiTranslationDesc": "Používá vlastní koncový bod API kompatibilní s OpenAI"
   },
   "inference": {
     "smartRecommend": "Chytrá doporučení",

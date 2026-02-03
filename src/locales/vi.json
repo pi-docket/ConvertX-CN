@@ -104,28 +104,6 @@
   "file": {
     "size": "{size} kB"
   },
-  "settings": {
-    "title": "Cài đặt",
-    "otherLlmApiKey": "Khóa API LLM khác",
-    "updateButton": "Update",
-    "processingMode": "Chế độ xử lý",
-    "mineruProcessingMode": "Chế độ xử lý MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Không có thay đổi để lưu",
-    "translationService": "Dịch vụ dịch thuật (BabelDOC)",
-    "translationServiceDesc": "Chọn công cụ dịch cho dịch PDF với BabelDOC",
-    "localTranslation": "Dịch cục bộ tích hợp",
-    "localTranslationDesc": "Sử dụng llama-server cục bộ, không cần khóa API, hoạt động ngoại tuyến",
-    "openaiTranslationDesc": "Sử dụng OpenAI API, cần khóa API ở trên",
-    "deepseekTranslationDesc": "Sử dụng DeepSeek API, cần khóa API ở trên",
-    "customApiTranslation": "API tùy chỉnh",
-    "customApiTranslationDesc": "Sử dụng điểm cuối API tương thích OpenAI tùy chỉnh"
-  },
   "inference": {
     "smartRecommend": "Đề xuất thông minh",
     "yourFrequentFormat": "Định dạng thường dùng của bạn"

@@ -27,8 +27,7 @@
     "login": "Logi sisse",
     "register": "Registreeru",
     "language": "Keel",
-    "toggleTheme": "Vaheta teemat",
-    "settings": "Seaded"
+    "toggleTheme": "Vaheta teemat"
   },
   "convert": {
     "title": "Teisenda",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Seaded",
-    "otherLlmApiKey": "Muu LLM API võti",
-    "updateButton": "Update",
-    "processingMode": "Töötlemisrežiim",
-    "mineruProcessingMode": "MinerU töötlemisrežiim",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Salvestamiseks pole muudatusi",
-    "translationService": "Tõlketeenus (BabelDOC)",
-    "translationServiceDesc": "Valige tõlkemootor PDF-i tõlkimiseks BabelDOC-iga",
-    "localTranslation": "Sisseehitatud kohalik tõlge",
-    "localTranslationDesc": "Kasutab kohalikku llama-serverit, ei vaja API võtit, töötab väljaspool võrku",
-    "openaiTranslationDesc": "Kasutab OpenAI API-t, vajab ülalpool olevat API võtit",
-    "deepseekTranslationDesc": "Kasutab DeepSeek API-t, vajab ülalpool olevat API võtit",
-    "customApiTranslation": "Kohandatud API",
-    "customApiTranslationDesc": "Kasutab kohandatud OpenAI-ga ühilduvat API lõpp-punkti"
   },
   "inference": {
     "smartRecommend": "Nutikas soovitus",

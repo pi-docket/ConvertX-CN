@@ -27,8 +27,7 @@
     "login": "Σύνδεση",
     "register": "Εγγραφή",
     "language": "Γλώσσα",
-    "toggleTheme": "Αλλαγή θέματος",
-    "settings": "Ρυθμίσεις"
+    "toggleTheme": "Αλλαγή θέματος"
   },
   "convert": {
     "title": "Μετατροπή",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Ρυθμίσεις",
-    "otherLlmApiKey": "Άλλο κλειδί API LLM",
-    "updateButton": "Update",
-    "processingMode": "Λειτουργία επεξεργασίας",
-    "mineruProcessingMode": "Λειτουργία επεξεργασίας MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Δεν υπάρχουν αλλαγές για αποθήκευση",
-    "translationService": "Υπηρεσία μετάφρασης (BabelDOC)",
-    "translationServiceDesc": "Επιλέξτε τη μηχανή μετάφρασης για μετάφραση PDF με BabelDOC",
-    "localTranslation": "Ενσωματωμένη τοπική μετάφραση",
-    "localTranslationDesc": "Χρησιμοποιεί τοπικό llama-server, δεν απαιτείται κλειδί API, λειτουργεί εκτός σύνδεσης",
-    "openaiTranslationDesc": "Χρησιμοποιεί OpenAI API, απαιτείται το παραπάνω κλειδί API",
-    "deepseekTranslationDesc": "Χρησιμοποιεί DeepSeek API, απαιτείται το παραπάνω κλειδί API",
-    "customApiTranslation": "Προσαρμοσμένο API",
-    "customApiTranslationDesc": "Χρησιμοποιεί προσαρμοσμένο τελικό σημείο API συμβατό με OpenAI"
   },
   "inference": {
     "smartRecommend": "Έξυπνη Σύσταση",

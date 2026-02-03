@@ -27,8 +27,7 @@
     "login": "Giriş",
     "register": "Kayıt Ol",
     "language": "Dil",
-    "toggleTheme": "Tema değiştir",
-    "settings": "Ayarlar"
+    "toggleTheme": "Tema değiştir"
   },
   "convert": {
     "title": "Dönüştür",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Ayarlar",
-    "otherLlmApiKey": "Diğer LLM API Anahtarı",
-    "updateButton": "Update",
-    "processingMode": "İşleme Modu",
-    "mineruProcessingMode": "MinerU İşleme Modu",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Kaydedilecek değişiklik yok",
-    "translationService": "Çeviri Servisi (BabelDOC)",
-    "translationServiceDesc": "BabelDOC ile PDF çevirisi için çeviri motorunu seçin",
-    "localTranslation": "Yerleşik Yerel Çeviri",
-    "localTranslationDesc": "Yerel llama-server kullanır, API anahtarı gerektirmez, çevrimdışı çalışır",
-    "openaiTranslationDesc": "OpenAI API kullanır, yukarıdaki API anahtarı gerektirir",
-    "deepseekTranslationDesc": "DeepSeek API kullanır, yukarıdaki API anahtarı gerektirir",
-    "customApiTranslation": "Özel API",
-    "customApiTranslationDesc": "Özel OpenAI uyumlu API uç noktası kullanır"
   },
   "inference": {
     "smartRecommend": "Akıllı Öneri",

@@ -17,7 +17,6 @@ import { history } from "./pages/history";
 import { listConverters } from "./pages/listConverters";
 import { results } from "./pages/results";
 import { root } from "./pages/root";
-import { settings } from "./pages/settings";
 import { upload } from "./pages/upload";
 import { uploadChunk, uploadInfo } from "./pages/uploadChunk";
 import { user } from "./pages/user";
@@ -66,7 +65,6 @@ const app = new Elysia({
   .use(enginesApi)
   .use(convertersApi)
   .use(rasApi)
-  .use(settings)
   .onError(({ error }) => {
     console.error(error);
   });

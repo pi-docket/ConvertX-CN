@@ -27,8 +27,7 @@
     "login": "લૉગિન",
     "register": "નોંધણી કરો",
     "language": "ભાષા",
-    "toggleTheme": "થીમ બદલો",
-    "settings": "સેટિંગ્સ"
+    "toggleTheme": "થીમ બદલો"
   },
   "convert": {
     "title": "રૂપાંતર કરો",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "સેટિંગ્સ",
-    "otherLlmApiKey": "અન્ય LLM API કી",
-    "updateButton": "Update",
-    "processingMode": "પ્રોસેસિંગ મોડ",
-    "mineruProcessingMode": "MinerU પ્રોસેસિંગ મોડ",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "સાચવવા માટે કોઈ ફેરફારો નથી",
-    "translationService": "અનુવાદ સેવા (BabelDOC)",
-    "translationServiceDesc": "BabelDOC સાથે PDF અનુવાદ માટે અનુવાદ ઇંજન પસંદ કરો",
-    "localTranslation": "બિલ્ટ-ઇન સ્થાનિક અનુવાદ",
-    "localTranslationDesc": "સ્થાનિક llama-server વાપરે છે, API કીની જરૂર નથી, ઑફલાઇન કામ કરે છે",
-    "openaiTranslationDesc": "OpenAI API વાપરે છે, ઉપરની API કી જરૂરી છે",
-    "deepseekTranslationDesc": "DeepSeek API વાપરે છે, ઉપરની API કી જરૂરી છે",
-    "customApiTranslation": "કસ્ટમ API",
-    "customApiTranslationDesc": "કસ્ટમ OpenAI-સંગત API એન્ડપોઇન્ટ વાપરે છે"
   },
   "inference": {
     "smartRecommend": "સ્માર્ટ ભલામણ",

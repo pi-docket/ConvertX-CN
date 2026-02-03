@@ -60,7 +60,6 @@ export const TRA_EXTENSION = ".tra";
  */
 export function isMultiOutputTask(
   outputDir: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _outputFormat: string,
 ): { isMulti: boolean; reason?: string; fileCount: number } {
   if (!existsSync(outputDir)) {

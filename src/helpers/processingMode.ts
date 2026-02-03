@@ -2,14 +2,21 @@
  * 處理模式配置管理
  *
  * 管理 MinerU 的處理模式設定（pipeline / vlm）
- * - 預設為 pipeline（穩定相容）
- * - 設定會持久化到資料庫
- * - 後端啟動時讀取使用者設定
- * - 支持按需啟動 VLM server
+ *
+ * 設計原則：
+ * - 預設一律使用 pipeline（穩定、無需額外依賴）
+ * - VLM 為進階選項，需要額外條件才能啟用
+ * - 失敗自動回退到 pipeline，確保系統穩定性
+ *
+ * 環境變數：
+ * - MINERU_MODE: 處理模式（pipeline | vlm），預設 pipeline
+ * - MINERU_BACKEND: 後端類型（與 MINERU_MODE 相容）
+ * - VLM_FALLBACK: 強制回退標記（由 entrypoint.sh 設定）
+ * - VLM_AVAILABLE: VLM 可用性標記（由 entrypoint.sh 設定）
+ * - VLM_ON_DEMAND: 按需啟動標記
  */
 
-import db from "../db/db";
-import { ensureVlmServer, isVlmHealthy } from "./vlmServer";
+import { ensureVlmServer, isVlmHealthy, stopVlmServer } from "./vlmServer";
 
 // 處理模式類型
 export type ProcessingMode = "pipeline" | "vlm";
@@ -17,83 +24,54 @@ export type ProcessingMode = "pipeline" | "vlm";
 // 預設模式（必須是 pipeline）
 export const DEFAULT_PROCESSING_MODE: ProcessingMode = "pipeline";
 
-// 設定名稱常數
-const SETTING_KEY = "processing_mode";
+// VLM 狀態追蹤
+let vlmFailureCount = 0;
+const MAX_VLM_FAILURES = 3;
+let isVlmForcedFallback = false;
 
 /**
- * 確保 settings 表存在
+ * 從環境變數取得設定的處理模式
+ * @returns 設定的處理模式（尚未驗證可用性）
  */
-function ensureSettingsTable(): void {
-  db.query(
-    `
-    CREATE TABLE IF NOT EXISTS settings (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      key TEXT NOT NULL,
-      value TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL,
-      UNIQUE(user_id, key)
-    )
-  `,
-  ).run();
-}
-
-/**
- * 取得使用者的處理模式設定
- * @param userId - 使用者 ID
- * @returns 處理模式（預設為 pipeline）
- */
-export function getUserProcessingMode(userId: number): ProcessingMode {
-  ensureSettingsTable();
-
-  const result = db
-    .query("SELECT value FROM settings WHERE user_id = ? AND key = ?")
-    .get(userId, SETTING_KEY) as { value: string } | null;
-
-  if (result?.value === "vlm" || result?.value === "pipeline") {
-    return result.value;
+export function getConfiguredProcessingMode(): ProcessingMode {
+  // 優先檢查 MINERU_MODE
+  const mineruMode = process.env.MINERU_MODE?.toLowerCase();
+  if (mineruMode === "vlm") {
+    return "vlm";
+  }
+  if (mineruMode === "pipeline" || mineruMode === "pip") {
+    return "pipeline";
   }
 
+  // 相容舊的 MINERU_BACKEND 設定
+  const backend = process.env.MINERU_BACKEND?.toLowerCase();
+  if (backend?.includes("vlm")) {
+    return "vlm";
+  }
+
+  // 預設使用 pipeline
   return DEFAULT_PROCESSING_MODE;
 }
 
 /**
- * 設定使用者的處理模式
- * @param userId - 使用者 ID
- * @param mode - 處理模式
- * @returns 是否有實際變更
+ * 取得使用者的處理模式設定
+ * @deprecated 處理模式現在由環境變數控制，userId 參數已忽略
+ * @param __userId - 使用者 ID（已忽略）
+ * @returns 處理模式（預設為 pipeline）
  */
-export function setUserProcessingMode(userId: number, mode: ProcessingMode): boolean {
-  ensureSettingsTable();
+export function getUserProcessingMode(_userId: number): ProcessingMode {
+  return getConfiguredProcessingMode();
+}
 
-  // 先取得目前的值，只在值變化時才更新
-  const currentMode = getUserProcessingMode(userId);
-  if (currentMode === mode) {
-    // 值沒有變化，不需要更新
-    return false;
-  }
-
-  const now = new Date().toISOString();
-  const existing = db
-    .query("SELECT id FROM settings WHERE user_id = ? AND key = ?")
-    .get(userId, SETTING_KEY);
-
-  if (existing) {
-    db.query("UPDATE settings SET value = ?, updated_at = ? WHERE user_id = ? AND key = ?").run(
-      mode,
-      now,
-      userId,
-      SETTING_KEY,
-    );
-  } else {
-    db.query(
-      "INSERT INTO settings (user_id, key, value, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-    ).run(userId, SETTING_KEY, mode, now, now);
-  }
-
-  console.log(`[CONFIG] User ${userId} processing mode set to: ${mode}`);
-  return true;
+/**
+ * 設定使用者的處理模式（已停用）
+ * @deprecated 處理模式現在由環境變數控制，此函數不再有效
+ */
+export function setUserProcessingMode(_userId: number, _mode: ProcessingMode): boolean {
+  console.warn(
+    "[CONFIG] setUserProcessingMode is deprecated. Use MINERU_MODE environment variable.",
+  );
+  return false;
 }
 
 /**
@@ -110,9 +88,20 @@ export async function checkVlmAvailability(): Promise<{
     | "not_installed"
     | "model_missing"
     | "fallback_active"
-    | "on_demand_available";
+    | "on_demand_available"
+    | "forced_fallback";
   message: string;
 }> {
+  // 檢查是否被程式強制回退
+  if (isVlmForcedFallback) {
+    return {
+      available: false,
+      fallback: true,
+      reason: "forced_fallback",
+      message: "VLM forced fallback due to repeated failures",
+    };
+  }
+
   // 檢查是否已經啟用了回退模式（由 entrypoint.sh 設定）
   if (process.env.VLM_FALLBACK === "true") {
     return {
@@ -163,6 +152,8 @@ export async function checkVlmAvailability(): Promise<{
     });
 
     if (response.ok) {
+      // 重置失敗計數
+      vlmFailureCount = 0;
       return {
         available: true,
         fallback: false,
@@ -204,7 +195,8 @@ export async function ensureVlmAvailability(): Promise<{
   if (
     status.reason === "available" ||
     status.reason === "fallback_active" ||
-    status.reason === "not_installed"
+    status.reason === "not_installed" ||
+    status.reason === "forced_fallback"
   ) {
     return status;
   }
@@ -215,6 +207,7 @@ export async function ensureVlmAvailability(): Promise<{
     const started = await ensureVlmServer();
 
     if (started) {
+      vlmFailureCount = 0; // 重置失敗計數
       return {
         available: true,
         fallback: false,
@@ -223,11 +216,20 @@ export async function ensureVlmAvailability(): Promise<{
       };
     }
 
+    // 啟動失敗，記錄並可能觸發強制回退
+    vlmFailureCount++;
+    console.warn(`[VLM] 啟動失敗 (${vlmFailureCount}/${MAX_VLM_FAILURES})`);
+
+    if (vlmFailureCount >= MAX_VLM_FAILURES) {
+      isVlmForcedFallback = true;
+      console.error("[VLM] 連續多次啟動失敗，強制回退到 pipeline 模式");
+    }
+
     return {
       available: false,
-      fallback: false,
+      fallback: true,
       reason: "server_unreachable",
-      message: "Failed to start VLM server on-demand",
+      message: "Failed to start VLM server on-demand, falling back to pipeline",
     };
   }
 
@@ -235,25 +237,96 @@ export async function ensureVlmAvailability(): Promise<{
 }
 
 /**
+ * 報告 VLM 執行錯誤，可能觸發回退
+ * @param error - 錯誤訊息
+ */
+export function reportVlmError(error: string): void {
+  vlmFailureCount++;
+  console.error(`[VLM] 執行錯誤 (${vlmFailureCount}/${MAX_VLM_FAILURES}): ${error}`);
+
+  if (vlmFailureCount >= MAX_VLM_FAILURES) {
+    isVlmForcedFallback = true;
+    console.error("[VLM] 連續多次錯誤，強制回退到 pipeline 模式");
+
+    // 嘗試停止 VLM server
+    stopVlmServer().catch((e) => {
+      console.warn("[VLM] 無法停止 VLM server:", e);
+    });
+  }
+}
+
+/**
+ * 重置 VLM 回退狀態（用於手動恢復）
+ */
+export function resetVlmFallback(): void {
+  vlmFailureCount = 0;
+  isVlmForcedFallback = false;
+  console.log("[VLM] 回退狀態已重置");
+}
+
+/**
  * 取得有效的處理模式（考慮 VLM 可用性）
- * 如果用戶選擇 VLM 但 VLM 不可用，會自動回退到 pipeline
+ * 如果設定為 VLM 但 VLM 不可用，會自動回退到 pipeline
+ *
+ * @param __userId - 使用者 ID（已忽略，現在使用環境變數）
  */
 export async function getEffectiveProcessingMode(
-  userId: number,
-): Promise<{ mode: ProcessingMode; isAutoFallback: boolean }> {
-  const userMode = getUserProcessingMode(userId);
+  _userId?: number,
+): Promise<{ mode: ProcessingMode; isAutoFallback: boolean; reason?: string }> {
+  const configuredMode = getConfiguredProcessingMode();
 
-  if (userMode === "pipeline") {
+  // 如果設定為 pipeline，直接使用
+  if (configuredMode === "pipeline") {
     return { mode: "pipeline", isAutoFallback: false };
   }
 
-  // 用戶選擇了 VLM，檢查可用性
+  // 設定為 VLM，檢查可用性
   const vlmStatus = await checkVlmAvailability();
 
   if (vlmStatus.available) {
     return { mode: "vlm", isAutoFallback: false };
   }
 
-  // VLM 不可用，自動回退
-  return { mode: "pipeline", isAutoFallback: true };
+  // VLM 不可用，自動回退到 pipeline
+  console.log(`[CONFIG] VLM 不可用 (${vlmStatus.reason}), 自動回退到 pipeline 模式`);
+  return {
+    mode: "pipeline",
+    isAutoFallback: true,
+    reason: vlmStatus.message,
+  };
+}
+
+/**
+ * 執行處理任務，自動處理 VLM 回退
+ *
+ * @param task - 要執行的任務
+ * @param fallbackTask - VLM 失敗時的回退任務
+ * @returns 任務結果
+ */
+export async function executeWithFallback<T>(
+  task: () => Promise<T>,
+  fallbackTask: () => Promise<T>,
+): Promise<{ result: T; usedFallback: boolean }> {
+  const effectiveMode = await getEffectiveProcessingMode();
+
+  // 如果已經是 pipeline 或自動回退，直接使用 fallback
+  if (effectiveMode.mode === "pipeline") {
+    const result = await fallbackTask();
+    return { result, usedFallback: effectiveMode.isAutoFallback };
+  }
+
+  // 嘗試使用 VLM
+  try {
+    const result = await task();
+    return { result, usedFallback: false };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[VLM] 任務執行失敗: ${errorMessage}`);
+    reportVlmError(errorMessage);
+
+    // 回退到 pipeline
+    console.log("[VLM] 自動回退到 pipeline 模式執行任務");
+    const result = await fallbackTask();
+    return { result, usedFallback: true };
+  }
 }

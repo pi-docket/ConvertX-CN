@@ -3,11 +3,7 @@ import { mkdirSync, existsSync, readdirSync, unlinkSync, rmdirSync } from "node:
 import { join, basename, dirname } from "node:path";
 import { ExecFileFn } from "./types";
 import { getArchiveFileName } from "../transfer";
-import {
-  getEffectiveProcessingMode,
-  setUserProcessingMode,
-  type ProcessingMode,
-} from "../helpers/processingMode";
+import { getEffectiveProcessingMode, type ProcessingMode } from "../helpers/processingMode";
 import { ensureVlmServer, getVlmUrl, isVlmConfigured, markVlmUsed } from "../helpers/vlmServer";
 
 export const properties = {
@@ -316,10 +312,10 @@ export async function convert(
     }
   }
 
-  // 如果使用了回退，更新使用者設定（這樣下次就會直接使用 pipeline）
-  if (usedFallback && userId !== undefined) {
-    console.log(`[MinerU] 自動將使用者 ${userId} 的處理模式切換為 Pipeline（因 VLM 不可用）`);
-    setUserProcessingMode(userId, "pipeline");
+  // 如果使用了回退，記錄日誌
+  // 注意：處理模式現在由環境變數控制，不再更新使用者設定
+  if (usedFallback) {
+    console.log(`[MinerU] VLM 模式不可用，已自動回退到 Pipeline 模式完成此次任務`);
   }
 
   // 標記 VLM 正在使用中，防止閒置超時（長時間轉換時）

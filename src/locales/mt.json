@@ -27,8 +27,7 @@
     "login": "Idħol",
     "register": "Irreġistra",
     "language": "Lingwa",
-    "toggleTheme": "Ibdel it-tema",
-    "settings": "Settings"
+    "toggleTheme": "Ibdel it-tema"
   },
   "convert": {
     "title": "Ikkonverti",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Settings",
-    "otherLlmApiKey": "Ċavi API ta' LLM ieħor",
-    "updateButton": "Update",
-    "processingMode": "Modalità tal-Ipproċessar",
-    "mineruProcessingMode": "Modalità tal-Ipproċessar MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "L-ebda tibdiliet biex issalva",
-    "translationService": "Servizz ta' Traduzzjoni (BabelDOC)",
-    "translationServiceDesc": "Agħżel il-magna tat-traduzzjoni għat-traduzzjoni PDF b'BabelDOC",
-    "localTranslation": "Traduzzjoni lokali integrata",
-    "localTranslationDesc": "Tuża llama-server lokali, m'hemmx bżonn ta' ċavi API, taħdem offline",
-    "openaiTranslationDesc": "Tuża OpenAI API, teħtieġ iċ-ċavi API ta' fuq",
-    "deepseekTranslationDesc": "Tuża DeepSeek API, teħtieġ iċ-ċavi API ta' fuq",
-    "customApiTranslation": "API personalizzat",
-    "customApiTranslationDesc": "Tuża endpoint API kompatibbli ma' OpenAI personalizzat"
   },
   "inference": {
     "smartRecommend": "Rakkomandazzjoni Intelliġenti",

@@ -27,8 +27,7 @@
     "login": "Saioa hasi",
     "register": "Erregistratu",
     "language": "Hizkuntza",
-    "toggleTheme": "Aldatu gaia",
-    "settings": "Ezarpenak"
+    "toggleTheme": "Aldatu gaia"
   },
   "convert": {
     "title": "Bihurtu",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Ezarpenak",
-    "otherLlmApiKey": "Beste LLM API gakoa",
-    "updateButton": "Update",
-    "processingMode": "Prozesatzeko modua",
-    "mineruProcessingMode": "MinerU prozesatzeko modua",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Ez dago gordetako aldaketarik",
-    "translationService": "Itzulpen zerbitzua (BabelDOC)",
-    "translationServiceDesc": "Aukeratu itzulpen motorra PDF itzulpenerako BabelDOC-ekin",
-    "localTranslation": "Barneko itzulpen lokala",
-    "localTranslationDesc": "Llama-server lokala erabiltzen du, ez du API gakorik behar, lineaz kanpo funtzionatzen du",
-    "openaiTranslationDesc": "OpenAI API erabiltzen du, goiko API gakoa behar du",
-    "deepseekTranslationDesc": "DeepSeek API erabiltzen du, goiko API gakoa behar du",
-    "customApiTranslation": "API pertsonalizatua",
-    "customApiTranslationDesc": "OpenAI-rekin bateragarria den API amaiera-puntu pertsonalizatua erabiltzen du"
   },
   "inference": {
     "smartRecommend": "Gomendio adimentsua",

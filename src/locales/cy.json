@@ -27,8 +27,7 @@
     "login": "Mewngofnodi",
     "register": "Cofrestru",
     "language": "Iaith",
-    "toggleTheme": "Newid thema",
-    "settings": "Gosodiadau"
+    "toggleTheme": "Newid thema"
   },
   "convert": {
     "title": "Trosi",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Gosodiadau",
-    "otherLlmApiKey": "Allwedd API LLM arall",
-    "updateButton": "Update",
-    "processingMode": "Modd Prosesu",
-    "mineruProcessingMode": "Modd Prosesu MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Dim newidiadau i'w cadw",
-    "translationService": "Gwasanaeth Cyfieithu (BabelDOC)",
-    "translationServiceDesc": "Dewiswch yr injan gyfieithu ar gyfer cyfieithu PDF gyda BabelDOC",
-    "localTranslation": "Cyfieithu lleol adeiledig",
-    "localTranslationDesc": "Yn defnyddio llama-server lleol, dim angen allwedd API, yn gweithio all-lein",
-    "openaiTranslationDesc": "Yn defnyddio OpenAI API, angen allwedd API uchod",
-    "deepseekTranslationDesc": "Yn defnyddio DeepSeek API, angen allwedd API uchod",
-    "customApiTranslation": "API personol",
-    "customApiTranslationDesc": "Yn defnyddio pwynt terfyn API cydnaws ag OpenAI personol"
   },
   "inference": {
     "smartRecommend": "Argymhelliad Clyfar",

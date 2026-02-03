@@ -27,8 +27,7 @@
     "login": "Prisijungti",
     "register": "Registruotis",
     "language": "Kalba",
-    "toggleTheme": "Pakeisti temą",
-    "settings": "Nustatymai"
+    "toggleTheme": "Pakeisti temą"
   },
   "convert": {
     "title": "Konvertuoti",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Nustatymai",
-    "otherLlmApiKey": "Kitas LLM API raktas",
-    "updateButton": "Update",
-    "processingMode": "Apdorojimo režimas",
-    "mineruProcessingMode": "MinerU apdorojimo režimas",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Nėra pakeitimų, kuriuos reikėtų išsaugoti",
-    "translationService": "Vertimo paslauga (BabelDOC)",
-    "translationServiceDesc": "Pasirinkite vertimo variklį PDF vertimui su BabelDOC",
-    "localTranslation": "Įintegruotas vietinis vertimas",
-    "localTranslationDesc": "Naudoja vielinį llama-server, nereikia API rakto, veikia neprisijungus",
-    "openaiTranslationDesc": "Naudoja OpenAI API, reikia aukščiau nurodyto API rakto",
-    "deepseekTranslationDesc": "Naudoja DeepSeek API, reikia aukščiau nurodyto API rakto",
-    "customApiTranslation": "Pasirinktinis API",
-    "customApiTranslationDesc": "Naudoja pasirintinį su OpenAI suderinamą API galinį tašką"
   },
   "inference": {
     "smartRecommend": "Išmanioji rekomendacija",

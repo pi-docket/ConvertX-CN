@@ -59,6 +59,18 @@ JWT_SECRET=你的隨機密鑰請更換成自己的字串
 
 # 時區
 TZ=Asia/Taipei
+
+# ========== 進階設定（選填）==========
+
+# MinerU 處理模式：pipeline（預設）或 vlm
+# MINERU_MODE=pipeline
+
+# BabelDOC 翻譯引擎：local（預設）、openai、deepseek、custom
+# BABELDOC_ENGINE=local
+
+# API Keys（如需使用 OpenAI/DeepSeek 翻譯）
+# OPENAI_API_KEY=sk-...
+# DEEPSEEK_API_KEY=sk-...
 EOF
 
 # 產生安全的 JWT_SECRET（擇一執行）

@@ -27,8 +27,7 @@
     "login": "Logg inn",
     "register": "Registrer",
     "language": "Språk",
-    "toggleTheme": "Bytt tema",
-    "settings": "Innstillinger"
+    "toggleTheme": "Bytt tema"
   },
   "convert": {
     "title": "Konverter",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Innstillinger",
-    "otherLlmApiKey": "Annen LLM API-nøkkel",
-    "updateButton": "Update",
-    "processingMode": "Behandlingsmodus",
-    "mineruProcessingMode": "MinerU-behandlingsmodus",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Ingen endringer å lagre",
-    "translationService": "Oversettelsestjeneste (BabelDOC)",
-    "translationServiceDesc": "Velg oversettelsesmotor for PDF-oversettelse med BabelDOC",
-    "localTranslation": "Innebygd lokal oversettelse",
-    "localTranslationDesc": "Bruker lokal llama-server, ingen API-nøkkel kreves, fungerer offline",
-    "openaiTranslationDesc": "Bruker OpenAI API, krever API-nøkkel ovenfor",
-    "deepseekTranslationDesc": "Bruker DeepSeek API, krever API-nøkkel ovenfor",
-    "customApiTranslation": "Tilpasset API",
-    "customApiTranslationDesc": "Bruker tilpasset OpenAI-kompatibelt API-endepunkt"
   },
   "inference": {
     "smartRecommend": "Smart anbefaling",

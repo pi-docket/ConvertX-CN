@@ -104,28 +104,6 @@
   "file": {
     "size": "{size} kB"
   },
-  "settings": {
-    "title": "ቅንብሮች",
-    "otherLlmApiKey": "ሌላ LLM API ቁልፍ",
-    "updateButton": "Update",
-    "processingMode": "የማዘጋጃ ሁኔታ",
-    "mineruProcessingMode": "MinerU የማዘጋጃ ሁኔታ",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "ምንም ለውጦች የሉም ለማስቀመጥ",
-    "translationService": "የትርጓም አገልግሎት (BabelDOC)",
-    "translationServiceDesc": "ለPDF ትርጓም ከBabelDOC ጋር የትርጓም ሚየር ይምረጡ",
-    "localTranslation": "የተገናባ የሀለበት ትርጓም",
-    "localTranslationDesc": "የሀለበት llama-server ይጠቀማል፣ የAPI ቁልፍ አያስፈልግም፣ ከመስመር ውጭ ይሰራል",
-    "openaiTranslationDesc": "የOpenAI API ይጠቀማል፣ ከላይ የተጠቀሰውን የAPI ቁልፍ ይፈልጋል",
-    "deepseekTranslationDesc": "የDeepSeek API ይጠቀማል፣ ከላይ የተጠቀሰውን የAPI ቁልፍ ይፈልጋል",
-    "customApiTranslation": "በጭፊ የተቀረበ API",
-    "customApiTranslationDesc": "ከOpenAI ጋር ተስማሚ በጭፊ የተቀረበ የAPI መዓፋየዊ ነጥብ ይጠቀማል"
-  },
   "inference": {
     "smartRecommend": "ብልጥ ምክር",
     "yourFrequentFormat": "የእርስዎ ተደጋጋሚ ቅርጸት"

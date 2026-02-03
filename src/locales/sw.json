@@ -27,8 +27,7 @@
     "login": "Ingia",
     "register": "Jisajili",
     "language": "Lugha",
-    "toggleTheme": "Badilisha mandhari",
-    "settings": "Mipangilio"
+    "toggleTheme": "Badilisha mandhari"
   },
   "convert": {
     "title": "Badilisha",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Mipangilio",
-    "otherLlmApiKey": "Ufunguo mwingine wa API ya LLM",
-    "updateButton": "Update",
-    "processingMode": "Hali ya Usindikaji",
-    "mineruProcessingMode": "Hali ya Usindikaji wa MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Hakuna mabadiliko ya kuhifadhi",
-    "translationService": "Huduma ya Tafsiri (BabelDOC)",
-    "translationServiceDesc": "Chagua injini ya tafsiri kwa tafsiri ya PDF na BabelDOC",
-    "localTranslation": "Tafsiri ya ndani iliyojengwa",
-    "localTranslationDesc": "Inatumia llama-server ya ndani, haihitaji ufunguo wa API, inafanya kazi nje ya mtandao",
-    "openaiTranslationDesc": "Inatumia OpenAI API, inahitaji ufunguo wa API hapo juu",
-    "deepseekTranslationDesc": "Inatumia DeepSeek API, inahitaji ufunguo wa API hapo juu",
-    "customApiTranslation": "API maalum",
-    "customApiTranslationDesc": "Inatumia mwisho wa API unaoweza kuendana na OpenAI maalum"
   },
   "inference": {
     "smartRecommend": "Pendekezo la Akili",

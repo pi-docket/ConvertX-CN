@@ -27,8 +27,7 @@
     "login": "Prijava",
     "register": "Registracija",
     "language": "Jezik",
-    "toggleTheme": "Preklopi temo",
-    "settings": "Nastavitve"
+    "toggleTheme": "Preklopi temo"
   },
   "convert": {
     "title": "Pretvori",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Nastavitve",
-    "otherLlmApiKey": "Drug ključ API LLM",
-    "updateButton": "Update",
-    "processingMode": "Način obdelave",
-    "mineruProcessingMode": "Način obdelave MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Ni sprememb za shranjevanje",
-    "translationService": "Prevajalska storitev (BabelDOC)",
-    "translationServiceDesc": "Izberite prevajalski motor za prevajanje PDF z BabelDOC",
-    "localTranslation": "Vgrajen lokalni prevod",
-    "localTranslationDesc": "Uporablja lokalni llama-strežnik, ne potrebuje API ključa, deluje brez povezave",
-    "openaiTranslationDesc": "Uporablja OpenAI API, potreben zgornji API ključ",
-    "deepseekTranslationDesc": "Uporablja DeepSeek API, potreben zgornji API ključ",
-    "customApiTranslation": "API po meri",
-    "customApiTranslationDesc": "Uporablja končno točko API po meri, združljivo z OpenAI"
   },
   "inference": {
     "smartRecommend": "Pametno priporočilo",

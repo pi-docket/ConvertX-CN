@@ -27,8 +27,7 @@
     "login": "පිවිසෙන්න",
     "register": "ලියාපදිංචි වන්න",
     "language": "භාෂාව",
-    "toggleTheme": "තේමාව මාරු කරන්න",
-    "settings": "සැකසුම්"
+    "toggleTheme": "තේමාව මාරු කරන්න"
   },
   "convert": {
     "title": "පරිවර්තනය",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "සැකසුම්",
-    "otherLlmApiKey": "වෙනත් LLM API යතුර",
-    "updateButton": "Update",
-    "processingMode": "සැකසුම් ප්‍රකාරය",
-    "mineruProcessingMode": "MinerU සැකසුම් ප්‍රකාරය",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "සුරැකීමට වෙනස්කම් නැත",
-    "translationService": "පරිවර්තන සේවාව (BabelDOC)",
-    "translationServiceDesc": "BabelDOC සමඟ PDF පරිවර්තනය සඳහා පරිවර්තන යන්ත්‍රය තෝරන්න",
-    "localTranslation": "අන්තර්නිර්මිත ස්ථානීය පරිවර්තනය",
-    "localTranslationDesc": "ස්ථානීය llama-server භාවිතා කරයි, API යතුරක් අවශ්‍ය නැත, ඔෆ්ලාඊන් ක්‍රියාත්මක වේ",
-    "openaiTranslationDesc": "OpenAI API භාවිතා කරයි, ඉහත API යතුර අවශ්‍යයි",
-    "deepseekTranslationDesc": "DeepSeek API භාවිතා කරයි, ඉහත API යතුර අවශ්‍යයි",
-    "customApiTranslation": "අනුකූල API",
-    "customApiTranslationDesc": "අනුකූල OpenAI-සම්පත API අන්ත බින්දුව භාවිතා කරයි"
   },
   "inference": {
     "smartRecommend": "ස්මාර්ට් නිර්දේශය",

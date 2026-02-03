@@ -27,8 +27,7 @@
     "login": "Innskrá",
     "register": "Nýskrá",
     "language": "Tungumál",
-    "toggleTheme": "Skipta um þma",
-    "settings": "Stillingar"
+    "toggleTheme": "Skipta um þma"
   },
   "convert": {
     "title": "Umbreyta",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Stillingar",
-    "otherLlmApiKey": "Annar LLM API-lykil",
-    "updateButton": "Update",
-    "processingMode": "Vinnslustilling",
-    "mineruProcessingMode": "MinerU vinnslustilling",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Engar breytingar til að vista",
-    "translationService": "Þýðingarþjonusta (BabelDOC)",
-    "translationServiceDesc": "Veldu þýðingavél fyrir PDF þýðingu með BabelDOC",
-    "localTranslation": "Innbyggt staðbundið þýðing",
-    "localTranslationDesc": "Notar staðbundinn llama-server, þarf ekki API lykil, virkar ónettengt",
-    "openaiTranslationDesc": "Notar OpenAI API, þarf API lykil hér að ofan",
-    "deepseekTranslationDesc": "Notar DeepSeek API, þarf API lykil hér að ofan",
-    "customApiTranslation": "Sérsniðið API",
-    "customApiTranslationDesc": "Notar sérsniðinn OpenAI-samræmdan API endapunkt"
   },
   "inference": {
     "smartRecommend": "Snjöll tillaga",

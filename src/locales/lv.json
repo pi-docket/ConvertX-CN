@@ -27,8 +27,7 @@
     "login": "Ierakstīties",
     "register": "Reģistrēties",
     "language": "Valoda",
-    "toggleTheme": "Mainīt tēmu",
-    "settings": "Iestatījumi"
+    "toggleTheme": "Mainīt tēmu"
   },
   "convert": {
     "title": "Konvertēt",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Iestatījumi",
-    "otherLlmApiKey": "Cita LLM API atslēga",
-    "updateButton": "Update",
-    "processingMode": "Apstrādes režīms",
-    "mineruProcessingMode": "MinerU apstrādes režīms",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Nav izmaiņu, ko saglabāt",
-    "translationService": "Tulkošanas pakalpojums (BabelDOC)",
-    "translationServiceDesc": "Izvēlieties tulkošanas dzīnēju PDF tulkošanai ar BabelDOC",
-    "localTranslation": "Iebūvēts lokālais tulkojums",
-    "localTranslationDesc": "Izmanto lokālo llama-server, nav nepieciešama API atslēga, darbojas bezsaistē",
-    "openaiTranslationDesc": "Izmanto OpenAI API, nepieciešama augšējā API atslēga",
-    "deepseekTranslationDesc": "Izmanto DeepSeek API, nepieciešama augšējā API atslēga",
-    "customApiTranslation": "Pielāgots API",
-    "customApiTranslationDesc": "Izmanto pielāgotu ar OpenAI saderīgu API galamērķi"
   },
   "inference": {
     "smartRecommend": "Viedais ieteikums",

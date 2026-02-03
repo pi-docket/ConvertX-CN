@@ -27,8 +27,7 @@
     "login": "Anmelden",
     "register": "Registrieren",
     "language": "Sprache",
-    "toggleTheme": "Thema wechseln",
-    "settings": "Einstellungen"
+    "toggleTheme": "Thema wechseln"
   },
   "convert": {
     "title": "Konvertieren",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Einstellungen",
-    "otherLlmApiKey": "Anderer LLM API-Schlüssel",
-    "updateButton": "Aktualisieren",
-    "processingMode": "Verarbeitungsmodus",
-    "mineruProcessingMode": "MinerU-Verarbeitungsmodus",
-    "apiKeysSection": "API-Schlüssel",
-    "vlmRequirement": "Erfordert lokalen llama-server",
-    "vlmFallbackActive": "VLM nicht verfügbar, Pipeline-Modus aktiv",
-    "updateSuccess": "Einstellungen gespeichert",
-    "updateError": "Speichern fehlgeschlagen",
-    "updating": "Speichern...",
-    "noChanges": "Keine Änderungen zu speichern",
-    "translationService": "Übersetzungsdienst (BabelDOC)",
-    "translationServiceDesc": "Wählen Sie die Übersetzungs-Engine für PDF-Übersetzung mit BabelDOC",
-    "localTranslation": "Integrierte lokale Übersetzung",
-    "localTranslationDesc": "Verwendet lokalen llama-server, kein API-Schlüssel erforderlich, funktioniert offline",
-    "openaiTranslationDesc": "Verwendet OpenAI API, erfordert obigen API-Schlüssel",
-    "deepseekTranslationDesc": "Verwendet DeepSeek API, erfordert obigen API-Schlüssel",
-    "customApiTranslation": "Benutzerdefinierte API",
-    "customApiTranslationDesc": "Verwendet benutzerdefinierten OpenAI-kompatiblen API-Endpunkt"
   },
   "inference": {
     "smartRecommend": "Intelligente Empfehlung",

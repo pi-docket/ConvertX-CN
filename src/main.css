@@ -22,30 +22,101 @@
 }
 
 @utility article {
-  @apply px-2 sm:px-4 py-4 mb-4 bg-neutral-800/40 w-full mx-auto max-w-4xl rounded-sm;
+  @apply px-2 sm:px-4 py-4 mb-4 bg-neutral-800/40 w-full mx-auto max-w-4xl rounded-xl;
 }
 
 @utility btn-primary {
-  @apply bg-accent-500 text-contrast rounded-sm p-2 sm:p-4 hover:bg-accent-400 cursor-pointer transition-colors;
+  @apply bg-accent-500 text-contrast rounded-xl p-2 sm:p-4 cursor-pointer transition-all duration-150;
+
+  &:hover {
+    @apply opacity-90;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 @utility btn-secondary {
-  @apply bg-neutral-400 text-contrast rounded-sm p-2 sm:p-4 hover:bg-neutral-300 cursor-pointer transition-colors;
+  @apply bg-neutral-400 text-contrast rounded-xl p-2 sm:p-4 cursor-pointer transition-all duration-150;
+
+  &:hover {
+    @apply opacity-90;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
-/* Settings page status banner styles */
+/* ============================================================================
+   Apple HIG Glassmorphism Utility Classes
+   ============================================================================ */
+
+/* Glass panel base */
+@utility glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow), var(--glass-inset-highlight);
+}
+
+/* Glass button */
+@utility glass-btn {
+  background: var(--glass-bg-secondary);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--glass-text);
+  transition: var(--glass-transition-fast);
+
+  &:hover {
+    background: var(--glass-bg-hover);
+  }
+
+  &:active {
+    background: var(--glass-bg-active);
+    transform: scale(0.98);
+  }
+}
+
+/* Glass input */
+@utility glass-input {
+  background: var(--glass-bg-secondary);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--glass-text);
+  transition: var(--glass-transition-fast);
+
+  &:focus {
+    border-color: var(--accent-500);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--accent-500), 0.15);
+  }
+}
+
+/* Status styles for feedback */
 @utility status-success {
-  @apply bg-green-700 text-white;
+  @apply text-white;
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 @utility status-error {
-  @apply bg-red-700 text-white;
+  @apply text-white;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 @utility status-info {
-  @apply bg-neutral-700 text-neutral-200;
+  background: var(--glass-bg-secondary);
+  border: 1px solid var(--glass-border);
+  color: var(--glass-text-secondary);
 }
 
 @utility status-loading {
-  @apply bg-neutral-700 text-neutral-300;
+  background: var(--glass-bg-secondary);
+  border: 1px solid var(--glass-border);
+  color: var(--glass-text-muted);
 }

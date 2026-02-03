@@ -48,6 +48,15 @@ export default defineConfig(
       // 關閉未註冊/未知 class 的檢查，因為專案使用了很多自訂 class
       "better-tailwindcss/no-unregistered-classes": "off",
       "better-tailwindcss/no-unknown-classes": "off",
+      // 允許以 _ 開頭的未使用參數（用於保留相容性的 API 介面）
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
   {

@@ -27,8 +27,7 @@
     "login": "লগইন",
     "register": "নিবন্ধন",
     "language": "ভাষা",
-    "toggleTheme": "থিম পরিবর্তন করুন",
-    "settings": "সেটিংস"
+    "toggleTheme": "থিম পরিবর্তন করুন"
   },
   "convert": {
     "title": "রূপান্তর করুন",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "সেটিংস",
-    "otherLlmApiKey": "অন্য LLM API কী",
-    "updateButton": "Update",
-    "processingMode": "প্রসেসিং মোড",
-    "mineruProcessingMode": "MinerU প্রসেসিং মোড",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "সংরক্ষণ করার কোনো পরিবর্তন নেই",
-    "translationService": "অনুবাদ পরিষেবা (BabelDOC)",
-    "translationServiceDesc": "BabelDOC দিয়ে PDF অনুবাদের জন্য অনুবাদ ইঞ্জিন নির্বাচন করুন",
-    "localTranslation": "বিল্ট-ইন স্থানীয় অনুবাদ",
-    "localTranslationDesc": "স্থানীয় llama-server ব্যবহার করে, API কী প্রয়োজন নেই, অফলাইনে কাজ করে",
-    "openaiTranslationDesc": "OpenAI API ব্যবহার করে, উপরের API কী প্রয়োজন",
-    "deepseekTranslationDesc": "DeepSeek API ব্যবহার করে, উপরের API কী প্রয়োজন",
-    "customApiTranslation": "কাস্টম API",
-    "customApiTranslationDesc": "কাস্টম OpenAI-সঙ্গত API এন্ডপয়েন্ট ব্যবহার করে"
   },
   "inference": {
     "smartRecommend": "স্মার্ট সুপারিশ",

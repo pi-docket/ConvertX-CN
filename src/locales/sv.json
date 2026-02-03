@@ -27,8 +27,7 @@
     "login": "Logga in",
     "register": "Registrera",
     "language": "Språk",
-    "toggleTheme": "Byt tema",
-    "settings": "Inställningar"
+    "toggleTheme": "Byt tema"
   },
   "convert": {
     "title": "Konvertera",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Inställningar",
-    "otherLlmApiKey": "Annan LLM API-nyckel",
-    "updateButton": "Update",
-    "processingMode": "Bearbetningsläge",
-    "mineruProcessingMode": "MinerU-bearbetningsläge",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Inga ändringar att spara",
-    "translationService": "Översättningstjänst (BabelDOC)",
-    "translationServiceDesc": "Välj översättningsmotor för PDF-översättning med BabelDOC",
-    "localTranslation": "Inbyggd lokal översättning",
-    "localTranslationDesc": "Använder lokal llama-server, ingen API-nyckel krävs, fungerar offline",
-    "openaiTranslationDesc": "Använder OpenAI API, kräver API-nyckel ovan",
-    "deepseekTranslationDesc": "Använder DeepSeek API, kräver API-nyckel ovan",
-    "customApiTranslation": "Anpassat API",
-    "customApiTranslationDesc": "Använder anpassad OpenAI-kompatibel API-slutpunkt"
   },
   "inference": {
     "smartRecommend": "Smart rekommendation",

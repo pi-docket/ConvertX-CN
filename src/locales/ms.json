@@ -27,8 +27,7 @@
     "login": "Log masuk",
     "register": "Daftar",
     "language": "Bahasa",
-    "toggleTheme": "Tukar tema",
-    "settings": "Tetapan"
+    "toggleTheme": "Tukar tema"
   },
   "convert": {
     "title": "Tukar",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Tetapan",
-    "otherLlmApiKey": "Kunci API LLM Lain",
-    "updateButton": "Update",
-    "processingMode": "Mod Pemprosesan",
-    "mineruProcessingMode": "Mod Pemprosesan MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Tiada perubahan untuk disimpan",
-    "translationService": "Perkhidmatan Terjemahan (BabelDOC)",
-    "translationServiceDesc": "Pilih enjin terjemahan untuk terjemahan PDF dengan BabelDOC",
-    "localTranslation": "Terjemahan Tempatan Terbina Dalam",
-    "localTranslationDesc": "Menggunakan llama-server tempatan, tidak memerlukan kunci API, berfungsi luar talian",
-    "openaiTranslationDesc": "Menggunakan OpenAI API, memerlukan kunci API di atas",
-    "deepseekTranslationDesc": "Menggunakan DeepSeek API, memerlukan kunci API di atas",
-    "customApiTranslation": "API Tersuai",
-    "customApiTranslationDesc": "Menggunakan titik akhir API yang serasi dengan OpenAI tersuai"
   },
   "inference": {
     "smartRecommend": "Cadangan Pintar",

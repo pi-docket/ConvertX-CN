@@ -28,3 +28,48 @@ export const UNAUTHENTICATED_USER_SHARING =
   process.env.UNAUTHENTICATED_USER_SHARING?.toLowerCase() === "true" || false;
 
 export const TIMEZONE = process.env.TZ || undefined;
+
+// ========== 新增：處理模式與翻譯服務設定 ==========
+
+/**
+ * MinerU 處理模式
+ * - pipeline: 穩定的 OCR 處理模式（預設）
+ * - vlm: 視覺語言模型處理模式（進階）
+ */
+export const MINERU_MODE = ((): "pipeline" | "vlm" => {
+  const mode = process.env.MINERU_MODE?.toLowerCase();
+  if (mode === "vlm") return "vlm";
+  // 相容舊的 MINERU_BACKEND 設定
+  const backend = process.env.MINERU_BACKEND?.toLowerCase();
+  if (backend?.includes("vlm")) return "vlm";
+  return "pipeline";
+})();
+
+/**
+ * BabelDOC 翻譯引擎
+ * - local: 本地 llama-server（預設）
+ * - openai: OpenAI API
+ * - deepseek: DeepSeek API
+ * - custom: 自訂 API
+ */
+export const BABELDOC_ENGINE = ((): "local" | "openai" | "deepseek" | "custom" => {
+  const engine = process.env.BABELDOC_ENGINE?.toLowerCase();
+  switch (engine) {
+    case "openai":
+      return "openai";
+    case "deepseek":
+      return "deepseek";
+    case "custom":
+      return "custom";
+    default:
+      return "local";
+  }
+})();
+
+/**
+ * API Keys（從環境變數讀取）
+ */
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY ?? "";
+export const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY ?? "";
+export const OTHER_LLM_API_KEY = process.env.OTHER_LLM_API_KEY ?? "";
+export const CUSTOM_LLM_BASE_URL = process.env.CUSTOM_LLM_BASE_URL ?? "";

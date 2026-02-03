@@ -164,18 +164,25 @@ export const root = new Elysia()
                 class="relative mx-auto mb-[35vh] w-full max-w-4xl"
               >
                 <input type="hidden" name="file_names" id="file_names" />
-                {/* 搜尋欄區塊 - 不使用透明度以避免創建新的 stacking context */}
-                <article class="article w-full !bg-neutral-800">
+                {/* 搜尋欄區塊 */}
+                <article class="article w-full">
                   <input
                     type="search"
                     name="convert_to_search"
                     placeholder={t("convert", "searchConversions")}
                     autocomplete="off"
-                    class="w-full rounded-sm bg-neutral-700 p-4"
+                    class={`
+                      w-full rounded-xl bg-neutral-900/60 p-4 transition-all duration-150
+                      focus:ring-2 focus:ring-[var(--accent-500)]/30 focus:outline-none
+                    `}
+                    style={{
+                      border: "1.5px solid var(--glass-border)",
+                      color: "var(--glass-text)",
+                    }}
                   />
                 </article>
 
-                {/* 格式選單 - 獨立於 article 外，避免 stacking context 問題 */}
+                {/* 格式選單 - Apple HIG Glass 風格 */}
                 <div
                   class={`
                     select_container relative z-50 px-2
@@ -184,31 +191,43 @@ export const root = new Elysia()
                 >
                   <article
                     class={`
-                      convert_to_popup absolute top-0 left-0 z-50 m-0 hidden h-[30vh] max-h-[50vh]
-                      w-full flex-col overflow-x-hidden overflow-y-auto rounded-sm border
-                      border-neutral-700 bg-neutral-800 shadow-xl
+                      convert_to_popup theme-glass-panel top-full left-0 z-50 hidden h-[30vh]
+                      max-h-[50vh] w-full flex-col overflow-x-hidden overflow-y-auto p-2
                       sm:h-[30vh]
                     `}
                   >
                     {Object.entries(getAllTargets()).map(([converter, targets]) => (
                       <article
-                        class={`
-                          convert_to_group flex w-full flex-col border-b border-neutral-700 p-4
-                        `}
+                        class={`convert_to_group mb-2 flex w-full flex-col rounded-xl p-4`}
+                        style={{
+                          background: "transparent",
+                          borderBottom: "1px solid var(--glass-divider)",
+                        }}
                         data-converter={converter}
                       >
-                        <header class="mb-2 w-full text-xl font-bold" safe>
+                        <header
+                          class="mb-3 w-full text-lg font-semibold"
+                          style={{ color: "var(--glass-text)" }}
+                          safe
+                        >
                           {converter}
                         </header>
-                        <ul class={`convert_to_target flex flex-row flex-wrap gap-1`}>
+                        <ul class={`convert_to_target flex flex-row flex-wrap gap-2`}>
                           {targets.map((target) => (
                             <button
                               // https://stackoverflow.com/questions/121499/when-a-blur-event-occurs-how-can-i-find-out-which-element-focus-went-to#comment82388679_33325953
                               tabindex={0}
                               class={`
-                                target rounded bg-neutral-700 p-1 text-base
-                                hover:bg-neutral-600
+                                target rounded-lg px-3 py-1.5 text-sm font-medium transition-all
+                                duration-150
+                                hover:brightness-95
+                                active:brightness-90
                               `}
+                              style={{
+                                background: "rgba(0, 0, 0, 0.04)",
+                                border: "none",
+                                color: "inherit",
+                              }}
                               data-value={`${target},${converter}`}
                               data-target={target}
                               data-converter={converter}

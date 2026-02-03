@@ -27,8 +27,7 @@
     "login": "Пријава",
     "register": "Регистрација",
     "language": "Језик",
-    "toggleTheme": "Промени тему",
-    "settings": "Подешавања"
+    "toggleTheme": "Промени тему"
   },
   "convert": {
     "title": "Конвертуј",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Подешавања",
-    "otherLlmApiKey": "Други LLM API кључ",
-    "updateButton": "Update",
-    "processingMode": "Режим обраде",
-    "mineruProcessingMode": "MinerU режим обраде",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Нема промена за чување",
-    "translationService": "Услуга превођења (BabelDOC)",
-    "translationServiceDesc": "Изаберите мотор за превођење за PDF превод са BabelDOC",
-    "localTranslation": "Уграђени локални превод",
-    "localTranslationDesc": "Користи локални llama-server, не захтева API кључ, ради офлајн",
-    "openaiTranslationDesc": "Користи OpenAI API, захтева горњи API кључ",
-    "deepseekTranslationDesc": "Користи DeepSeek API, захтева горњи API кључ",
-    "customApiTranslation": "Прилагођени API",
-    "customApiTranslationDesc": "Користи прилагођену крајњу тачку API компатибилну са OpenAI"
   },
   "inference": {
     "smartRecommend": "Паметна препорака",

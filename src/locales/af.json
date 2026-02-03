@@ -27,8 +27,7 @@
     "login": "Teken in",
     "register": "Registreer",
     "language": "Taal",
-    "toggleTheme": "Wissel tema",
-    "settings": "Instellings"
+    "toggleTheme": "Wissel tema"
   },
   "convert": {
     "title": "Omskakel",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Instellings",
-    "otherLlmApiKey": "Ander LLM API-sleutel",
-    "updateButton": "Update",
-    "processingMode": "Verwerkingsmodus",
-    "mineruProcessingMode": "MinerU-verwerkingsmodus",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Geen veranderinge om te stoor nie",
-    "translationService": "Vertaaldiens (BabelDOC)",
-    "translationServiceDesc": "Kies die vertaalenjin vir PDF-vertaling met BabelDOC",
-    "localTranslation": "Ingeboude plaaslike vertaling",
-    "localTranslationDesc": "Gebruik plaaslike llama-bediener, geen API-sleutel nodig nie, werk vanlyn",
-    "openaiTranslationDesc": "Gebruik OpenAI API, vereis bogenoemde API-sleutel",
-    "deepseekTranslationDesc": "Gebruik DeepSeek API, vereis bogenoemde API-sleutel",
-    "customApiTranslation": "Pasgemaakte API",
-    "customApiTranslationDesc": "Gebruik pasgemaakte OpenAI-versoenbare API-eindpunt"
   },
   "inference": {
     "smartRecommend": "Slim Aanbeveling",

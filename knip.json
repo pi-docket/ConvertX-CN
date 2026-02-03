@@ -12,7 +12,10 @@
     "src/helpers/translation/**",
     "src/helpers/llamaServerCheck.ts",
     "src/helpers/vlmServer.ts",
-    "src/helpers/processingMode.ts"
+    "src/helpers/processingMode.ts",
+    "src/helpers/apiKeys.ts",
+    "src/helpers/env.ts",
+    "src/db/types.ts"
   ],
   "ignoreDependencies": [],
   "ignoreExportsUsedInFile": true

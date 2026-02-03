@@ -27,8 +27,7 @@
     "login": "Hyni",
     "register": "Regjistrohu",
     "language": "Gjuha",
-    "toggleTheme": "Ndrysho temën",
-    "settings": "Cilësimet"
+    "toggleTheme": "Ndrysho temën"
   },
   "convert": {
     "title": "Konverto",
@@ -104,28 +103,6 @@
   },
   "file": {
     "size": "{size} kB"
-  },
-  "settings": {
-    "title": "Cilësimet",
-    "otherLlmApiKey": "Çelës tjetër API LLM",
-    "updateButton": "Update",
-    "processingMode": "Mënyra e përpunimit",
-    "mineruProcessingMode": "Mënyra e përpunimit MinerU",
-    "apiKeysSection": "API Keys",
-    "vlmRequirement": "Requires local llama-server",
-    "vlmFallbackActive": "VLM unavailable, using Pipeline mode",
-    "updateSuccess": "Settings saved",
-    "updateError": "Failed to save settings",
-    "updating": "Saving...",
-    "noChanges": "Nuk ka ndryshime për të ruajtur",
-    "translationService": "Shërbimi i Përkthimit (BabelDOC)",
-    "translationServiceDesc": "Zgjidhni motorin e përkthimit për përkthimin PDF me BabelDOC",
-    "localTranslation": "Përkthim lokal i integruar",
-    "localTranslationDesc": "Përdor llama-server lokal, nuk kërkon çelës API, punon jashtë linje",
-    "openaiTranslationDesc": "Përdor OpenAI API, kërkon çelësin API më lart",
-    "deepseekTranslationDesc": "Përdor DeepSeek API, kërkon çelësin API më lart",
-    "customApiTranslation": "API i personalizuar",
-    "customApiTranslationDesc": "Përdor pikën fundore API të përputhshme me OpenAI të personalizuar"
   },
   "inference": {
     "smartRecommend": "Rekomandim i zgjuar",
