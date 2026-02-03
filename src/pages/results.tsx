@@ -25,7 +25,9 @@ function ResultsArticle({
   return (
     <article class="article">
       <div class="mb-4 flex items-center justify-between">
-        <h1 class="text-xl" safe>{t("results", "title")}</h1>
+        <h1 class="text-xl" safe>
+          {t("results", "title")}
+        </h1>
         <div class="flex flex-row gap-4">
           <a
             style={files.length !== job.num_files ? "pointer-events: none;" : ""}

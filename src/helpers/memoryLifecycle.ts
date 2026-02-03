@@ -14,7 +14,6 @@
  */
 
 import { rmSync, existsSync } from "node:fs";
-import { join } from "node:path";
 
 // ==================== 等級一：可回收性管理 ====================
 
@@ -47,11 +46,7 @@ class BufferTracker {
   /**
    * 追蹤 Buffer
    */
-  track(
-    data: Buffer | ArrayBuffer,
-    taskId: string | null = null,
-    description = ""
-  ): string {
+  track(data: Buffer | ArrayBuffer, taskId: string | null = null, description = ""): string {
     const id = `buffer_${++this.nextId}`;
     const sizeBytes = data instanceof Buffer ? data.byteLength : data.byteLength;
 
@@ -67,7 +62,7 @@ class BufferTracker {
     this.registry.register(data, id);
 
     console.debug(
-      `[MemoryLifecycle] Buffer tracked: ${description} (${(sizeBytes / 1024 / 1024).toFixed(2)} MB)`
+      `[MemoryLifecycle] Buffer tracked: ${description} (${(sizeBytes / 1024 / 1024).toFixed(2)} MB)`,
     );
     return id;
   }
@@ -283,9 +278,12 @@ class TaskLifecycleManager {
 
   constructor() {
     // 定期清理已完成任務的參考（每 10 分鐘）
-    this.cleanupInterval = setInterval(() => {
-      this.cleanupCompletedTasks();
-    }, 10 * 60 * 1000);
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanupCompletedTasks();
+      },
+      10 * 60 * 1000,
+    );
   }
 
   /**
@@ -321,7 +319,7 @@ class TaskLifecycleManager {
    */
   async finishTask(
     taskId: string,
-    status: "completed" | "failed" | "aborted" = "completed"
+    status: "completed" | "failed" | "aborted" = "completed",
   ): Promise<void> {
     const task = this.tasks.get(taskId);
     if (!task) return;
@@ -519,7 +517,7 @@ class MemoryMonitor {
    */
   private triggerHighMemoryWarning(info: MemoryInfo): void {
     console.warn(
-      `[MemoryLifecycle] High memory usage detected: ${info.heapUsedMB}MB / ${info.heapTotalMB}MB`
+      `[MemoryLifecycle] High memory usage detected: ${info.heapUsedMB}MB / ${info.heapTotalMB}MB`,
     );
 
     for (const callback of this.onHighMemoryCallbacks) {
@@ -558,9 +556,9 @@ class MemoryMonitor {
     const recent = this.memoryHistory.slice(-5);
     const firstItem = recent[0];
     const lastItem = recent[recent.length - 1];
-    
+
     if (!firstItem || !lastItem) return "unknown";
-    
+
     const first = firstItem.heapUsed;
     const last = lastItem.heapUsed;
     const diff = last - first;
@@ -580,9 +578,7 @@ class MemoryMonitor {
       global.gc();
       return true;
     }
-    console.debug(
-      "[MemoryLifecycle] GC not exposed. Run with --expose-gc to enable manual GC."
-    );
+    console.debug("[MemoryLifecycle] GC not exposed. Run with --expose-gc to enable manual GC.");
     return false;
   }
 
@@ -630,9 +626,12 @@ class MemoryLifecycleManager {
     });
 
     // 定期維護
-    this.maintenanceInterval = setInterval(() => {
-      this.performMaintenance();
-    }, 5 * 60 * 1000); // 每 5 分鐘
+    this.maintenanceInterval = setInterval(
+      () => {
+        this.performMaintenance();
+      },
+      5 * 60 * 1000,
+    ); // 每 5 分鐘
   }
 
   // ==================== 等級一 API ====================
@@ -640,11 +639,7 @@ class MemoryLifecycleManager {
   /**
    * 追蹤 Buffer
    */
-  trackBuffer(
-    data: Buffer | ArrayBuffer,
-    taskId: string | null = null,
-    description = ""
-  ): string {
+  trackBuffer(data: Buffer | ArrayBuffer, taskId: string | null = null, description = ""): string {
     const id = this.bufferTracker.track(data, taskId, description);
 
     if (taskId) {
@@ -685,7 +680,7 @@ class MemoryLifecycleManager {
    */
   async finishTask(
     taskId: string,
-    status: "completed" | "failed" | "aborted" = "completed"
+    status: "completed" | "failed" | "aborted" = "completed",
   ): Promise<void> {
     await this.taskManager.finishTask(taskId, status);
     this.bufferTracker.cleanup();
@@ -710,7 +705,7 @@ class MemoryLifecycleManager {
   /**
    * 執行緊急清理
    */
-  performEmergencyCleanup(memoryInfo: MemoryInfo): void {
+  performEmergencyCleanup(_memoryInfo: MemoryInfo): void {
     console.warn("[MemoryLifecycle] Performing emergency cleanup due to high memory");
 
     // 1. 清理已被 GC 的 Buffer 參考
@@ -740,7 +735,7 @@ class MemoryLifecycleManager {
     console.debug(
       `[MemoryLifecycle] Stats: ${stats.memory.current.heapUsedMB}MB heap, ` +
         `${stats.tasks.activeTasks} active tasks, ` +
-        `${stats.buffers.aliveCount} tracked buffers`
+        `${stats.buffers.aliveCount} tracked buffers`,
     );
   }
 
@@ -835,22 +830,17 @@ process.on("SIGINT", () => {
 export { TaskContext, MemoryInfo };
 
 // 便捷函數
-export const createTask = (taskType: string): TaskContext =>
-  memoryLifecycle.createTask(taskType);
-
-export const getTask = (taskId: string): TaskContext | undefined =>
-  memoryLifecycle.getTask(taskId);
+export const createTask = (taskType: string): TaskContext => memoryLifecycle.createTask(taskType);
 
 export const startTask = (taskId: string): void => memoryLifecycle.startTask(taskId);
 
 export const finishTask = (
   taskId: string,
-  status: "completed" | "failed" | "aborted" = "completed"
+  status: "completed" | "failed" | "aborted" = "completed",
 ): Promise<void> => memoryLifecycle.finishTask(taskId, status);
 
-export const getMemoryReport = (): ReturnType<
-  MemoryLifecycleManager["getFullReport"]
-> => memoryLifecycle.getFullReport();
+export const getMemoryReport = (): ReturnType<MemoryLifecycleManager["getFullReport"]> =>
+  memoryLifecycle.getFullReport();
 
 export const requestGC = (): boolean => memoryLifecycle.requestGarbageCollection();
 

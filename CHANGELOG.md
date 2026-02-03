@@ -1,57 +1,35 @@
 # Changelog
 
-## [0.2.0](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.2.0) (2026-02-03)
+## [0.1.23](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.23) (2026-02-03)
 
-**重大變更**：移除設定頁面，所有設定改由環境變數控制。
-
-### ⚠️ Breaking Changes
-
-- **移除設定頁面（Settings Page）**
-  - 不再提供 UI 層級的設定功能
-  - 所有設定必須由部署者透過環境變數決定
-  - 移除 `/settings` 路由和相關前端程式碼
-
-- **API Keys 改為環境變數控制**
-  - 不再支援使用者在 UI 設定 API Key
-  - 請使用 `OPENAI_API_KEY`、`DEEPSEEK_API_KEY`、`OTHER_LLM_API_KEY` 環境變數
-
-- **處理模式改為環境變數控制**
-  - 新增 `MINERU_MODE` 環境變數（`pipeline` / `vlm`）
-  - 不再支援使用者在 UI 切換處理模式
-  - 預設使用 `pipeline` 模式（穩定、無需額外依賴）
-
-- **翻譯引擎改為環境變數控制**
-  - 新增 `BABELDOC_ENGINE` 環境變數（`local` / `openai` / `deepseek` / `custom`）
-  - 不再支援使用者在 UI 選擇翻譯引擎
-  - 預設使用 `local` 本地翻譯
+多語言翻譯與程式碼品質修復版本。
 
 ### ✨ Features
 
-- **VLM 自動回退機制**
-  - 當 VLM 無法啟動或執行失敗時，自動回退到 pipeline 模式
-  - 確保系統穩定性，不因 VLM 問題導致服務中斷
-  - 連續多次失敗時強制回退，避免重複錯誤
+- **主題選擇器新增主題**
+  - 新增 Prismatic（炫彩）全螢幕主題
+  - 已為全部 65 種語言添加對應翻譯
 
-- **環境變數設定完整支援**
-  - `MINERU_MODE`: 處理模式（pipeline / vlm）
-  - `BABELDOC_ENGINE`: 翻譯引擎（local / openai / deepseek / custom）
-  - `OPENAI_API_KEY`: OpenAI API 金鑰
-  - `DEEPSEEK_API_KEY`: DeepSeek API 金鑰
-  - `OTHER_LLM_API_KEY`: 自訂 LLM API 金鑰
-  - `CUSTOM_LLM_BASE_URL`: 自訂 API 端點
+### 🐛 Bug Fixes
 
-### 📚 Documentation
+- **移除設定頁面**：刪除未完成的 settings.tsx 頁面
+- **記憶體管理優化**：移除未使用的 `getTask` 導出函數
+- **程式碼清理**：移除未使用的導入（`join`、`WEBROOT`）
+- **參數命名修正**：將未使用的 `memoryInfo` 參數重命名為 `_memoryInfo`
 
-- 更新環境變數文件，新增完整設定說明
-- 更新 README，提供 `.env` 範例
-- 新增 VLM 回退機制說明
-- 更新 `.env.example` 範例檔案
+### 🌐 Translations
+
+- **全部語言翻譯補齊**：為 62 種語言添加 `screenThemePrismatic` 翻譯
+  - 歐洲語言：德語、法語、西班牙語、義大利語、葡萄牙語、俄語等
+  - 亞洲語言：日語、韓語、印地語、孟加拉語、泰語、越南語等
+  - 中東語言：阿拉伯語、希伯來語、波斯語、土耳其語
+  - 非洲語言：斯瓦希里語、祖魯語、阿姆哈拉語等
 
 ### 🔧 Code Quality
 
-- 移除設定頁面相關程式碼（settings.tsx, settingsButton.tsx, settings.js）
-- 重構 apiKeys.ts、processingMode.ts、translation/manager.ts 改用環境變數
-- 移除語言檔案中的設定頁面翻譯字串
+- 通過完整的 lint 檢查（tsc、knip、eslint、prettier）
+- 修復所有 TypeScript 類型錯誤
+- 統一程式碼格式
 
 ---
 

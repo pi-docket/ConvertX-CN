@@ -7,12 +7,7 @@
 
 import { Elysia } from "elysia";
 import { userService } from "./user";
-import {
-  memoryLifecycle,
-  getMemoryReport,
-  requestGC,
-} from "../helpers/memoryLifecycle";
-import { WEBROOT } from "../helpers/env";
+import { memoryLifecycle, getMemoryReport, requestGC } from "../helpers/memoryLifecycle";
 
 export const memoryDiagnostics = new Elysia()
   .use(userService)
@@ -34,7 +29,7 @@ export const memoryDiagnostics = new Elysia()
         },
       };
     },
-    { auth: true }
+    { auth: true },
   )
   /**
    * 請求手動垃圾回收
@@ -70,7 +65,7 @@ export const memoryDiagnostics = new Elysia()
           : "GC 未啟用，請使用 --expose-gc 啟動 Node.js",
       };
     },
-    { auth: true }
+    { auth: true },
   )
   /**
    * 執行完整清理
@@ -105,7 +100,7 @@ export const memoryDiagnostics = new Elysia()
         message: "完整清理已執行",
       };
     },
-    { auth: true }
+    { auth: true },
   )
   /**
    * 記憶體趨勢分析
@@ -136,7 +131,7 @@ export const memoryDiagnostics = new Elysia()
           : "記憶體在正常範圍內",
       };
     },
-    { auth: true }
+    { auth: true },
   )
   /**
    * 記憶體健康檢查（簡化版，用於監控）
@@ -148,9 +143,7 @@ export const memoryDiagnostics = new Elysia()
       (report.memory.current.heapUsed / (report.memory.current.heapTotal || 1)) * 100;
 
     const isHealthy =
-      heapUsagePercent < 80 &&
-      report.memory.trend !== "rising" &&
-      report.tasks.activeTasks < 100;
+      heapUsagePercent < 80 && report.memory.trend !== "rising" && report.tasks.activeTasks < 100;
 
     return {
       healthy: isHealthy,

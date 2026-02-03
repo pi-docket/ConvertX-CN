@@ -258,7 +258,14 @@ export async function handleConvert(
         const targetPath = `${userOutputDir}${newFileName.replace(/\.tar$/, "")}`;
         toProcess.push(
           new Promise((resolve, reject) => {
-            mainConverter(filePath, fileType, convertTo, targetPath, { userId, taskId }, converterName)
+            mainConverter(
+              filePath,
+              fileType,
+              convertTo,
+              targetPath,
+              { userId, taskId },
+              converterName,
+            )
               .then((r) => {
                 if (jobId.value) {
                   query.run(jobId.value, fileName, newFileName, r);
@@ -274,11 +281,15 @@ export async function handleConvert(
 
     // 🧠 等級二：任務完成，清理資源
     await finishTask(taskId, "completed");
-    console.log(`[MemoryLifecycle] Conversion job ${jobId.value} completed, task ${taskId} cleaned`);
+    console.log(
+      `[MemoryLifecycle] Conversion job ${jobId.value} completed, task ${taskId} cleaned`,
+    );
 
     // 輸出記憶體報告（除錯用）
     const report = getMemoryReport();
-    console.log(`[MemoryLifecycle] Post-conversion memory: ${report.memory.current.heapUsedMB}MB heap`);
+    console.log(
+      `[MemoryLifecycle] Post-conversion memory: ${report.memory.current.heapUsedMB}MB heap`,
+    );
   } catch (error) {
     // 🧠 等級二：任務失敗，清理資源
     await finishTask(taskId, "failed");
