@@ -168,6 +168,22 @@ export function convert(
 
   if (xelatex.includes(convertTo)) {
     args.push("--pdf-engine=xelatex");
+    // CJK 支援：使用 Noto CJK 字體族系（包含中日韓全字符集）
+    args.push("-V", "mainfont=Noto Sans CJK TC");
+    args.push("-V", "sansfont=Noto Sans CJK TC");
+    args.push("-V", "monofont=Noto Sans Mono CJK TC");
+    args.push("-V", "CJKmainfont=Noto Sans CJK TC");
+    args.push("-V", "CJKsansfont=Noto Sans CJK TC");
+    args.push("-V", "CJKmonofont=Noto Sans Mono CJK TC");
+    // Emoji 支援：多層 fallback 確保最佳覆蓋
+    // 1. Noto Color Emoji - Google 彩色 Emoji（最接近 Apple 風格）
+    // 2. Apple Color Emoji - macOS/iOS Emoji（如果可用）
+    // 3. Segoe UI Emoji - Windows Emoji
+    // 4. GoNotoKurrent - 完整 Unicode 覆蓋（黑白備用）
+    args.push(
+      "-V",
+      "mainfontfallback=Noto Color Emoji:mode=harf;Apple Color Emoji:mode=harf;Segoe UI Emoji:mode=harf;GoNotoKurrent:mode=harf",
+    );
   }
 
   args.push(filePath);

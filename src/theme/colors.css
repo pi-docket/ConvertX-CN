@@ -522,25 +522,41 @@
    CUSTOM COLOR SUPPORT
    =================================================================== */
 
+/* 
+ * Custom colors are set directly via JavaScript using inline styles
+ * on --accent-600, --accent-500, --accent-400
+ * 
+ * JavaScript sets these values using HSL for accurate color matching:
+ * --accent-600: hsla(h, s%, l-10%, alpha)
+ * --accent-500: hsla(h, s%, l%, alpha)  
+ * --accent-400: hsla(h, s%, l+15%, alpha)
+ *
+ * CSS custom properties for reference:
+ * --custom-hue: 0-360
+ * --custom-saturation: 0-100%
+ * --custom-lightness: 0-100%
+ * --custom-alpha: 0-1
+ */
+
 :root[data-color="custom"] {
-  /* Custom colors are set via JavaScript using CSS custom properties */
-  /* --custom-hue is set dynamically */
-  --accent-600: oklch(53% 0.2 var(--custom-hue, 131));
-  --accent-500: oklch(65% 0.22 var(--custom-hue, 131));
-  --accent-400: oklch(77% 0.2 var(--custom-hue, 131));
+  /* Fallback values - will be overridden by JavaScript inline styles */
+  --accent-600: hsl(131, 100%, 35%);
+  --accent-500: hsl(131, 100%, 45%);
+  --accent-400: hsl(131, 100%, 60%);
 }
 
 :root[data-theme="dark"][data-color="custom"] {
-  --accent-600: oklch(65% 0.22 var(--custom-hue, 131));
-  --accent-500: oklch(77% 0.2 var(--custom-hue, 131));
-  --accent-400: oklch(85% 0.18 var(--custom-hue, 131));
+  /* Dark mode fallback - will be overridden by JavaScript */
+  --accent-600: hsl(131, 100%, 40%);
+  --accent-500: hsl(131, 100%, 50%);
+  --accent-400: hsl(131, 100%, 65%);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"])[data-color="custom"] {
-    --accent-600: oklch(65% 0.22 var(--custom-hue, 131));
-    --accent-500: oklch(77% 0.2 var(--custom-hue, 131));
-    --accent-400: oklch(85% 0.18 var(--custom-hue, 131));
+    --accent-600: hsl(131, 100%, 40%);
+    --accent-500: hsl(131, 100%, 50%);
+    --accent-400: hsl(131, 100%, 65%);
   }
 }
 

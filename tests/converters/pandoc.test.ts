@@ -48,6 +48,10 @@ describe("convert", () => {
     await convert("input.md", "markdown", "pdf", "output.pdf", undefined, mockExecFile);
 
     expect(calledArgs[1][0]).toBe("--pdf-engine=xelatex");
+    // 驗證 CJK 字體設定
+    expect(calledArgs[1]).toContain("-V");
+    expect(calledArgs[1]).toContain("mainfont=Noto Sans CJK TC");
+    expect(calledArgs[1]).toContain("CJKmainfont=Noto Sans CJK TC");
     expect(calledArgs[1]).toContain("input.md");
     expect(calledArgs[1]).toContain("-f");
     expect(calledArgs[1]).toContain("markdown");

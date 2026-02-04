@@ -132,10 +132,18 @@ export const root = new Elysia()
                   <table
                     id="file-list"
                     class={`
-                      w-full table-auto rounded bg-neutral-900
+                      w-full table-auto overflow-hidden rounded-xl
                       [&_td]:p-4 [&_td]:first:max-w-[30vw] [&_td]:first:truncate
-                      [&_tr]:rounded-sm [&_tr]:border-b [&_tr]:border-neutral-800
+                      [&_tr]:border-b [&_tr]:border-[var(--glass-divider)]
+                      [&_tr:last-child]:border-b-0
                     `}
+                    style={{
+                      background: "var(--glass-bg)",
+                      backdropFilter: "var(--glass-blur)",
+                      WebkitBackdropFilter: "var(--glass-blur)",
+                      border: "1px solid var(--glass-border)",
+                      boxShadow: "var(--glass-shadow), var(--glass-inset-highlight)",
+                    }}
                   />
                 </div>
                 <div

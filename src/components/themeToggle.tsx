@@ -407,8 +407,8 @@ export const ThemeToggle = ({
                 {/* Active indicator (checkmark) - Apple 風格 */}
                 <div
                   class={`
-                    screen-theme-active-indicator absolute inset-0 flex items-center justify-center
-                    rounded-xl opacity-0 transition-opacity
+                    screen-theme-active-indicator pointer-events-none absolute inset-0 flex
+                    items-center justify-center rounded-xl opacity-0 transition-opacity
                   `}
                   style={{
                     background: "rgba(0, 0, 0, 0.3)",
@@ -475,8 +475,8 @@ export const ThemeToggle = ({
                 {/* Active indicator (checkmark) - Apple 風格 */}
                 <div
                   class={`
-                    active-indicator absolute inset-0 flex items-center justify-center rounded-xl
-                    opacity-0 transition-opacity
+                    active-indicator pointer-events-none absolute inset-0 flex items-center
+                    justify-center rounded-xl opacity-0 transition-opacity
                   `}
                   style={{
                     background: "rgba(0, 0, 0, 0.3)",

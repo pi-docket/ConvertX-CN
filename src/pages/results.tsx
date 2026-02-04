@@ -65,10 +65,18 @@ function ResultsArticle({
       />
       <table
         class={`
-          w-full table-auto rounded-sm bg-neutral-900 text-left
+          w-full table-auto overflow-hidden rounded-xl text-left
           [&_td]:p-4
-          [&_tr]:rounded-sm [&_tr]:border-b [&_tr]:border-neutral-800
+          [&_tr]:border-b [&_tr]:border-[var(--glass-divider)]
+          [&_tr:last-child]:border-b-0
         `}
+        style={{
+          background: "var(--glass-bg)",
+          backdropFilter: "var(--glass-blur)",
+          WebkitBackdropFilter: "var(--glass-blur)",
+          border: "1px solid var(--glass-border)",
+          boxShadow: "var(--glass-shadow), var(--glass-inset-highlight)",
+        }}
       >
         <thead>
           <tr>

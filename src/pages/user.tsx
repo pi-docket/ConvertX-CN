@@ -98,9 +98,14 @@ export const user = new Elysia()
         <>
           <header class="w-full p-4">
             <nav
-              class={`
-                mx-auto flex max-w-4xl items-center justify-between rounded-sm bg-neutral-900 p-4
-              `}
+              class="mx-auto flex max-w-4xl items-center justify-between rounded-xl p-4"
+              style={{
+                background: "var(--glass-bg)",
+                backdropFilter: "var(--glass-blur)",
+                WebkitBackdropFilter: "var(--glass-blur)",
+                border: "1px solid var(--glass-border)",
+                boxShadow: "var(--glass-shadow), var(--glass-inset-highlight)",
+              }}
             >
               <strong>ConvertX-CN</strong>
               <div class="flex items-center gap-4">

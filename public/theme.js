@@ -15,11 +15,17 @@
   const THEME_COLOR_KEY = "themeColor";
   const THEME_STYLE_KEY = "themeStyle";
   const CUSTOM_HUE_KEY = "customHue";
+  const CUSTOM_SATURATION_KEY = "customSaturation";
+  const CUSTOM_LIGHTNESS_KEY = "customLightness";
+  const CUSTOM_ALPHA_KEY = "customAlpha";
   const SCREEN_THEME_KEY = "screenTheme";
 
   // Default values
   const DEFAULT_HUE = 131;
   const DEFAULT_CHROMA = 0.2;
+  const DEFAULT_SATURATION = 100;
+  const DEFAULT_LIGHTNESS = 50;
+  const DEFAULT_ALPHA = 100;
   const DEFAULT_COLOR = "green";
   const DEFAULT_STYLE = "solid";
   const DEFAULT_SCREEN_THEME = "none";
@@ -59,6 +65,30 @@
     }
   }
 
+  function getStoredCustomSaturation() {
+    try {
+      return parseInt(localStorage.getItem(CUSTOM_SATURATION_KEY), 10) ?? DEFAULT_SATURATION;
+    } catch (e) {
+      return DEFAULT_SATURATION;
+    }
+  }
+
+  function getStoredCustomLightness() {
+    try {
+      return parseInt(localStorage.getItem(CUSTOM_LIGHTNESS_KEY), 10) ?? DEFAULT_LIGHTNESS;
+    } catch (e) {
+      return DEFAULT_LIGHTNESS;
+    }
+  }
+
+  function getStoredCustomAlpha() {
+    try {
+      return parseInt(localStorage.getItem(CUSTOM_ALPHA_KEY), 10) ?? DEFAULT_ALPHA;
+    } catch (e) {
+      return DEFAULT_ALPHA;
+    }
+  }
+
   function getStoredScreenTheme() {
     try {
       return localStorage.getItem(SCREEN_THEME_KEY) || DEFAULT_SCREEN_THEME;
@@ -92,6 +122,24 @@
   function saveCustomHue(hue) {
     try {
       localStorage.setItem(CUSTOM_HUE_KEY, String(hue));
+    } catch (e) {}
+  }
+
+  function saveCustomSaturation(saturation) {
+    try {
+      localStorage.setItem(CUSTOM_SATURATION_KEY, String(saturation));
+    } catch (e) {}
+  }
+
+  function saveCustomLightness(lightness) {
+    try {
+      localStorage.setItem(CUSTOM_LIGHTNESS_KEY, String(lightness));
+    } catch (e) {}
+  }
+
+  function saveCustomAlpha(alpha) {
+    try {
+      localStorage.setItem(CUSTOM_ALPHA_KEY, String(alpha));
     } catch (e) {}
   }
 
@@ -136,10 +184,39 @@
     root.setAttribute("data-color", color);
     root.setAttribute("data-style", style);
 
-    // For custom colors, also set the CSS variable
+    // For custom colors, set HSL values directly for accurate color matching
     if (color === "custom") {
-      const customHue = getStoredCustomHue();
-      root.style.setProperty("--custom-hue", String(customHue));
+      const h = getStoredCustomHue();
+      const s = getStoredCustomSaturation();
+      const l = getStoredCustomLightness();
+      const a = getStoredCustomAlpha();
+
+      // Set HSL values as CSS variables
+      root.style.setProperty("--custom-hue", String(h));
+      root.style.setProperty("--custom-saturation", String(s) + "%");
+      root.style.setProperty("--custom-lightness", String(l) + "%");
+      root.style.setProperty("--custom-alpha", String(a / 100));
+
+      // Generate accent colors based on HSL
+      // accent-500 is the base color, 600 is darker, 400 is lighter
+      root.style.setProperty(
+        "--accent-600",
+        `hsla(${h}, ${s}%, ${Math.max(l - 10, 20)}%, ${a / 100})`,
+      );
+      root.style.setProperty("--accent-500", `hsla(${h}, ${s}%, ${l}%, ${a / 100})`);
+      root.style.setProperty(
+        "--accent-400",
+        `hsla(${h}, ${s}%, ${Math.min(l + 15, 85)}%, ${a / 100})`,
+      );
+    } else {
+      // Clear custom color inline styles when switching to preset colors
+      root.style.removeProperty("--custom-hue");
+      root.style.removeProperty("--custom-saturation");
+      root.style.removeProperty("--custom-lightness");
+      root.style.removeProperty("--custom-alpha");
+      root.style.removeProperty("--accent-600");
+      root.style.removeProperty("--accent-500");
+      root.style.removeProperty("--accent-400");
     }
 
     // Update active swatch indicator
@@ -198,11 +275,62 @@
     );
   }
 
-  function setCustomColor(hexColor) {
+  function setCustomColor(hexColor, saturation, lightness, alpha) {
     // Convert hex to hue
     const hue = hexToHue(hexColor);
     saveCustomHue(hue);
+    // Save saturation, lightness, and alpha if provided
+    if (saturation !== undefined) {
+      saveCustomSaturation(saturation);
+    }
+    if (lightness !== undefined) {
+      saveCustomLightness(lightness);
+    }
+    if (alpha !== undefined) {
+      saveCustomAlpha(alpha);
+    }
     setColor("custom", "solid");
+  }
+
+  // Apply custom color in real-time (saves and previews immediately)
+  function previewCustomColor() {
+    const root = document.documentElement;
+    const h = advancedState.hue;
+    const s = advancedState.saturation;
+    const l = advancedState.lightness;
+    const a = advancedState.alpha;
+
+    // Save the custom color values immediately
+    saveCustomHue(h);
+    saveCustomSaturation(s);
+    saveCustomLightness(l);
+    saveCustomAlpha(a);
+    saveColor("custom");
+    saveStyle("solid");
+
+    // Set data attributes
+    root.setAttribute("data-color", "custom");
+    root.setAttribute("data-style", "solid");
+
+    // Set HSL values directly for accurate color
+    root.style.setProperty("--custom-hue", String(h));
+    root.style.setProperty("--custom-saturation", String(s) + "%");
+    root.style.setProperty("--custom-lightness", String(l) + "%");
+    root.style.setProperty("--custom-alpha", String(a / 100));
+
+    // Generate accent colors based on HSL with proper lightness adjustments
+    root.style.setProperty(
+      "--accent-600",
+      `hsla(${h}, ${s}%, ${Math.max(l - 10, 20)}%, ${a / 100})`,
+    );
+    root.style.setProperty("--accent-500", `hsla(${h}, ${s}%, ${l}%, ${a / 100})`);
+    root.style.setProperty(
+      "--accent-400",
+      `hsla(${h}, ${s}%, ${Math.min(l + 15, 85)}%, ${a / 100})`,
+    );
+
+    // Update active swatch indicator
+    updateActiveSwatchIndicator("custom");
   }
 
   function hexToHue(hex) {
@@ -236,9 +364,17 @@
   function updateActiveSwatchIndicator(activeColor) {
     // Remove active indicator from all swatches
     document.querySelectorAll(".theme-color-swatch").forEach((swatch) => {
+      const indicator = swatch.querySelector(".active-indicator");
       swatch.classList.remove("ring-2", "ring-white", "ring-offset-2", "ring-offset-neutral-900");
+      if (indicator) {
+        indicator.style.opacity = "0";
+      }
+
       if (swatch.dataset.color === activeColor) {
         swatch.classList.add("ring-2", "ring-white", "ring-offset-2", "ring-offset-neutral-900");
+        if (indicator) {
+          indicator.style.opacity = "1";
+        }
       }
     });
   }
@@ -470,8 +606,27 @@
     root.setAttribute("data-screen-theme", screenTheme);
 
     if (color === "custom") {
-      const customHue = getStoredCustomHue();
-      root.style.setProperty("--custom-hue", String(customHue));
+      const h = getStoredCustomHue();
+      const s = getStoredCustomSaturation();
+      const l = getStoredCustomLightness();
+      const a = getStoredCustomAlpha();
+
+      // Set HSL values directly
+      root.style.setProperty("--custom-hue", String(h));
+      root.style.setProperty("--custom-saturation", String(s) + "%");
+      root.style.setProperty("--custom-lightness", String(l) + "%");
+      root.style.setProperty("--custom-alpha", String(a / 100));
+
+      // Generate accent colors
+      root.style.setProperty(
+        "--accent-600",
+        `hsla(${h}, ${s}%, ${Math.max(l - 10, 20)}%, ${a / 100})`,
+      );
+      root.style.setProperty("--accent-500", `hsla(${h}, ${s}%, ${l}%, ${a / 100})`);
+      root.style.setProperty(
+        "--accent-400",
+        `hsla(${h}, ${s}%, ${Math.min(l + 15, 85)}%, ${a / 100})`,
+      );
     }
   })();
 
@@ -546,8 +701,17 @@
       }
 
       // Click outside dropdown - close it
-      if (container && !container.contains(e.target)) {
-        closeDropdown();
+      // Note: dropdown is moved to body, so we need to check both container AND dropdown
+      // Also, don't close when clicking on the HEX input field
+      const hexInput = document.getElementById("hex-input");
+      const isHexInputClick = hexInput && (e.target === hexInput || hexInput.contains(e.target));
+      const isInsideDropdown = dropdown && dropdown.contains(e.target);
+
+      if (container && !container.contains(e.target) && !isInsideDropdown) {
+        // Only close if not clicking on HEX input
+        if (!isHexInputClick) {
+          closeDropdown();
+        }
       }
     });
 
@@ -688,6 +852,7 @@
 
     advancedState.hue = Math.round(hue);
     updateAdvancedPickerUI();
+    previewCustomColor();
   }
 
   function updateSLFromEvent(e) {
@@ -701,6 +866,7 @@
     advancedState.saturation = Math.round((x / rect.width) * 100);
     advancedState.lightness = Math.round(100 - (y / rect.height) * 100);
     updateAdvancedPickerUI();
+    previewCustomColor();
   }
 
   function updateAdvancedPickerUI() {
@@ -845,11 +1011,13 @@
     advancedState.saturation = Math.round(s * 100);
     advancedState.lightness = Math.round(l * 100);
     updateAdvancedPickerUI();
+    previewCustomColor();
   }
 
   function updateAlphaPreview(alpha) {
     advancedState.alpha = alpha;
     updateAdvancedPickerUI();
+    previewCustomColor();
   }
 
   function copyHexCode() {
@@ -870,7 +1038,7 @@
 
   function applyAdvancedColor() {
     const hex = getCurrentHex();
-    setCustomColor(hex);
+    setCustomColor(hex, advancedState.saturation, advancedState.lightness, advancedState.alpha);
     closeDropdown();
   }
 

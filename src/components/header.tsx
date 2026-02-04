@@ -120,13 +120,13 @@ export const Header = ({
   return (
     <header class="w-full p-4">
       <nav
-        class={`
-          mx-auto flex max-w-4xl items-center justify-between rounded-2xl bg-neutral-800/90 p-4
-          backdrop-blur-xl
-        `}
+        class="mx-auto flex max-w-4xl items-center justify-between rounded-2xl p-4"
         style={{
-          border: "1px solid var(--screen-border, var(--neutral-700))",
-          boxShadow: "var(--screen-glow, 0 4px 16px rgba(0, 0, 0, 0.1))",
+          background: "var(--glass-bg)",
+          backdropFilter: "var(--glass-blur)",
+          WebkitBackdropFilter: "var(--glass-blur)",
+          border: "1px solid var(--glass-border)",
+          boxShadow: "var(--glass-shadow), var(--glass-inset-highlight)",
         }}
       >
         <ul class="flex items-center">
