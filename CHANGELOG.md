@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.24](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.24) (2026-02-05)
+
+MinerU 後端優化與 Lite 版本 Dockerfile 優化。
+
+### 🐛 Bug Fixes
+
+- **MinerU 後端配置**：將 MinerU 預設使用 pipeline 模式，提升轉換穩定性
+
+### 🔧 Docker
+
+- **Lite Dockerfile 優化**：優化輕量版 Docker 映像構建流程
+
+---
+
 ## [0.1.23](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.23) (2026-02-03)
 
 多語言翻譯與程式碼品質修復版本。
