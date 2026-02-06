@@ -385,7 +385,7 @@ jobs:
           if-no-files-found: warn
 
   # ============================================
-  # Job 5: Cleanup test image
+  # Job 5: Cleanup test image（測試後自動清理）
   # ============================================
   cleanup:
     name: Cleanup Test Image
@@ -396,18 +396,53 @@ jobs:
       packages: write
 
     steps:
-      - name: Delete test image
+      - name: Delete test image from GHCR
         uses: actions/github-script@v7
         continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const tag = `test-${{ github.sha }}`;
-            console.log(`🗑️ Attempting to delete test image with tag: ${tag}`);
+            const owner = context.repo.owner.toLowerCase();
+            const repo = context.repo.repo.toLowerCase();
+            const packageName = `${repo}`;
 
-            // Note: This requires ghcr.io API access which may need additional setup
-            // For now, images will be cleaned up by retention policies
-            console.log('Test images will be cleaned up by retention policies');
+            console.log(`🗑️ Attempting to delete test image with tag: ${tag}`);
+            console.log(`📦 Package: ${owner}/${packageName}`);
+
+            try {
+              // 取得所有 package versions
+              const versions = await github.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
+                package_type: 'container',
+                package_name: packageName,
+                username: owner,
+                per_page: 100
+              });
+              
+              // 找到符合 test-<sha> tag 的版本
+              const testVersion = versions.data.find(v => 
+                v.metadata?.container?.tags?.includes(tag)
+              );
+              
+              if (testVersion) {
+                console.log(`🔍 Found version ID: ${testVersion.id}`);
+                
+                // 刪除這個版本
+                await github.rest.packages.deletePackageVersionForUser({
+                  package_type: 'container',
+                  package_name: packageName,
+                  username: owner,
+                  package_version_id: testVersion.id
+                });
+                
+                console.log(`✅ Successfully deleted test image: ${tag}`);
+              } else {
+                console.log(`⚠️ Test image not found: ${tag}`);
+              }
+            } catch (error) {
+              console.log(`⚠️ Failed to delete test image: ${error.message}`);
+              console.log('Test images will be cleaned up by retention policies');
+            }
 
   # ============================================
   # Job 6: Test summary

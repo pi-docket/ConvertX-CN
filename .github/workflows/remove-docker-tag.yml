@@ -1,18 +1,119 @@
-name: Remove Docker Tag
+name: Remove Docker Tags
 
 on:
   workflow_dispatch:
+    inputs:
+      tag_pattern:
+        description: "Tag pattern to remove (e.g., 'test-' for all test-* tags, or exact tag name)"
+        required: true
+        default: "test-"
+        type: string
+      dry_run:
+        description: "Dry run (只列出不刪除)"
+        required: false
+        default: true
+        type: boolean
 
 jobs:
-  remove-docker-tag:
+  remove-docker-tags:
     runs-on: ubuntu-latest
 
-    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
-    # (required)
     permissions:
       contents: read
       packages: write
 
+    steps:
+      - name: Remove Docker Tags
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const tagPattern = '${{ github.event.inputs.tag_pattern }}';
+            const dryRun = '${{ github.event.inputs.dry_run }}' === 'true';
+            const owner = context.repo.owner.toLowerCase();
+            const repo = context.repo.repo.toLowerCase();
+            const packageName = `${repo}`;
+
+            console.log('========================================');
+            console.log('🧹 GHCR Tag Cleanup');
+            console.log('========================================');
+            console.log(`📦 Package: ghcr.io/${owner}/${packageName}`);
+            console.log(`🔍 Pattern: ${tagPattern}`);
+            console.log(`🏃 Dry run: ${dryRun}`);
+            console.log('========================================');
+
+            try {
+              // 取得所有 package versions
+              const versions = await github.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
+                package_type: 'container',
+                package_name: packageName,
+                username: owner,
+                per_page: 100
+              });
+              
+              console.log(`📊 Found ${versions.data.length} versions`);
+              console.log('');
+              
+              // 找到符合 pattern 的版本
+              const matchingVersions = versions.data.filter(v => {
+                const tags = v.metadata?.container?.tags || [];
+                return tags.some(tag => tag.startsWith(tagPattern) || tag === tagPattern);
+              });
+              
+              console.log(`🎯 Matching versions: ${matchingVersions.length}`);
+              console.log('');
+              
+              if (matchingVersions.length === 0) {
+                console.log('✅ No matching versions found. Nothing to delete.');
+                return;
+              }
+              
+              // 列出所有匹配的版本
+              for (const version of matchingVersions) {
+                const tags = version.metadata?.container?.tags || [];
+                console.log(`  📦 Version ID: ${version.id}`);
+                console.log(`     Tags: ${tags.join(', ')}`);
+                console.log(`     Created: ${version.created_at}`);
+                
+                if (!dryRun) {
+                  try {
+                    await github.rest.packages.deletePackageVersionForUser({
+                      package_type: 'container',
+                      package_name: packageName,
+                      username: owner,
+                      package_version_id: version.id
+                    });
+                    console.log(`     ✅ Deleted`);
+                  } catch (deleteError) {
+                    console.log(`     ❌ Failed to delete: ${deleteError.message}`);
+                  }
+                } else {
+                  console.log(`     ⏸️ Would delete (dry run)`);
+                }
+                console.log('');
+              }
+              
+              console.log('========================================');
+              if (dryRun) {
+                console.log('🏃 Dry run complete. No changes made.');
+                console.log('   Re-run with dry_run=false to delete.');
+              } else {
+                console.log(`✅ Cleanup complete. Deleted ${matchingVersions.length} versions.`);
+              }
+              console.log('========================================');
+              
+            } catch (error) {
+              console.log(`❌ Error: ${error.message}`);
+              throw error;
+            }
+
+  # 保留原本的單一 tag 刪除功能（向後相容）
+  remove-single-tag:
+    if: false # 可手動啟用
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Remove Docker Tag
         uses: ArchieAtkinson/remove-dockertag-action@v0.0

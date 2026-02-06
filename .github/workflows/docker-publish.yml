@@ -149,6 +149,18 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ env.REPO }}
+          # 設定正式對外發佈的 tag
+          tags: |
+            # branch push -> branch name (e.g., main)
+            type=ref,event=branch
+            # tag push -> version (e.g., 0.1.15)
+            type=semver,pattern={{version}}
+            # tag push -> major.minor (e.g., 0.1)
+            type=semver,pattern={{major}}.{{minor}}
+            # tag push -> latest
+            type=raw,value=latest,enable=${{ github.ref_type == 'tag' }}
+          flavor: |
+            latest=false
 
       # ========================================
       # 設定 Docker Buildx（針對大型模型優化）
@@ -246,6 +258,18 @@ jobs:
           images: |
             ghcr.io/${{ env.REPO }}
             ${{ env.DOCKER_IMAGE }}
+          # 設定正式對外發佈的 tag（與上游 ConvertX 對齊）
+          tags: |
+            # branch push -> branch name (e.g., main)
+            type=ref,event=branch
+            # tag push -> version (e.g., 0.1.15)
+            type=semver,pattern={{version}}
+            # tag push -> major.minor (e.g., 0.1)
+            type=semver,pattern={{major}}.{{minor}}
+            # tag push -> latest
+            type=raw,value=latest,enable=${{ github.ref_type == 'tag' }}
+          flavor: |
+            latest=false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
