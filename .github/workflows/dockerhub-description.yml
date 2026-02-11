@@ -1,4 +1,6 @@
 name: Update Docker Hub Description
+permissions:
+  contents: read
 
 # ==============================================================================
 # 🔧 自動更新 Docker Hub Repository Overview
