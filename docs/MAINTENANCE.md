@@ -13,16 +13,19 @@
 **文件**: `.github/workflows/verify-docker-hub.yml`
 
 **功能**:
+
 - 在 Release workflow 完成後自動驗證 Docker Hub 上的 images
 - 檢查 AMD64、ARM64 和 multi-arch manifest 是否存在
 - 生成驗證報告
 - 失敗時提供詳細錯誤資訊
 
 **觸發時機**:
+
 - Release workflow 完成後自動執行
 - 可手動觸發驗證特定 tag
 
 **使用方式**:
+
 ```bash
 # 手動驗證特定版本
 gh workflow run verify-docker-hub.yml -f tag=v0.1.25
@@ -35,6 +38,7 @@ gh workflow run verify-docker-hub.yml -f tag=v0.1.25
 **文件**: `.github/workflows/auto-handle-upstream-pr.yml`
 
 **功能**:
+
 - 自動分析 upstream-sync PR
 - 檢查 commits 是否已合併
 - 自動關閉已合併的 PR（標記 `resolved-upstream`）
@@ -45,6 +49,7 @@ gh workflow run verify-docker-hub.yml -f tag=v0.1.25
 **處理邏輯**:
 
 #### 情況 A: 已合併 → 自動關閉
+
 ```
 如果所有 commits 已存在於 main:
   → 添加 comment "Already included"
@@ -53,6 +58,7 @@ gh workflow run verify-docker-hub.yml -f tag=v0.1.25
 ```
 
 #### 情況 B: 依賴更新 → 自動關閉
+
 ```
 如果包含 renovate/dependabot/lock file 更新:
   → 添加 comment "Not merging - custom CN override"
@@ -61,6 +67,7 @@ gh workflow run verify-docker-hub.yml -f tag=v0.1.25
 ```
 
 #### 情況 C: 實質性變更 → 需要審查
+
 ```
 如果包含實質性程式碼變更:
   → 添加 comment "Requires Manual Review"
@@ -75,22 +82,26 @@ gh workflow run verify-docker-hub.yml -f tag=v0.1.25
 **文件**: `.github/workflows/check-calibre-version.yml`
 
 **功能**:
+
 - 每週一自動檢查 Calibre 最新版本
 - 驗證新版本 binary 是否可用
 - 自動更新 Dockerfile
 - 創建 PR 供審查
 
 **執行時間**:
+
 - 每週一早上 8:00 (UTC 0:00)
 - 可手動觸發
 
 **使用方式**:
+
 ```bash
 # 手動檢查 Calibre 版本
 gh workflow run check-calibre-version.yml
 ```
 
 **PR 內容**:
+
 - 自動更新版本號
 - 更新相關註釋
 - 提供驗證清單
@@ -120,6 +131,7 @@ git log HEAD..upstream/main --stat
 **合併標準**:
 
 ✅ **應該合併**:
+
 - 明確的 bug 修復
 - 安全性更新
 - 效能改進
@@ -127,6 +139,7 @@ git log HEAD..upstream/main --stat
 - 文件更新
 
 ❌ **不應合併**:
+
 - 依賴套件更新（有獨立管理）
 - 架構重構（可能破壞 CN 功能）
 - 功能移除
@@ -158,6 +171,7 @@ git cherry-pick --continue
 **症狀**: `exit code: 22` (curl HTTP error)
 
 **診斷**:
+
 ```bash
 # 檢查 Dockerfile 中的版本
 grep "CALIBRE_VERSION" Dockerfile
@@ -167,6 +181,7 @@ curl -I "https://github.com/kovidgoyal/calibre/releases/download/v<VERSION>/cali
 ```
 
 **解決**:
+
 1. 查看 Calibre releases: https://github.com/kovidgoyal/calibre/releases
 2. 確認最新版本
 3. 更新 Dockerfile 中的 `CALIBRE_VERSION`
@@ -179,12 +194,14 @@ curl -I "https://github.com/kovidgoyal/calibre/releases/download/v<VERSION>/cali
 **症狀**: `no space left on device`
 
 **診斷**:
+
 ```bash
 # 查看 workflow log 中的磁碟空間報告
 gh run view <run-id> --log | grep "可用空間"
 ```
 
 **解決**:
+
 - Release workflow 已包含極限磁碟清理
 - 如仍不足，考慮分離更多構建階段
 
@@ -193,12 +210,14 @@ gh run view <run-id> --log | grep "可用空間"
 **症狀**: Build 成功但 image 不在 Docker Hub
 
 **診斷**:
+
 ```bash
 # 驗證 Docker Hub 上的 image
 docker manifest inspect convertx/convertx-cn:v0.1.25
 ```
 
 **解決**:
+
 1. 檢查 Docker Hub credentials
 2. 確認 workflow 使用 `--push` flag
 3. 檢查 Docker Hub API rate limit
@@ -286,6 +305,7 @@ gh pr list --state closed --label "resolved-upstream"
 **問題**: Workflow 執行失敗
 
 **步驟**:
+
 1. 查看詳細 logs: `gh run view <run-id> --log`
 2. 檢查錯誤訊息
 3. 查看相關 annotations
@@ -296,6 +316,7 @@ gh pr list --state closed --label "resolved-upstream"
 **問題**: Build 超過時間限制
 
 **解決**:
+
 - GitHub Actions 免費版限制 6 小時
 - 考慮使用 self-hosted runner
 - 或優化 Dockerfile（減少層數、使用 cache）
@@ -305,6 +326,7 @@ gh pr list --state closed --label "resolved-upstream"
 **問題**: Calibre 檢查 workflow 創建的 PR 失敗
 
 **步驟**:
+
 1. 查看 PR 內容
 2. 手動驗證 Calibre 版本可用性
 3. 檢查 Dockerfile syntax
@@ -401,6 +423,7 @@ gh pr list --state closed --label "resolved-upstream"
 4. 在 Issues 中搜尋類似問題
 
 **報告問題請包含**:
+
 - Workflow run ID
 - 錯誤訊息
 - 相關 logs

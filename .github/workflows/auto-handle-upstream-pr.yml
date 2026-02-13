@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     # 只處理來自 upstream-sync branch 的 PR
     if: startsWith(github.head_ref, 'copilot/sync-upstream-') || startsWith(github.head_ref, 'upstream-sync-')
-    
+
     permissions:
       pull-requests: write
       contents: read
@@ -25,7 +25,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 需要完整歷史來檢查 commit
+          fetch-depth: 0 # 需要完整歷史來檢查 commit
 
       - name: Setup Git
         run: |
@@ -45,16 +45,16 @@ jobs:
         id: analyze
         run: |
           echo "🔍 分析 PR commits..."
-          
+
           # 取得 PR 的 commits
           PR_COMMITS=$(git log origin/main..HEAD --oneline)
           echo "PR Commits:"
           echo "$PR_COMMITS"
-          
+
           # 檢查是否所有 commits 都已存在於 main
           ALL_MERGED=true
           UPSTREAM_ONLY=false
-          
+
           while IFS= read -r commit_line; do
             COMMIT_SHA=$(echo "$commit_line" | awk '{print $1}')
             COMMIT_MSG=$(echo "$commit_line" | cut -d' ' -f2-)
@@ -75,7 +75,7 @@ jobs:
               fi
             fi
           done <<< "$PR_COMMITS"
-          
+
           echo "all_merged=$ALL_MERGED" >> $GITHUB_OUTPUT
           echo "upstream_only=$UPSTREAM_ONLY" >> $GITHUB_OUTPUT
 
@@ -85,14 +85,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "✅ 所有 commits 已經在 main 中"
-          
+
           gh pr comment ${{ github.event.pull_request.number }} --body \
             "🤖 **自動關閉**: 所有 commits 已包含在 main 分支中。
 
           ✅ Status: **Already Merged**
-          
+
           這個 PR 的所有變更已經透過其他方式合併到 main 分支。"
-          
+
           gh pr close ${{ github.event.pull_request.number }}
           gh pr edit ${{ github.event.pull_request.number }} --add-label "resolved-upstream"
 
@@ -104,21 +104,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "⚠️  包含 upstream 專用設定（依賴更新）"
-          
+
           gh pr comment ${{ github.event.pull_request.number }} --body \
             "🤖 **自動關閉**: 此 PR 包含 upstream 依賴更新。
 
           ⚠️  Status: **Not Merging**
-          
+
           ConvertX-CN 有獨立的依賴管理策略，不自動合併 upstream 的依賴更新。
-          
+
           📝 原因：
           - 避免破壞 CN 自訂依賴配置
           - 保持獨立的依賴版本控制
           - 減少潛在衝突
-          
+
           如需要特定更新，請手動 cherry-pick。"
-          
+
           gh pr close ${{ github.event.pull_request.number }}
           gh pr edit ${{ github.event.pull_request.number }} --add-label "ignored-upstream"
 
@@ -130,22 +130,22 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "🔍 需要手動審查"
-          
+
           gh pr comment ${{ github.event.pull_request.number }} --body \
             "🤖 **需要手動審查**: 此 PR 包含實質性變更。
 
           ⚠️  Status: **Requires Manual Review**
-          
+
           📋 建議檢查：
           - [ ] 是否修改核心功能？
           - [ ] 是否與 CN 自訂功能衝突？
           - [ ] 是否為 bug 修復？
           - [ ] 是否為安全性更新？
           - [ ] 是否改善效能？
-          
+
           ✅ 如果值得合併，請手動審查並 cherry-pick 特定 commits。
           ❌ 如果不需要，請關閉此 PR 並加上標籤。"
-          
+
           gh pr edit ${{ github.event.pull_request.number }} --add-label "needs-manual-review"
 
   # 掃描並關閉過期的 upstream PR
@@ -153,7 +153,7 @@ jobs:
     runs-on: ubuntu-latest
     # 只在手動觸發或每週執行
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
-    
+
     permissions:
       pull-requests: write
       contents: read
@@ -165,7 +165,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "🔍 掃描過期 upstream PRs..."
-          
+
           # 查找所有 open 的 upstream-sync PR，超過 30 天未更新
           gh pr list --state open --label "needs-manual-review" --json number,updatedAt,title \
             --jq '.[] | select(.updatedAt < (now - 30*24*60*60 | strftime("%Y-%m-%dT%H:%M:%SZ"))) | .number' \
