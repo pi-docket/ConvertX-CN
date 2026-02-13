@@ -2,7 +2,7 @@
 
 ## [0.1.25](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.25) (2026-02-13)
 
-智能上游同步、UI 修復與穩定性改進。
+智能上游同步、Docker 修復與穩定性改進。
 
 ### 🔄 Upstream Sync
 
@@ -18,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- **Docker Build 修復**：更新 Calibre 版本從 9.1.0 到 9.2.1（9.1.0 binary 不可用）
 - **結果卡片溢出修復**：修復長檔名撐破 glass 卡片邊界的問題
 - **article 容器保護**：為 article 加上 `overflow: hidden` 防止內容溢出
 - **table-fixed 佈局**：結果頁與歷史頁表格改用 `table-fixed`，確保欄位不被撐開
@@ -32,7 +33,7 @@
 
 - **上游版本**：v0.17.0（基礎版本）
 - **CN 版本**：v0.1.25（增強版本）
-- **分支差異**：本地領先 315 個提交，上游領先 4 個提交
+- **分支差異**：本地領先 316 個提交，上游領先 3 個提交
 - **合併策略**：選擇性 cherry-pick，避免完整合併破壞 CN 功能
 
 ---
