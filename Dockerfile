@@ -518,7 +518,7 @@ RUN apt-get update --fix-missing && \
 # 4.13 TexLive 語言包
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  texlive-lang-cjk texlive-lang-german texlive-lang-french \
+  texlive-lang-cjk texlive-lang-chinese texlive-lang-german texlive-lang-french \
   texlive-lang-arabic texlive-lang-other && \
   rm -rf /var/lib/apt/lists/*
 

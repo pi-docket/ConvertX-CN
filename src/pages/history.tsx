@@ -80,9 +80,9 @@ export const history = new Elysia()
                 </div>
                 <table
                   class={`
-                    w-full table-auto overflow-hidden rounded-xl text-left
+                    w-full table-fixed overflow-hidden rounded-xl text-left
                     [&_td]:p-4
-                    [&_tr]:border-b [&_tr]:border-[var(--glass-divider)]
+                    [&_tr]:border-b [&_tr]:border-(--glass-divider)
                     [&_tr:last-child]:border-b-0
                   `}
                   style={{
@@ -218,12 +218,14 @@ export const history = new Elysia()
                           </td>
                         </tr>
                         <tr id={`details-${job.id}`} class="hidden">
-                          <td colspan="7">
+                          <td colspan="7" style="max-width: 0;">
                             <div
-                              class="rounded-lg p-3 text-sm"
+                              class="overflow-hidden rounded-lg p-3 text-sm"
                               style={{
                                 background: "var(--glass-bg-secondary)",
                                 color: "var(--glass-text-secondary)",
+                                maxWidth: "100%",
+                                boxSizing: "border-box",
                               }}
                             >
                               <div
@@ -233,15 +235,19 @@ export const history = new Elysia()
                                 {t("history", "detailedFileInfo")}
                               </div>
                               {job.files_detailed.map((file: Filename) => (
-                                <div class="flex items-center py-1">
-                                  <span class="w-5/12 truncate" title={file.file_name} safe>
+                                <div class="flex min-w-0 items-center py-1">
+                                  <span
+                                    class="inline-block max-w-[45%] min-w-0 truncate"
+                                    title={file.file_name}
+                                    safe
+                                  >
                                     {file.file_name}
                                   </span>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
-                                    class="mx-2 inline-block h-4 w-4"
+                                    class="mx-2 inline-block h-4 w-4 shrink-0"
                                     style={{ color: "var(--glass-text-muted)" }}
                                   >
                                     <path
@@ -250,7 +256,11 @@ export const history = new Elysia()
                                       clip-rule="evenodd"
                                     />
                                   </svg>
-                                  <span class="w-5/12 truncate" title={file.output_file_name} safe>
+                                  <span
+                                    class="inline-block max-w-[45%] min-w-0 truncate"
+                                    title={file.output_file_name}
+                                    safe
+                                  >
                                     {file.output_file_name}
                                   </span>
                                 </div>

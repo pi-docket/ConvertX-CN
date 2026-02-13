@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y \
   resvg \
   texlive \
   texlive-fonts-recommended \
+  texlive-lang-chinese \
   texlive-latex-extra \
   texlive-latex-recommended \
   texlive-xetex \

@@ -15,7 +15,7 @@ export const LanguageSelector = ({
         type="button"
         class={`
           flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 transition-all
-          hover:bg-[var(--glass-bg-hover)]
+          hover:bg-(--glass-bg-hover)
           active:scale-[0.98]
         `}
         style={{
@@ -32,7 +32,7 @@ export const LanguageSelector = ({
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="h-5 w-5"
+          class="size-5"
           style={{ color: "var(--accent-500)" }}
         >
           <path
@@ -55,7 +55,7 @@ export const LanguageSelector = ({
           viewBox="0 0 24 24"
           stroke-width="2"
           stroke="currentColor"
-          class="h-3.5 w-3.5 transition-transform duration-200"
+          class="size-3.5 transition-transform duration-200"
           style={{ color: "var(--glass-text-muted)" }}
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -82,9 +82,9 @@ export const LanguageSelector = ({
               class={`
                 language-option flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left
                 text-sm transition-all
-                hover:bg-[var(--glass-bg-hover)]
-                active:scale-[0.98] active:bg-[var(--glass-bg-active)]
-                ${locale.code === currentLocale ? "bg-[var(--glass-bg-active)]" : ""}
+                hover:bg-(--glass-bg-hover)
+                active:scale-[0.98] active:bg-(--glass-bg-active)
+                ${locale.code === currentLocale ? "bg-(--glass-bg-active)" : ""}
               `}
               style={{
                 color: locale.code === currentLocale ? "var(--accent-500)" : "var(--glass-text)",
@@ -99,7 +99,7 @@ export const LanguageSelector = ({
                   viewBox="0 0 24 24"
                   stroke-width="2.5"
                   stroke="currentColor"
-                  class="h-4 w-4 flex-shrink-0"
+                  class="size-4 shrink-0"
                   style={{ color: "var(--accent-500)" }}
                 >
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />

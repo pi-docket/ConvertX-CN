@@ -247,7 +247,7 @@ export const ThemeToggle = ({
           id="theme-toggle"
           class={`
             flex items-center rounded-lg p-1.5 transition-all
-            hover:bg-[var(--glass-bg-hover)]
+            hover:bg-(--glass-bg-hover)
             active:scale-[0.95]
           `}
           style={{ color: "var(--accent-500)" }}
@@ -294,7 +294,7 @@ export const ThemeToggle = ({
           id="theme-dropdown-toggle"
           class={`
             flex items-center rounded-lg p-1.5 transition-all
-            hover:bg-[var(--glass-bg-hover)]
+            hover:bg-(--glass-bg-hover)
             active:scale-[0.95]
           `}
           style={{ color: "var(--glass-text-muted)" }}
@@ -308,7 +308,7 @@ export const ThemeToggle = ({
             viewBox="0 0 24 24"
             stroke-width="2"
             stroke="currentColor"
-            class="h-3.5 w-3.5 transition-transform duration-200"
+            class="size-3.5 transition-transform duration-200"
             id="theme-dropdown-arrow"
           >
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -354,7 +354,7 @@ export const ThemeToggle = ({
                   screen-theme-swatch group relative h-10 w-10 cursor-pointer rounded-xl
                   transition-all duration-150
                   hover:scale-105
-                  focus:ring-2 focus:ring-[var(--accent-500)] focus:ring-offset-2 focus:outline-none
+                  focus:ring-2 focus:ring-(--accent-500) focus:ring-offset-2 focus:outline-none
                   active:scale-95
                 `}
                 style={{
@@ -375,7 +375,7 @@ export const ThemeToggle = ({
                 {themeDef.id === "none" && (
                   <div class="absolute inset-0 flex items-center justify-center">
                     <svg
-                      class="h-4 w-4"
+                      class="size-4"
                       style={{ color: "var(--glass-text-muted)" }}
                       fill="none"
                       viewBox="0 0 24 24"
@@ -415,7 +415,7 @@ export const ThemeToggle = ({
                   }}
                 >
                   <svg
-                    class="h-4 w-4 text-white drop-shadow-lg"
+                    class="size-4 text-white drop-shadow-lg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -444,7 +444,7 @@ export const ThemeToggle = ({
                   theme-color-swatch group relative h-11 w-11 cursor-pointer rounded-xl
                   transition-all duration-150
                   hover:scale-105
-                  focus:ring-2 focus:ring-[var(--accent-500)] focus:ring-offset-2 focus:outline-none
+                  focus:ring-2 focus:ring-(--accent-500) focus:ring-offset-2 focus:outline-none
                   active:scale-95
                 `}
                 data-color={colorDef.id}
@@ -509,8 +509,8 @@ export const ThemeToggle = ({
             class={`
               flex w-full items-center justify-between rounded-xl px-3.5 py-3 text-sm font-medium
               transition-all duration-150
-              hover:bg-[var(--glass-bg-hover)]
-              active:scale-[0.98] active:bg-[var(--glass-bg-active)]
+              hover:bg-(--glass-bg-hover)
+              active:scale-[0.98] active:bg-(--glass-bg-active)
             `}
             style={{ color: "var(--glass-text)" }}
           >
@@ -533,7 +533,7 @@ export const ThemeToggle = ({
               <span safe>{t("theme", "customColor")}</span>
             </span>
             <svg
-              class="h-4 w-4 transition-transform duration-200"
+              class="size-4 transition-transform duration-200"
               style={{ color: "var(--glass-text-muted)" }}
               id="advanced-picker-arrow"
               fill="none"
@@ -679,7 +679,7 @@ export const ThemeToggle = ({
                   class={`
                     border-1.5 w-full rounded-xl px-3.5 py-2.5 font-mono text-sm uppercase
                     transition-all duration-150
-                    focus:border-[var(--accent-500)] focus:ring-2 focus:ring-[var(--accent-500)]/20
+                    focus:border-(--accent-500) focus:ring-2 focus:ring-(--accent-500)/20
                     focus:outline-none
                   `}
                   style={{
@@ -705,7 +705,7 @@ export const ThemeToggle = ({
                 class={`
                   border-1.5 flex items-center justify-center rounded-xl px-3.5 transition-all
                   duration-150
-                  hover:bg-[var(--glass-bg-hover)]
+                  hover:bg-(--glass-bg-hover)
                   active:scale-95
                 `}
                 style={{

@@ -9,7 +9,7 @@ export const chooseConverter = new Elysia().use(userService).post(
       <>
         <article
           class={`
-            convert_to_popup absolute top-0 left-0 z-[9999] m-0 hidden h-[50vh] max-h-[50vh] w-full
+            convert_to_popup absolute top-0 left-0 z-9999 m-0 hidden h-[50vh] max-h-[50vh] w-full
             flex-col overflow-x-hidden overflow-y-auto rounded-sm border border-neutral-700
             bg-neutral-800 shadow-xl
             sm:h-[30vh]

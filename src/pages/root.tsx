@@ -133,8 +133,9 @@ export const root = new Elysia()
                     id="file-list"
                     class={`
                       w-full table-auto overflow-hidden rounded-xl
-                      [&_td]:p-4 [&_td]:first:max-w-[30vw] [&_td]:first:truncate
-                      [&_tr]:border-b [&_tr]:border-[var(--glass-divider)]
+                      [&_td]:p-4
+                      [&_td]:first:max-w-[30vw] [&_td]:first:truncate
+                      [&_tr]:border-b [&_tr]:border-(--glass-divider)
                       [&_tr:last-child]:border-b-0
                     `}
                     style={{
@@ -149,7 +150,7 @@ export const root = new Elysia()
                 <div
                   id="dropzone"
                   class={`
-                    relative flex h-48 w-full items-center justify-center rounded border
+                    relative flex h-48 w-full items-center justify-center rounded-sm border
                     border-dashed border-neutral-700 transition-all
                     hover:border-neutral-600
                     [&.dragover]:border-4 [&.dragover]:border-neutral-500
@@ -181,7 +182,7 @@ export const root = new Elysia()
                     autocomplete="off"
                     class={`
                       w-full rounded-xl bg-neutral-900/60 p-4 transition-all duration-150
-                      focus:ring-2 focus:ring-[var(--accent-500)]/30 focus:outline-none
+                      focus:ring-2 focus:ring-(--accent-500)/30 focus:outline-none
                     `}
                     style={{
                       border: "1.5px solid var(--glass-border)",

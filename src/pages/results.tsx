@@ -23,7 +23,7 @@ function ResultsArticle({
   t?: Translator;
 }) {
   return (
-    <article class="article">
+    <article class="article" style="overflow: hidden; max-width: 100%; box-sizing: border-box;">
       <div class="mb-4 flex items-center justify-between">
         <h1 class="text-xl" safe>
           {t("results", "title")}
@@ -57,17 +57,17 @@ function ResultsArticle({
         class={`
           mb-4 inline-block h-2 w-full appearance-none overflow-hidden rounded-full border-0
           bg-neutral-700 bg-none text-accent-500 accent-accent-500
-          [&::-moz-progress-bar]:bg-accent-500 [&::-webkit-progress-value]:rounded-full
-          [&::-webkit-progress-value]:[background:none]
+          [&::-moz-progress-bar]:bg-accent-500
+          [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:[background:none]
           [&[value]::-webkit-progress-value]:bg-accent-500
           [&[value]::-webkit-progress-value]:transition-[inline-size]
         `}
       />
       <table
         class={`
-          w-full table-auto overflow-hidden rounded-xl text-left
+          w-full table-fixed overflow-hidden rounded-xl text-left
           [&_td]:p-4
-          [&_tr]:border-b [&_tr]:border-[var(--glass-divider)]
+          [&_tr]:border-b [&_tr]:border-(--glass-divider)
           [&_tr:last-child]:border-b-0
         `}
         style={{
@@ -111,7 +111,7 @@ function ResultsArticle({
             const isTarFile = file.output_file_name.endsWith(".tar");
             return (
               <tr>
-                <td safe class="max-w-[20vw] truncate">
+                <td class="max-w-[200px] truncate" title={file.output_file_name} safe>
                   {file.output_file_name}
                 </td>
                 <td safe>{file.status}</td>

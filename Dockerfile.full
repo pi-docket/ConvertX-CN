@@ -43,7 +43,7 @@ FROM convertx/convertx-cn:latest
 # ==============================================================================
 # 說明：完整 LaTeX 支援，適合需要特殊 LaTeX 套件的使用者
 # 風險：Image 體積大幅增加
-# ℹ️ 一般版已內建：texlive-base, texlive-latex-base, texlive-xetex, texlive-lang-cjk
+# ℹ️ 一般版已內建：texlive-base, texlive-latex-base, texlive-xetex, texlive-lang-cjk, texlive-lang-chinese
 # ------------------------------------------------------------------------------
 # RUN apt-get update && apt-get install -y --no-install-recommends \
 #   texlive-full \

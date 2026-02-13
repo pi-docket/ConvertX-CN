@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.1.25](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.25) (2026-02-13)
+
+修復長檔名導致結果卡片溢出容器問題，提升 UI 穩定性。
+
+### 🐛 Bug Fixes
+
+- **結果卡片溢出修復**：修復長檔名撐破 glass 卡片邊界的問題
+- **article 容器保護**：為 article 加上 `overflow: hidden` 防止內容溢出
+- **table-fixed 佈局**：結果頁與歷史頁表格改用 `table-fixed`，確保欄位不被撐開
+
+### ✨ Improvements
+
+- **更積極的檔名截斷**：使用 `max-w-[200px]` + `truncate` + `min-w-0` 強制省略過長檔名
+- **Hover 顯示完整名稱**：所有檔名元素加上 `title` 屬性，滑鼠懸停即可查看完整檔名
+- **箭頭符號固定寬度**：歷史頁箭頭加上 `shrink-0`，防止被文字擠壓
+
+---
+
 ## [0.1.24](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.24) (2026-02-05)
 
 MinerU 後端優化與 Lite 版本 Dockerfile 優化。

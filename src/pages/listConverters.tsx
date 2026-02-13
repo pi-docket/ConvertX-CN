@@ -28,7 +28,9 @@ export const listConverters = new Elysia().use(userService).get(
                   <h3 class="mb-2 font-semibold text-yellow-400">⚠️ 部分引擎在此平台不可用</h3>
                   <p class="text-sm text-yellow-200">
                     以下引擎因架構限制而被禁用：
-                    <span class="ml-2 font-mono">{disabledEngines.join(", ")}</span>
+                    <span class="ml-2 font-mono" safe>
+                      {disabledEngines.join(", ")}
+                    </span>
                   </p>
                   <p class="mt-1 text-xs text-yellow-300">
                     這通常發生在 ARM64 平台上。請參閱文檔了解替代方案。
@@ -40,7 +42,7 @@ export const listConverters = new Elysia().use(userService).get(
                 class={`
                   w-full table-auto overflow-hidden rounded-xl text-left
                   [&_td]:p-4
-                  [&_tr]:border-b [&_tr]:border-[var(--glass-divider)]
+                  [&_tr]:border-b [&_tr]:border-(--glass-divider)
                   [&_tr:last-child]:border-b-0
                   [&_ul]:list-inside [&_ul]:list-disc
                 `}
@@ -68,7 +70,7 @@ export const listConverters = new Elysia().use(userService).get(
                         <td safe>
                           {converter}
                           {isDisabled && (
-                            <span class="ml-2 rounded bg-yellow-600 px-2 py-0.5 text-xs text-white">
+                            <span class="ml-2 rounded-sm bg-yellow-600 px-2 py-0.5 text-xs text-white">
                               禁用
                             </span>
                           )}
