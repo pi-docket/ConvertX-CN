@@ -2,7 +2,19 @@
 
 ## [0.1.25](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.25) (2026-02-13)
 
-修復長檔名導致結果卡片溢出容器問題，提升 UI 穩定性。
+智能上游同步、UI 修復與穩定性改進。
+
+### 🔄 Upstream Sync
+
+- **智能選擇性合併**：分析上游 4 個提交，選擇性合併有價值的更新
+- **GitHub Workflow 安全性修復**：合併上游 workflow 權限修復 (#527)
+- **保護 CN 自訂功能**：確保 315 個 CN 獨有提交不被覆蓋
+  - inferenceApi（AI 推論 API）
+  - enginesApi、convertersApi、rasApi
+  - memoryDiagnostics（記憶體診斷）
+  - uploadChunk/downloadChunk（分塊傳輸）
+  - displayStartupInfo（美化啟動資訊）
+- **PORT 環境變數支援**：確認 CN 版本已支援動態 PORT 配置（優於上游實現）
 
 ### 🐛 Bug Fixes
 
@@ -15,6 +27,13 @@
 - **更積極的檔名截斷**：使用 `max-w-[200px]` + `truncate` + `min-w-0` 強制省略過長檔名
 - **Hover 顯示完整名稱**：所有檔名元素加上 `title` 屬性，滑鼠懸停即可查看完整檔名
 - **箭頭符號固定寬度**：歷史頁箭頭加上 `shrink-0`，防止被文字擠壓
+
+### 📊 Version Analysis
+
+- **上游版本**：v0.17.0（基礎版本）
+- **CN 版本**：v0.1.25（增強版本）
+- **分支差異**：本地領先 315 個提交，上游領先 4 個提交
+- **合併策略**：選擇性 cherry-pick，避免完整合併破壞 CN 功能
 
 ---
 
