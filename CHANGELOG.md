@@ -2,13 +2,17 @@
 
 ## [0.1.25](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.25) (2026-02-13)
 
-智能上游同步、Docker 修復與穩定性改進。
+智能上游同步、Docker 修復與完整合併。
 
 ### 🔄 Upstream Sync
 
-- **智能選擇性合併**：分析上游 4 個提交，選擇性合併有價值的更新
-- **GitHub Workflow 安全性修復**：合併上游 workflow 權限修復 (#527)
-- **保護 CN 自訂功能**：確保 315 個 CN 獨有提交不被覆蓋
+- **完整合併 upstream/main**：正式合併上游 4 個提交，確保分支完全同步
+- **智能衝突解決**：保留所有 CN 自訂功能的同時完成合併
+  - 保留 CN 增強的 PORT 與啟動系統
+  - 保留 CN 獨立的依賴管理（ESLint 9.x）
+  - 保留 CN 改進的 workflow 配置
+- **GitHub 分支狀態**：從 "321 ahead, 4 behind" 優化為 "321 ahead, 0 behind"
+- **保護 CN 自訂功能**：確保 316+ 個 CN 獨有提交不被覆蓋
   - inferenceApi（AI 推論 API）
   - enginesApi、convertersApi、rasApi
   - memoryDiagnostics（記憶體診斷）
@@ -29,12 +33,18 @@
 - **Hover 顯示完整名稱**：所有檔名元素加上 `title` 屬性，滑鼠懸停即可查看完整檔名
 - **箭頭符號固定寬度**：歷史頁箭頭加上 `shrink-0`，防止被文字擠壓
 
+### 🤖 Automation
+
+- **Docker Hub 自動驗證**：Release 後自動驗證 images 是否成功推送
+- **PR 智能處理**：自動處理 upstream-sync PR，識別已合併/依賴更新
+- **Calibre 版本檢查**：每週自動檢查並創建更新 PR
+
 ### 📊 Version Analysis
 
 - **上游版本**：v0.17.0（基礎版本）
 - **CN 版本**：v0.1.25（增強版本）
-- **分支差異**：本地領先 316 個提交，上游領先 3 個提交
-- **合併策略**：選擇性 cherry-pick，避免完整合併破壞 CN 功能
+- **分支狀態**：321 commits ahead, 0 commits behind（完全同步）
+- **合併策略**：完整 merge upstream/main + 智能衝突解決
 
 ---
 
