@@ -1,0 +1,125 @@
+name: Check Calibre Version
+
+# 定期檢查 Calibre 是否有新版本，並在 Dockerfile 中更新
+on:
+  schedule:
+    # 每週一早上 8 點（UTC 0:00）檢查
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check-calibre-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest Calibre version
+        id: calibre
+        run: |
+          echo "🔍 檢查最新 Calibre 版本..."
+          
+          # 從 GitHub API 獲取最新 release
+          LATEST_VERSION=$(curl -s https://api.github.com/repos/kovidgoyal/calibre/releases/latest | jq -r '.tag_name' | sed 's/v//')
+          echo "最新版本: $LATEST_VERSION"
+          echo "latest=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          
+          # 檢查當前 Dockerfile 中的版本
+          CURRENT_VERSION=$(grep "ARG CALIBRE_VERSION=" Dockerfile | head -1 | cut -d= -f2)
+          echo "當前版本: $CURRENT_VERSION"
+          echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          
+          if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "⚠️  需要更新 Calibre 版本！"
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "✅ Calibre 版本已是最新"
+          fi
+
+      - name: Verify latest version is available
+        if: steps.calibre.outputs.needs_update == 'true'
+        id: verify
+        run: |
+          LATEST_VERSION="${{ steps.calibre.outputs.latest }}"
+          
+          echo "🔍 驗證 Calibre ${LATEST_VERSION} binary 是否可用..."
+          
+          # 檢查 x86_64 版本
+          if curl -I "https://github.com/kovidgoyal/calibre/releases/download/v${LATEST_VERSION}/calibre-${LATEST_VERSION}-x86_64.txz" 2>&1 | grep -q "HTTP/[12] 302\|HTTP/[12] 200"; then
+            echo "✅ x86_64 binary 可用"
+            echo "available=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ x86_64 binary 不可用"
+            echo "available=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update Dockerfile
+        if: |
+          steps.calibre.outputs.needs_update == 'true' &&
+          steps.verify.outputs.available == 'true'
+        run: |
+          LATEST_VERSION="${{ steps.calibre.outputs.latest }}"
+          CURRENT_VERSION="${{ steps.calibre.outputs.current }}"
+          
+          echo "🔄 更新 Dockerfile 中的 Calibre 版本..."
+          
+          # 更新版本號
+          sed -i "s/ARG CALIBRE_VERSION=${CURRENT_VERSION}/ARG CALIBRE_VERSION=${LATEST_VERSION}/g" Dockerfile
+          
+          # 更新註釋
+          sed -i "s/版本 ${CURRENT_VERSION}/版本 ${LATEST_VERSION}/g" Dockerfile
+          sed -i "s/v${CURRENT_VERSION}/v${LATEST_VERSION}/g" Dockerfile
+          
+          echo "✅ Dockerfile 已更新"
+
+      - name: Create Pull Request
+        if: |
+          steps.calibre.outputs.needs_update == 'true' &&
+          steps.verify.outputs.available == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(docker): update Calibre to v${{ steps.calibre.outputs.latest }}"
+          title: "⬆️ Update Calibre to v${{ steps.calibre.outputs.latest }}"
+          body: |
+            ## 🔄 Calibre 版本更新
+
+            ### 變更內容
+            - 從 `v${{ steps.calibre.outputs.current }}` 更新到 `v${{ steps.calibre.outputs.latest }}`
+
+            ### 驗證狀態
+            - ✅ 最新版本已發布
+            - ✅ x86_64 binary 可用
+            - ✅ arm64 binary 可用
+            - ✅ Dockerfile 已自動更新
+
+            ### 測試建議
+            1. 驗證 Docker build 成功
+            2. 測試 ebook 轉換功能
+            3. 確認 Calibre 命令可正常執行
+
+            ---
+            🤖 此 PR 由自動化 workflow 創建
+          branch: auto-update-calibre-v${{ steps.calibre.outputs.latest }}
+          delete-branch: true
+          labels: |
+            dependencies
+            docker
+            auto-update
+
+      - name: Report status
+        if: always()
+        run: |
+          echo "======================================"
+          echo "📊 Calibre 版本檢查報告"
+          echo "======================================"
+          echo "當前版本: ${{ steps.calibre.outputs.current }}"
+          echo "最新版本: ${{ steps.calibre.outputs.latest }}"
+          echo "需要更新: ${{ steps.calibre.outputs.needs_update }}"
+          echo "Binary 可用: ${{ steps.verify.outputs.available }}"
+          echo "======================================"

@@ -1,0 +1,131 @@
+name: Verify Docker Hub Image
+
+# 在 Release workflow 完成後驗證 Docker Hub 上是否存在 image
+on:
+  workflow_run:
+    workflows: ["Release (一般版)"]
+    types:
+      - completed
+
+  # 允許手動觸發
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to verify (e.g., v0.1.25)"
+        required: true
+        type: string
+
+env:
+  DOCKER_REPO: convertx/convertx-cn
+
+jobs:
+  verify-docker-images:
+    runs-on: ubuntu-latest
+    # 只在 workflow 成功時執行
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get tag name
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            # 從觸發的 workflow 取得 tag
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+          echo "Tag to verify: $(cat $GITHUB_OUTPUT | grep version | cut -d= -f2)"
+
+      - name: Wait for Docker Hub propagation
+        run: |
+          echo "⏳ 等待 Docker Hub 傳播（30秒）..."
+          sleep 30
+
+      - name: Verify AMD64 image exists
+        id: verify_amd64
+        continue-on-error: true
+        run: |
+          echo "🔍 驗證 AMD64 image..."
+          TAG="${{ steps.tag.outputs.version }}"
+          
+          # 使用 docker manifest inspect 驗證
+          if docker manifest inspect ${{ env.DOCKER_REPO }}:${TAG}-amd64 > /dev/null 2>&1; then
+            echo "✅ AMD64 image 存在於 Docker Hub"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ AMD64 image 不存在於 Docker Hub"
+            echo "exists=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Verify ARM64 image exists
+        id: verify_arm64
+        continue-on-error: true
+        run: |
+          echo "🔍 驗證 ARM64 image..."
+          TAG="${{ steps.tag.outputs.version }}"
+          
+          if docker manifest inspect ${{ env.DOCKER_REPO }}:${TAG}-arm64 > /dev/null 2>&1; then
+            echo "✅ ARM64 image 存在於 Docker Hub"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ ARM64 image 不存在於 Docker Hub"
+            echo "exists=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Verify multi-arch manifest
+        id: verify_manifest
+        continue-on-error: true
+        run: |
+          echo "🔍 驗證 multi-arch manifest..."
+          TAG="${{ steps.tag.outputs.version }}"
+          
+          if docker manifest inspect ${{ env.DOCKER_REPO }}:${TAG} > /dev/null 2>&1; then
+            echo "✅ Multi-arch manifest 存在於 Docker Hub"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Multi-arch manifest 不存在於 Docker Hub"
+            echo "exists=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Generate verification report
+        if: always()
+        run: |
+          echo "======================================"
+          echo "📊 Docker Hub 驗證報告"
+          echo "======================================"
+          echo "Tag: ${{ steps.tag.outputs.version }}"
+          echo "Repository: ${{ env.DOCKER_REPO }}"
+          echo ""
+          echo "AMD64 Image: ${{ steps.verify_amd64.outputs.exists == 'true' && '✅ 成功' || '❌ 失敗' }}"
+          echo "ARM64 Image: ${{ steps.verify_arm64.outputs.exists == 'true' && '✅ 成功' || '❌ 失敗' }}"
+          echo "Multi-arch: ${{ steps.verify_manifest.outputs.exists == 'true' && '✅ 成功' || '❌ 失敗' }}"
+          echo "======================================"
+
+      - name: Report failure
+        if: |
+          steps.verify_amd64.outputs.exists != 'true' ||
+          steps.verify_arm64.outputs.exists != 'true' ||
+          steps.verify_manifest.outputs.exists != 'true'
+        run: |
+          echo "❌ Docker Hub 驗證失敗！"
+          echo "請檢查 Release workflow 日誌："
+          echo "https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}"
+          exit 1
+
+      - name: Success message
+        if: |
+          steps.verify_amd64.outputs.exists == 'true' &&
+          steps.verify_arm64.outputs.exists == 'true' &&
+          steps.verify_manifest.outputs.exists == 'true'
+        run: |
+          echo "🎉 所有 Docker images 已成功推送到 Docker Hub！"
+          echo "可以使用以下指令拉取："
+          echo ""
+          echo "  docker pull ${{ env.DOCKER_REPO }}:${{ steps.tag.outputs.version }}"
+          echo "  docker pull ${{ env.DOCKER_REPO }}:latest"
