@@ -70,7 +70,11 @@ export const listConverters = new Elysia().use(userService).get(
                         <td safe>
                           {converter}
                           {isDisabled && (
-                            <span class="ml-2 rounded-sm bg-yellow-600 px-2 py-0.5 text-xs text-white">
+                            <span
+                              class="
+                              ml-2 rounded-sm bg-yellow-600 px-2 py-0.5 text-xs text-white
+                            "
+                            >
                               禁用
                             </span>
                           )}

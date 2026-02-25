@@ -78,28 +78,14 @@ export const history = new Elysia()
                     </button>
                   </div>
                 </div>
-                <table
-                  class={`
-                    w-full table-fixed overflow-hidden rounded-xl text-left
-                    [&_td]:p-4
-                    [&_tr]:border-b [&_tr]:border-(--glass-divider)
-                    [&_tr:last-child]:border-b-0
-                  `}
-                  style={{
-                    background: "var(--glass-bg)",
-                    backdropFilter: "var(--glass-blur)",
-                    WebkitBackdropFilter: "var(--glass-blur)",
-                    border: "1px solid var(--glass-border)",
-                    boxShadow: "var(--glass-shadow), var(--glass-inset-highlight)",
-                  }}
-                >
+                <table class="result-panel">
                   <thead>
                     <tr>
                       <th
-                        class={`
-                          px-2 py-2
-                          sm:px-4
-                        `}
+                        class="
+                        table-cell-padding px-2
+                        sm:px-4
+                      "
                       >
                         <input
                           type="checkbox"
@@ -109,51 +95,51 @@ export const history = new Elysia()
                         />
                       </th>
                       <th
-                        class={`
-                          px-2 py-2
-                          sm:px-4
-                        `}
+                        class="
+                        table-cell-padding px-2
+                        sm:px-4
+                      "
                       >
                         <span class="sr-only">{t("history", "expandDetails")}</span>
                       </th>
                       <th
-                        class={`
-                          px-2 py-2
-                          sm:px-4
-                        `}
+                        class="
+                        table-cell-padding px-2
+                        sm:px-4
+                      "
                       >
                         {t("history", "time")}
                       </th>
                       <th
-                        class={`
-                          px-2 py-2
-                          sm:px-4
-                        `}
+                        class="
+                        table-cell-padding px-2
+                        sm:px-4
+                      "
                       >
                         {t("history", "files")}
                       </th>
                       <th
-                        class={`
-                          px-2 py-2
-                          max-sm:hidden
-                          sm:px-4
-                        `}
+                        class="
+                        table-cell-padding px-2
+                        max-sm:hidden
+                        sm:px-4
+                      "
                       >
                         {t("history", "filesDone")}
                       </th>
                       <th
-                        class={`
-                          px-2 py-2
-                          sm:px-4
-                        `}
+                        class="
+                        table-cell-padding px-2
+                        sm:px-4
+                      "
                       >
                         {t("history", "status")}
                       </th>
                       <th
-                        class={`
-                          px-2 py-2
-                          sm:px-4
-                        `}
+                        class="
+                        table-cell-padding px-2
+                        sm:px-4
+                      "
                       >
                         {t("history", "actions")}
                       </th>
@@ -162,8 +148,16 @@ export const history = new Elysia()
                   <tbody>
                     {userJobs.map((job) => (
                       <>
-                        <tr id={`job-row-${job.id}`}>
-                          <td>
+                        <tr
+                          id={`job-row-${job.id}`}
+                          style="border-bottom: 1px solid var(--glass-divider);"
+                        >
+                          <td
+                            class="
+                            table-cell-padding px-2
+                            sm:px-4
+                          "
+                          >
                             <input
                               type="checkbox"
                               class="h-4 w-4 cursor-pointer"
@@ -171,7 +165,13 @@ export const history = new Elysia()
                               data-job-id={job.id}
                             />
                           </td>
-                          <td class="job-details-toggle cursor-pointer" data-job-id={job.id}>
+                          <td
+                            class="
+                            job-details-toggle table-cell-padding cursor-pointer px-2
+                            sm:px-4
+                          "
+                            data-job-id={job.id}
+                          >
                             <svg
                               id={`arrow-${job.id}`}
                               xmlns="http://www.w3.org/2000/svg"
@@ -188,15 +188,49 @@ export const history = new Elysia()
                               />
                             </svg>
                           </td>
-                          <td safe>
+                          <td
+                            class="
+                            table-cell-padding px-2
+                            sm:px-4
+                          "
+                            safe
+                          >
                             {new Date(job.date_created).toLocaleTimeString(LANGUAGE, {
                               timeZone: TIMEZONE,
                             })}
                           </td>
-                          <td>{job.num_files}</td>
-                          <td class="max-sm:hidden">{job.finished_files}</td>
-                          <td safe>{job.status}</td>
-                          <td class="flex flex-row gap-4">
+                          <td
+                            class="
+                            table-cell-padding px-2
+                            sm:px-4
+                          "
+                          >
+                            {job.num_files}
+                          </td>
+                          <td
+                            class="
+                            table-cell-padding px-2
+                            max-sm:hidden
+                            sm:px-4
+                          "
+                          >
+                            {job.finished_files}
+                          </td>
+                          <td
+                            class="
+                            table-cell-padding px-2
+                            sm:px-4
+                          "
+                            safe
+                          >
+                            {job.status}
+                          </td>
+                          <td
+                            class="
+                            table-cell-padding flex flex-row gap-2 px-2
+                            sm:gap-4 sm:px-4
+                          "
+                          >
                             <a
                               class={`
                                 text-accent-500 underline
@@ -217,8 +251,12 @@ export const history = new Elysia()
                             </a>
                           </td>
                         </tr>
-                        <tr id={`details-${job.id}`} class="hidden">
-                          <td colspan="7" style="max-width: 0;">
+                        <tr
+                          id={`details-${job.id}`}
+                          class="hidden"
+                          style="border-bottom: 1px solid var(--glass-divider);"
+                        >
+                          <td colspan="7" style="max-width: 0; display: table-cell;">
                             <div
                               class="overflow-hidden rounded-lg p-3 text-sm"
                               style={{

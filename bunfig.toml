@@ -1,0 +1,11 @@
+# Bun Configuration
+# https://bun.sh/docs/runtime/bunfig
+
+[runtime]
+# Enable manual garbage collection
+# 運行時設定
+exposeGC = true
+
+[bundle]
+# Bun 優化設定
+root = "src"

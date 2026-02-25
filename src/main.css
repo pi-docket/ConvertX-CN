@@ -98,6 +98,38 @@
   }
 }
 
+/* ============================================================================
+   Unified Layout System for Results & History Pages
+   ============================================================================ */
+
+/* Shared result panel container */
+@utility result-panel {
+  @apply w-full overflow-hidden rounded-xl text-left;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), var(--glass-inset-highlight);
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Unified table cell padding - consistent across all tables */
+@utility table-cell-padding {
+  @apply py-2;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+/* Progress bar - block layout for proper alignment */
+@utility progress-bar {
+  @apply block h-2 w-full appearance-none overflow-hidden rounded-full border-0
+    bg-neutral-700 bg-none text-accent-500 accent-accent-500
+    mb-4;
+}
+
 /* Status styles for feedback */
 @utility status-success {
   @apply text-white;

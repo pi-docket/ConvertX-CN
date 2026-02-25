@@ -38,13 +38,7 @@ export default defineConfig(
     rules: {
       ...eslintPluginBetterTailwindcss.configs.recommended.rules,
       ...eslintPluginBetterTailwindcss.configs.stylistic.rules,
-      "better-tailwindcss/enforce-consistent-line-wrapping": [
-        "warn",
-        {
-          group: "newLine",
-          printWidth: 100,
-        },
-      ],
+      "better-tailwindcss/enforce-consistent-line-wrapping": ["off"],
       // 關閉未註冊/未知 class 的檢查，因為專案使用了很多自訂 class
       "better-tailwindcss/no-unregistered-classes": "off",
       "better-tailwindcss/no-unknown-classes": "off",
