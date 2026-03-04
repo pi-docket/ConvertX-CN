@@ -10,9 +10,9 @@
 name: Auto Upstream Sync
 
 on:
-  # 每 6 小時檢查一次 upstream
+  # 每天 UTC 03:00 檢查一次 upstream（台灣時間 11:00）
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 3 * * *"
   # 手動觸發
   workflow_dispatch:
     inputs:
@@ -220,6 +220,48 @@ jobs:
             *此 Issue 由 GitHub Actions 自動建立*
             `;
 
+            // 自動關閉之前的 upstream-sync 通知 issue
+            const oldSyncIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'upstream-sync,automated',
+              per_page: 10
+            });
+            for (const issue of oldSyncIssues.data) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+                state_reason: 'completed'
+              });
+            }
+
+            // 同步成功時也自動關閉當前開啟的 merge-conflict issue
+            const openConflictIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'merge-conflict',
+              per_page: 10
+            });
+            for (const issue of openConflictIssues.data) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `✅ Upstream sync 已成功完成 (${date})，自動關閉此衝突 issue。`
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+                state_reason: 'completed'
+              });
+            }
+
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -245,7 +287,15 @@ jobs:
             });
 
             if (existingIssues.data.length > 0) {
-              console.log(`⏭️ 已有開啟的 merge-conflict issue (#${existingIssues.data[0].number})，跳過建立新 issue`);
+              // 已有開啟的 merge-conflict issue，更新其註解而不是建立新的
+              const existingIssue = existingIssues.data[0];
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `⚠️ 同步仍失敗 (${date})，merge conflict 尚未解決。請手動處理。`
+              });
+              console.log(`⏭️ 已更新現有 merge-conflict issue (#${existingIssue.number})`);
               return;
             }
 
