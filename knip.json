@@ -15,7 +15,9 @@
     "src/helpers/processingMode.ts",
     "src/helpers/apiKeys.ts",
     "src/helpers/env.ts",
-    "src/db/types.ts"
+    "src/db/types.ts",
+    "src/ai/**",
+    "src/security/**"
   ],
   "ignoreDependencies": [],
   "ignoreExportsUsedInFile": true

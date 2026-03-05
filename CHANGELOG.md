@@ -7,6 +7,7 @@
 ### 🚀 Major Changes
 
 #### 翻譯引擎升級
+
 - **移除本地 LLM 依賴**：不再支援 Ollama、llama.cpp、GGUF 等本地模型
   - 簡化部署流程，減少內存和 GPU 占用
   - 所有用戶統一使用雲端翻譯服務
@@ -19,6 +20,7 @@
   - 內置加密密鑰與 Worker URL
 
 #### API Key 緩存機制
+
 - **1 分鐘 Key 共用**：同時並發多個翻譯請求時只會向 Worker 請求一次
   - 大幅降低 Worker 請求費用
   - 避免 API 速率限制
@@ -26,18 +28,18 @@
 - **自動過期更新**：超過有效期自動從 Worker 重新取得
 
 #### 安全與隱私加強
+
 - **API Key 不落地**：
   - 不寫入 .env 檔案
   - 不寫入 localStorage
   - 不寫入日誌
   - 只在記憶體中保留（頻繁清除引用）
-- **XOR Cipher 混淆**：Worker URL 和加密密鑰使用 XOR 加密存儲
-  - 比 Base64 編碼更安全
-  - 代碼公開發佈無洩露風險
 - **無環境變數困擾**：預設配置已內置，新用戶無需手動設定
 
 #### 多翻譯服務支援
+
 新增 OpenAI、DeepSeek、Custom LLM 翻譯提供者：
+
 - `BABELDOC_ENGINE=siliconflow`（預設）
 - `BABELDOC_ENGINE=openai`（需 OPENAI_API_KEY）
 - `BABELDOC_ENGINE=deepseek`（需 DEEPSEEK_API_KEY）
@@ -45,7 +47,9 @@
 - `BABELDOC_ENGINE=placeholder`（禁用翻譯，抬出錯誤）
 
 #### 自定義部署支援
+
 高級用戶可使用自己的 Worker 服務：
+
 - `CONVERTX_WORKER_URL`：自訂 Worker 端點
 - `CONVERTX_ENCRYPTION_KEY`：自訂加密密鑰
 
@@ -92,6 +96,7 @@
 3. ✅ **可選**：配置其他翻譯服務（OpenAI/DeepSeek）
 
 **环境變數變更：**
+
 ```diff
 - 移除：SILICONFLOW_ENCRYPTION_KEY（已內置）
 - 移除：SILICONFLOW_WORKER_URL（已內置）

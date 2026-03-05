@@ -1,8 +1,7 @@
 /**
  * Translation Service Manager
  *
- * 目前僅保留 placeholder，
- * 不提供本地翻譯與 API Key 翻譯實作。
+ * 管理翻譯服務提供者，支援 SiliconFlow 等多種翻譯後端。
  */
 
 import {
@@ -12,6 +11,13 @@ import {
   TranslationResult,
   DEFAULT_TRANSLATION_PROVIDER,
 } from "./types";
+import { SiliconFlowTranslationProvider } from "../../ai/translator";
+import {
+  OpenAITranslationProvider,
+  DeepSeekTranslationProvider,
+  CustomTranslationProvider,
+} from "../../ai/translationProviders";
+import { BABELDOC_ENGINE } from "../env";
 
 function createNotImplementedError(): Error {
   const error = new Error(
@@ -39,6 +45,22 @@ class PlaceholderTranslationProvider implements TranslationProvider {
  * @returns 翻譯服務類型
  */
 export function getConfiguredTranslationProvider(): TranslationProviderType {
+  const engine = BABELDOC_ENGINE.toLowerCase();
+
+  // 支援的翻譯類型
+  const validTypes: TranslationProviderType[] = [
+    "siliconflow",
+    "openai",
+    "deepseek",
+    "custom",
+    "local",
+    "placeholder",
+  ];
+
+  if (validTypes.includes(engine as TranslationProviderType)) {
+    return engine as TranslationProviderType;
+  }
+
   return DEFAULT_TRANSLATION_PROVIDER;
 }
 
@@ -80,8 +102,20 @@ export class TranslationServiceManager {
    * 取得或建立翻譯服務實例
    */
   private getOrCreateProvider(type: TranslationProviderType): TranslationProvider | null {
-    void type;
-    return this.provider;
+    switch (type) {
+      case "siliconflow":
+        return new SiliconFlowTranslationProvider();
+      case "openai":
+        return new OpenAITranslationProvider();
+      case "deepseek":
+        return new DeepSeekTranslationProvider();
+      case "custom":
+        return new CustomTranslationProvider();
+      case "placeholder":
+      case "local":
+      default:
+        return new PlaceholderTranslationProvider();
+    }
   }
 
   /**
@@ -89,18 +123,40 @@ export class TranslationServiceManager {
    *
    * 優先順序：
    * 1. 環境變數設定的服務（如果可用）
-   * 2. 本地翻譯服務（預設 fallback）
+   * 2. SiliconFlow（預設 fallback）
+   * 3. Placeholder（如果都不可用）
    */
   async getBestProvider(): Promise<TranslationProvider> {
-    throw createNotImplementedError();
+    // 嘗試環境變數設定的服務
+    const preferredProvider = this.getOrCreateProvider(this.preferredProvider);
+    if (preferredProvider) {
+      const available = await preferredProvider.isAvailable();
+      if (available) {
+        return preferredProvider;
+      }
+    }
+
+    // Fallback: 嘗試 SiliconFlow
+    if (this.preferredProvider !== "siliconflow") {
+      const siliconflow = this.getOrCreateProvider("siliconflow");
+      if (siliconflow) {
+        const available = await siliconflow.isAvailable();
+        if (available) {
+          return siliconflow;
+        }
+      }
+    }
+
+    // 最後回傳 placeholder（會拋出錯誤）
+    return new PlaceholderTranslationProvider();
   }
 
   /**
    * 執行翻譯
    */
   async translate(request: TranslationRequest): Promise<TranslationResult> {
-    void request;
-    throw createNotImplementedError();
+    const provider = await this.getBestProvider();
+    return provider.translate(request);
   }
 
   /**
@@ -114,8 +170,11 @@ export class TranslationServiceManager {
    * 檢查特定翻譯服務是否可用
    */
   async checkProviderAvailability(type: TranslationProviderType): Promise<boolean> {
-    void type;
-    return false;
+    const provider = this.getOrCreateProvider(type);
+    if (!provider) {
+      return false;
+    }
+    return provider.isAvailable();
   }
 }
 
@@ -131,5 +190,6 @@ export function createTranslationManager(userId?: number): TranslationServiceMan
  * 用於匿名使用者或系統任務
  */
 export async function getDefaultTranslationProvider(): Promise<TranslationProvider> {
-  return new PlaceholderTranslationProvider();
+  const manager = new TranslationServiceManager();
+  return manager.getBestProvider();
 }

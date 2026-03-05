@@ -50,9 +50,14 @@ export const MINERU_MODE = ((): "pipeline" | "vlm" => {
 /**
  * BabelDOC 翻譯引擎
  *
- * 目前僅保留 placeholder（尚未實作線上 API 翻譯）。
+ * 支援的翻譯類型：
+ * - siliconflow: 使用 SiliconFlow（Hunyuan-MT-7B）翻譯（預設）
+ * - openai: 使用 OpenAI API 翻譯
+ * - deepseek: 使用 DeepSeek API 翻譯
+ * - custom: 使用自定義 LLM API 翻譯
+ * - placeholder: 不啟用翻譯（會拋出錯誤）
  */
-export const BABELDOC_ENGINE = "placeholder";
+export const BABELDOC_ENGINE = process.env.BABELDOC_ENGINE?.toLowerCase() || "siliconflow";
 
 /**
  * API Keys（從環境變數讀取）

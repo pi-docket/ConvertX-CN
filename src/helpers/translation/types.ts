@@ -2,13 +2,18 @@
  * Translation Provider Types
  *
  * 定義翻譯服務的統一介面。
- * 目前僅保留 placeholder，不啟用任何實際翻譯後端。
  */
 
 /**
  * 翻譯服務類型
  */
-export type TranslationProviderType = "local" | "openai" | "deepseek" | "custom";
+export type TranslationProviderType =
+  | "local"
+  | "openai"
+  | "deepseek"
+  | "custom"
+  | "siliconflow"
+  | "placeholder";
 
 /**
  * 翻譯請求
@@ -70,9 +75,9 @@ export interface TranslationProvider {
 
 /**
  * 預設翻譯服務類型
- * 目前僅作為相容性保留。
+ * 可透過 BABELDOC_ENGINE 環境變數設定。
  */
-export const DEFAULT_TRANSLATION_PROVIDER: TranslationProviderType = "local";
+export const DEFAULT_TRANSLATION_PROVIDER: TranslationProviderType = "placeholder";
 
 /**
  * 語言代碼標準化

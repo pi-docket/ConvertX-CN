@@ -39,26 +39,6 @@ export interface ServiceStatus {
 // ==============================================================================
 
 /**
- * 檢查 HTTP 服務是否可用
- */
-async function checkHttpHealth(url: string, timeoutMs = 3000): Promise<boolean> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-    const response = await fetch(url, {
-      method: "GET",
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * 檢查 TCP Port 是否開啟
  */
 async function checkPortOpen(host: string, port: number, timeoutMs = 2000): Promise<boolean> {
