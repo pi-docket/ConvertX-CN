@@ -1,5 +1,106 @@
 # Changelog
 
+## [0.1.26](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.26) (2026-03-05)
+
+翻譯系統革新、移除本地 LLM 依賴、核心安全加固。
+
+### 🚀 Major Changes
+
+#### 翻譯引擎升級
+- **移除本地 LLM 依賴**：不再支援 Ollama、llama.cpp、GGUF 等本地模型
+  - 簡化部署流程，減少內存和 GPU 占用
+  - 所有用戶統一使用雲端翻譯服務
+- **改為 Worker + Client 架構**：
+  - Cloudflare Worker 只負責金鑰分發（加密）
+  - 客戶端直接呼叫 SiliconFlow API
+  - 完全符合「開箱即用」理念
+- **預設使用 SiliconFlow（Hunyuan-MT-7B）**：高質量中文翻譯
+  - 無需用戶配置環境變數
+  - 內置加密密鑰與 Worker URL
+
+#### API Key 緩存機制
+- **1 分鐘 Key 共用**：同時並發多個翻譯請求時只會向 Worker 請求一次
+  - 大幅降低 Worker 請求費用
+  - 避免 API 速率限制
+- **線程安全實現**：並發翻譯時只有首次請求刷新，其他請求等待結果
+- **自動過期更新**：超過有效期自動從 Worker 重新取得
+
+#### 安全與隱私加強
+- **API Key 不落地**：
+  - 不寫入 .env 檔案
+  - 不寫入 localStorage
+  - 不寫入日誌
+  - 只在記憶體中保留（頻繁清除引用）
+- **XOR Cipher 混淆**：Worker URL 和加密密鑰使用 XOR 加密存儲
+  - 比 Base64 編碼更安全
+  - 代碼公開發佈無洩露風險
+- **無環境變數困擾**：預設配置已內置，新用戶無需手動設定
+
+#### 多翻譯服務支援
+新增 OpenAI、DeepSeek、Custom LLM 翻譯提供者：
+- `BABELDOC_ENGINE=siliconflow`（預設）
+- `BABELDOC_ENGINE=openai`（需 OPENAI_API_KEY）
+- `BABELDOC_ENGINE=deepseek`（需 DEEPSEEK_API_KEY）
+- `BABELDOC_ENGINE=custom`（需 CUSTOM_LLM_BASE_URL）
+- `BABELDOC_ENGINE=placeholder`（禁用翻譯，抬出錯誤）
+
+#### 自定義部署支援
+高級用戶可使用自己的 Worker 服務：
+- `CONVERTX_WORKER_URL`：自訂 Worker 端點
+- `CONVERTX_ENCRYPTION_KEY`：自訂加密密鑰
+
+### 🔧 Technical Changes
+
+- **translationProviders.ts** (新增)：多翻譯提供者工廠
+- **keyProvider.ts** (改進)：XOR 解密、1分鐘 key 緩存
+- **translator.ts** (改進)：SiliconFlow + 緩存整合層
+- **manager.ts** (改進)：翻譯服務發現與可用性檢查
+- **babeldoc.ts** (改進)：API key 非同步取得與清理
+
+### 🐛 Bug Fixes
+
+- **knip.json**：新增 `src/ai/` 和 `src/security/` 到忽略列表
+- **startupStatus.ts**：移除未使用的 `checkHttpHealth()` 函數
+- **Prettier 格式化**：修復多個文件的代碼風格
+
+### 📚 Documentation Updates
+
+- **README.md**：更新已移除本地 LLM 相關段落（待用戶回饋再最終審定）
+- **.env.example**：簡化配置，預設值改為註解
+- **env.ts**：更新註釋反映已實現的翻譯服務類型
+
+### ✨ Improvements
+
+- **CI/Build**：修復 knip 檢查（新增翻譯模組到忽略列表）
+- **代碼品質**：通過完整的 lint/build/docker 檢查
+- **版本一致**：前端版本升級至 0.1.26
+
+### 📋 Breaking Changes
+
+- ⚠️ **不再支援本地翻譯**：Ollama/llama.cpp 功能完全移除
+  - 遷移指南：所有翻譯請求改為使用 SiliconFlow（已預設）
+  - 影響範圍：PDF 翻譯、文檔翻譯功能需使用遠端 API
+- ⚠️ **BabelDOC 依賴變更**：從 llama.cpp 伺服器轉換為 SiliconFlow API
+  - 不影響其他轉換器（只影響翻譯功能）
+
+### 🔄 Migration Guide
+
+**如果您在 v0.1.25 使用本地翻譯：**
+
+1. ❌ **不要**設置本地 llama.cpp 伺服器
+2. ✅ **改用**內置 SiliconFlow（無需配置）
+3. ✅ **可選**：配置其他翻譯服務（OpenAI/DeepSeek）
+
+**环境變數變更：**
+```diff
+- 移除：SILICONFLOW_ENCRYPTION_KEY（已內置）
+- 移除：SILICONFLOW_WORKER_URL（已內置）
++ 新增（可選）：CONVERTX_WORKER_URL（自訂部署）
++ 新增（可選）：CONVERTX_ENCRYPTION_KEY（自訂部署）
+```
+
+---
+
 ## [0.1.25](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.25) (2026-02-13)
 
 智能上游同步、Docker 修復與完整合併。
