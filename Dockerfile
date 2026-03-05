@@ -447,15 +447,34 @@ RUN set -ex && \
   rm -rf /tmp/pandoc* && \
   echo "✅ Pandoc v${PANDOC_VERSION} 安裝完成"
 
-# 4.10.1 Calibre APT 安裝（使用系統包管理）
-# ⚠️ 注意：使用 apt 版本 Calibre（避免官方 binary 版本過期）
-# 📝 APT 版本由 Debian 維護，依賴管理更穩定
-# 🔗 https://packages.debian.org/bookworm/calibre
+# 4.10.1 Calibre 官方二進制安裝
+# 📦 版本 9.4.0 - 2026-02 官方最新穩定版（比 9.2.1 新）
+# 💡 v9.4 新功能：改進 EPUB 轉換、更好的 DOCX 支援
+# 🔗 https://github.com/kovidgoyal/calibre/releases/tag/v9.4.0
+# ⚠️注意：官方 binary 自帶所有依賴，不依賴系統 libxml2 ABI
+ARG CALIBRE_VERSION=9.4.0
 RUN set -ex && \
   apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  calibre && \
+  libgl1 libegl1 libxkbcommon0 libxcb-cursor0 \
+  libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+  libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
+  libopengl0 libxcb-xinerama0 libxcb-xkb1 xz-utils && \
   rm -rf /var/lib/apt/lists/* && \
+  ARCH=$(uname -m) && \
+  if [ "$ARCH" = "aarch64" ]; then \
+  CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-arm64.txz"; \
+  else \
+  CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz"; \
+  fi && \
+  echo "📦 下載 Calibre ${CALIBRE_VERSION}..." && \
+  curl -fsSL --retry 3 --retry-delay 5 "${CALIBRE_URL}" -o /tmp/calibre.txz && \
+  mkdir -p /opt/calibre && \
+  tar -xJf /tmp/calibre.txz -C /opt/calibre && \
+  rm -f /tmp/calibre.txz && \
+  ln -sf /opt/calibre/ebook-convert /usr/local/bin/ebook-convert && \
+  ln -sf /opt/calibre/ebook-meta /usr/local/bin/ebook-meta && \
+  ln -sf /opt/calibre/calibre /usr/local/bin/calibre && \
   echo "✅ Calibre $(ebook-convert --version 2>&1 | head -1) 安裝完成"
 
 # 4.11 LibreOffice 25.8.4 - 官方 deb 安裝
