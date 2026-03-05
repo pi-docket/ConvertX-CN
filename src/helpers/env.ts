@@ -34,7 +34,9 @@ export const TIMEZONE = process.env.TZ || undefined;
 /**
  * MinerU 處理模式
  * - pipeline: 穩定的 OCR 處理模式（預設）
- * - vlm: 視覺語言模型處理模式（進階）
+ *
+ * 注意：本地 VLM / llama.cpp 功能已移除，
+ * 即使設定 vlm 也會由呼叫端回退到 pipeline。
  */
 export const MINERU_MODE = ((): "pipeline" | "vlm" => {
   const mode = process.env.MINERU_MODE?.toLowerCase();
@@ -47,24 +49,10 @@ export const MINERU_MODE = ((): "pipeline" | "vlm" => {
 
 /**
  * BabelDOC 翻譯引擎
- * - local: 本地 llama-server（預設）
- * - openai: OpenAI API
- * - deepseek: DeepSeek API
- * - custom: 自訂 API
+ *
+ * 目前僅保留 placeholder（尚未實作線上 API 翻譯）。
  */
-export const BABELDOC_ENGINE = ((): "local" | "openai" | "deepseek" | "custom" => {
-  const engine = process.env.BABELDOC_ENGINE?.toLowerCase();
-  switch (engine) {
-    case "openai":
-      return "openai";
-    case "deepseek":
-      return "deepseek";
-    case "custom":
-      return "custom";
-    default:
-      return "local";
-  }
-})();
+export const BABELDOC_ENGINE = "placeholder";
 
 /**
  * API Keys（從環境變數讀取）

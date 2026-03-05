@@ -180,25 +180,7 @@ verify_models() {
     # MinerU 模型
     check_dir "/opt/convertx/models/mineru/PDF-Extract-Kit-1.0" "MinerU Pipeline" "true" "x86_64"
     check_file "/root/mineru.json" "MinerU 配置檔" "true" "x86_64"
-    
-    # MinerU VLM GGUF 模型（量化版本）
-    if [ "${ARCH}" = "x86_64" ]; then
-        local gguf_model="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.Q6_K.gguf"
-        local mmproj_model="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf"
-        if [ -f "${gguf_model}" ] && [ -f "${mmproj_model}" ]; then
-            local gguf_size
-            gguf_size=$(ls -lh "${gguf_model}" 2>/dev/null | awk '{print $5}')
-            echo "  ✅ VLM GGUF Q6_K: ${gguf_size}"
-            ((PASS++))
-            echo "  ✅ VLM mmproj-Q8_0: 已安裝"
-            ((PASS++))
-            echo "  💡 VLM 模式預設啟用，llama.cpp server 將自動啟動"
-        else
-            echo "  ❌ VLM GGUF 模型不存在"
-            echo "     預期路徑: ${gguf_model}"
-            ((FAIL++))
-        fi
-    fi
+    echo "  ℹ️ 本地 VLM / GGUF 模型檢查已移除（pipeline-only）"
     
     # BabelDOC 模型
     check_file "/root/.cache/babeldoc/models/doclayout_yolo_docstructbench_imgsz1024.onnx" "DocLayout-YOLO ONNX" "false"

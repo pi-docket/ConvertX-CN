@@ -7,7 +7,7 @@
 
 import * as net from "node:net";
 import { WEBROOT } from "./env";
-import { checkLlamaServerAvailability, type LlamaServerCheckResult } from "./llamaServerCheck";
+import type { LlamaServerCheckResult } from "./llamaServerCheck";
 
 // ==============================================================================
 // 環境變數
@@ -18,9 +18,6 @@ export const WEB_PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 /** API Server Port（從環境變數或預設 7890） */
 export const RAS_API_PORT = process.env.RAS_API_PORT ? Number(process.env.RAS_API_PORT) : 7890;
-
-/** LLM Server URL（從環境變數或預設 http://127.0.0.1:11785） */
-export const LLAMA_SERVER_URL = process.env.LLAMA_SERVER_URL || "http://127.0.0.1:11785";
 
 /** API Server Host（從環境變數或預設 0.0.0.0） */
 export const RAS_API_HOST = process.env.RAS_API_HOST || "0.0.0.0";
@@ -93,88 +90,17 @@ async function checkPortOpen(host: string, port: number, timeoutMs = 2000): Prom
 // 服務偵測函數
 // ==============================================================================
 
-/** 快取的 llama server 檢查結果 */
-let cachedLlamaCheckResult: LlamaServerCheckResult | null = null;
-
 /**
  * 偵測 LLM Server 狀態（包含依賴檢查）
  */
 export async function detectLlmServerStatus(): Promise<
   ServiceStatus & { checkResult?: LlamaServerCheckResult }
 > {
-  const url = LLAMA_SERVER_URL;
-  const healthUrl = `${url}/health`;
-
-  // 首先檢查服務是否在運行
-  try {
-    const isHealthy = await checkHttpHealth(healthUrl);
-
-    if (isHealthy) {
-      return {
-        name: "LLM Server",
-        icon: "🧠",
-        status: "running",
-        url,
-      };
-    }
-
-    // 如果 /health 不回應，嘗試檢查 port 是否開啟
-    const urlObj = new URL(url);
-    const port = Number(urlObj.port) || 80;
-    const host = urlObj.hostname;
-
-    const isPortOpen = await checkPortOpen(host, port);
-
-    if (isPortOpen) {
-      return {
-        name: "LLM Server",
-        icon: "🧠",
-        status: "running",
-        url,
-        message: "port open, health check failed",
-      };
-    }
-  } catch {
-    // 連線失敗
-  }
-
-  // 服務未運行，檢查是否可以啟動（只在 Linux 環境執行）
-  if (process.platform === "linux") {
-    try {
-      // 使用快取或執行新檢查
-      if (!cachedLlamaCheckResult) {
-        cachedLlamaCheckResult = await checkLlamaServerAvailability();
-      }
-      const checkResult = cachedLlamaCheckResult;
-
-      if (!checkResult.available) {
-        // 依賴檢查失敗
-        let message = "未啟動";
-
-        if (checkResult.missingLibraries.length > 0) {
-          message = `缺少動態庫: ${checkResult.missingLibraries.slice(0, 2).join(", ")}`;
-        } else if (checkResult.errorReason) {
-          message = checkResult.errorReason.substring(0, 30);
-        }
-
-        return {
-          name: "LLM Server",
-          icon: "🧠",
-          status: "stopped",
-          message,
-          checkResult,
-        };
-      }
-    } catch {
-      // 依賴檢查失敗
-    }
-  }
-
   return {
     name: "LLM Server",
     icon: "🧠",
     status: "stopped",
-    message: "未啟動",
+    message: "已移除（placeholder）",
   };
 }
 
@@ -346,27 +272,9 @@ function printAdditionalInfo(
 
   // LLM Server 提示（增強版）
   if (llmServer.status === "stopped") {
-    const checkResult = llmServer.checkResult;
-
-    if (checkResult && checkResult.missingLibraries.length > 0) {
-      // 有缺失的動態庫
-      console.log("⚠️  LLM Server 無法啟動（缺少動態連結庫）");
-      console.log(`   缺失: ${checkResult.missingLibraries.join(", ")}`);
-      console.log("");
-      console.log("   💡 解決方案：");
-      console.log("      • 使用 Docker 環境（推薦）");
-      console.log("      • 或從 llama.cpp 官方 Release 下載完整版本");
-      console.log("");
-      console.log("   📊 目前模式: pipeline（功能正常，但無本地 VLM）");
-    } else if (checkResult && !checkResult.executableExists) {
-      // 執行檔不存在
-      console.log("ℹ️  LLM Server 未安裝（llama-server 不存在）");
-      console.log("   提示：Docker 環境會自動包含 llama.cpp server");
-    } else if (process.env.SKIP_LLAMA_SERVER !== "1") {
-      // 一般未啟動
-      console.log("ℹ️  LLM Server 未啟動（本地翻譯功能將無法使用）");
-      console.log("   提示：Docker 環境會自動啟動 llama.cpp server");
-    }
+    void llmServer;
+    console.log("ℹ️  本地 LLM / llama.cpp 功能已移除");
+    console.log("   目前維持 pipeline 模式運行");
   }
 
   console.log("");

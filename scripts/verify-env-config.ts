@@ -3,8 +3,8 @@
  *
  * 用於驗證 ConvertX-CN 的環境變數設定邏輯：
  * 1. 沒有設定任何環境變數 → 使用 pipeline
- * 2. MINERU_MODE=vlm 但 llama-server 不存在 → 回退 pipeline
- * 3. BabelDOC 使用 local / openai / deepseek 正確切換
+ * 2. MINERU_MODE=vlm 仍會由呼叫端回退 pipeline
+ * 3. BabelDOC 目前為 placeholder（尚未實作線上 API 翻譯）
  */
 
 import {
@@ -74,9 +74,9 @@ getEffectiveProcessingMode().then((result) => {
     issues.push("❌ 未設定 MINERU_MODE 時應使用 pipeline");
   }
 
-  // 確保預設翻譯引擎為 local
-  if (!process.env.BABELDOC_ENGINE && getConfiguredTranslationProvider() !== "local") {
-    issues.push("❌ 未設定 BABELDOC_ENGINE 時應使用 local");
+  // 確保翻譯服務目前為 placeholder（manager 仍保留 legacy type）
+  if (BABELDOC_ENGINE !== "placeholder") {
+    issues.push("❌ BABELDOC_ENGINE 應為 placeholder");
   }
 
   if (issues.length === 0) {

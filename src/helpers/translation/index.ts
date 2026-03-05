@@ -1,11 +1,10 @@
 /**
  * Translation Module
  *
- * 提供統一的翻譯服務介面，支援：
- * - 本地 llama.cpp 翻譯（預設）
- * - OpenAI API
- * - DeepSeek API
- * - 自訂 API
+ * 提供統一的翻譯服務介面。
+ *
+ * 目前翻譯功能僅保留 placeholder，
+ * 實際線上 API 翻譯將於後續版本實作。
  */
 
 // Types
@@ -18,18 +17,6 @@ export type {
 } from "./types";
 
 export { DEFAULT_TRANSLATION_PROVIDER, normalizeLanguageCode } from "./types";
-
-// Providers
-export { LocalLlamaTranslationProvider, createLocalTranslationProvider } from "./localProvider";
-
-export {
-  OpenAITranslationProvider,
-  DeepSeekTranslationProvider,
-  CustomAPITranslationProvider,
-  createOpenAIProvider,
-  createDeepSeekProvider,
-  createCustomAPIProvider,
-} from "./apiProviders";
 
 // Manager
 export {

@@ -655,62 +655,7 @@ ENV MINERU_USE_CPU="1"
 ENV MINERU_DEVICE_MODE="cpu"
 ENV TORCH_DEVICE="cpu"
 
-# ==============================================================================
-# 6.11 llama.cpp（GGUF VLM 推理引擎）
-# ==============================================================================
-# 📌 llama.cpp 用於載入 GGUF 格式的 VLM 模型
-# 📌 提供 OpenAI 相容 API，讓 MinerU 使用 vlm-http-client 後端
-# 📌 CPU-only 編譯，無需 CUDA
-# ------------------------------------------------------------------------------
-ARG LLAMA_CPP_VERSION=b7898
-RUN set -ex && \
-  ARCH=$(uname -m) && \
-  if [ "$ARCH" = "aarch64" ]; then \
-  echo "⚠️ ARM64：跳過 llama.cpp 安裝"; \
-  else \
-  echo "📦 安裝 llama.cpp (${LLAMA_CPP_VERSION})..." && \
-  apt-get update && apt-get install -y --no-install-recommends \
-  build-essential cmake libcurl4-openssl-dev && \
-  cd /tmp && \
-  curl -fsSL -o llama.cpp.tar.gz \
-  "https://github.com/ggml-org/llama.cpp/archive/refs/tags/${LLAMA_CPP_VERSION}.tar.gz" && \
-  tar xzf llama.cpp.tar.gz && \
-  cd llama.cpp-* && \
-  cmake -B build \
-  -DGGML_CUDA=OFF \
-  -DGGML_METAL=OFF \
-  -DGGML_BLAS=OFF \
-  -DLLAMA_SERVER=ON \
-  -DLLAMA_CURL=ON \
-  -DCMAKE_BUILD_TYPE=Release && \
-  cmake --build build --config Release -j $(nproc) --target llama-server && \
-  # 驗證編譯產物存在
-  if [ ! -f "build/bin/llama-server" ]; then \
-  echo "❌ llama-server 編譯失敗：找不到 build/bin/llama-server" && exit 1; \
-  fi && \
-  # 複製執行檔
-  cp build/bin/llama-server /usr/local/bin/ && \
-  chmod +x /usr/local/bin/llama-server && \
-  # 複製所有必要的動態連結庫（libmtmd.so、libggml.so、libllama.so 等）
-  echo "📦 複製動態連結庫..." && \
-  find build -name "*.so*" -type f -exec cp {} /usr/local/lib/ \; && \
-  ldconfig && \
-  # 驗證安裝成功
-  echo "📋 檢查動態連結依賴..." && \
-  ldd /usr/local/bin/llama-server && \
-  if ! /usr/local/bin/llama-server --version 2>&1; then \
-  echo "⚠️ llama-server 無法執行，檢查動態庫依賴..." && \
-  ldd /usr/local/bin/llama-server || true; \
-  fi && \
-  cd / && rm -rf /tmp/llama.cpp* && \
-  apt-get purge -y build-essential cmake && \
-  apt-get autoremove -y && \
-  rm -rf /var/lib/apt/lists/* && \
-  echo "✅ llama.cpp 安裝完成" && \
-  echo "   路徑: $(which llama-server)" && \
-  echo "   版本: $(llama-server --version 2>&1 | head -1 || echo 'N/A')" && \
-  echo "   動態庫: $(ls -la /usr/local/lib/lib*.so* 2>/dev/null | wc -l) 個"; \
-  fi
+# 6.11 本地 llama.cpp / GGUF 功能已移除（保留編號避免註解序號跳動）
 
 # 6.12 tiktoken
 RUN uv pip install --system --break-system-packages --no-cache tiktoken
@@ -736,13 +681,6 @@ RUN mkdir -p /opt/convertx/models/mineru && \
 
 # 7.2 複製預下載的 ONNX 模型
 COPY models/ /root/.cache/babeldoc/models/
-
-# 7.2.1 下載 VLM GGUF 模型
-# 📌 模型來源：mradermacher/MinerU2.5-2509-1.2B-GGUF
-# 📌 包含：主模型（Q6_K, ~482MB）+ 視覺投影器（mmproj-Q8_0, ~677MB）
-# 📌 總大小約 1.16 GB
-COPY scripts/download-vlm-gguf.sh /tmp/download-vlm-gguf.sh
-RUN chmod +x /tmp/download-vlm-gguf.sh && /tmp/download-vlm-gguf.sh && rm -f /tmp/download-vlm-gguf.sh
 
 # 7.3 複製 MinerU 模型下載腳本
 COPY scripts/download-mineru-models.sh /tmp/download-mineru-models.sh
@@ -781,10 +719,8 @@ COPY --from=models /opt/convertx /opt/convertx
 COPY --from=models /root/.cache/babeldoc /root/.cache/babeldoc
 COPY --from=models /root/mineru.json /root/mineru.json
 
-# 8.1.1 複製 llama.cpp server 啟動腳本
-COPY scripts/start-llama-server.sh /opt/convertx/start-llama-server.sh
 COPY scripts/entrypoint.sh /opt/convertx/entrypoint.sh
-RUN chmod +x /opt/convertx/start-llama-server.sh /opt/convertx/entrypoint.sh
+RUN chmod +x /opt/convertx/entrypoint.sh
 
 # 8.2 複製應用程式
 COPY --from=install /temp/prod/node_modules node_modules
@@ -877,29 +813,11 @@ RUN echo "======================================" && \
   else \
   echo "  ❌ MinerU Pipeline 模型不存在" && VALIDATION_PASSED=false; \
   fi && \
-  GGUF_MODEL="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.Q6_K.gguf" && \
-  MMPROJ_MODEL="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf" && \
-  if [ -f "$GGUF_MODEL" ] && [ -f "$MMPROJ_MODEL" ]; then \
-  echo "  ✅ MinerU VLM GGUF 模型存在（Q6_K 量化版）"; \
-  echo "     - 主模型: $(basename $GGUF_MODEL)"; \
-  echo "     - 視覺投影器: $(basename $MMPROJ_MODEL)"; \
-  else \
-  echo "  ❌ MinerU VLM GGUF 模型不存在" && VALIDATION_PASSED=false; \
-  fi && \
   if [ -f "/root/mineru.json" ]; then \
   echo "  ✅ mineru.json 存在"; \
   cat /root/mineru.json; \
   else \
   echo "  ❌ mineru.json 不存在" && VALIDATION_PASSED=false; \
-  fi && \
-  # 驗證 llama-server（VLM 推理引擎）
-  echo "🔍 驗證 llama-server..." && \
-  if command -v llama-server >/dev/null 2>&1; then \
-  echo "  ✅ llama-server: $(which llama-server)"; \
-  LLAMA_VERSION=$(llama-server --version 2>&1 | head -1 || echo "version unknown"); \
-  echo "     Version: ${LLAMA_VERSION}"; \
-  else \
-  echo "  ⚠️ llama-server 未安裝（VLM 模式將不可用）"; \
   fi; \
   else \
   echo "  ⚠️ ARM64：跳過 MinerU 驗證"; \

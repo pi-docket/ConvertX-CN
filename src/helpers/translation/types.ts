@@ -1,11 +1,8 @@
 /**
  * Translation Provider Types
  *
- * 定義翻譯服務的統一介面，支援多種翻譯後端：
- * - LocalLlama: 使用本地 llama.cpp + GGUF 模型
- * - OpenAI: 使用 OpenAI API
- * - DeepSeek: 使用 DeepSeek API
- * - Custom: 使用自訂 API 端點
+ * 定義翻譯服務的統一介面。
+ * 目前僅保留 placeholder，不啟用任何實際翻譯後端。
  */
 
 /**
@@ -73,7 +70,7 @@ export interface TranslationProvider {
 
 /**
  * 預設翻譯服務類型
- * 當使用者未設定 API Key 時，自動使用本地翻譯
+ * 目前僅作為相容性保留。
  */
 export const DEFAULT_TRANSLATION_PROVIDER: TranslationProviderType = "local";
 

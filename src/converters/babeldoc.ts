@@ -12,9 +12,14 @@ import { join, basename, dirname } from "node:path";
 import { ExecFileFn } from "./types";
 import { getArchiveFileName } from "../transfer";
 import { ensureSearchablePdf, cleanupOcrTempFile } from "../helpers/pdfOcr";
-import { getUserTranslationProvider, type TranslationProviderType } from "../helpers/translation";
-import { LLAMA_SERVER_URL } from "../helpers/startupStatus";
-import { ensureVlmServer, markVlmUsed } from "../helpers/vlmServer";
+
+function createTranslationNotImplementedError(): Error {
+  const error = new Error(
+    "Local translation has been removed. Online API translation will be implemented later.",
+  );
+  error.name = "NotImplementedError";
+  return error;
+}
 
 /**
  * BabelDOC Content Engine
@@ -201,89 +206,8 @@ function getOutputExtension(format: OutputFormat): string {
  * @returns babeldoc CLI 參數陣列
  */
 function getTranslationArgs(userId?: number): string[] {
-  const args: string[] = [];
-
-  // 取得使用者偏好的翻譯服務
-  const providerType: TranslationProviderType = userId
-    ? getUserTranslationProvider(userId)
-    : "local";
-
-  // llama-server 的 OpenAI 相容 API 端點（使用統一的設定）
-  const llamaServerUrl = LLAMA_SERVER_URL;
-
-  switch (providerType) {
-    case "local":
-      // 使用本地 llama-server（OpenAI 相容 API）
-      args.push("--openai");
-      args.push("--openai-base-url", `${llamaServerUrl}/v1`);
-      args.push("--openai-api-key", "local-llama"); // 本地不需要 key，但參數必填
-      args.push("--openai-model", process.env.LOCAL_TRANSLATION_MODEL || "local");
-      console.log(`[BabelDOC] Using local llama-server at ${llamaServerUrl}`);
-      break;
-
-    case "openai":
-      if (process.env.OPENAI_API_KEY) {
-        args.push("--openai");
-        args.push("--openai-api-key", process.env.OPENAI_API_KEY);
-        if (process.env.OPENAI_MODEL) {
-          args.push("--openai-model", process.env.OPENAI_MODEL);
-        }
-        if (process.env.OPENAI_BASE_URL) {
-          args.push("--openai-base-url", process.env.OPENAI_BASE_URL);
-        }
-        console.log(`[BabelDOC] Using OpenAI API`);
-      } else {
-        // Fallback 到本地
-        console.log(`[BabelDOC] OpenAI API key not set, falling back to local`);
-        return getTranslationArgsLocal(llamaServerUrl);
-      }
-      break;
-
-    case "deepseek":
-      if (process.env.DEEPSEEK_API_KEY) {
-        args.push("--openai");
-        args.push("--openai-api-key", process.env.DEEPSEEK_API_KEY);
-        args.push("--openai-base-url", "https://api.deepseek.com/v1");
-        args.push("--openai-model", process.env.DEEPSEEK_MODEL || "deepseek-chat");
-        console.log(`[BabelDOC] Using DeepSeek API`);
-      } else {
-        console.log(`[BabelDOC] DeepSeek API key not set, falling back to local`);
-        return getTranslationArgsLocal(llamaServerUrl);
-      }
-      break;
-
-    case "custom":
-      if (process.env.OTHER_LLM_API_KEY && process.env.CUSTOM_LLM_BASE_URL) {
-        args.push("--openai");
-        args.push("--openai-api-key", process.env.OTHER_LLM_API_KEY);
-        args.push("--openai-base-url", process.env.CUSTOM_LLM_BASE_URL);
-        if (process.env.CUSTOM_LLM_MODEL) {
-          args.push("--openai-model", process.env.CUSTOM_LLM_MODEL);
-        }
-        console.log(`[BabelDOC] Using custom API at ${process.env.CUSTOM_LLM_BASE_URL}`);
-      } else {
-        console.log(`[BabelDOC] Custom API not configured, falling back to local`);
-        return getTranslationArgsLocal(llamaServerUrl);
-      }
-      break;
-  }
-
-  return args;
-}
-
-/**
- * 取得本地翻譯服務的 CLI 參數
- */
-function getTranslationArgsLocal(llamaServerUrl: string): string[] {
-  return [
-    "--openai",
-    "--openai-base-url",
-    `${llamaServerUrl}/v1`,
-    "--openai-api-key",
-    "local-llama",
-    "--openai-model",
-    process.env.LOCAL_TRANSLATION_MODEL || "local",
-  ];
+  void userId;
+  throw createTranslationNotImplementedError();
 }
 
 /**
@@ -406,22 +330,13 @@ export async function convert(
     options && typeof options === "object" && "userId" in options
       ? (options as { userId?: number }).userId
       : undefined;
+  void userId;
+
+  throw createTranslationNotImplementedError();
+
   let ocrTempFile: string | undefined;
 
   try {
-    // 0. 檢查是否使用本地翻譯服務，如果是則按需啟動 VLM server
-    const providerType: TranslationProviderType = userId
-      ? getUserTranslationProvider(userId)
-      : "local";
-
-    if (providerType === "local") {
-      console.log(`[BabelDOC] Using local translation, ensuring VLM server is running...`);
-      const vlmStarted = await ensureVlmServer();
-      if (!vlmStarted) {
-        console.warn(`[BabelDOC] ⚠️ Failed to start VLM server, translation may fail`);
-      }
-    }
-
     // 1. 自動偵測掃描版 PDF 並進行 OCR 處理
     console.log(`[BabelDOC] Checking if PDF needs OCR...`);
     const ocrResult = await ensureSearchablePdf(filePath, execFile);
@@ -458,11 +373,6 @@ export async function convert(
 
     // 7. 執行 babeldoc 翻譯（使用 OCR 處理後的 PDF，根據使用者設定選擇翻譯服務）
     await runBabelDoc(inputPdf, translatedFilePath, targetLang, outputFormat, execFile, userId);
-
-    // 7.5. 標記 VLM 正在使用中，防止閒置超時（長時間翻譯時）
-    if (providerType === "local") {
-      markVlmUsed();
-    }
 
     // 8. 複製翻譯後的檔案到封裝目錄
     const translatedDest = join(archiveDir, `translated-${targetLang}.${outputExt}`);
