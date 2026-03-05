@@ -447,34 +447,15 @@ RUN set -ex && \
   rm -rf /tmp/pandoc* && \
   echo "✅ Pandoc v${PANDOC_VERSION} 安裝完成"
 
-# 4.10.1 Calibre 官方安裝（解決 libxml2 版本衝突）
-# ⚠️ 重要：apt 版本 Calibre 會導致 html5-parser/lxml libxml2 ABI 衝突
-# 📦 使用官方 binary installer，自帶獨立 runtime，版本 9.2.1
-# 📝 官方 installer 包含所有依賴，不會污染系統 Python
-# 🔗 https://github.com/kovidgoyal/calibre/releases/tag/v9.2.1
-ARG CALIBRE_VERSION=9.2.1
+# 4.10.1 Calibre APT 安裝（使用系統包管理）
+# ⚠️ 注意：使用 apt 版本 Calibre（避免官方 binary 版本過期）
+# 📝 APT 版本由 Debian 維護，依賴管理更穩定
+# 🔗 https://packages.debian.org/bookworm/calibre
 RUN set -ex && \
   apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  libgl1 libegl1 libxkbcommon0 libxcb-cursor0 \
-  libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
-  libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
-  libopengl0 libxcb-xinerama0 libxcb-xkb1 xz-utils && \
+  calibre && \
   rm -rf /var/lib/apt/lists/* && \
-  ARCH=$(uname -m) && \
-  if [ "$ARCH" = "aarch64" ]; then \
-  CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-arm64.txz"; \
-  else \
-  CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz"; \
-  fi && \
-  echo "📦 下載 Calibre ${CALIBRE_VERSION}..." && \
-  curl -fsSL --retry 3 --retry-delay 5 "${CALIBRE_URL}" -o /tmp/calibre.txz && \
-  mkdir -p /opt/calibre && \
-  tar -xJf /tmp/calibre.txz -C /opt/calibre && \
-  rm -f /tmp/calibre.txz && \
-  ln -sf /opt/calibre/ebook-convert /usr/local/bin/ebook-convert && \
-  ln -sf /opt/calibre/ebook-meta /usr/local/bin/ebook-meta && \
-  ln -sf /opt/calibre/calibre /usr/local/bin/calibre && \
   echo "✅ Calibre $(ebook-convert --version 2>&1 | head -1) 安裝完成"
 
 # 4.11 LibreOffice 25.8.4 - 官方 deb 安裝
