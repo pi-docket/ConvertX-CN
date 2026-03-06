@@ -262,7 +262,7 @@ export const ThemeToggle = ({
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="hidden h-5 w-5"
+            class="hidden size-5"
           >
             <path
               stroke-linecap="round"
@@ -278,7 +278,7 @@ export const ThemeToggle = ({
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="hidden h-5 w-5"
+            class="hidden size-5"
           >
             <path
               stroke-linecap="round"
@@ -351,7 +351,7 @@ export const ThemeToggle = ({
               <button
                 type="button"
                 class={`
-                  screen-theme-swatch group relative h-10 w-10 cursor-pointer rounded-xl
+                  screen-theme-swatch group relative size-10 cursor-pointer rounded-xl
                   transition-all duration-150
                   hover:scale-105
                   focus:ring-2 focus:ring-(--accent-500) focus:ring-offset-2 focus:outline-none
@@ -441,7 +441,7 @@ export const ThemeToggle = ({
               <button
                 type="button"
                 class={`
-                  theme-color-swatch group relative h-11 w-11 cursor-pointer rounded-xl
+                  theme-color-swatch group relative size-11 cursor-pointer rounded-xl
                   transition-all duration-150
                   hover:scale-105
                   focus:ring-2 focus:ring-(--accent-500) focus:ring-offset-2 focus:outline-none
@@ -483,7 +483,7 @@ export const ThemeToggle = ({
                   }}
                 >
                   <svg
-                    class="h-5 w-5 text-white drop-shadow-lg"
+                    class="size-5 text-white drop-shadow-lg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -574,7 +574,7 @@ export const ThemeToggle = ({
               <div
                 id="hue-indicator"
                 class={`
-                  pointer-events-none absolute h-4 w-4 rounded-full border-2 border-white shadow-lg
+                  pointer-events-none absolute size-4 rounded-full border-2 border-white shadow-lg
                 `}
                 style={{
                   top: "0",
@@ -613,7 +613,7 @@ export const ThemeToggle = ({
                 <div
                   id="sl-indicator"
                   class={`
-                    pointer-events-none absolute h-4 w-4 rounded-full border-2 border-white
+                    pointer-events-none absolute size-4 rounded-full border-2 border-white
                     shadow-lg
                   `}
                   style={{
@@ -655,8 +655,8 @@ export const ThemeToggle = ({
                     absolute inset-0 w-full cursor-pointer appearance-none bg-transparent
                     [&::-webkit-slider-runnable-track]:h-full
                     [&::-webkit-slider-runnable-track]:rounded-full
-                    [&::-webkit-slider-thumb]:mt-[-2px] [&::-webkit-slider-thumb]:h-4
-                    [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none
+                    [&::-webkit-slider-thumb]:mt-[-2px] [&::-webkit-slider-thumb]:size-4
+                     [&::-webkit-slider-thumb]:appearance-none
                     [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2
                     [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:bg-neutral-600
                     [&::-webkit-slider-thumb]:shadow-lg
@@ -715,7 +715,7 @@ export const ThemeToggle = ({
                 title="複製 HEX 碼"
               >
                 <svg
-                  class="h-4 w-4"
+                  class="size-4"
                   style={{ color: "var(--glass-text-muted)" }}
                   fill="none"
                   viewBox="0 0 24 24"

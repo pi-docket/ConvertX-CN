@@ -279,7 +279,10 @@ describe("BabelDOC converter - config based CLI", () => {
 
         const inputPath = args[args.indexOf("--files") + 1] as string;
         const inputBase = basename(inputPath, ".pdf");
-        writeFileSync(join(outputDirFromArgs, `${inputBase}-mono.pdf`), "%PDF-1.4\n%Translated content");
+        writeFileSync(
+          join(outputDirFromArgs, `${inputBase}-mono.pdf`),
+          "%PDF-1.4\n%Translated content",
+        );
         callback(null, "Translation complete", "");
         return;
       }

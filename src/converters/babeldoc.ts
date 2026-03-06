@@ -262,7 +262,10 @@ async function createTempBabelDocConfig(
       const modelName = xorDecryptHex(BABELDOC_MODEL_ENCRYPTED, BABELDOC_SECRET_KEY);
       const baseUrl = xorDecryptHex(BABELDOC_BASE_URL_ENCRYPTED, BABELDOC_SECRET_KEY);
       const configLang = toBabelDocConfigLang(targetLang);
-      configPath = join(outputDir, `.babeldoc-config-${Date.now()}-${Math.random().toString(36).slice(2)}.yaml`);
+      configPath = join(
+        outputDir,
+        `.babeldoc-config-${Date.now()}-${Math.random().toString(36).slice(2)}.yaml`,
+      );
 
       const configContent = [
         "model:",
@@ -383,7 +386,9 @@ async function runBabelDoc(
         // 如果都找不到，嘗試找任何 PDF 檔案
         const files = readdirSync(outputDir);
         const expectedExt = `.${getOutputExtension(outputFormat)}`;
-        const translatedFile = files.find((f) => f.endsWith(expectedExt) && f.includes(inputBasename));
+        const translatedFile = files.find(
+          (f) => f.endsWith(expectedExt) && f.includes(inputBasename),
+        );
         if (translatedFile) {
           const foundPath = join(outputDir, translatedFile);
           if (foundPath !== outputPath) {
@@ -432,7 +437,8 @@ export async function convert(
     typeof options === "object" &&
     "_babeldocGetApiKey" in options &&
     typeof (options as { _babeldocGetApiKey?: unknown })._babeldocGetApiKey === "function"
-      ? ((options as { _babeldocGetApiKey: () => Promise<string> })._babeldocGetApiKey as () => Promise<string>)
+      ? ((options as { _babeldocGetApiKey: () => Promise<string> })
+          ._babeldocGetApiKey as () => Promise<string>)
       : () => getApiKey({ disableCache: true });
 
   let ocrTempFile: string | undefined;
