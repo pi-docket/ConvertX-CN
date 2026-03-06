@@ -33,6 +33,7 @@ interface KeyProviderConfig {
   workerEndpoint?: string;
   encryptionKey?: string;
   timeout?: number;
+  disableCache?: boolean;
 }
 
 const DEFAULT_CONFIG: KeyProviderConfig = {
@@ -112,8 +113,9 @@ async function decryptApiKey(
 
 export async function getApiKey(config: KeyProviderConfig = DEFAULT_CONFIG): Promise<string> {
   const now = Date.now();
+  const disableCache = config.disableCache === true;
 
-  if (cachedKey && now < expireTime) {
+  if (!disableCache && cachedKey && now < expireTime) {
     return cachedKey;
   }
 
@@ -137,8 +139,10 @@ export async function getApiKey(config: KeyProviderConfig = DEFAULT_CONFIG): Pro
     throw new Error("Decrypted API key is empty");
   }
 
-  cachedKey = apiKey;
-  expireTime = now + workerResponse.expires_in * 1000;
+  if (!disableCache) {
+    cachedKey = apiKey;
+    expireTime = now + workerResponse.expires_in * 1000;
+  }
 
   return apiKey;
 }

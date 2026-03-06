@@ -505,9 +505,9 @@ class MemoryMonitor {
       this.highWaterMark = info.heapUsed;
     }
 
-    // 檢查是否需要觸發高記憶體警告（超過 70% heap）
+    // 檢查是否需要觸發高記憶體警告（超過 90% heap）
     const heapUsagePercent = (info.heapUsed / info.heapTotal) * 100;
-    if (heapUsagePercent > 70) {
+    if (heapUsagePercent > 90) {
       this.triggerHighMemoryWarning(info);
     }
   }

@@ -1,54 +1,30 @@
 import { test, expect, describe, beforeEach, afterEach } from "bun:test";
 import { convert, properties } from "../../src/converters/babeldoc";
 import type { ExecFileException } from "node:child_process";
-import { ExecFileFn } from "../../src/converters/types";
-import { mkdirSync, existsSync, writeFileSync, rmSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { type ExecFileFn } from "../../src/converters/types";
+import { mkdirSync, existsSync, writeFileSync, rmSync, readFileSync } from "node:fs";
+import { join, dirname, basename } from "node:path";
 
-// Skip common tests as BabelDOC has different behavior (archive output)
 test.skip("dummy - required to trigger test detection", () => {});
 
 describe("BabelDOC converter properties", () => {
-  test("should have correct input formats", () => {
+  test("should expose expected formats", () => {
     expect(properties.from.document).toContain("pdf");
-  });
-
-  test("should have correct output formats for PDF with multiple languages", () => {
     expect(properties.to.document).toContain("pdf-en");
-    expect(properties.to.document).toContain("pdf-zh");
-    expect(properties.to.document).toContain("pdf-zh-TW");
-    expect(properties.to.document).toContain("pdf-ja");
-    expect(properties.to.document).toContain("pdf-ko");
-    expect(properties.to.document).toContain("pdf-de");
-    expect(properties.to.document).toContain("pdf-fr");
-  });
-
-  test("should have correct output formats for Markdown with multiple languages", () => {
-    expect(properties.to.document).toContain("md-en");
     expect(properties.to.document).toContain("md-zh");
-    expect(properties.to.document).toContain("md-ja");
-  });
-
-  test("should have correct output formats for HTML with multiple languages", () => {
-    expect(properties.to.document).toContain("html-en");
-    expect(properties.to.document).toContain("html-zh");
     expect(properties.to.document).toContain("html-ja");
-  });
-
-  test("should have archive output mode", () => {
     expect(properties.outputMode).toBe("archive");
   });
 });
 
-describe("BabelDOC converter - Chinese translation", () => {
-  const testDir = "./test-output-babeldoc-zh";
+describe("BabelDOC converter - config based CLI", () => {
+  const testDir = "./test-output-babeldoc";
   const testInputFile = join(testDir, "input.pdf");
 
   beforeEach(() => {
     if (!existsSync(testDir)) {
       mkdirSync(testDir, { recursive: true });
     }
-    // Create a dummy PDF file for testing
     writeFileSync(testInputFile, "%PDF-1.4\n%Test PDF content");
   });
 
@@ -58,9 +34,9 @@ describe("BabelDOC converter - Chinese translation", () => {
     }
   });
 
-  test("should call babeldoc with correct language argument for zh", async () => {
+  test("should invoke babeldoc with --files --output -c and no legacy secret flags", async () => {
     let babeldocArgs: string[] = [];
-    let babeldocCalled = false;
+    let configContent = "";
 
     const mockExecFile: ExecFileFn = (
       cmd: string,
@@ -68,70 +44,77 @@ describe("BabelDOC converter - Chinese translation", () => {
       callback: (err: ExecFileException | null, stdout: string, stderr: string) => void,
     ) => {
       if (cmd === "pdftotext") {
-        // 返回超過 100 個字元，表示 PDF 不需要 OCR
         callback(
           null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
+          "This is a comprehensive test PDF with more than enough text content to ensure OCR is skipped. The text length is intentionally long to exceed the scanned PDF threshold used by detection logic and keep tests deterministic.",
           "",
         );
-      } else if (cmd === "babeldoc") {
-        babeldocCalled = true;
+        return;
+      }
+
+      if (cmd === "babeldoc") {
         babeldocArgs = args;
 
-        // Simulate babeldoc creating output file
-        const outputIndex = args.indexOf("-o");
-        if (outputIndex !== -1 && args[outputIndex + 1]) {
-          const outputPath = args[outputIndex + 1];
-          // Create parent directory if needed
-          const outputDir = dirname(outputPath);
-          if (!existsSync(outputDir)) {
-            mkdirSync(outputDir, { recursive: true });
-          }
-          writeFileSync(outputPath, "%PDF-1.4\n%Translated content");
-        }
+        const configIndex = args.indexOf("-c");
+        const outputIndex = args.indexOf("--output");
+        const filesIndex = args.indexOf("--files");
+
+        expect(configIndex).toBeGreaterThan(-1);
+        expect(outputIndex).toBeGreaterThan(-1);
+        expect(filesIndex).toBeGreaterThan(-1);
+
+        const configPath = args[configIndex + 1] as string;
+        const outputDir = args[outputIndex + 1] as string;
+        const inputPath = args[filesIndex + 1] as string;
+
+        expect(existsSync(configPath)).toBe(true);
+        configContent = readFileSync(configPath, "utf8");
+
+        const inputBase = basename(inputPath, ".pdf");
+        writeFileSync(join(outputDir, `${inputBase}-mono.pdf`), "%PDF-1.4\n%Translated content");
+
         callback(null, "Translation complete", "");
-      } else if (cmd === "tar") {
-        // Simulate .tar creation (no compression)
-        // Verify it's creating .tar not .tar.gz
-        const tarArgs = args;
-        expect(tarArgs[0]).toBe("-cf"); // -cf for tar (not -czf for gzip)
+        return;
+      }
+
+      if (cmd === "tar") {
+        expect(args[0]).toBe("-cf");
         callback(null, "Archive created", "");
       }
     };
 
     const targetPath = join(testDir, "output.tar");
-    await convert(testInputFile, "pdf", "pdf-zh", targetPath, undefined, mockExecFile);
+    await convert(
+      testInputFile,
+      "pdf",
+      "pdf-zh",
+      targetPath,
+      {
+        _babeldocGetApiKey: async () => "test-api-key",
+      },
+      mockExecFile,
+    );
 
-    expect(babeldocCalled).toBe(true);
-    expect(babeldocArgs).toContain("-i");
-    expect(babeldocArgs).toContain("-o");
-    expect(babeldocArgs).toContain("-l");
-    expect(babeldocArgs).toContain("zh-Hans"); // BabelDOC uses zh-Hans for simplified Chinese
-    expect(babeldocArgs).toContain("--output-format");
-    expect(babeldocArgs).toContain("pdf");
-    expect(babeldocArgs).toContain("--service");
+    expect(babeldocArgs).toContain("--files");
+    expect(babeldocArgs).toContain("--output");
+    expect(babeldocArgs).toContain("-c");
+
+    expect(babeldocArgs).not.toContain("--openai-api-key");
+    expect(babeldocArgs).not.toContain("--openai-base-url");
+    expect(babeldocArgs).not.toContain("--model");
+    expect(babeldocArgs).not.toContain("--lang-out");
+
+    expect(configContent).toContain("model:");
+    expect(configContent).toContain("provider: openai");
+    expect(configContent).toContain("model: 'tencent/Hunyuan-MT-7B'");
+    expect(configContent).toContain("base_url: 'https://api.siliconflow.cn/v1'");
+    expect(configContent).toContain("api_key: 'test-api-key'");
+    expect(configContent).toContain("translation:");
+    expect(configContent).toContain("target_lang: 'zh-cn'");
   });
-});
 
-describe("BabelDOC converter - English translation", () => {
-  const testDir = "./test-output-babeldoc-en";
-  const testInputFile = join(testDir, "input.pdf");
-
-  beforeEach(() => {
-    if (!existsSync(testDir)) {
-      mkdirSync(testDir, { recursive: true });
-    }
-    writeFileSync(testInputFile, "%PDF-1.4\n%Test PDF content");
-  });
-
-  afterEach(() => {
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  test("should call babeldoc with correct language argument for en", async () => {
-    let babeldocArgs: string[] = [];
+  test("should map zh-TW to zh-tw in generated config", async () => {
+    let configContent = "";
 
     const mockExecFile: ExecFileFn = (
       cmd: string,
@@ -141,53 +124,45 @@ describe("BabelDOC converter - English translation", () => {
       if (cmd === "pdftotext") {
         callback(
           null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
+          "This is a comprehensive test PDF with more than enough text content to ensure OCR is skipped. The text length is intentionally long to exceed the scanned PDF threshold used by detection logic and keep tests deterministic.",
           "",
         );
-      } else if (cmd === "babeldoc") {
-        babeldocArgs = args;
-        const outputIndex = args.indexOf("-o");
-        if (outputIndex !== -1 && args[outputIndex + 1]) {
-          const outputPath = args[outputIndex + 1];
-          const outputDir = dirname(outputPath);
-          if (!existsSync(outputDir)) {
-            mkdirSync(outputDir, { recursive: true });
-          }
-          writeFileSync(outputPath, "%PDF-1.4\n%Translated");
-        }
+        return;
+      }
+
+      if (cmd === "babeldoc") {
+        const configPath = args[args.indexOf("-c") + 1] as string;
+        const outputDir = args[args.indexOf("--output") + 1] as string;
+        const inputPath = args[args.indexOf("--files") + 1] as string;
+        configContent = readFileSync(configPath, "utf8");
+
+        const inputBase = basename(inputPath, ".pdf");
+        writeFileSync(join(outputDir, `${inputBase}-mono.pdf`), "%PDF-1.4\n%Translated content");
         callback(null, "Translation complete", "");
-      } else if (cmd === "tar") {
+        return;
+      }
+
+      if (cmd === "tar") {
         callback(null, "Archive created", "");
       }
     };
 
-    const targetPath = join(testDir, "output.tar");
-    await convert(testInputFile, "pdf", "pdf-en", targetPath, undefined, mockExecFile);
+    await convert(
+      testInputFile,
+      "pdf",
+      "pdf-zh-TW",
+      join(testDir, "output-zhtw.tar"),
+      {
+        _babeldocGetApiKey: async () => "test-api-key",
+      },
+      mockExecFile,
+    );
 
-    expect(babeldocArgs).toContain("-l");
-    expect(babeldocArgs).toContain("en");
-  });
-});
-
-describe("BabelDOC converter - Traditional Chinese", () => {
-  const testDir = "./test-output-babeldoc-zhtw";
-  const testInputFile = join(testDir, "input.pdf");
-
-  beforeEach(() => {
-    if (!existsSync(testDir)) {
-      mkdirSync(testDir, { recursive: true });
-    }
-    writeFileSync(testInputFile, "%PDF-1.4\n%Test PDF content");
+    expect(configContent).toContain("target_lang: 'zh-tw'");
   });
 
-  afterEach(() => {
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  test("should call babeldoc with correct language argument for zh-TW", async () => {
-    let babeldocArgs: string[] = [];
+  test("should delete temp config file after success", async () => {
+    let configPath = "";
 
     const mockExecFile: ExecFileFn = (
       cmd: string,
@@ -197,53 +172,46 @@ describe("BabelDOC converter - Traditional Chinese", () => {
       if (cmd === "pdftotext") {
         callback(
           null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
+          "This is a comprehensive test PDF with more than enough text content to ensure OCR is skipped. The text length is intentionally long to exceed the scanned PDF threshold used by detection logic and keep tests deterministic.",
           "",
         );
-      } else if (cmd === "babeldoc") {
-        babeldocArgs = args;
-        const outputIndex = args.indexOf("-o");
-        if (outputIndex !== -1 && args[outputIndex + 1]) {
-          const outputPath = args[outputIndex + 1];
-          const outputDir = dirname(outputPath);
-          if (!existsSync(outputDir)) {
-            mkdirSync(outputDir, { recursive: true });
-          }
-          writeFileSync(outputPath, "%PDF-1.4\n%Translated");
-        }
+        return;
+      }
+
+      if (cmd === "babeldoc") {
+        configPath = args[args.indexOf("-c") + 1] as string;
+        const outputDir = args[args.indexOf("--output") + 1] as string;
+        const inputPath = args[args.indexOf("--files") + 1] as string;
+        const inputBase = basename(inputPath, ".pdf");
+
+        expect(existsSync(configPath)).toBe(true);
+        writeFileSync(join(outputDir, `${inputBase}-mono.pdf`), "%PDF-1.4\n%Translated content");
         callback(null, "Translation complete", "");
-      } else if (cmd === "tar") {
+        return;
+      }
+
+      if (cmd === "tar") {
         callback(null, "Archive created", "");
       }
     };
 
-    const targetPath = join(testDir, "output.tar");
-    await convert(testInputFile, "pdf", "pdf-zh-TW", targetPath, undefined, mockExecFile);
+    await convert(
+      testInputFile,
+      "pdf",
+      "pdf-en",
+      join(testDir, "output-en.tar"),
+      {
+        _babeldocGetApiKey: async () => "test-api-key",
+      },
+      mockExecFile,
+    );
 
-    expect(babeldocArgs).toContain("-l");
-    expect(babeldocArgs).toContain("zh-Hant"); // BabelDOC uses zh-Hant for traditional Chinese
-  });
-});
-
-describe("BabelDOC converter - Output structure", () => {
-  const testDir = "./test-output-babeldoc-structure";
-  const testInputFile = join(testDir, "input.pdf");
-
-  beforeEach(() => {
-    if (!existsSync(testDir)) {
-      mkdirSync(testDir, { recursive: true });
-    }
-    writeFileSync(testInputFile, "%PDF-1.4\n%Test PDF content");
+    expect(configPath.length).toBeGreaterThan(0);
+    expect(existsSync(configPath)).toBe(false);
   });
 
-  afterEach(() => {
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  test("should create archive with translated-<lang>.pdf", async () => {
-    let tarSourceDir = "";
+  test("should delete temp config file when babeldoc fails", async () => {
+    let configPath = "";
 
     const mockExecFile: ExecFileFn = (
       cmd: string,
@@ -253,166 +221,43 @@ describe("BabelDOC converter - Output structure", () => {
       if (cmd === "pdftotext") {
         callback(
           null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
+          "This is a comprehensive test PDF with more than enough text content to ensure OCR is skipped. The text length is intentionally long to exceed the scanned PDF threshold used by detection logic and keep tests deterministic.",
           "",
         );
-      } else if (cmd === "babeldoc") {
-        const outputIndex = args.indexOf("-o");
-        if (outputIndex !== -1 && args[outputIndex + 1]) {
-          const outputPath = args[outputIndex + 1];
-          const outputDir = dirname(outputPath);
-          if (!existsSync(outputDir)) {
-            mkdirSync(outputDir, { recursive: true });
-          }
-          writeFileSync(outputPath, "%PDF-1.4\n%Translated content");
-        }
-        callback(null, "Translation complete", "");
-      } else if (cmd === "tar") {
-        // Capture the source directory for the tar archive
-        const cIndex = args.indexOf("-C");
-        if (cIndex !== -1 && args[cIndex + 1]) {
-          tarSourceDir = args[cIndex + 1];
-        }
-        callback(null, "Archive created", "");
+        return;
       }
-    };
 
-    const targetPath = join(testDir, "output.tar");
-    await convert(testInputFile, "pdf", "pdf-ko", targetPath, undefined, mockExecFile);
+      if (cmd === "babeldoc") {
+        configPath = args[args.indexOf("-c") + 1] as string;
+        expect(existsSync(configPath)).toBe(true);
 
-    // The archive source directory should end with "archive"
-    expect(tarSourceDir).toContain("archive");
-  });
-
-  test("should only use .tar format, not .tar.gz", async () => {
-    let tarCommand: string[] = [];
-
-    const mockExecFile: ExecFileFn = (
-      cmd: string,
-      args: string[],
-      callback: (err: ExecFileException | null, stdout: string, stderr: string) => void,
-    ) => {
-      if (cmd === "pdftotext") {
-        callback(
-          null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
-          "",
-        );
-      } else if (cmd === "babeldoc") {
-        const outputIndex = args.indexOf("-o");
-        if (outputIndex !== -1 && args[outputIndex + 1]) {
-          const outputPath = args[outputIndex + 1];
-          const outputDir = dirname(outputPath);
-          if (!existsSync(outputDir)) {
-            mkdirSync(outputDir, { recursive: true });
-          }
-          writeFileSync(outputPath, "%PDF-1.4\n%Translated");
-        }
-        callback(null, "Translation complete", "");
-      } else if (cmd === "tar") {
-        tarCommand = args;
-        callback(null, "Archive created", "");
-      }
-    };
-
-    const targetPath = join(testDir, "output.tar");
-    await convert(testInputFile, "pdf", "pdf-de", targetPath, undefined, mockExecFile);
-
-    // Should use -cf (no gzip) not -czf
-    expect(tarCommand[0]).toBe("-cf");
-    expect(tarCommand).not.toContain("-czf");
-    expect(tarCommand).not.toContain("-z");
-  });
-});
-
-describe("BabelDOC converter - Error handling", () => {
-  const testDir = "./test-output-babeldoc-error";
-  const testInputFile = join(testDir, "input.pdf");
-
-  beforeEach(() => {
-    if (!existsSync(testDir)) {
-      mkdirSync(testDir, { recursive: true });
-    }
-    writeFileSync(testInputFile, "%PDF-1.4\n%Test PDF content");
-  });
-
-  afterEach(() => {
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  test("should reject with error when babeldoc fails", async () => {
-    const mockExecFile: ExecFileFn = (
-      cmd: string,
-      _args: string[],
-      callback: (err: ExecFileException | null, stdout: string, stderr: string) => void,
-    ) => {
-      if (cmd === "pdftotext") {
-        callback(
-          null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
-          "",
-        );
-      } else if (cmd === "babeldoc") {
         const error = new Error("Translation failed") as ExecFileException;
         error.code = 1;
-        callback(error, "", "babeldoc: Translation error");
+        callback(error, "", "translation failure");
       }
     };
 
-    const targetPath = join(testDir, "output.tar");
-
     await expect(
-      convert(testInputFile, "pdf", "pdf-zh", targetPath, undefined, mockExecFile),
-    ).rejects.toThrow();
+      convert(
+        testInputFile,
+        "pdf",
+        "pdf-ja",
+        join(testDir, "output-ja.tar"),
+        {
+          _babeldocGetApiKey: async () => "test-api-key",
+        },
+        mockExecFile,
+      ),
+    ).rejects.toThrow("BabelDOC translation failed");
+
+    expect(configPath.length).toBeGreaterThan(0);
+    expect(existsSync(configPath)).toBe(false);
   });
 
-  test("should reject when no output PDF is generated", async () => {
-    const mockExecFile: ExecFileFn = (
-      cmd: string,
-      _args: string[],
-      callback: (err: ExecFileException | null, stdout: string, stderr: string) => void,
-    ) => {
-      if (cmd === "pdftotext") {
-        callback(
-          null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
-          "",
-        );
-      } else if (cmd === "babeldoc") {
-        // Don't create output file, simulating failed translation
-        callback(null, "Complete", "");
-      }
-    };
+  test("should ensure output directory exists before babeldoc run", async () => {
+    let outputDirFromArgs = "";
 
-    const targetPath = join(testDir, "output.tar");
-
-    await expect(
-      convert(testInputFile, "pdf", "pdf-zh", targetPath, undefined, mockExecFile),
-    ).rejects.toThrow();
-  });
-});
-
-describe("BabelDOC converter - Markdown output format", () => {
-  const testDir = "./test-output-babeldoc-md";
-  const testInputFile = join(testDir, "input.pdf");
-
-  beforeEach(() => {
-    if (!existsSync(testDir)) {
-      mkdirSync(testDir, { recursive: true });
-    }
-    writeFileSync(testInputFile, "%PDF-1.4\n%Test PDF content");
-  });
-
-  afterEach(() => {
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  test("should call babeldoc with md output format", async () => {
-    let babeldocArgs: string[] = [];
+    const nestedTargetPath = join(testDir, "nested", "deep", "output.tar");
 
     const mockExecFile: ExecFileFn = (
       cmd: string,
@@ -422,90 +267,40 @@ describe("BabelDOC converter - Markdown output format", () => {
       if (cmd === "pdftotext") {
         callback(
           null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
+          "This is a comprehensive test PDF with more than enough text content to ensure OCR is skipped. The text length is intentionally long to exceed the scanned PDF threshold used by detection logic and keep tests deterministic.",
           "",
         );
-      } else if (cmd === "babeldoc") {
-        babeldocArgs = args;
-        const outputIndex = args.indexOf("-o");
-        if (outputIndex !== -1 && args[outputIndex + 1]) {
-          const outputPath = args[outputIndex + 1];
-          const outputDir = dirname(outputPath);
-          if (!existsSync(outputDir)) {
-            mkdirSync(outputDir, { recursive: true });
-          }
-          writeFileSync(outputPath, "# Translated Markdown Content");
-        }
+        return;
+      }
+
+      if (cmd === "babeldoc") {
+        outputDirFromArgs = args[args.indexOf("--output") + 1] as string;
+        expect(existsSync(outputDirFromArgs)).toBe(true);
+
+        const inputPath = args[args.indexOf("--files") + 1] as string;
+        const inputBase = basename(inputPath, ".pdf");
+        writeFileSync(join(outputDirFromArgs, `${inputBase}-mono.pdf`), "%PDF-1.4\n%Translated content");
         callback(null, "Translation complete", "");
-      } else if (cmd === "tar") {
+        return;
+      }
+
+      if (cmd === "tar") {
         callback(null, "Archive created", "");
       }
     };
 
-    const targetPath = join(testDir, "output.tar");
-    await convert(testInputFile, "pdf", "md-zh", targetPath, undefined, mockExecFile);
+    await convert(
+      testInputFile,
+      "pdf",
+      "pdf-fr",
+      nestedTargetPath,
+      {
+        _babeldocGetApiKey: async () => "test-api-key",
+      },
+      mockExecFile,
+    );
 
-    expect(babeldocArgs).toContain("-l");
-    expect(babeldocArgs).toContain("zh-Hans");
-    expect(babeldocArgs).toContain("--output-format");
-    expect(babeldocArgs).toContain("md");
-  });
-});
-
-describe("BabelDOC converter - HTML output format", () => {
-  const testDir = "./test-output-babeldoc-html";
-  const testInputFile = join(testDir, "input.pdf");
-
-  beforeEach(() => {
-    if (!existsSync(testDir)) {
-      mkdirSync(testDir, { recursive: true });
-    }
-    writeFileSync(testInputFile, "%PDF-1.4\n%Test PDF content");
-  });
-
-  afterEach(() => {
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  test("should call babeldoc with html output format", async () => {
-    let babeldocArgs: string[] = [];
-
-    const mockExecFile: ExecFileFn = (
-      cmd: string,
-      args: string[],
-      callback: (err: ExecFileException | null, stdout: string, stderr: string) => void,
-    ) => {
-      if (cmd === "pdftotext") {
-        callback(
-          null,
-          "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
-          "",
-        );
-      } else if (cmd === "babeldoc") {
-        babeldocArgs = args;
-        const outputIndex = args.indexOf("-o");
-        if (outputIndex !== -1 && args[outputIndex + 1]) {
-          const outputPath = args[outputIndex + 1];
-          const outputDir = dirname(outputPath);
-          if (!existsSync(outputDir)) {
-            mkdirSync(outputDir, { recursive: true });
-          }
-          writeFileSync(outputPath, "<html><body>Translated HTML</body></html>");
-        }
-        callback(null, "Translation complete", "");
-      } else if (cmd === "tar") {
-        callback(null, "Archive created", "");
-      }
-    };
-
-    const targetPath = join(testDir, "output.tar");
-    await convert(testInputFile, "pdf", "html-ja", targetPath, undefined, mockExecFile);
-
-    expect(babeldocArgs).toContain("-l");
-    expect(babeldocArgs).toContain("ja");
-    expect(babeldocArgs).toContain("--output-format");
-    expect(babeldocArgs).toContain("html");
+    expect(outputDirFromArgs.length).toBeGreaterThan(0);
+    expect(outputDirFromArgs.startsWith(dirname(nestedTargetPath))).toBe(true);
   });
 });

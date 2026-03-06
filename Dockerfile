@@ -452,6 +452,7 @@ RUN set -ex && \
 # 💡 v9.4 新功能：改進 EPUB 轉換、更好的 DOCX 支援
 # 🔗 https://github.com/kovidgoyal/calibre/releases/tag/v9.4.0
 # ⚠️注意：官方 binary 自帶所有依賴，不依賴系統 libxml2 ABI
+# ⚠️重要：Calibre 的 ebook-convert 在 PDF 生成時需要 QtWebEngine runtime 依賴
 ARG CALIBRE_VERSION=9.4.0
 RUN set -ex && \
   apt-get update --fix-missing && \
@@ -459,7 +460,12 @@ RUN set -ex && \
   libgl1 libegl1 libxkbcommon0 libxcb-cursor0 \
   libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
   libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
-  libopengl0 libxcb-xinerama0 libxcb-xkb1 xz-utils && \
+  libopengl0 libxcb-xinerama0 libxcb-xkb1 xz-utils \
+  libasound2 libnss3 libxcomposite1 libxrandr2 \
+  libxi6 libxcursor1 libxdamage1 libxtst6 \
+  libglib2.0-0 libdbus-1-3 libdrm2 libgbm1 \
+  libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+  libgtk-3-0 libx11-xcb1 libxcb-dri3-0 libxshmfence1 && \
   rm -rf /var/lib/apt/lists/* && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
@@ -475,7 +481,7 @@ RUN set -ex && \
   ln -sf /opt/calibre/ebook-convert /usr/local/bin/ebook-convert && \
   ln -sf /opt/calibre/ebook-meta /usr/local/bin/ebook-meta && \
   ln -sf /opt/calibre/calibre /usr/local/bin/calibre && \
-  echo "✅ Calibre $(ebook-convert --version 2>&1 | head -1) 安裝完成"
+  echo "✅ Calibre $(ebook-convert --version 2>&1 | head -1) 安裝完成（含 QtWebEngine 依賴）"
 
 # 4.11 LibreOffice 25.8.4 - 官方 deb 安裝
 # 📦 版本 25.8.4 - 2026-01 官方最新穩定版

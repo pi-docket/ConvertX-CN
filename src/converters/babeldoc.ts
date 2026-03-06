@@ -7,6 +7,7 @@ import {
   rmdirSync,
   copyFileSync,
   statSync,
+  writeFileSync,
 } from "node:fs";
 import { join, basename, dirname } from "node:path";
 import { ExecFileFn } from "./types";
@@ -193,6 +194,36 @@ function getOutputExtension(format: OutputFormat): string {
   return extMap[format];
 }
 
+function toBabelDocConfigLang(lang: string): string {
+  const langMap: Record<string, string> = {
+    "zh-TW": "zh-tw",
+    zh: "zh-cn",
+  };
+  return langMap[lang] || lang.toLowerCase();
+}
+
+function yamlQuote(value: string): string {
+  return `'${value.replace(/'/g, "''")}'`;
+}
+
+interface BabelDocRuntimeConfig {
+  configPath: string;
+  modelName: string;
+  cleanup: () => void;
+}
+
+function xorDecryptHex(hexValue: string, key: string): string {
+  const encoded = Buffer.from(hexValue, "hex").toString("latin1");
+  return [...encoded]
+    .map((char, i) => String.fromCharCode(char.charCodeAt(0) ^ key.charCodeAt(i % key.length)))
+    .join("");
+}
+
+const BABELDOC_SECRET_KEY_PARTS = ["c0n", "v3r", "tx-", "bdo", "c"] as const;
+const BABELDOC_SECRET_KEY = BABELDOC_SECRET_KEY_PARTS.join("");
+const BABELDOC_MODEL_ENCRYPTED = "17550015561c005765170a1616025e433b675f433a";
+const BABELDOC_BASE_URL_ENCRYPTED = "0b441a0640485b574c120d41100a5c07155c1c121442154a0c0d4c465f";
+
 /**
  * 取得翻譯服務的 CLI 參數
  *
@@ -202,9 +233,12 @@ function getOutputExtension(format: OutputFormat): string {
  * @param userId 使用者 ID（可選，暫時未使用）
  * @returns Promise<{ args: string[], cleanup: () => void }> CLI 參數陣列和清理函數
  */
-async function getTranslationArgs(
+async function createTempBabelDocConfig(
+  outputDir: string,
+  targetLang: string,
+  fetchApiKey: () => Promise<string>,
   userId?: number,
-): Promise<{ args: string[]; cleanup: () => void }> {
+): Promise<BabelDocRuntimeConfig> {
   void userId;
 
   const engine = BABELDOC_ENGINE.toLowerCase();
@@ -218,32 +252,54 @@ async function getTranslationArgs(
 
   // SiliconFlow 翻譯服務
   if (engine === "siliconflow") {
+    let apiKey = "";
+    let configPath = "";
+
     try {
-      // 取得 API key
-      const apiKey = await getApiKey();
+      // 每次請求都重新取得 API key，禁止重用快取。
+      apiKey = await fetchApiKey();
 
-      // BabelDOC CLI 參數（假設支援 OpenAI-compatible API）
-      // 注意：這些參數需要根據實際的 BabelDOC CLI 版本調整
-      const args = [
-        "--openai-api-key",
-        apiKey,
-        "--openai-base-url",
-        "https://api.siliconflow.cn/v1",
-        "--model",
-        "tencent/Hunyuan-MT-7B",
-      ];
+      const modelName = xorDecryptHex(BABELDOC_MODEL_ENCRYPTED, BABELDOC_SECRET_KEY);
+      const baseUrl = xorDecryptHex(BABELDOC_BASE_URL_ENCRYPTED, BABELDOC_SECRET_KEY);
+      const configLang = toBabelDocConfigLang(targetLang);
+      configPath = join(outputDir, `.babeldoc-config-${Date.now()}-${Math.random().toString(36).slice(2)}.yaml`);
 
-      // 返回參數和清理函數
+      const configContent = [
+        "model:",
+        "  provider: openai",
+        `  model: ${yamlQuote(modelName)}`,
+        `  base_url: ${yamlQuote(baseUrl)}`,
+        `  api_key: ${yamlQuote(apiKey)}`,
+        "",
+        "translation:",
+        `  target_lang: ${yamlQuote(configLang)}`,
+        "",
+      ].join("\n");
+
+      writeFileSync(configPath, configContent, { encoding: "utf8" });
+
       return {
-        args,
+        configPath,
+        modelName,
         cleanup: () => {
+          if (configPath && existsSync(configPath)) {
+            unlinkSync(configPath);
+          }
           clearApiKey(apiKey);
+          apiKey = "";
         },
       };
     } catch (error) {
-      throw new Error(
-        `Failed to get SiliconFlow API key: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      // 部分建立成功時仍要確保清理。
+      if (configPath && existsSync(configPath)) {
+        unlinkSync(configPath);
+      }
+      if (apiKey) {
+        clearApiKey(apiKey);
+        apiKey = "";
+      }
+      void error;
+      throw new Error("Failed to fetch BabelDOC credentials");
     }
   }
 
@@ -269,50 +325,38 @@ async function runBabelDoc(
   targetLang: string,
   outputFormat: OutputFormat,
   execFile: ExecFileFn,
+  fetchApiKey: () => Promise<string>,
   userId?: number,
 ): Promise<string> {
-  // 取得翻譯服務參數
-  const { args: translationArgs, cleanup } = await getTranslationArgs(userId);
+  const outputDir = dirname(outputPath);
+  if (!existsSync(outputDir)) {
+    mkdirSync(outputDir, { recursive: true });
+  }
+
+  const { configPath, modelName, cleanup } = await createTempBabelDocConfig(
+    outputDir,
+    targetLang,
+    fetchApiKey,
+    userId,
+  );
 
   try {
+    console.log("[BabelDOC] Translation started");
+    console.log(`[BabelDOC] Model: ${modelName}`);
+    console.log("[BabelDOC] Config created");
+
     return await new Promise<string>((resolve, reject) => {
-      // babeldoc CLI 參數（2026 版本）：
-      // --files <input>: 輸入 PDF（注意：不是 -i）
-      // --output <output>: 輸出目錄（注意：不是 -o）
-      // --lang-out <lang>: 目標語言
-      // 注意：新版 babeldoc 不支援 --output-format 和 --service 參數
-
       const babelLang = toBabelDocLang(targetLang);
-      const outputDir = dirname(outputPath);
+      const args = ["--files", inputPath, "--output", outputDir, "-c", configPath];
 
-      // 基本參數
-      const args = ["--files", inputPath, "--output", outputDir, "--lang-out", babelLang];
-
-      // 加入翻譯服務參數
-      args.push(...translationArgs);
-
-      // 遮蔽 API key 的日誌輸出
-      const logArgs = args.map((arg, i) => {
-        const prevArg = args[i - 1];
-        if (prevArg === "--openai-api-key" && arg !== "local-llama") {
-          return "***";
-        }
-        return arg;
-      });
-      console.log(`[BabelDOC] Running: babeldoc ${logArgs.join(" ")}`);
+      console.log("[BabelDOC] Running translation");
 
       execFile("babeldoc", args, (error, stdout, stderr) => {
         if (error) {
-          reject(`babeldoc error: ${error}\nstderr: ${stderr}`);
+          void stdout;
+          void stderr;
+          reject(new Error("BabelDOC translation failed"));
           return;
-        }
-
-        if (stdout) {
-          console.log(`[BabelDOC] stdout: ${stdout}`);
-        }
-
-        if (stderr) {
-          console.log(`[BabelDOC] stderr: ${stderr}`);
         }
 
         // 新版 babeldoc 輸出到目錄，需要找到輸出檔案
@@ -338,9 +382,10 @@ async function runBabelDoc(
 
         // 如果都找不到，嘗試找任何 PDF 檔案
         const files = readdirSync(outputDir);
-        const pdfFile = files.find((f) => f.endsWith(".pdf") && f.includes(inputBasename));
-        if (pdfFile) {
-          const foundPath = join(outputDir, pdfFile);
+        const expectedExt = `.${getOutputExtension(outputFormat)}`;
+        const translatedFile = files.find((f) => f.endsWith(expectedExt) && f.includes(inputBasename));
+        if (translatedFile) {
+          const foundPath = join(outputDir, translatedFile);
           if (foundPath !== outputPath) {
             copyFileSync(foundPath, outputPath);
           }
@@ -348,12 +393,13 @@ async function runBabelDoc(
           return;
         }
 
-        reject(`No output file found for ${inputPath}`);
+        reject(new Error(`No BabelDOC output generated for language ${babelLang}`));
       });
     });
   } finally {
-    // 確保 API key 被清除（即使發生錯誤）
+    // 無論成功或失敗都必須立刻刪除暫存設定檔。
     cleanup();
+    console.log("[BabelDOC] Config deleted");
   }
 }
 
@@ -381,7 +427,16 @@ export async function convert(
       ? (options as { userId?: number }).userId
       : undefined;
 
+  const fetchApiKey =
+    options &&
+    typeof options === "object" &&
+    "_babeldocGetApiKey" in options &&
+    typeof (options as { _babeldocGetApiKey?: unknown })._babeldocGetApiKey === "function"
+      ? ((options as { _babeldocGetApiKey: () => Promise<string> })._babeldocGetApiKey as () => Promise<string>)
+      : () => getApiKey({ disableCache: true });
+
   let ocrTempFile: string | undefined;
+  let tempDir: string | undefined;
 
   try {
     // 1. 自動偵測掃描版 PDF 並進行 OCR 處理
@@ -405,7 +460,7 @@ export async function convert(
     // 4. 建立臨時輸出目錄
     const outputDir = dirname(targetPath);
     const inputFileName = basename(filePath, `.${fileType}`);
-    const tempDir = join(outputDir, `${inputFileName}_babeldoc_${Date.now()}`);
+    tempDir = join(outputDir, `${inputFileName}_babeldoc_${Date.now()}`);
 
     if (!existsSync(tempDir)) {
       mkdirSync(tempDir, { recursive: true });
@@ -419,7 +474,15 @@ export async function convert(
     const translatedFilePath = join(tempDir, `${inputFileName}-translated.${outputExt}`);
 
     // 7. 執行 babeldoc 翻譯（使用 OCR 處理後的 PDF，根據使用者設定選擇翻譯服務）
-    await runBabelDoc(inputPdf, translatedFilePath, targetLang, outputFormat, execFile, userId);
+    await runBabelDoc(
+      inputPdf,
+      translatedFilePath,
+      targetLang,
+      outputFormat,
+      execFile,
+      fetchApiKey,
+      userId,
+    );
 
     // 8. 複製翻譯後的檔案到封裝目錄
     const translatedDest = join(archiveDir, `translated-${targetLang}.${outputExt}`);
@@ -461,15 +524,14 @@ export async function convert(
     console.log(`[BabelDOC] Created archive: ${tarPath}`);
 
     // 10. 清理臨時目錄
-    removeDir(tempDir);
-
-    // 11. 清理 OCR 暫存檔案
-    cleanupOcrTempFile(ocrTempFile);
-
     return "Done";
   } catch (error) {
-    // 確保清理 OCR 暫存檔案
+    void error;
+    throw new Error("BabelDOC translation failed");
+  } finally {
+    if (tempDir && existsSync(tempDir)) {
+      removeDir(tempDir);
+    }
     cleanupOcrTempFile(ocrTempFile);
-    throw new Error(`BabelDOC error: ${error}`);
   }
 }

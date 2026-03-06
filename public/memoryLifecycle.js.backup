@@ -637,7 +637,7 @@ class TaskLifecycleManager {
   }
 }
 
-// ==================== 等級三：記憶體監控 ====================
+// ==================== 等級三：記憶體監控與硬回收 ====================
 
 /**
  * 記憶體監控器
@@ -803,7 +803,6 @@ class MemoryMonitor {
 /**
  * 全域記憶體生命週期管理器
  * 整合所有等級的記憶體管理功能
- * 實現 ConvertX 專用的記憶體分層管理策略
  */
 class MemoryLifecycleManager {
   constructor() {
@@ -814,117 +813,23 @@ class MemoryLifecycleManager {
     // 等級二：任務生命週期
     this.taskManager = new TaskLifecycleManager();
 
-    // 等級三：記憶體監控（僅用於診斷）
+    // 等級三：記憶體監控
     this.memoryMonitor = new MemoryMonitor();
 
-    // GC 執行狀態追蹤
-    this.lastGCTime = 0;
-    this.lastUIActivityTime = Date.now();
-    this.gcEnabled = typeof global !== "undefined" && typeof global.gc === "function";
+    // 設置高記憶體時的自動清理
+    this.memoryMonitor.onHighMemory((info) => {
+      this.performEmergencyCleanup(info);
+    });
 
-    // 如果 GC 不可用，只在初始化時顯示一次 debug log
-    if (!this.gcEnabled) {
-      console.debug(
-        "[MemoryLifecycle] GC not exposed. Run Node.js with --expose-gc to enable manual GC.",
-      );
-    }
-
-    // 定期清理過期資源（每 5 分鐘）
+    // 定期清理過期資源
     this.maintenanceInterval = setInterval(
       () => {
         this.performMaintenance();
       },
       5 * 60 * 1000,
-    );
-
-    // 定期嘗試執行 Web Renderer GC（每 5 分鐘）
-    this.gcInterval = setInterval(() => {
-      this.tryPerformRendererGC();
-    }, GC_INTERVAL);
-
-    // 監聽 UI 活動
-    this.setupUIActivityTracking();
+    ); // 每 5 分鐘
 
     console.log("[MemoryLifecycle] Memory Lifecycle Manager initialized");
-    console.log("[MemoryLifecycle] Memory Strategy:");
-    console.log("  - Conversion engines: No GC during task execution");
-    console.log("  - Web renderer: Periodic GC when idle");
-    console.log(`  - GC interval: ${GC_INTERVAL / 1000}s`);
-    console.log(`  - Renderer idle threshold: ${RENDERER_IDLE_THRESHOLD / 1000}s`);
-  }
-
-  /**
-   * 設置 UI 活動追蹤
-   */
-  setupUIActivityTracking() {
-    // 監聽各種 UI 事件來判斷 renderer 是否 idle
-    const activityEvents = ["mousedown", "mousemove", "keydown", "scroll", "touchstart"];
-
-    for (const eventType of activityEvents) {
-      window.addEventListener(
-        eventType,
-        () => {
-          this.lastUIActivityTime = Date.now();
-        },
-        { passive: true },
-      );
-    }
-  }
-
-  /**
-   * 判斷 Web Renderer 是否處於閒置狀態
-   * @returns {boolean}
-   */
-  isRendererIdle() {
-    return Date.now() - this.lastUIActivityTime > RENDERER_IDLE_THRESHOLD;
-  }
-
-  /**
-   * 取得執行中的轉換引擎任務數量
-   * @returns {number}
-   */
-  getRunningConversionTaskCount() {
-    let count = 0;
-    for (const task of this.taskManager.tasks.values()) {
-      if (task.status === "running" && CONVERSION_ENGINE_TASK_TYPES.has(task.taskType)) {
-        count++;
-      }
-    }
-    return count;
-  }
-
-  /**
-   * 嘗試執行 Web Renderer GC
-   * 只在符合以下【所有】條件時執行：
-   * 1. 沒有轉換引擎任務執行中
-   * 2. Web Renderer 處於閒置狀態
-   * 3. 距離上次 GC 已超過間隔時間
-   */
-  tryPerformRendererGC() {
-    const now = Date.now();
-    const runningConversionTasks = this.getRunningConversionTaskCount();
-    const rendererIdle = this.isRendererIdle();
-    const timeSinceLastGC = now - this.lastGCTime;
-
-    // 檢查是否符合 GC 條件
-    const shouldGC = runningConversionTasks === 0 && rendererIdle && timeSinceLastGC > GC_INTERVAL;
-
-    if (shouldGC) {
-      console.log("[MemoryLifecycle] Performing Web Renderer GC");
-      console.debug(`  - Running conversion tasks: ${runningConversionTasks}`);
-      console.debug(`  - Renderer idle: ${rendererIdle}`);
-      console.debug(`  - Time since last GC: ${(timeSinceLastGC / 1000).toFixed(0)}s`);
-
-      this.requestGarbageCollection();
-      this.lastGCTime = now;
-    } else {
-      console.debug("[MemoryLifecycle] GC conditions not met:");
-      console.debug(`  - Running conversion tasks: ${runningConversionTasks} (require: 0)`);
-      console.debug(`  - Renderer idle: ${rendererIdle}`);
-      console.debug(
-        `  - Time since last GC: ${(timeSinceLastGC / 1000).toFixed(0)}s (require: ${GC_INTERVAL / 1000}s)`,
-      );
-    }
   }
 
   // ==================== 等級一 API ====================
@@ -1009,14 +914,14 @@ class MemoryLifecycleManager {
     // 然後清理任務上下文
     await this.taskManager.finishTask(taskId, status);
 
-    // 清理已被 GC 回收的 Blob 參考
+    // 清理已被 GC 的 Blob 參考
     this.blobTracker.cleanup();
   }
 
   // ==================== 等級三 API ====================
 
   /**
-   * 開始記憶體監控（僅用於診斷）
+   * 開始記憶體監控
    */
   startMemoryMonitoring() {
     this.memoryMonitor.startMonitoring();
@@ -1027,6 +932,34 @@ class MemoryLifecycleManager {
    */
   stopMemoryMonitoring() {
     this.memoryMonitor.stopMonitoring();
+  }
+
+  /**
+   * 執行緊急清理（高記憶體時自動觸發）
+   * ⚠️ 重要：只清理已完成任務的資源，不影響執行中的任務
+   * @param {object} memoryInfo
+   */
+  performEmergencyCleanup(memoryInfo) {
+    console.warn("[MemoryLifecycle] Performing emergency cleanup due to high memory");
+
+    // 取得已完成任務的 ID
+    const completedTaskIds = this.taskManager.getCompletedTaskIds();
+
+    // 1. 只釋放已完成任務的 Object URLs（不影響執行中任務）
+    this.objectURLTracker.revokeExpired(24 * 60 * 60 * 1000, completedTaskIds);
+
+    // 2. 清理已被 GC 的 Blob 參考
+    this.blobTracker.cleanup();
+
+    // 3. 清理已完成的任務快取（縮短保留時間到 10 分鐘）
+    this.taskManager.cleanupCompletedTasks(10 * 60 * 1000);
+
+    // 4. 請求 GC（如果可用）
+    this.requestGarbageCollection();
+
+    console.log(
+      `[MemoryLifecycle] Emergency cleanup complete. Active tasks: ${this.taskManager.tasks.size}`,
+    );
   }
 
   /**
@@ -1055,20 +988,12 @@ class MemoryLifecycleManager {
 
   /**
    * 請求垃圾回收（如果可用）
-   * ⚠️ 如果 GC 不可用，靜默忽略（不顯示錯誤）
    */
   requestGarbageCollection() {
-    if (this.gcEnabled) {
-      try {
-        // @ts-ignore - gc() is only available with --expose-gc flag
-        global.gc();
-        console.log("[MemoryLifecycle] Garbage collection requested");
-      } catch (e) {
-        console.debug("[MemoryLifecycle] Failed to request GC:", e);
-      }
-    } else {
-      // 靜默忽略，僅在 debug 模式下顯示
-      console.debug("[MemoryLifecycle] GC not available, skipping");
+    // @ts-ignore - gc() is only available with --expose-gc flag
+    if (typeof gc === "function") {
+      console.log("[MemoryLifecycle] Requesting garbage collection");
+      gc();
     }
   }
 
@@ -1102,18 +1027,6 @@ class MemoryLifecycleManager {
       blobs: this.blobTracker.getStats(),
       tasks: this.taskManager.getStats(),
       memory: this.memoryMonitor.getStats(),
-      gc: {
-        enabled: this.gcEnabled,
-        lastGCTime: this.lastGCTime,
-        timeSinceLastGC: Date.now() - this.lastGCTime,
-      },
-      renderer: {
-        lastActivityTime: this.lastUIActivityTime,
-        isIdle: this.isRendererIdle(),
-      },
-      conversionTasks: {
-        running: this.getRunningConversionTaskCount(),
-      },
       timestamp: new Date().toISOString(),
     };
   }
@@ -1128,9 +1041,6 @@ class MemoryLifecycleManager {
     console.log("Blob References:", report.blobs);
     console.log("Tasks:", report.tasks);
     console.log("Memory:", report.memory);
-    console.log("GC Status:", report.gc);
-    console.log("Renderer Status:", report.renderer);
-    console.log("Conversion Tasks:", report.conversionTasks);
     console.groupEnd();
     return report;
   }
@@ -1141,7 +1051,6 @@ class MemoryLifecycleManager {
   destroy() {
     this.stopMemoryMonitoring();
     clearInterval(this.maintenanceInterval);
-    clearInterval(this.gcInterval);
     this.performFullCleanup();
   }
 }
@@ -1205,7 +1114,3 @@ window.finishMemoryTask = (taskId, status) => memoryLifecycle.finishTask(taskId,
 window.getMemoryDiagnostics = () => memoryLifecycle.printDiagnostics();
 
 console.log("[MemoryLifecycle] Module loaded. Use window.MemoryLifecycle for access.");
-console.log("[MemoryLifecycle] Memory management strategy active:");
-console.log("  ✓ Conversion engines protected from GC during execution");
-console.log("  ✓ Web renderer memory managed separately");
-console.log("  ✓ Periodic GC only when system is idle");
