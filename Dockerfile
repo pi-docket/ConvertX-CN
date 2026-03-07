@@ -857,15 +857,8 @@ RUN echo "======================================" && \
   echo "  ⚠️ pdf2zh 不可用"; \
   fi && \
   \
-  # 驗證 ImageMagick
-  echo "🔍 驗證 ImageMagick..." && \
-  if command -v magick >/dev/null 2>&1; then \
-  echo "  ✅ ImageMagick: $(magick --version | head -1)"; \
-  elif command -v convert >/dev/null 2>&1; then \
-  echo "  ⚠️ ImageMagick (legacy): $(convert --version | head -1)"; \
-  else \
-  echo "  ❌ ImageMagick 未安裝" && VALIDATION_PASSED=false; \
-  fi && \
+  # 注：ImageMagick 已在核心工具中驗證，此處跳過重複檢查
+  echo "✅ ImageMagick: 已在核心工具驗證中確認" && \
   \
   # 驗證 ONNX 模型
   echo "🔍 驗證 ONNX 模型..." && \

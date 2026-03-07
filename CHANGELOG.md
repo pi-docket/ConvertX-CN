@@ -56,7 +56,7 @@
 ### 🔧 Technical Changes
 
 - **translationProviders.ts** (新增)：多翻譯提供者工廠
-- **keyProvider.ts** (改進)：XOR 解密、1分鐘 key 緩存
+- **keyProvider.ts** (改進)：解密、1分鐘 key 緩存
 - **translator.ts** (改進)：SiliconFlow + 緩存整合層
 - **manager.ts** (改進)：翻譯服務發現與可用性檢查
 - **babeldoc.ts** (改進)：API key 非同步取得與清理
