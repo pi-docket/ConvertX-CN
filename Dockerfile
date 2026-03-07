@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN 官方 Docker Image
-# 版本：v0.1.24 - CPU-only 輕量版
+# 版本：v0.1.26 - CPU-only 輕量版
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -48,7 +48,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN - 完全離線化檔案轉換服務"
-LABEL org.opencontainers.image.version="v0.1.22"
+LABEL org.opencontainers.image.version="v0.1.26"
 WORKDIR /app
 
 # 設定非互動模式
@@ -798,13 +798,25 @@ RUN echo "======================================" && \
   \
   # 驗證核心工具
   echo "🔍 驗證核心工具..." && \
-  for cmd in ffmpeg magick gm vips inkscape pandoc soffice; do \
+  for cmd in ffmpeg magick gm vips inkscape pandoc; do \
   if command -v ${cmd} >/dev/null 2>&1; then \
   echo "  ✅ ${cmd}: $(which ${cmd})"; \
   else \
   echo "  ❌ ${cmd}: 未找到" && VALIDATION_PASSED=false; \
   fi; \
   done && \
+  \
+  # 驗證 LibreOffice (架構感知)
+  echo "🔍 驗證 LibreOffice..." && \
+  if command -v soffice >/dev/null 2>&1; then \
+  echo "  ✅ soffice: $(which soffice)"; \
+  else \
+  if [ "$ARCH" = "aarch64" ]; then \
+  echo "  ⚠️ ARM64：未安裝 LibreOffice，跳過檢查"; \
+  else \
+  echo "  ❌ soffice: 未找到" && VALIDATION_PASSED=false; \
+  fi; \
+  fi && \
   \
   # 驗證 MinerU（僅 AMD64）
   echo "🔍 驗證 MinerU..." && \
