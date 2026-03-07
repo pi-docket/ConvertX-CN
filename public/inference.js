@@ -67,7 +67,7 @@ let lastInferredEngine = null;
 let isInferredValue = false;
 
 /**
- * 請求格式推斷
+ * 請求格式推斷 (含自動重試機制)
  * @param {string} ext - 檔案副檔名
  * @param {number} [fileSizeKb] - 檔案大小 (KB)
  * @returns {Promise<InferenceResult|null>}
@@ -77,65 +77,254 @@ async function requestFormatInference(ext, fileSizeKb) {
     return null;
   }
 
-  try {
-    const response = await fetch(`${inferenceWebroot}/inference/predict`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ext: ext,
-        file_size_kb: fileSizeKb,
-      }),
-    });
+  const maxRetries = 3;
+  const baseDelay = 60; // 秒
+  const maxAttempts = 1 + maxRetries;
+  const url = `${inferenceWebroot}/inference/predict`;
 
-    const result = await response.json();
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ext: ext,
+          file_size_kb: fileSizeKb,
+        }),
+      });
 
-    if (result.success && result.data) {
-      return result.data;
+      // 檢查 429 狀態碼
+      if (response.status === 429) {
+        // 已達最大重試次數
+        if (attempt >= maxAttempts - 1) {
+          console.error(`[Inference] ❌ Format prediction - Max retries exceeded. Status: 429.`);
+          return null;
+        }
+
+        // 計算延遲時間
+        let delaySeconds = baseDelay;
+        const retryAfter = response.headers.get("Retry-After");
+
+        if (retryAfter) {
+          const seconds = parseInt(retryAfter, 10);
+          if (!isNaN(seconds) && seconds > 0 && seconds < 86400) {
+            delaySeconds = seconds;
+          }
+          console.warn(
+            `[Inference] ⏳ Format prediction - Rate limit triggered (429). Using Retry-After: ${delaySeconds}s`,
+          );
+        } else {
+          console.warn(
+            `[Inference] ⏳ Format prediction - Rate limit triggered (429). Using default: ${delaySeconds}s`,
+          );
+        }
+
+        // 顯示重試進度
+        const retryAttempt = attempt + 1;
+        console.log(
+          `[Inference] 🔄 Format prediction - Retry attempt ${retryAttempt}/${maxRetries}...`,
+        );
+        console.log(
+          `[Inference] ⏸️ Format prediction - Waiting ${delaySeconds} seconds before retry...`,
+        );
+
+        // 等待後重試
+        await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+        continue;
+      }
+
+      // 非 429 錯誤，直接返回
+      if (!response.ok) {
+        console.warn(`[Inference] ⚠️ Format prediction - HTTP ${response.status}`);
+        return null;
+      }
+
+      // 成功
+      const result = await response.json();
+      if (result.success && result.data) {
+        console.log("[Inference] ✅ Format prediction succeeded");
+        return result.data;
+      }
+
+      console.warn("[Inference] ⚠️ Format prediction returned no data");
+      return null;
+    } catch (error) {
+      console.error(`[Inference] ❌ Format prediction error: ${error.message}`);
+      if (attempt >= maxAttempts - 1) {
+        return null;
+      }
+      console.log(
+        `[Inference] 🔄 Format prediction - Retry attempt ${attempt + 1}/${maxRetries}...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, baseDelay * 1000));
     }
-
-    return null;
-  } catch (error) {
-    console.warn("Format inference request failed:", error);
-    return null;
   }
+
+  return null;
 }
 
 /**
- * 記錄推薦被拒絕
+ * 記錄推薦被拒絕 (含自動重試機制)
  * @param {string} inputExt - 輸入副檔名
  * @param {string} dismissedFormat - 被拒絕的格式
  * @param {string} [dismissedEngine] - 被拒絕的引擎
  */
 async function logDismissEvent(inputExt, dismissedFormat, dismissedEngine) {
-  try {
-    await fetch(`${inferenceWebroot}/inference/dismiss`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        input_ext: inputExt,
-        dismissed_format: dismissedFormat,
-        dismissed_engine: dismissedEngine,
-      }),
-    });
-  } catch (error) {
-    console.warn("Failed to log dismiss event:", error);
+  const maxRetries = 3;
+  const baseDelay = 60; // 秒
+  const maxAttempts = 1 + maxRetries;
+  const url = `${inferenceWebroot}/inference/dismiss`;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input_ext: inputExt,
+          dismissed_format: dismissedFormat,
+          dismissed_engine: dismissedEngine,
+        }),
+      });
+
+      // 檢查 429 狀態碼
+      if (response.status === 429) {
+        // 已達最大重試次數
+        if (attempt >= maxAttempts - 1) {
+          console.error(`[Inference] ❌ Log dismiss event - Max retries exceeded. Status: 429.`);
+          return;
+        }
+
+        // 計算延遲時間
+        let delaySeconds = baseDelay;
+        const retryAfter = response.headers.get("Retry-After");
+
+        if (retryAfter) {
+          const seconds = parseInt(retryAfter, 10);
+          if (!isNaN(seconds) && seconds > 0 && seconds < 86400) {
+            delaySeconds = seconds;
+          }
+          console.warn(
+            `[Inference] ⏳ Log dismiss event - Rate limit triggered (429). Using Retry-After: ${delaySeconds}s`,
+          );
+        } else {
+          console.warn(
+            `[Inference] ⏳ Log dismiss event - Rate limit triggered (429). Using default: ${delaySeconds}s`,
+          );
+        }
+
+        // 顯示重試進度
+        const retryAttempt = attempt + 1;
+        console.log(
+          `[Inference] 🔄 Log dismiss event - Retry attempt ${retryAttempt}/${maxRetries}...`,
+        );
+        console.log(
+          `[Inference] ⏸️ Log dismiss event - Waiting ${delaySeconds} seconds before retry...`,
+        );
+
+        // 等待後重試
+        await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+        continue;
+      }
+
+      // 檢查是否成功
+      if (response.ok) {
+        console.log("[Inference] ✅ Log dismiss event succeeded");
+        return;
+      }
+
+      // 非 429 的錯誤
+      console.warn(`[Inference] ⚠️ Log dismiss event - HTTP ${response.status}`);
+      return;
+    } catch (error) {
+      console.warn(`[Inference] ⚠️ Log dismiss event error: ${error.message}`);
+      if (attempt >= maxAttempts - 1) {
+        return;
+      }
+      console.log(
+        `[Inference] 🔄 Log dismiss event - Retry attempt ${attempt + 1}/${maxRetries}...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, baseDelay * 1000));
+    }
   }
 }
 
 /**
- * 取消預調用
+ * 取消預調用 (含自動重試機制)
  */
 async function cancelWarmup() {
-  try {
-    await fetch(`${inferenceWebroot}/inference/cancel-warmup`, {
-      method: "POST",
-    });
-  } catch (error) {
-    console.warn("Failed to cancel warmup:", error);
+  const maxRetries = 3;
+  const baseDelay = 60; // 秒
+  const maxAttempts = 1 + maxRetries;
+  const url = `${inferenceWebroot}/inference/cancel-warmup`;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+      });
+
+      // 檢查 429 狀態碼
+      if (response.status === 429) {
+        // 已達最大重試次數
+        if (attempt >= maxAttempts - 1) {
+          console.error(`[Inference] ❌ Cancel warmup - Max retries exceeded. Status: 429.`);
+          return;
+        }
+
+        // 計算延遲時間
+        let delaySeconds = baseDelay;
+        const retryAfter = response.headers.get("Retry-After");
+
+        if (retryAfter) {
+          const seconds = parseInt(retryAfter, 10);
+          if (!isNaN(seconds) && seconds > 0 && seconds < 86400) {
+            delaySeconds = seconds;
+          }
+          console.warn(
+            `[Inference] ⏳ Cancel warmup - Rate limit triggered (429). Using Retry-After: ${delaySeconds}s`,
+          );
+        } else {
+          console.warn(
+            `[Inference] ⏳ Cancel warmup - Rate limit triggered (429). Using default: ${delaySeconds}s`,
+          );
+        }
+
+        // 顯示重試進度
+        const retryAttempt = attempt + 1;
+        console.log(
+          `[Inference] 🔄 Cancel warmup - Retry attempt ${retryAttempt}/${maxRetries}...`,
+        );
+        console.log(
+          `[Inference] ⏸️ Cancel warmup - Waiting ${delaySeconds} seconds before retry...`,
+        );
+
+        // 等待後重試
+        await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+        continue;
+      }
+
+      // 檢查是否成功
+      if (response.ok) {
+        console.log("[Inference] ✅ Cancel warmup succeeded");
+        return;
+      }
+
+      // 非 429 的錯誤
+      console.warn(`[Inference] ⚠️ Cancel warmup - HTTP ${response.status}`);
+      return;
+    } catch (error) {
+      console.warn(`[Inference] ⚠️ Cancel warmup error: ${error.message}`);
+      if (attempt >= maxAttempts - 1) {
+        return;
+      }
+      console.log(`[Inference] 🔄 Cancel warmup - Retry attempt ${attempt + 1}/${maxRetries}...`);
+      await new Promise((resolve) => setTimeout(resolve, baseDelay * 1000));
+    }
   }
 }
 

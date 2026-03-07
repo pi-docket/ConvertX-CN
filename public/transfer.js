@@ -187,42 +187,114 @@ class UploadManager {
   }
 
   /**
-   * 直接上傳（小檔）
+   * 直接上傳（小檔）(含自動重試機制)
+   *
+   * 🧠 記憶體管理：
+   * - FormData 不會複製 Blob 資料
+   * - fetch 完成後，FormData 和 Blob 都可被 GC
+   *
+   * 🔄 Rate Limit 重試：
+   * - 自動偵測 429 狀態碼
+   * - 支援 Retry-After header
+   * - 最多重試 3 次
+   *
    * @param {File} file
    * @param {function} onProgress
    * @param {string|null} taskId
    */
   async uploadDirect(file, onProgress, taskId = null) {
-    return new Promise((resolve, reject) => {
-      const formData = new FormData();
-      formData.append("file", file, file.name);
+    const formData = new FormData();
+    formData.append("file", file, file.name);
 
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", `${this.webroot}/upload`, true);
+    const url = `${this.webroot}/upload`;
+    const maxRetries = 3;
+    const baseDelay = 60; // 秒
+    const maxAttempts = 1 + maxRetries;
 
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable && onProgress) {
-          const percent = (e.loaded / e.total) * 100;
-          onProgress(percent);
-        }
-      };
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        // 建立 upload 進度事件
+        // 注意：使用 fetch 時無法直接追蹤上傳進度
+        // 如需精確進度，可考慮使用 XMLHttpRequest 或 fetch 的 UploadEvent 支援
 
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            resolve(data);
-          } catch {
-            resolve({ success: true, message: "Upload completed" });
+        const response = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
+
+        // 檢查是否為 429 (Too Many Requests)
+        if (response.status === 429) {
+          // 已達最大重試次數
+          if (attempt >= maxAttempts - 1) {
+            console.error(`[Upload] ❌ Direct upload - Max retries exceeded. Status: 429.`);
+            return {
+              success: false,
+              error: "429 Too Many Requests (max retries exceeded)",
+              status: 429,
+            };
           }
-        } else {
-          reject(new Error(`Upload failed with status ${xhr.status}`));
-        }
-      };
 
-      xhr.onerror = () => reject(new Error("Upload failed"));
-      xhr.send(formData);
-    });
+          // 計算延遲時間
+          let delaySeconds = baseDelay;
+          const retryAfter = response.headers.get("Retry-After");
+
+          if (retryAfter) {
+            const seconds = parseInt(retryAfter, 10);
+            if (!isNaN(seconds) && seconds > 0 && seconds < 86400) {
+              delaySeconds = seconds;
+            }
+            console.warn(
+              `[Upload] ⏳ Direct upload - Rate limit triggered (429). Using Retry-After: ${delaySeconds}s`,
+            );
+          } else {
+            console.warn(
+              `[Upload] ⏳ Direct upload - Rate limit triggered (429). Using default: ${delaySeconds}s`,
+            );
+          }
+
+          // 顯示重試進度
+          const retryAttempt = attempt + 1;
+          console.log(`[Upload] 🔄 Direct upload - Retry attempt ${retryAttempt}/${maxRetries}...`);
+          console.log(
+            `[Upload] ⏸️ Direct upload - Waiting ${delaySeconds} seconds before retry...`,
+          );
+
+          // 等待後重試
+          await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+          continue;
+        }
+
+        // 檢查是否成功
+        if (response.status >= 200 && response.status < 300) {
+          console.log(`[Upload] ✅ Direct upload - Success. Status: ${response.status}`);
+          try {
+            const data = await response.json();
+            return data;
+          } catch {
+            return { success: true, message: "Upload completed" };
+          }
+        }
+
+        // 其他 HTTP 錯誤
+        console.error(
+          `[Upload] ❌ Direct upload failed: ${response.status} ${response.statusText}`,
+        );
+        return {
+          success: false,
+          error: `Upload failed with status ${response.status}`,
+          status: response.status,
+        };
+      } catch (error) {
+        console.error(`[Upload] ❌ Direct upload error: ${error.message}`);
+        if (attempt >= maxAttempts - 1) {
+          throw error;
+        }
+        console.log(`[Upload] 🔄 Direct upload - Retry attempt ${attempt + 1}/${maxRetries}...`);
+        await new Promise((resolve) => setTimeout(resolve, baseDelay * 1000));
+      }
+    }
+
+    throw new Error("Direct upload failed: Unknown error");
   }
 
   /**
@@ -286,11 +358,16 @@ class UploadManager {
   }
 
   /**
-   * 上傳單個 chunk
+   * 上傳單個 chunk (含自動重試機制)
    *
    * 🧠 記憶體管理：
    * - FormData 不會複製 Blob 資料
    * - fetch 完成後，FormData 和 Blob 都可被 GC
+   *
+   * 🔄 Rate Limit 重試：
+   * - 自動偵測 429 狀態碼
+   * - 支援 Retry-After header
+   * - 最多重試 3 次
    */
   async uploadChunk(uploadId, chunkIndex, totalChunks, chunkData, fileName, totalSize) {
     const formData = new FormData();
@@ -301,18 +378,87 @@ class UploadManager {
     formData.append("total_size", totalSize.toString());
     formData.append("chunk", chunkData);
 
-    const response = await fetch(`${this.webroot}/upload-chunk`, {
-      method: "POST",
-      body: formData,
-    });
+    const url = `${this.webroot}/upload-chunk`;
+    const maxRetries = 3;
+    const baseDelay = 60; // 秒
 
-    if (!response.ok) {
-      throw new Error(`Chunk ${chunkIndex} upload failed: ${response.status}`);
+    let lastResponse = null;
+    const maxAttempts = 1 + maxRetries;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        // 執行上傳請求
+        const response = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
+
+        lastResponse = response;
+
+        // 檢查是否為 429 (Too Many Requests)
+        if (response.status === 429) {
+          // 已達最大重試次數
+          if (attempt >= maxAttempts - 1) {
+            console.error(
+              `[Upload] ❌ Chunk ${chunkIndex} - Max retries exceeded. Status: 429. Returning error.`,
+            );
+            throw new Error(
+              `Chunk ${chunkIndex} upload failed: 429 Too Many Requests (max retries exceeded)`,
+            );
+          }
+
+          // 計算延遲時間
+          let delaySeconds = baseDelay;
+          const retryAfter = response.headers.get("Retry-After");
+
+          if (retryAfter) {
+            const seconds = parseInt(retryAfter, 10);
+            if (!isNaN(seconds) && seconds > 0 && seconds < 86400) {
+              delaySeconds = seconds;
+            }
+            console.warn(
+              `[Upload] ⏳ Chunk ${chunkIndex} - Rate limit triggered (429). Using Retry-After: ${delaySeconds}s`,
+            );
+          } else {
+            console.warn(
+              `[Upload] ⏳ Chunk ${chunkIndex} - Rate limit triggered (429). Using default: ${delaySeconds}s`,
+            );
+          }
+
+          // 顯示重試進度
+          const retryAttempt = attempt + 1;
+          console.log(
+            `[Upload] 🔄 Chunk ${chunkIndex} - Retry attempt ${retryAttempt}/${maxRetries}...`,
+          );
+          console.log(
+            `[Upload] ⏸️ Chunk ${chunkIndex} - Waiting ${delaySeconds} seconds before retry...`,
+          );
+
+          // 等待後重試
+          await new Promise((resolve) => setTimeout(resolve, delaySeconds * 1000));
+          continue;
+        }
+
+        // 檢查是否成功
+        if (response.ok) {
+          console.log(`[Upload] ✅ Chunk ${chunkIndex} uploaded successfully`);
+          const result = await response.json();
+          return result;
+        }
+
+        // 其他 HTTP 錯誤
+        console.error(
+          `[Upload] ❌ Chunk ${chunkIndex} upload failed: ${response.status} ${response.statusText}`,
+        );
+        throw new Error(`Chunk ${chunkIndex} upload failed: ${response.status}`);
+      } catch (error) {
+        // 不是 429，直接拋出
+        throw error;
+      }
     }
 
-    // 等級一：response 讀取後可被 GC
-    const result = await response.json();
-    return result;
+    // 不應到達此處
+    throw new Error(`Chunk ${chunkIndex} upload failed: Unknown error`);
   }
 
   /**
