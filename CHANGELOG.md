@@ -4,6 +4,13 @@
 
 翻譯系統革新、移除本地 LLM 依賴、核心安全加固。
 
+### ♻️ Re-release Note (2026-03-07)
+
+- 修復 ARM64 Docker build 在 FFmpeg 下載階段可能因 `johnvansickle.com` 不可達而失敗的問題
+- ARM64 FFmpeg 安裝改為「多來源 static binary 嘗試」並在全部失敗時自動 fallback 到 `apt` 的 `ffmpeg/ffprobe`
+- AMD64 既有路徑維持不變，仍優先使用既有 static binary 來源
+- 強化 release workflow，可在 `v0.1.26` 已存在時安全更新 release 內容，支援同版重發布
+
 ### 🚀 Major Changes
 
 #### 翻譯引擎升級

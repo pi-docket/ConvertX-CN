@@ -747,14 +747,25 @@ jobs:
           # Write to file to preserve newlines
           echo "$CHANGELOG" > changelog.txt
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: ${{ steps.tag.outputs.version }}
-          tag_name: ${{ steps.tag.outputs.version }}
-          body_path: changelog.txt
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+      - name: Create or update GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ steps.tag.outputs.version }}
+        run: |
+          echo "📦 準備發布 ${TAG_NAME}..."
+
+          if gh release view "${TAG_NAME}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "♻️ Release 已存在，更新內容（重發布同版）"
+            gh release edit "${TAG_NAME}" \
+              --repo "${{ github.repository }}" \
+              --title "${TAG_NAME}" \
+              --notes-file changelog.txt \
+              --latest
+          else
+            echo "🆕 Release 不存在，建立新 release"
+            gh release create "${TAG_NAME}" \
+              --repo "${{ github.repository }}" \
+              --title "${TAG_NAME}" \
+              --notes-file changelog.txt \
+              --latest
+          fi

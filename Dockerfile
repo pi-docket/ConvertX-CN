@@ -257,21 +257,53 @@ RUN set -ex && \
 ARG FFMPEG_VERSION=7.1.1
 RUN set -ex && \
   apt-get update --fix-missing && \
-  apt-get install -y --no-install-recommends libva2 xz-utils && \
+  apt-get install -y --no-install-recommends libva2 xz-utils ca-certificates curl && \
   rm -rf /var/lib/apt/lists/* && \
   ARCH=$(uname -m) && \
+  STATIC_INSTALL_OK=0 && \
   if [ "$ARCH" = "aarch64" ]; then \
-  FFMPEG_URL="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz"; \
+  FFMPEG_URLS="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz https://www.johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linuxarm64-gpl.tar.xz"; \
   else \
-  FFMPEG_URL="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz"; \
+  FFMPEG_URLS="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz"; \
   fi && \
-  echo "📦 下載 FFmpeg ${FFMPEG_VERSION} 靜態編譯版..." && \
-  curl -fsSL --retry 3 --retry-delay 5 "${FFMPEG_URL}" -o /tmp/ffmpeg.tar.xz && \
-  mkdir -p /tmp/ffmpeg && \
-  tar -xJf /tmp/ffmpeg.tar.xz -C /tmp/ffmpeg --strip-components=1 && \
-  cp /tmp/ffmpeg/ffmpeg /usr/local/bin/ffmpeg && \
-  cp /tmp/ffmpeg/ffprobe /usr/local/bin/ffprobe && \
-  chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe && \
+  echo "📦 下載 FFmpeg ${FFMPEG_VERSION} 靜態編譯版（架構: ${ARCH}）..." && \
+  for FFMPEG_URL in ${FFMPEG_URLS}; do \
+  echo "🔄 嘗試下載 FFmpeg: ${FFMPEG_URL}"; \
+  rm -rf /tmp/ffmpeg /tmp/ffmpeg.tar.xz; \
+  if curl -fL --connect-timeout 15 --max-time 600 --retry 4 --retry-delay 3 --retry-all-errors "${FFMPEG_URL}" -o /tmp/ffmpeg.tar.xz; then \
+  mkdir -p /tmp/ffmpeg; \
+  if tar -xJf /tmp/ffmpeg.tar.xz -C /tmp/ffmpeg --strip-components=1; then \
+  if [ -x /tmp/ffmpeg/ffmpeg ] && [ -x /tmp/ffmpeg/ffprobe ]; then \
+  cp /tmp/ffmpeg/ffmpeg /usr/local/bin/ffmpeg; \
+  cp /tmp/ffmpeg/ffprobe /usr/local/bin/ffprobe; \
+  elif [ -x /tmp/ffmpeg/bin/ffmpeg ] && [ -x /tmp/ffmpeg/bin/ffprobe ]; then \
+  cp /tmp/ffmpeg/bin/ffmpeg /usr/local/bin/ffmpeg; \
+  cp /tmp/ffmpeg/bin/ffprobe /usr/local/bin/ffprobe; \
+  else \
+  echo "⚠️ 已下載但未找到 ffmpeg/ffprobe 可執行檔，嘗試下一個來源"; \
+  continue; \
+  fi; \
+  chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe; \
+  STATIC_INSTALL_OK=1; \
+  echo "✅ FFmpeg 靜態版本安裝成功（來源: ${FFMPEG_URL}）"; \
+  break; \
+  fi; \
+  fi; \
+  done && \
+  if [ "${STATIC_INSTALL_OK}" -ne 1 ] && [ "$ARCH" = "aarch64" ]; then \
+  echo "⚠️ ARM64 靜態 FFmpeg 多來源下載皆失敗，改用 apt 安裝 ffmpeg/ffprobe"; \
+  apt-get update --fix-missing && \
+  apt-get install -y --no-install-recommends ffmpeg && \
+  rm -rf /var/lib/apt/lists/*; \
+  fi && \
+  if [ "${STATIC_INSTALL_OK}" -ne 1 ] && [ "$ARCH" != "aarch64" ]; then \
+  echo "❌ FFmpeg 靜態版本下載失敗（AMD64 不啟用 apt fallback）"; \
+  exit 1; \
+  fi && \
+  if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then \
+  echo "❌ FFmpeg 或 FFprobe 安裝失敗"; \
+  exit 1; \
+  fi && \
   rm -rf /tmp/ffmpeg* && \
   echo "✅ FFmpeg $(ffmpeg -version 2>&1 | head -1) 安裝完成"
 
