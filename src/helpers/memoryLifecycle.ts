@@ -486,6 +486,7 @@ class MemoryMonitor {
 
   /**
    * 記錄記憶體樣本
+   * 僅用於診斷與統計，不觸發任何破壞性清理動作
    */
   private recordMemorySample(): void {
     const info = this.getMemoryInfo();
@@ -505,19 +506,22 @@ class MemoryMonitor {
       this.highWaterMark = info.heapUsed;
     }
 
-    // 檢查是否需要觸發高記憶體警告（超過 90% heap）
-    const heapUsagePercent = (info.heapUsed / info.heapTotal) * 100;
-    if (heapUsagePercent > 90) {
+    // 使用 RSS 作為記憶體壓力指標（比 heapUsed/heapTotal 更可靠）
+    // Bun 的 heapUsed 可能超過 heapTotal，造成誤判
+    // 僅在 RSS 超過 512MB 時發出診斷警告（不觸發清理）
+    const RSS_WARNING_THRESHOLD_MB = 512;
+    if (info.rssMB > RSS_WARNING_THRESHOLD_MB) {
       this.triggerHighMemoryWarning(info);
     }
   }
 
   /**
    * 觸發高記憶體警告
+   * 僅用於診斷記錄，不執行破壞性清理
    */
   private triggerHighMemoryWarning(info: MemoryInfo): void {
-    console.warn(
-      `[MemoryLifecycle] High memory usage detected: ${info.heapUsedMB}MB / ${info.heapTotalMB}MB`,
+    console.debug(
+      `[MemoryLifecycle] Memory diagnostic: RSS=${info.rssMB}MB, heap=${info.heapUsedMB}MB/${info.heapTotalMB}MB`,
     );
 
     for (const callback of this.onHighMemoryCallbacks) {
@@ -620,9 +624,9 @@ class MemoryLifecycleManager {
     this.taskManager = new TaskLifecycleManager();
     this.memoryMonitor = new MemoryMonitor();
 
-    // 設置高記憶體時的自動清理
+    // 診斷用記憶體監控回調（僅在無 active task 時執行非破壞性清理）
     this.memoryMonitor.onHighMemory((info) => {
-      this.performEmergencyCleanup(info);
+      this.performSafeIdleCleanup(info);
     });
 
     // 定期維護
@@ -703,19 +707,47 @@ class MemoryLifecycleManager {
   }
 
   /**
-   * 執行緊急清理
+   * 安全的閒置清理（僅在無 active conversion task 時執行）
+   *
+   * 設計原則：
+   * - 有 active conversion task 時：完全不執行任何清理
+   * - 無 active task 時：僅清理已完成任務的殘留資源和已被 GC 回收的 buffer
+   * - 絕不清理 running/pending 狀態的任務資源
    */
-  performEmergencyCleanup(_memoryInfo: MemoryInfo): void {
-    console.warn("[MemoryLifecycle] Performing emergency cleanup due to high memory");
+  private performSafeIdleCleanup(memoryInfo: MemoryInfo): void {
+    const taskStats = this.taskManager.getStats();
+    const activeTasks = taskStats.activeTasks;
 
-    // 1. 清理已被 GC 的 Buffer 參考
+    if (activeTasks > 0) {
+      console.debug(
+        `[MemoryLifecycle] Skipping idle cleanup: ${activeTasks} active task(s) ` +
+          `(${JSON.stringify(taskStats.activeByType)}). ` +
+          `RSS=${memoryInfo.rssMB}MB, heap=${memoryInfo.heapUsedMB}MB/${memoryInfo.heapTotalMB}MB`,
+      );
+      return;
+    }
+
+    console.debug(
+      `[MemoryLifecycle] Performing safe idle cleanup (no active tasks). ` +
+        `RSS=${memoryInfo.rssMB}MB`,
+    );
+
+    // 僅清理已被 GC 回收的 buffer 參考
     this.bufferTracker.cleanup();
 
-    // 2. 清理已完成的任務快取
+    // 清理已完成的任務快取
     this.taskManager.cleanupCompletedTasks();
 
-    // 3. 請求 GC
+    // 請求 GC（僅在無 active task 時）
     this.memoryMonitor.requestGarbageCollection();
+  }
+
+  /**
+   * 執行緊急清理（已棄用，保留介面相容）
+   * @deprecated 請使用 performSafeIdleCleanup
+   */
+  performEmergencyCleanup(_memoryInfo: MemoryInfo): void {
+    this.performSafeIdleCleanup(_memoryInfo);
   }
 
   /**

@@ -16,6 +16,12 @@ import { ensureSearchablePdf, cleanupOcrTempFile } from "../helpers/pdfOcr";
 import { getApiKey, clearApiKey } from "../security/keyProvider";
 import { BABELDOC_ENGINE } from "../helpers/env";
 
+/** 截斷過長的 log 文本 */
+function truncateLog(text: string, maxLen = 2000): string {
+  if (text.length <= maxLen) return text;
+  return `${text.slice(0, maxLen)}\n... (truncated, total ${text.length} chars)`;
+}
+
 /**
  * BabelDOC Content Engine
  *
@@ -172,14 +178,15 @@ function removeDir(dirPath: string): void {
 /**
  * BabelDOC 語言代碼轉換
  * BabelDOC 可能使用不同的語言代碼格式
+ * 使用大小寫不敏感比對，因為 normalizeFiletype 會將語言代碼轉為小寫
  */
 function toBabelDocLang(lang: string): string {
-  // BabelDOC 語言代碼映射
+  // BabelDOC 語言代碼映射（key 統一小寫以便比對）
   const langMap: Record<string, string> = {
-    "zh-TW": "zh-Hant",
+    "zh-tw": "zh-Hant",
     zh: "zh-Hans",
   };
-  return langMap[lang] || lang;
+  return langMap[lang.toLowerCase()] || lang;
 }
 
 /**
@@ -195,11 +202,12 @@ function getOutputExtension(format: OutputFormat): string {
 }
 
 function toBabelDocConfigLang(lang: string): string {
+  // key 統一小寫以便大小寫不敏感比對
   const langMap: Record<string, string> = {
-    "zh-TW": "zh-tw",
+    "zh-tw": "zh-tw",
     zh: "zh-cn",
   };
-  return langMap[lang] || lang.toLowerCase();
+  return langMap[lang.toLowerCase()] || lang.toLowerCase();
 }
 
 function yamlQuote(value: string): string {
@@ -295,14 +303,18 @@ async function createTempBabelDocConfig(
     } catch (error) {
       // 部分建立成功時仍要確保清理。
       if (configPath && existsSync(configPath)) {
-        unlinkSync(configPath);
+        try {
+          unlinkSync(configPath);
+        } catch (cleanupErr) {
+          console.warn(`[BabelDOC] Failed to cleanup config on error: ${cleanupErr}`);
+        }
       }
       if (apiKey) {
         clearApiKey(apiKey);
         apiKey = "";
       }
-      void error;
-      throw new Error("Failed to fetch BabelDOC credentials");
+      const originalMsg = error instanceof Error ? error.message : String(error);
+      throw new Error(`Failed to fetch BabelDOC credentials: ${originalMsg}`);
     }
   }
 
@@ -336,6 +348,12 @@ async function runBabelDoc(
     mkdirSync(outputDir, { recursive: true });
   }
 
+  console.log(`[BabelDOC] Translation started`);
+  console.log(`[BabelDOC]   input: ${inputPath}`);
+  console.log(`[BabelDOC]   outputDir: ${outputDir}`);
+  console.log(`[BabelDOC]   targetLang: ${targetLang}`);
+  console.log(`[BabelDOC]   outputFormat: ${outputFormat}`);
+
   const { configPath, modelName, cleanup } = await createTempBabelDocConfig(
     outputDir,
     targetLang,
@@ -343,39 +361,86 @@ async function runBabelDoc(
     userId,
   );
 
+  let configDeleted = false;
   try {
-    console.log("[BabelDOC] Translation started");
     console.log(`[BabelDOC] Model: ${modelName}`);
-    console.log("[BabelDOC] Config created");
+    console.log(`[BabelDOC] Config created: ${configPath}`);
 
     return await new Promise<string>((resolve, reject) => {
       const babelLang = toBabelDocLang(targetLang);
       const args = ["--files", inputPath, "--output", outputDir, "-c", configPath];
 
-      console.log("[BabelDOC] Running translation");
+      // 遮蔽 config 路徑中可能包含的敏感資訊
+      const maskedArgs = args.map((a) => (a === configPath ? "<config-file>" : a));
+      console.log(`[BabelDOC] Running: babeldoc ${maskedArgs.join(" ")}`);
+      console.log(`[BabelDOC] Working directory: ${process.cwd()}`);
 
       execFile("babeldoc", args, (error, stdout, stderr) => {
+        // 記錄完整的子程序輸出
+        const exitCode =
+          error && "code" in error
+            ? (error as NodeJS.ErrnoException).code
+            : error
+              ? "non-zero"
+              : "0";
+        console.log(`[BabelDOC] Process exit code: ${exitCode}`);
+
+        if (stdout) {
+          console.log(`[BabelDOC] stdout:\n${truncateLog(stdout)}`);
+        } else {
+          console.log(`[BabelDOC] stdout: (empty)`);
+        }
+        if (stderr) {
+          console.warn(`[BabelDOC] stderr:\n${truncateLog(stderr)}`);
+        }
+
+        // 列出輸出目錄內容以供診斷
+        let outputDirFiles: string[] = [];
+        try {
+          if (existsSync(outputDir)) {
+            outputDirFiles = readdirSync(outputDir);
+            console.log(`[BabelDOC] Output dir contents: [${outputDirFiles.join(", ")}]`);
+          } else {
+            console.error(`[BabelDOC] Output dir does not exist: ${outputDir}`);
+          }
+        } catch (dirErr) {
+          console.error(`[BabelDOC] Failed to list output dir: ${dirErr}`);
+        }
+
         if (error) {
-          void stdout;
-          void stderr;
-          reject(new Error("BabelDOC translation failed"));
+          const stderrSnippet = stderr ? `\nstderr: ${truncateLog(stderr, 500)}` : "";
+          const stdoutSnippet = stdout ? `\nstdout: ${truncateLog(stdout, 500)}` : "";
+          reject(
+            new Error(
+              `BabelDOC subprocess failed (exit: ${exitCode}): ${error.message}${stderrSnippet}${stdoutSnippet}`,
+            ),
+          );
           return;
         }
 
-        // 新版 babeldoc 輸出到目錄，需要找到輸出檔案
-        // 輸出檔案可能是 <input>-mono.pdf 或 <input>-dual.pdf
+        // babeldoc 輸出到目錄，需要找到輸出檔案
+        // 可能的命名：<input>-mono.pdf、<input>-dual.pdf、<input>-<lang>-mono.pdf 等
         const inputBasename = basename(inputPath, ".pdf");
         const possibleOutputs = [
           join(outputDir, `${inputBasename}-mono.pdf`),
           join(outputDir, `${inputBasename}-dual.pdf`),
           join(outputDir, `${inputBasename}.pdf`),
+          join(outputDir, `${inputBasename}-${babelLang}-mono.pdf`),
+          join(outputDir, `${inputBasename}-${babelLang}-dual.pdf`),
           outputPath,
         ];
 
+        console.log(`[BabelDOC] Searching for output file...`);
         for (const possibleOutput of possibleOutputs) {
           if (existsSync(possibleOutput)) {
-            // 如果找到的不是預期的輸出路徑，複製過去
-            if (possibleOutput !== outputPath && existsSync(possibleOutput)) {
+            console.log(`[BabelDOC] Found output: ${possibleOutput}`);
+            const fileSize = statSync(possibleOutput).size;
+            if (fileSize === 0) {
+              console.warn(`[BabelDOC] Output file is empty (0 bytes): ${possibleOutput}`);
+              continue;
+            }
+            console.log(`[BabelDOC] Output file size: ${(fileSize / 1024).toFixed(1)} KB`);
+            if (possibleOutput !== outputPath) {
               copyFileSync(possibleOutput, outputPath);
             }
             resolve(outputPath);
@@ -383,14 +448,31 @@ async function runBabelDoc(
           }
         }
 
-        // 如果都找不到，嘗試找任何 PDF 檔案
-        const files = readdirSync(outputDir);
+        // 最後手段：找輸出目錄內任何符合格式的檔案（排除設定檔與輸入檔本身）
         const expectedExt = `.${getOutputExtension(outputFormat)}`;
-        const translatedFile = files.find(
-          (f) => f.endsWith(expectedExt) && f.includes(inputBasename),
+        const inputFileName = basename(inputPath);
+        const translatedFile = outputDirFiles.find(
+          (f) =>
+            f.endsWith(expectedExt) &&
+            f !== inputFileName &&
+            !f.startsWith(".") &&
+            !f.endsWith(".yaml"),
         );
         if (translatedFile) {
           const foundPath = join(outputDir, translatedFile);
+          const fileSize = statSync(foundPath).size;
+          if (fileSize === 0) {
+            reject(
+              new Error(
+                `BabelDOC output file is empty (0 bytes): ${translatedFile}. ` +
+                  `Output dir: [${outputDirFiles.join(", ")}]`,
+              ),
+            );
+            return;
+          }
+          console.log(
+            `[BabelDOC] Found fallback output: ${translatedFile} (${(fileSize / 1024).toFixed(1)} KB)`,
+          );
           if (foundPath !== outputPath) {
             copyFileSync(foundPath, outputPath);
           }
@@ -398,13 +480,28 @@ async function runBabelDoc(
           return;
         }
 
-        reject(new Error(`No BabelDOC output generated for language ${babelLang}`));
+        reject(
+          new Error(
+            `No BabelDOC output found for language ${babelLang}. ` +
+              `Expected extension: ${expectedExt}. ` +
+              `Output dir contents: [${outputDirFiles.join(", ")}]. ` +
+              `Expected path: ${outputPath}`,
+          ),
+        );
       });
     });
   } finally {
     // 無論成功或失敗都必須立刻刪除暫存設定檔。
-    cleanup();
-    console.log("[BabelDOC] Config deleted");
+    try {
+      cleanup();
+      configDeleted = true;
+      console.log("[BabelDOC] Config deleted");
+    } catch (cleanupErr) {
+      console.warn(`[BabelDOC] Config cleanup failed: ${cleanupErr}`);
+    }
+    if (!configDeleted) {
+      console.warn("[BabelDOC] Warning: config file may not have been deleted");
+    }
   }
 }
 
@@ -444,15 +541,27 @@ export async function convert(
   let ocrTempFile: string | undefined;
   let tempDir: string | undefined;
 
+  const taskStartTime = Date.now();
+  console.log(`[BabelDOC] ====== Task Start ======`);
+  console.log(`[BabelDOC]   source: ${filePath}`);
+  console.log(`[BabelDOC]   fileType: ${fileType}`);
+  console.log(`[BabelDOC]   convertTo: ${convertTo}`);
+  console.log(`[BabelDOC]   targetPath: ${targetPath}`);
+  console.log(`[BabelDOC]   userId: ${userId ?? "(none)"}`);
+  console.log(`[BabelDOC]   engine: ${BABELDOC_ENGINE}`);
+
   try {
     // 1. 自動偵測掃描版 PDF 並進行 OCR 處理
-    console.log(`[BabelDOC] Checking if PDF needs OCR...`);
+    console.log(`[BabelDOC] Step 1: Checking if PDF needs OCR...`);
     const ocrResult = await ensureSearchablePdf(filePath, execFile);
     const inputPdf = ocrResult.path;
     ocrTempFile = ocrResult.tempFile;
 
     if (ocrResult.wasOcred) {
       console.log(`[BabelDOC] ✅ Scanned PDF detected and OCR'd automatically`);
+      console.log(`[BabelDOC]   OCR output: ${inputPdf}`);
+    } else {
+      console.log(`[BabelDOC] ✅ PDF has text layer, no OCR needed`);
     }
 
     // 2. 檢查資源（警告但不阻止）
@@ -461,7 +570,7 @@ export async function convert(
     // 3. 提取目標語言和輸出格式
     const { lang: targetLang, format: outputFormat } = extractTargetInfo(convertTo);
     const outputExt = getOutputExtension(outputFormat);
-    console.log(`[BabelDOC] Translating to: ${targetLang}, format: ${outputFormat}`);
+    console.log(`[BabelDOC] Step 3: Translating to: ${targetLang}, format: ${outputFormat}`);
 
     // 4. 建立臨時輸出目錄
     const outputDir = dirname(targetPath);
@@ -471,6 +580,7 @@ export async function convert(
     if (!existsSync(tempDir)) {
       mkdirSync(tempDir, { recursive: true });
     }
+    console.log(`[BabelDOC] Step 4: Temp dir created: ${tempDir}`);
 
     // 5. 建立封裝用目錄
     const archiveDir = join(tempDir, "archive");
@@ -480,6 +590,7 @@ export async function convert(
     const translatedFilePath = join(tempDir, `${inputFileName}-translated.${outputExt}`);
 
     // 7. 執行 babeldoc 翻譯（使用 OCR 處理後的 PDF，根據使用者設定選擇翻譯服務）
+    console.log(`[BabelDOC] Step 7: Running BabelDOC translation...`);
     await runBabelDoc(
       inputPdf,
       translatedFilePath,
@@ -490,12 +601,31 @@ export async function convert(
       userId,
     );
 
-    // 8. 複製翻譯後的檔案到封裝目錄
+    // 8. 驗證翻譯輸出
+    if (!existsSync(translatedFilePath)) {
+      // 嘗試列出 tempDir 內容以供診斷
+      const tempDirContents = existsSync(tempDir) ? readdirSync(tempDir) : [];
+      throw new Error(
+        `BabelDOC output validation failed: translated file not found at ${translatedFilePath}. ` +
+          `Temp dir contents: [${tempDirContents.join(", ")}]`,
+      );
+    }
+    const translatedSize = statSync(translatedFilePath).size;
+    if (translatedSize === 0) {
+      throw new Error(
+        `BabelDOC output validation failed: translated file is empty (0 bytes) at ${translatedFilePath}`,
+      );
+    }
+    console.log(
+      `[BabelDOC] Step 8: Translated file verified (${(translatedSize / 1024).toFixed(1)} KB)`,
+    );
+
+    // 9. 複製翻譯後的檔案到封裝目錄
     const translatedDest = join(archiveDir, `translated-${targetLang}.${outputExt}`);
     copyFileSync(translatedFilePath, translatedDest);
     console.log(`[BabelDOC] Copied translated ${outputFormat.toUpperCase()} to archive`);
 
-    // 9. 檢查是否有其他 BabelDOC 產生的輔助檔案
+    // 10. 檢查是否有其他 BabelDOC 產生的輔助檔案
     const translatedBaseName = `${inputFileName}-translated.${outputExt}`;
     const tempFiles = readdirSync(tempDir);
     for (const file of tempFiles) {
@@ -513,13 +643,13 @@ export async function convert(
             copyFileSync(fileTempPath, destPath);
             console.log(`[BabelDOC] Copied auxiliary file: ${file}`);
           }
-        } catch {
-          // 忽略複製失敗的輔助檔案
+        } catch (auxErr) {
+          console.warn(`[BabelDOC] Failed to copy auxiliary file ${file}: ${auxErr}`);
         }
       }
     }
 
-    // 9. 建立 .tar 封裝
+    // 11. 建立 .tar 封裝
     const tarPath = getArchiveFileName(targetPath);
     const tarDir = dirname(tarPath);
     if (!existsSync(tarDir)) {
@@ -529,14 +659,53 @@ export async function convert(
     await createTarArchive(archiveDir, tarPath, execFile);
     console.log(`[BabelDOC] Created archive: ${tarPath}`);
 
-    // 10. 清理臨時目錄
+    // 12. 驗證最終封裝
+    if (!existsSync(tarPath)) {
+      throw new Error(`BabelDOC archive creation failed: tar file not found at ${tarPath}`);
+    }
+    const tarSize = statSync(tarPath).size;
+    if (tarSize === 0) {
+      throw new Error(
+        `BabelDOC archive creation failed: tar file is empty (0 bytes) at ${tarPath}`,
+      );
+    }
+
+    const elapsed = ((Date.now() - taskStartTime) / 1000).toFixed(1);
+    console.log(`[BabelDOC] ====== Task Complete (${elapsed}s) ======`);
     return "Done";
   } catch (error) {
-    void error;
-    throw new Error("BabelDOC translation failed");
+    const msg = error instanceof Error ? error.message : String(error);
+    const stack = error instanceof Error ? error.stack : undefined;
+    console.error(`[BabelDOC] ====== Task Failed ======`);
+    console.error(`[BabelDOC] Error: ${msg}`);
+    if (stack) {
+      console.error(`[BabelDOC] Stack: ${stack}`);
+    }
+    // 額外診斷：檢查 tempDir 是否仍存在
+    if (tempDir) {
+      console.error(`[BabelDOC] Temp dir exists: ${existsSync(tempDir)}`);
+      if (existsSync(tempDir)) {
+        try {
+          console.error(`[BabelDOC] Temp dir contents: [${readdirSync(tempDir).join(", ")}]`);
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+    throw error instanceof Error ? error : new Error(`BabelDOC translation failed: ${msg}`);
   } finally {
-    if (tempDir && existsSync(tempDir)) {
-      removeDir(tempDir);
+    // cleanup: 確保 temp dir 和 OCR temp file 被清理
+    if (tempDir) {
+      if (existsSync(tempDir)) {
+        try {
+          removeDir(tempDir);
+          console.log(`[BabelDOC] Temp dir deleted: ${tempDir}`);
+        } catch (cleanupErr) {
+          console.warn(`[BabelDOC] Failed to delete temp dir: ${cleanupErr}`);
+        }
+      } else {
+        console.log(`[BabelDOC] Temp dir already removed: ${tempDir}`);
+      }
     }
     cleanupOcrTempFile(ocrTempFile);
   }
