@@ -122,7 +122,20 @@ docker run -d \
 > 📖 詳細說明請參閱 [快速開始](docs/快速入門/快速開始.md)
 
 ---
+## 🔗 線上示範
 
+[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen)](https://convertx-cn.bioailab.qzz.io)
+
+<!-- [![Online Preview](https://img.shields.io/badge/online-preview-available-green)](https://convertx-cn.bioailab.qzz.io) -->
+
+🔗 **https://convertx-cn.bioailab.qzz.io**
+
+| 項目 | 內容              |
+| ---- | ----------------- |
+| 帳號 | admin@example.com |
+| 密碼 | admin             |
+
+> ⚠️ 示範站僅供測試，請勿上傳敏感檔案，會定期清理資料。
 
 ---
 
