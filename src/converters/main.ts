@@ -263,12 +263,15 @@ export function getConversionOutputFileName(
     const sourceName = parsed.name || "converted";
     return `${sourceName}-${getPdfPackagerOutputFileName(canonicalTarget)}`;
   }
-  const originalExtension = fileName.split(".").pop() ?? "";
+  const originalExtension = fileName.includes(".") ? (fileName.split(".").pop() ?? "") : "";
   const outputExtension = normalizeOutputFiletype(canonicalTarget);
-  let outputName = fileName.replace(
-    new RegExp(`${originalExtension.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
-    outputExtension,
-  );
+  let outputName =
+    originalExtension === ""
+      ? `${fileName}.${outputExtension}`
+      : fileName.replace(
+          new RegExp(`${originalExtension.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+          outputExtension,
+        );
   if (converterProps.outputMode === "archive") outputName += ".tar";
   return outputName;
 }
