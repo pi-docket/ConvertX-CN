@@ -17,7 +17,6 @@ export {
   CHUNK_TEMP_DIR,
   ALLOWED_ARCHIVE_FORMAT,
   FORBIDDEN_ARCHIVE_FORMATS,
-  TRA_FORMAT,
   TRA_STRUCTURE,
 } from "./constants";
 
@@ -38,14 +37,6 @@ export type { TRAManifest, MultiOutputResult, OutputArtifact, TaskType } from ".
 export { PIXEL_FORMAT_GOVERNANCE } from "./traTypes";
 
 // 上傳管理
-export {
-  uploadSessionManager,
-  shouldUseChunkedUpload,
-  handleDirectUpload,
-  handleChunkUpload,
-  calculateChunkCount,
-} from "./uploadManager";
-
 // 下載管理
 export {
   shouldUseChunkedDownload,
@@ -55,12 +46,7 @@ export {
 } from "./downloadManager";
 
 // 封裝管理（傳統 tar）
-export {
-  validateArchiveFormat,
-  getArchiveFileName,
-  createTarArchive,
-  createJobArchive,
-} from "./archiveManager";
+export { validateArchiveFormat, getArchiveFileName, createTarArchive } from "./archiveManager";
 
 // TRA 封裝管理（ConvertX-CN 標準多輸出封裝）
 export {

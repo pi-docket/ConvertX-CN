@@ -32,7 +32,7 @@ ConvertX-CN 是一个以 Docker 为主要交付方式的文件转换服务，提
 mkdir -p convertx-cn/data
 cd convertx-cn
 cp .env.example .env
-# 编辑 .env，设置固定且足够随机的 JWT_SECRET
+# 可选：在 .env 设置 JWT_SECRET；未设置时会安全生成并持久化到 data/.secrets/
 docker compose up -d
 ```
 
@@ -124,7 +124,7 @@ API key，翻譯會明確報錯。舊版內建 Worker 與 `CONVERTX_WORKER_URL`�
 `CONVERTX_ENCRYPTION_KEY` 已停用。BabelDOC 僅支援 SiliconFlow；
 `openai`、`deepseek`、`custom` 只供文字翻譯管理器使用。
 
-- 生产环境必须设置固定、随机且足够长的 `JWT_SECRET`。
+- 未设置 `JWT_SECRET` 时，服务会在数据目录原子生成并持久化随机密钥；请备份 `data/.secrets/`。也可用 `JWT_SECRET` 或 `JWT_SECRET_FILE` 明确管理密钥。
 - 公开部署时请使用 HTTPS，并正确配置反向代理相关环境变量。
 - 不建议在公网开启未认证访问。
 - 上传和转换敏感文件前，请确认数据目录、备份策略和访问控制符合你的安全要求。

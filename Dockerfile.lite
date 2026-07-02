@@ -106,7 +106,13 @@ RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     openssl \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd --gid 10001 convertx \
+    && useradd --uid 10001 --gid 10001 --home-dir /home/convertx --create-home --shell /usr/sbin/nologin convertx \
+    && mkdir -p /app/data /opt/pipx \
+    && chown -R 10001:10001 /app/data /home/convertx
 
 # ------------------------------------------------------------------------------
 # 階段 2：PDF 處理工具（Ghostscript + qpdf + poppler）
@@ -170,7 +176,8 @@ RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     pipx \
     && rm -rf /var/lib/apt/lists/*
 
-ENV PATH="/root/.local/bin:${PATH}"
+ENV PIPX_HOME=/opt/pipx
+ENV PIPX_BIN_DIR=/usr/local/bin
 RUN pipx install "markitdown[all]"
 
 # ------------------------------------------------------------------------------
@@ -278,7 +285,10 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /app/public/ /app/public/
 COPY --from=prerelease /app/dist /app/dist
 
-RUN mkdir -p data
+COPY scripts/entrypoint.sh /opt/convertx/entrypoint.sh
+COPY scripts/pdf_sign.py /app/scripts/pdf_sign.py
+RUN chmod +x /opt/convertx/entrypoint.sh
+RUN mkdir -p data && chown -R 10001:10001 data
 
 EXPOSE 3000/tcp
 
@@ -292,7 +302,10 @@ ENV DISPLAY=":99"
 ENV NODE_ENV=production
 ENV CONVERTX_EDITION="lite"
 
+ENV HOME=/home/convertx
+ENV DATA_DIR=/app/data
+ENV PATH=/usr/local/bin:/usr/bin:/bin
 # ==============================================================================
 # 啟動
 # ==============================================================================
-ENTRYPOINT [ "bun", "run", "dist/src/index.js" ]
+ENTRYPOINT [ "/opt/convertx/entrypoint.sh" ]

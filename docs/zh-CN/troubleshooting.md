@@ -39,11 +39,13 @@
 
 现象：容器重启后所有用户需要重新登录。
 
-可能原因：未固定 `JWT_SECRET`，Web UI 使用随机 secret。
+可能原因：`JWT_SECRET`／`JWT_SECRET_FILE` 被轮替，或持久化的
+`data/.secrets/jwt-secret` 随 data volume 一起被删除。
 
-解决方式：在 `.env` 中设置固定 `JWT_SECRET`。
+解决方式：恢复并持久化原本的 `.secrets/jwt-secret`，或在 `.env`／secret
+manager 中提供固定 `JWT_SECRET`。
 
-相关环境变量：`JWT_SECRET`。
+相关环境变量：`JWT_SECRET`、`JWT_SECRET_FILE`、`DATA_DIR`。
 
 ## data 数据消失
 

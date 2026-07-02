@@ -1,9 +1,5 @@
-import { Cookie } from "elysia";
-import db from "../db/db";
-import { MAX_CONVERT_PROCESS } from "../helpers/env";
 import { normalizeFiletype, normalizeOutputFiletype } from "../helpers/normalizeFiletype";
 import { isMultiOutputTask, autoPackageMultiOutput } from "../transfer";
-import { createTask, startTask, finishTask, getMemoryReport } from "../helpers/memoryLifecycle";
 import { convert as convertassimp, properties as propertiesassimp } from "./assimp";
 import { convert as convertCalibre, properties as propertiesCalibre } from "./calibre";
 import { convert as convertDasel, properties as propertiesDasel } from "./dasel";
@@ -40,7 +36,7 @@ import {
   properties as propertiesPdfPackager,
   getOutputFileName as getPdfPackagerOutputFileName,
 } from "./pdfpackager";
-import { dirname } from "node:path";
+import { basename, dirname, parse } from "node:path";
 
 // This should probably be reconstructed so that the functions are not imported instead the functions hook into this to make the converters more modular
 
@@ -194,111 +190,89 @@ const properties: Record<
   },
 };
 
-function chunks<T>(arr: T[], size: number): T[][] {
-  if (size <= 0) {
-    return [arr];
+export class ConversionSelectionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConversionSelectionError";
   }
-  return Array.from({ length: Math.ceil(arr.length / size) }, (_: T, i: number) =>
-    arr.slice(i * size, i * size + size),
-  );
 }
 
-export async function handleConvert(
-  fileNames: string[],
-  userUploadsDir: string,
-  userOutputDir: string,
+function matchingTarget(
+  converterName: string,
+  fileTypeOriginal: string,
+  requestedTarget: string,
+): string | null {
+  const converter = properties[converterName];
+  if (!converter || disabledEngines.includes(converterName)) return null;
+
+  const fileType = normalizeFiletype(fileTypeOriginal);
+  const target = normalizeFiletype(requestedTarget);
+  for (const [group, fromList] of Object.entries(converter.properties.from)) {
+    const supportsInput = fromList.some((entry) => normalizeFiletype(entry) === fileType);
+    if (!supportsInput) continue;
+    const canonicalTarget = converter.properties.to[group]?.find(
+      (entry) => normalizeFiletype(entry) === target,
+    );
+    if (canonicalTarget) return canonicalTarget;
+  }
+  return null;
+}
+
+export function validateConversionSelection(
+  fileNames: readonly string[],
+  requestedTarget: string,
+  converterName: string,
+): string {
+  if (fileNames.length === 0) {
+    throw new ConversionSelectionError("At least one input file is required");
+  }
+  if (!properties[converterName] || disabledEngines.includes(converterName)) {
+    throw new ConversionSelectionError(`Unknown or disabled converter: ${converterName}`);
+  }
+
+  let canonicalTarget: string | null = null;
+  for (const fileName of fileNames) {
+    if (!fileName || basename(fileName) !== fileName) {
+      throw new ConversionSelectionError("Input file name must be a single path component");
+    }
+    const fileType = fileName.split(".").pop() ?? "";
+    const match = matchingTarget(converterName, fileType, requestedTarget);
+    if (!match) {
+      throw new ConversionSelectionError(
+        `Converter ${converterName} does not support ${normalizeFiletype(fileType)} to ${normalizeFiletype(requestedTarget)}`,
+      );
+    }
+    canonicalTarget ??= match;
+    if (normalizeFiletype(canonicalTarget) !== normalizeFiletype(match)) {
+      throw new ConversionSelectionError("All files in a job must use the same conversion target");
+    }
+  }
+  return canonicalTarget as string;
+}
+
+export function getConversionOutputFileName(
+  fileName: string,
   convertTo: string,
   converterName: string,
-  jobId: Cookie<string | undefined>,
-  userId?: number,
-) {
-  // 🧠 等級二：建立轉換任務上下文
-  const task = createTask("conversion");
-  const taskId = task.taskId;
-  startTask(taskId);
-
-  console.log(`[MemoryLifecycle] Starting conversion job ${jobId.value}, task ${taskId}`);
-
-  const query = db.query(
-    "INSERT INTO file_names (job_id, file_name, output_file_name, status) VALUES (?1, ?2, ?3, ?4)",
-  );
-
-  // Check if the converter outputs an archive (.tar)
+): string {
   const converterProps = properties[converterName]?.properties;
-  const isArchiveOutput = converterProps?.outputMode === "archive";
-
-  // Special handling for PDF Packager - uses custom output filename
-  const isPdfPackager = converterName === "PDF Packager";
-
-  try {
-    for (const chunk of chunks(fileNames, MAX_CONVERT_PROCESS)) {
-      const toProcess: Promise<string>[] = [];
-      for (const fileName of chunk) {
-        const filePath = `${userUploadsDir}${fileName}`;
-        const fileTypeOrig = fileName.split(".").pop() ?? "";
-        const fileType = normalizeFiletype(fileTypeOrig);
-        const newFileExt = normalizeOutputFiletype(convertTo);
-        let newFileName: string;
-
-        // PDF Packager uses its own output filename format: pack_<chip>.tar or pack_<chip>.pdf
-        if (isPdfPackager) {
-          newFileName = getPdfPackagerOutputFileName(convertTo);
-        } else {
-          newFileName = fileName.replace(
-            new RegExp(`${fileTypeOrig}(?!.*${fileTypeOrig})`),
-            newFileExt,
-          );
-
-          // For archive output converters, the actual file will have .tar extension
-          if (isArchiveOutput) {
-            newFileName = `${newFileName}.tar`;
-          }
-        }
-
-        const targetPath = `${userOutputDir}${newFileName.replace(/\.tar$/, "")}`;
-        toProcess.push(
-          new Promise((resolve, reject) => {
-            mainConverter(
-              filePath,
-              fileType,
-              convertTo,
-              targetPath,
-              { userId, taskId },
-              converterName,
-            )
-              .then((r) => {
-                if (jobId.value) {
-                  query.run(jobId.value, fileName, newFileName, r);
-                }
-                resolve(r);
-              })
-              .catch((c) => reject(c));
-          }),
-        );
-      }
-      await Promise.all(toProcess);
-    }
-
-    // 🧠 等級二：任務完成，清理資源
-    await finishTask(taskId, "completed");
-    console.log(
-      `[MemoryLifecycle] Conversion job ${jobId.value} completed, task ${taskId} cleaned`,
-    );
-
-    // 輸出記憶體報告（除錯用）
-    const report = getMemoryReport();
-    console.log(
-      `[MemoryLifecycle] Post-conversion memory: ${report.memory.current.heapUsedMB}MB heap`,
-    );
-  } catch (error) {
-    // 🧠 等級二：任務失敗，清理資源
-    await finishTask(taskId, "failed");
-    console.error(`[MemoryLifecycle] Conversion job ${jobId.value} failed, task ${taskId} cleaned`);
-    throw error;
+  if (!converterProps) throw new Error(`Unknown converter: ${converterName}`);
+  const canonicalTarget = validateConversionSelection([fileName], convertTo, converterName);
+  if (converterName === "PDF Packager") {
+    const parsed = parse(fileName);
+    const sourceName = parsed.name || "converted";
+    return `${sourceName}-${getPdfPackagerOutputFileName(canonicalTarget)}`;
   }
+  const originalExtension = fileName.split(".").pop() ?? "";
+  const outputExtension = normalizeOutputFiletype(canonicalTarget);
+  let outputName = fileName.replace(
+    new RegExp(`${originalExtension.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+    outputExtension,
+  );
+  if (converterProps.outputMode === "archive") outputName += ".tar";
+  return outputName;
 }
-
-async function mainConverter(
+export async function mainConverter(
   inputFilePath: string,
   fileTypeOriginal: string,
   convertTo: string,
@@ -311,23 +285,29 @@ async function mainConverter(
   let converterFunc: (typeof properties)["libjxl"]["converter"] | undefined;
 
   if (converterName) {
+    validateConversionSelection([`input.${fileTypeOriginal}`], convertTo, converterName);
     converterFunc = properties[converterName]?.converter;
   } else {
     // Iterate over each converter in properties
-    for (converterName in properties) {
-      const converterObj = properties[converterName];
+    converterSearch: for (const candidateName in properties) {
+      const converterObj = properties[candidateName];
 
       if (!converterObj) {
-        break;
+        continue;
       }
 
       for (const key in converterObj.properties.from) {
         if (
-          converterObj?.properties?.from[key]?.includes(fileType) &&
-          converterObj?.properties?.to[key]?.includes(convertTo)
+          converterObj?.properties?.from[key]?.some(
+            (entry) => normalizeFiletype(entry) === fileType,
+          ) &&
+          converterObj?.properties?.to[key]?.some(
+            (entry) => normalizeFiletype(entry) === normalizeFiletype(convertTo),
+          )
         ) {
           converterFunc = converterObj.converter;
-          break;
+          converterName = candidateName;
+          break converterSearch;
         }
       }
     }
@@ -335,7 +315,7 @@ async function mainConverter(
 
   if (!converterFunc) {
     console.log(`No available converter supports converting from ${fileType} to ${convertTo}.`);
-    return "File type not supported";
+    throw new Error(`No available converter supports converting from ${fileType} to ${convertTo}`);
   }
 
   try {
@@ -382,7 +362,7 @@ async function mainConverter(
       `Failed to convert ${inputFilePath} from ${fileType} to ${convertTo} using ${converterName}.`,
       error,
     );
-    return "Failed, check logs";
+    throw error;
   }
 }
 
@@ -399,9 +379,10 @@ for (const converterName in properties) {
     if (!fromList || !toList) continue;
 
     for (const ext of fromList) {
-      if (!possibleTargets[ext]) possibleTargets[ext] = {};
+      const normalizedExtension = normalizeFiletype(ext);
+      if (!possibleTargets[normalizedExtension]) possibleTargets[normalizedExtension] = {};
 
-      possibleTargets[ext][converterName] = toList;
+      possibleTargets[normalizedExtension][converterName] = toList;
     }
   }
 }

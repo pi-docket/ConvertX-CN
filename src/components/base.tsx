@@ -6,11 +6,13 @@ export const BaseHtml = ({
   title = "ConvertX-CN - 免費線上檔案轉換工具 | 支援 PDF、Word、圖片等格式轉換",
   webroot = "",
   locale = defaultLocale,
+  csrfToken,
 }: {
   children: JSX.Element;
   title?: string;
   webroot?: string;
   locale?: SupportedLocale;
+  csrfToken?: string;
 }) => (
   <html lang={locale}>
     <head>
@@ -36,6 +38,7 @@ export const BaseHtml = ({
       {/* 應用程式資訊 */}
       <meta name="webroot" content={webroot} />
       <meta name="locale" content={locale} />
+      {csrfToken && <meta name="csrf-token" content={csrfToken} />}
       <meta name="application-name" content="ConvertX-CN" />
       <meta name="apple-mobile-web-app-title" content="ConvertX-CN" />
       <meta name="apple-mobile-web-app-capable" content="yes" />

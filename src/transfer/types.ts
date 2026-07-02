@@ -7,6 +7,8 @@
  */
 export interface ChunkUploadResponse {
   success: boolean;
+  /** Stable machine-readable error code */
+  code?: string;
   message: string;
   /** 已接收的 chunks 索引列表 */
   received_chunks?: number[];
@@ -22,6 +24,7 @@ export interface ChunkUploadResponse {
 export interface DirectUploadResponse {
   success: boolean;
   message: string;
+  code?: string;
   file_path?: string;
 }
 
@@ -45,6 +48,8 @@ export interface ChunkDownloadInfo {
 export interface UploadSession {
   /** 上傳 ID */
   upload_id: string;
+  /** Upload transport selected by the server */
+  mode: TransferMode;
   /** 使用者 ID */
   user_id: string;
   /** Job ID */
@@ -57,10 +62,20 @@ export interface UploadSession {
   total_chunks: number;
   /** 已接收的 chunks */
   received_chunks: Set<number>;
+  /** Chunks currently being written, used to reject concurrent duplicates */
+  pending_chunks?: Set<number>;
+  /** Prevents concurrent direct requests from consuming one session twice */
+  active?: boolean;
   /** 建立時間 */
   created_at: Date;
   /** 暫存目錄路徑 */
   temp_dir: string;
+  /** Validated parent of temp_dir */
+  temp_root: string;
+  /** Cross-process file-name reservation */
+  reservation_path?: string;
+  /** Validated parent of reservation_path */
+  reservation_root?: string;
 }
 
 /**

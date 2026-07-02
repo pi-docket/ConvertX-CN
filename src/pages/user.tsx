@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { jwt } from "@elysiajs/jwt";
 import { Elysia, t } from "elysia";
 import { BaseHtml } from "../components/base";
@@ -12,12 +11,22 @@ import {
   ALLOW_UNAUTHENTICATED,
   HIDE_HISTORY,
   HTTP_ALLOWED,
-  TRUST_PROXY,
   WEBROOT,
 } from "../helpers/env";
 import { localeService } from "../i18n/service";
 
-export let FIRST_RUN = db.query("SELECT * FROM users").get() === null || false;
+import { ensureCsrfToken, verifyCsrf } from "../helpers/csrf";
+import { JWT_SECRET } from "../helpers/jwtSecret";
+
+export function isFirstRun(): boolean {
+  return db.query("SELECT id FROM users LIMIT 1").get() === null;
+}
+
+class RegistrationError extends Error {
+  constructor(public readonly code: "DISABLED" | "DUPLICATE") {
+    super(code);
+  }
+}
 
 // ==============================================================================
 // Cookie 設定輔助函數
@@ -25,12 +34,12 @@ export let FIRST_RUN = db.query("SELECT * FROM users").get() === null || false;
 // 解決遠端部署時登入失敗的問題：
 // 1. sameSite: "lax" - 允許導航時傳送 Cookie（strict 會阻擋）
 // 2. path: WEBROOT || "/" - 確保 Cookie 覆蓋整個應用
-// 3. secure: 考慮 TRUST_PROXY 設定
+// 3. secure: 只由是否允許明文 HTTP 決定，避免 TRUST_PROXY 反向關閉 Secure
 // ==============================================================================
 function getCookieOptions() {
   return {
     httpOnly: true,
-    secure: !HTTP_ALLOWED && !TRUST_PROXY ? true : false,
+    secure: !HTTP_ALLOWED,
     maxAge: 60 * 60 * 24 * 7, // 7 days
     sameSite: "lax" as const,
     path: WEBROOT || "/",
@@ -44,20 +53,28 @@ export const userService = new Elysia({ name: "user/service" })
       schema: t.Object({
         id: t.String(),
       }),
-      secret: process.env.JWT_SECRET ?? randomUUID(),
+      secret: JWT_SECRET,
       exp: "7d",
     }),
   )
   .model({
     signIn: t.Object({
-      email: t.String(),
-      password: t.String(),
+      csrfToken: t.String({ minLength: 16, maxLength: 256 }),
+      email: t.String({ format: "email", minLength: 3, maxLength: 254 }),
+      password: t.String({ minLength: 1, maxLength: 128 }),
+    }),
+    registration: t.Object({
+      csrfToken: t.String({ minLength: 16, maxLength: 256 }),
+      email: t.String({ format: "email", minLength: 3, maxLength: 254 }),
+      password: t.String({ minLength: 8, maxLength: 128 }),
     }),
     session: t.Cookie({
+      csrf: t.Optional(t.String()),
       auth: t.String(),
       jobId: t.Optional(t.String()),
     }),
     optionalSession: t.Cookie({
+      csrf: t.Optional(t.String()),
       auth: t.Optional(t.String()),
       jobId: t.Optional(t.String()),
     }),
@@ -88,10 +105,11 @@ export const userService = new Elysia({ name: "user/service" })
 export const user = new Elysia()
   .use(userService)
   .use(localeService)
-  .get("/setup", ({ redirect, locale, t }) => {
-    if (!FIRST_RUN) {
+  .get("/setup", ({ redirect, locale, t, cookie: { csrf } }) => {
+    if (!isFirstRun()) {
       return redirect(`${WEBROOT}/login`, 302);
     }
+    const csrfToken = ensureCsrfToken(csrf);
 
     return (
       <BaseHtml title="ConvertX-CN | Setup" webroot={WEBROOT} locale={locale}>
@@ -128,6 +146,7 @@ export const user = new Elysia()
                 {t("setup", "createYourAccount")}
               </header>
               <form method="post" action={`${WEBROOT}/register`} class="p-4">
+                <input type="hidden" name="csrfToken" value={csrfToken} />
                 <fieldset class="mb-4 flex flex-col gap-4">
                   <label class="flex flex-col gap-1">
                     <span safe>{t("auth", "email")}</span>
@@ -174,14 +193,18 @@ export const user = new Elysia()
       </BaseHtml>
     );
   })
-  .get("/register", ({ locale, t }) => {
+  .get("/register", ({ locale, t, redirect, cookie: { csrf } }) => {
+    if (!isFirstRun() && !ACCOUNT_REGISTRATION) {
+      return redirect(`${WEBROOT}/login`, 302);
+    }
+    const csrfToken = ensureCsrfToken(csrf);
     // 移除 ACCOUNT_REGISTRATION 限制，讓註冊頁面始終可用
     return (
       <BaseHtml webroot={WEBROOT} title="ConvertX-CN | Register" locale={locale}>
         <>
           <Header
             webroot={WEBROOT}
-            accountRegistration={true}
+            accountRegistration={ACCOUNT_REGISTRATION}
             allowUnauthenticated={ALLOW_UNAUTHENTICATED}
             hideHistory={HIDE_HISTORY}
             locale={locale}
@@ -195,6 +218,7 @@ export const user = new Elysia()
           >
             <article class="article">
               <form method="post" class="flex flex-col gap-4">
+                <input type="hidden" name="csrfToken" value={csrfToken} />
                 <fieldset class="mb-4 flex flex-col gap-4">
                   <label class="flex flex-col gap-1">
                     <span safe>{t("auth", "email")}</span>
@@ -233,25 +257,59 @@ export const user = new Elysia()
   })
   .post(
     "/register",
-    async ({ body: { email, password }, set, redirect, jwt, cookie: { auth } }) => {
+    async ({
+      body: { email, password, csrfToken },
+      set,
+      redirect,
+      jwt,
+      request,
+      cookie: { auth, csrf },
+    }) => {
       // 移除 ACCOUNT_REGISTRATION 限制，讓註冊功能始終可用
-      if (FIRST_RUN) {
-        FIRST_RUN = false;
+      if (
+        !verifyCsrf(request, csrfToken, typeof csrf?.value === "string" ? csrf.value : undefined)
+      ) {
+        set.status = 403;
+        return { message: "Invalid CSRF token or Origin." };
       }
-
-      const existingUser = await db.query("SELECT * FROM users WHERE email = ?").get(email);
-      if (existingUser) {
-        set.status = 400;
-        return {
-          message: "Email already in use.",
-        };
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!isFirstRun() && !ACCOUNT_REGISTRATION) {
+        set.status = 403;
+        return { message: "Account registration is disabled." };
       }
       const savedPassword = await Bun.password.hash(password);
-
-      db.query("INSERT INTO users (email, password) VALUES (?, ?)").run(email, savedPassword);
-
-      const user = db.query("SELECT * FROM users WHERE email = ?").as(User).get(email);
-
+      let user: User | null = null;
+      try {
+        user = db.transaction(() => {
+          const isFirstUser = db.query("SELECT id FROM users LIMIT 1").get() === null;
+          if (!isFirstUser && !ACCOUNT_REGISTRATION) {
+            throw new RegistrationError("DISABLED");
+          }
+          if (db.query("SELECT id FROM users WHERE email = ?").get(normalizedEmail)) {
+            throw new RegistrationError("DUPLICATE");
+          }
+          const result = db
+            .query("INSERT INTO users (email, password) VALUES (?, ?)")
+            .run(normalizedEmail, savedPassword);
+          return (
+            db.query("SELECT * FROM users WHERE id = ?").as(User).get(result.lastInsertRowid) ??
+            null
+          );
+        })();
+      } catch (error) {
+        if (error instanceof RegistrationError && error.code === "DISABLED") {
+          set.status = 403;
+          return { message: "Account registration is disabled." };
+        }
+        if (
+          (error instanceof RegistrationError && error.code === "DUPLICATE") ||
+          (error instanceof Error && error.message.includes("UNIQUE constraint failed"))
+        ) {
+          set.status = 409;
+          return { message: "Email already in use." };
+        }
+        throw error;
+      }
       if (!user) {
         set.status = 500;
         return {
@@ -278,12 +336,12 @@ export const user = new Elysia()
 
       return redirect(`${WEBROOT}/`, 302);
     },
-    { body: "signIn" },
+    { body: "registration" },
   )
   .get(
     "/login",
-    async ({ jwt, redirect, cookie: { auth }, locale, t }) => {
-      if (FIRST_RUN) {
+    async ({ jwt, redirect, cookie: { auth, csrf }, locale, t }) => {
+      if (isFirstRun()) {
         return redirect(`${WEBROOT}/setup`, 302);
       }
 
@@ -297,6 +355,7 @@ export const user = new Elysia()
 
         auth.remove();
       }
+      const csrfToken = ensureCsrfToken(csrf);
 
       return (
         <BaseHtml webroot={WEBROOT} title="ConvertX-CN | Login" locale={locale}>
@@ -317,6 +376,7 @@ export const user = new Elysia()
             >
               <article class="article">
                 <form method="post" class="flex flex-col gap-4">
+                  <input type="hidden" name="csrfToken" value={csrfToken} />
                   <fieldset class="mb-4 flex flex-col gap-4">
                     <label class="flex flex-col gap-1">
                       <span safe>{t("auth", "email")}</span>
@@ -367,8 +427,21 @@ export const user = new Elysia()
   )
   .post(
     "/login",
-    async function handler({ body, set, redirect, jwt, cookie: { auth } }) {
-      const existingUser = db.query("SELECT * FROM users WHERE email = ?").as(User).get(body.email);
+    async function handler({ body, set, redirect, jwt, request, cookie: { auth, csrf } }) {
+      if (
+        !verifyCsrf(
+          request,
+          body.csrfToken,
+          typeof csrf?.value === "string" ? csrf.value : undefined,
+        )
+      ) {
+        set.status = 403;
+        return { message: "Invalid CSRF token or Origin." };
+      }
+      const existingUser = db
+        .query("SELECT * FROM users WHERE email = ?")
+        .as(User)
+        .get(body.email.trim().toLowerCase());
 
       if (!existingUser) {
         set.status = 403;
@@ -407,23 +480,35 @@ export const user = new Elysia()
     },
     { body: "signIn" },
   )
-  .get("/logoff", ({ redirect, cookie: { auth } }) => {
-    if (auth?.value) {
-      auth.remove();
-    }
-
-    return redirect(`${WEBROOT}/login`, 302);
+  .get("/logoff", ({ set }) => {
+    set.status = 405;
+    set.headers.allow = "POST";
+    return { message: "Use POST to log out." };
   })
-  .post("/logoff", ({ redirect, cookie: { auth } }) => {
-    if (auth?.value) {
-      auth.remove();
-    }
+  .post(
+    "/logoff",
+    ({ body, request, set, redirect, cookie: { auth, csrf } }) => {
+      if (
+        !verifyCsrf(
+          request,
+          body.csrfToken,
+          typeof csrf?.value === "string" ? csrf.value : undefined,
+        )
+      ) {
+        set.status = 403;
+        return { message: "Invalid CSRF token or Origin." };
+      }
+      if (auth?.value) {
+        auth.remove();
+      }
 
-    return redirect(`${WEBROOT}/login`, 302);
-  })
+      return redirect(`${WEBROOT}/login`, 302);
+    },
+    { body: t.Object({ csrfToken: t.String() }) },
+  )
   .get(
     "/account",
-    async ({ user, redirect, locale, t }) => {
+    async ({ user, redirect, locale, t, cookie: { csrf } }) => {
       if (!user) {
         return redirect(`${WEBROOT}/`, 302);
       }
@@ -433,9 +518,15 @@ export const user = new Elysia()
       if (!userData) {
         return redirect(`${WEBROOT}/`, 302);
       }
+      const csrfToken = ensureCsrfToken(csrf);
 
       return (
-        <BaseHtml webroot={WEBROOT} title="ConvertX-CN | Account" locale={locale}>
+        <BaseHtml
+          webroot={WEBROOT}
+          title="ConvertX-CN | Account"
+          locale={locale}
+          csrfToken={csrfToken}
+        >
           <>
             <Header
               webroot={WEBROOT}
@@ -445,6 +536,7 @@ export const user = new Elysia()
               loggedIn
               locale={locale}
               t={t}
+              csrfToken={csrfToken}
             />
             <main
               class={`
@@ -454,6 +546,7 @@ export const user = new Elysia()
             >
               <article class="article">
                 <form method="post" class="flex flex-col gap-4">
+                  <input type="hidden" name="csrfToken" value={csrfToken} />
                   <fieldset class="mb-4 flex flex-col gap-4">
                     <label class="flex flex-col gap-1">
                       <span safe>{t("auth", "email")}</span>
@@ -509,7 +602,17 @@ export const user = new Elysia()
   )
   .post(
     "/account",
-    async function handler({ body, set, redirect, jwt, cookie: { auth } }) {
+    async function handler({ body, set, redirect, jwt, request, cookie: { auth, csrf } }) {
+      if (
+        !verifyCsrf(
+          request,
+          body.csrfToken,
+          typeof csrf?.value === "string" ? csrf.value : undefined,
+        )
+      ) {
+        set.status = 403;
+        return { message: "Invalid CSRF token or Origin." };
+      }
       if (!auth?.value) {
         return redirect(`${WEBROOT}/login`, 302);
       }
@@ -540,16 +643,17 @@ export const user = new Elysia()
       const values = [];
 
       if (body.email) {
+        const normalizedEmail = body.email.trim().toLowerCase();
         const existingUser = await db
           .query("SELECT id FROM users WHERE email = ?")
           .as(User)
-          .get(body.email);
+          .get(normalizedEmail);
         if (existingUser && existingUser.id.toString() !== user.id) {
           set.status = 409;
           return { message: "Email already in use." };
         }
         fields.push("email");
-        values.push(body.email);
+        values.push(normalizedEmail);
       }
       if (body.newPassword) {
         fields.push("password");
@@ -566,9 +670,10 @@ export const user = new Elysia()
     },
     {
       body: t.Object({
-        email: t.MaybeEmpty(t.String()),
-        newPassword: t.MaybeEmpty(t.String()),
-        password: t.String(),
+        email: t.MaybeEmpty(t.String({ format: "email", maxLength: 254 })),
+        csrfToken: t.String({ minLength: 16, maxLength: 256 }),
+        newPassword: t.MaybeEmpty(t.String({ minLength: 8, maxLength: 128 })),
+        password: t.String({ minLength: 1, maxLength: 128 }),
       }),
       cookie: "session",
     },

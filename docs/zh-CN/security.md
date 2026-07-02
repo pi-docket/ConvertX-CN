@@ -21,13 +21,16 @@
 
 ## JWT_SECRET
 
-生产环境必须设置固定、随机、足够长的 `JWT_SECRET`。建议至少 32 字节随机值。
+Web UI 会优先使用固定、随机且至少 32 字符的 `JWT_SECRET`。未设置时，
+会在 `${DATA_DIR}/.secrets/jwt-secret` 以 0600 权限原子产生并持久化；
+也可用 `JWT_SECRET_FILE` 指向外部 secret。
 
 ```bash
 openssl rand -hex 32
 ```
 
-未固定 `JWT_SECRET` 会导致 Web UI 重启后旧 session 全部失效。API Server 未设置 `JWT_SECRET` 会启动失败。
+请备份数据目录内的 `.secrets`；删除 data volume 才会产生新密钥并使旧 session
+失效。Experimental API Server 仍需显式取得自己的 `JWT_SECRET`。
 
 ## 公开服务风险
 

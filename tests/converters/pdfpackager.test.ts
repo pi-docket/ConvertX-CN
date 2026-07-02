@@ -23,11 +23,17 @@ describe("PDF Packager converter properties", () => {
   });
 
   test("should have all chips as output formats", () => {
-    expect(properties.to.document).toHaveLength(ALL_CHIPS.length);
+    const expected =
+      process.env.PDF_SIGNING_AVAILABLE === "true"
+        ? ALL_CHIPS
+        : ALL_CHIPS.filter((chip) => !chip.endsWith("-s"));
+    expect(properties.to.document).toEqual(expected);
 
     // 驗證部分代表性 chips
     expect(properties.to.document).toContain("png-300");
-    expect(properties.to.document).toContain("pdf-600-np-s");
+    expect(properties.to.document.includes("pdf-600-np-s")).toBe(
+      process.env.PDF_SIGNING_AVAILABLE === "true",
+    );
     expect(properties.to.document).toContain("pdfa1b-i-300-p");
     expect(properties.to.document).toContain("pdfa2b-o-600");
     expect(properties.to.document).toContain("all-300");

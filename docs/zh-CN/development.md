@@ -33,18 +33,18 @@
 
 ## 项目结构
 
-| 路径 | 说明 |
-|---|---|
-| `src/index.tsx` | Web Server 入口。 |
-| `src/pages/` | 页面和 API route。 |
-| `src/converters/` | 转换器实现。 |
-| `src/db/` | SQLite 初始化和类型。 |
-| `src/helpers/` | env、OCR、启动状态、内存生命周期等 helper。 |
-| `src/i18n/`、`src/locales/` | 多语言 UI。 |
-| `src/transfer/` | 分块上传、下载、打包治理。 |
-| `api-server/` | Rust API Server。 |
-| `tests/` | Web/converter/e2e tests。 |
-| `scripts/` | Docker 构建、模型、验证与运行脚本。 |
+| 路径                        | 说明                                        |
+| --------------------------- | ------------------------------------------- |
+| `src/index.tsx`             | Web Server 入口。                           |
+| `src/pages/`                | 页面和 API route。                          |
+| `src/converters/`           | 转换器实现。                                |
+| `src/db/`                   | SQLite 初始化和类型。                       |
+| `src/helpers/`              | env、OCR、启动状态、内存生命周期等 helper。 |
+| `src/i18n/`、`src/locales/` | 多语言 UI。                                 |
+| `src/transfer/`             | 分块上传、下载、打包治理。                  |
+| `api-server/`               | Rust API Server。                           |
+| `tests/`                    | Web/converter/e2e tests。                   |
+| `scripts/`                  | Docker 构建、模型、验证与运行脚本。         |
 
 ## 常用命令
 

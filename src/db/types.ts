@@ -4,6 +4,9 @@ export class Filename {
   file_name!: string;
   output_file_name!: string;
   status!: string;
+  error_message!: string | null;
+  started_at!: string | null;
+  completed_at!: string | null;
 }
 
 export class Jobs {
@@ -12,6 +15,9 @@ export class Jobs {
   user_id!: number;
   date_created!: string;
   status!: string;
+  error_message!: string | null;
+  started_at!: string | null;
+  completed_at!: string | null;
   num_files!: number;
   files_detailed!: Filename[];
 }

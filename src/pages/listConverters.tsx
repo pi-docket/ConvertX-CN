@@ -3,16 +3,23 @@ import { BaseHtml } from "../components/base";
 import { Header } from "../components/header";
 import { getAllInputs, getAllTargets, getDisabledEngines } from "../converters/main";
 import { ALLOW_UNAUTHENTICATED, WEBROOT } from "../helpers/env";
+import { ensureCsrfToken } from "../helpers/csrf";
 import { userService } from "./user";
 
 export const listConverters = new Elysia().use(userService).get(
   "/converters",
-  async () => {
+  async ({ cookie: { csrf } }) => {
     const disabledEngines = getDisabledEngines();
+    const csrfToken = ensureCsrfToken(csrf);
     return (
-      <BaseHtml webroot={WEBROOT} title="ConvertX-CN | Converters">
+      <BaseHtml webroot={WEBROOT} title="ConvertX-CN | Converters" csrfToken={csrfToken}>
         <>
-          <Header webroot={WEBROOT} allowUnauthenticated={ALLOW_UNAUTHENTICATED} loggedIn />
+          <Header
+            webroot={WEBROOT}
+            allowUnauthenticated={ALLOW_UNAUTHENTICATED}
+            loggedIn
+            csrfToken={csrfToken}
+          />
           <main
             class={`
               w-full flex-1 px-2

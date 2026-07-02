@@ -1,5 +1,5 @@
 import { execFile as execFileOriginal } from "node:child_process";
-import { mkdirSync, existsSync, readdirSync, unlinkSync, rmdirSync, copyFileSync } from "node:fs";
+import { mkdirSync, existsSync, readdirSync, unlinkSync, rmSync, copyFileSync } from "node:fs";
 import { join, basename, dirname } from "node:path";
 import { getArchiveFileName } from "../transfer";
 import { ensureSearchablePdf, cleanupOcrTempFile } from "../helpers/pdfOcr";
@@ -170,18 +170,7 @@ function createTarArchive(
  * Helper function to remove a directory recursively
  */
 function removeDir(dirPath: string): void {
-  if (existsSync(dirPath)) {
-    const files = readdirSync(dirPath, { withFileTypes: true });
-    for (const file of files) {
-      const filePath = join(dirPath, file.name);
-      if (file.isDirectory()) {
-        removeDir(filePath);
-      } else {
-        unlinkSync(filePath);
-      }
-    }
-    rmdirSync(dirPath);
-  }
+  rmSync(dirPath, { recursive: true, force: true, maxRetries: 3, retryDelay: 25 });
 }
 
 /**
@@ -351,6 +340,7 @@ export async function convert(
   execFile: ExecFileFn = execFileOriginal,
 ): Promise<string> {
   let ocrTempFile: string | undefined;
+  let tempDir: string | undefined;
 
   try {
     // 0. 自動偵測掃描版 PDF 並進行 OCR 處理
@@ -374,7 +364,7 @@ export async function convert(
     // 3. 建立臨時輸出目錄
     const outputDir = dirname(targetPath);
     const inputFileName = basename(filePath, `.${fileType}`);
-    const tempDir = join(outputDir, `${inputFileName}_pdfmathtranslate_${Date.now()}`);
+    tempDir = join(outputDir, `${inputFileName}_pdfmathtranslate_${Date.now()}`);
 
     if (!existsSync(tempDir)) {
       mkdirSync(tempDir, { recursive: true });
@@ -470,6 +460,7 @@ export async function convert(
   } catch (error) {
     // 確保清理 OCR 暫存檔案
     cleanupOcrTempFile(ocrTempFile);
+    if (tempDir) removeDir(tempDir);
     throw new Error(`PDFMathTranslate error: ${error}`);
   }
 }

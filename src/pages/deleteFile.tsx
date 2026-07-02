@@ -1,37 +1,36 @@
-import { unlink } from "node:fs/promises";
 import { Elysia, t } from "elysia";
-import { uploadsDir } from "..";
-import db from "../db/db";
-import { WEBROOT } from "../helpers/env";
+import { artifactService } from "../application/artifactService";
+import { webActor } from "../application/actor";
+import { verifyCsrf } from "../helpers/csrf";
 import { userService } from "./user";
-import sanitize from "sanitize-filename";
-import path from "node:path";
 
 export const deleteFile = new Elysia().use(userService).post(
   "/delete",
-  async ({ body, redirect, cookie: { jobId }, user }) => {
+  ({ body, request, cookie: { jobId, csrf }, user, set }) => {
     if (!jobId?.value) {
-      return redirect(`${WEBROOT}/`, 302);
+      set.status = 400;
+      return { success: false, message: "No active job session" };
     }
-
-    const existingJob = await db
-      .query("SELECT * FROM jobs WHERE id = ? AND user_id = ?")
-      .get(jobId.value, user.id);
-
-    if (!existingJob) {
-      return redirect(`${WEBROOT}/`, 302);
+    if (
+      !verifyCsrf(
+        request,
+        body.csrf_token,
+        typeof csrf?.value === "string" ? csrf.value : undefined,
+      )
+    ) {
+      set.status = 403;
+      return { success: false, message: "Invalid CSRF token or Origin" };
     }
-
-    const userUploadsDir = path.join(uploadsDir, user.id, jobId.value);
-
-    const sanitized = sanitize(body.filename);
-    const targetPath = path.join(userUploadsDir, sanitized);
-
-    await unlink(targetPath);
-
-    return {
-      message: "File deleted successfully.",
-    };
+    try {
+      artifactService.deleteUpload(webActor(user.id), jobId.value, body.filename);
+      return { success: true, message: "File deleted successfully." };
+    } catch {
+      set.status = 404;
+      return { success: false, message: "File not found" };
+    }
   },
-  { body: t.Object({ filename: t.String() }), auth: true },
+  {
+    body: t.Object({ filename: t.String(), csrf_token: t.String() }),
+    auth: true,
+  },
 );

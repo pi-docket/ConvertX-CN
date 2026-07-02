@@ -18,7 +18,8 @@
     "back": "Back",
     "next": "Next",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "retry": "Retry"
   },
   "nav": {
     "history": "History",
@@ -38,7 +39,8 @@
     "convertTo": "Convert to",
     "convertButton": "Convert",
     "uploading": "Uploading...",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "selfSignedNotice": "(Self-signed certificate for this deployment; not a CA-verified identity)"
   },
   "results": {
     "title": "Results",
@@ -95,7 +97,10 @@
     "fileNotFound": "File not found.",
     "uploadFailed": "Upload failed.",
     "conversionFailed": "Conversion failed.",
-    "serverError": "Server error."
+    "serverError": "Server error.",
+    "uploadCancelFailed": "Could not cancel upload. Please retry.",
+    "uploadCleanupFailed": "Previous upload cleanup failed. Retry again.",
+    "deleteFailed": "Could not delete file."
   },
   "upload": {
     "success": "Files uploaded successfully.",

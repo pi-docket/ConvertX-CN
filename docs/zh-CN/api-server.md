@@ -31,16 +31,16 @@ API Server 是可选服务，不影响 ConvertX-CN Web UI 的基本使用。它�
 
 当前 REST 路由：
 
-| 方法 | 路由 | 认证 | 说明 |
-|---|---|---|---|
-| GET | `/api/health` | 否 | API Server health。 |
-| GET | `/health` | 否 | health alias。 |
-| GET | `/api/v1/engines` | 是 | 列出 API Server registry 中的 engines。 |
-| GET | `/api/v1/engines/{engine_id}` | 是 | 获取单个 engine。 |
-| POST | `/api/v1/convert` | 是 | 上传文件并创建转换 job。 |
-| GET | `/api/v1/jobs/{job_id}` | 是 | 查询 job 状态。 |
-| GET | `/api/v1/jobs/{job_id}/download` | 是 | 下载完成结果 zip。 |
-| GET/POST | `/graphql` | 否 / schema 内部处理 | GraphQL Playground 与 handler。 |
+| 方法     | 路由                             | 认证                 | 说明                                    |
+| -------- | -------------------------------- | -------------------- | --------------------------------------- |
+| GET      | `/api/health`                    | 否                   | API Server health。                     |
+| GET      | `/health`                        | 否                   | health alias。                          |
+| GET      | `/api/v1/engines`                | 是                   | 列出 API Server registry 中的 engines。 |
+| GET      | `/api/v1/engines/{engine_id}`    | 是                   | 获取单个 engine。                       |
+| POST     | `/api/v1/convert`                | 是                   | 上传文件并创建转换 job。                |
+| GET      | `/api/v1/jobs/{job_id}`          | 是                   | 查询 job 状态。                         |
+| GET      | `/api/v1/jobs/{job_id}/download` | 是                   | 下载完成结果 zip。                      |
+| GET/POST | `/graphql`                       | 否 / schema 内部处理 | GraphQL Playground 与 handler。         |
 
 ## 目前可用但不稳定
 
@@ -66,23 +66,23 @@ API Server 会调用：
 
 JWT Claims：
 
-| Claim | 类型 | 必填 | 说明 |
-|---|---|---|---|
-| `sub` | string | 是 | 用户 ID。 |
-| `email` | string | 否 | 用户 email。 |
-| `scope` | string[] | 否 | 权限范围。空 scope 当前视为允许。 |
-| `iat` | number | 是 | 签发时间。 |
-| `exp` | number | 是 | 过期时间。 |
+| Claim   | 类型     | 必填 | 说明                              |
+| ------- | -------- | ---- | --------------------------------- |
+| `sub`   | string   | 是   | 用户 ID。                         |
+| `email` | string   | 否   | 用户 email。                      |
+| `scope` | string[] | 否   | 权限范围。空 scope 当前视为允许。 |
+| `iat`   | number   | 是   | 签发时间。                        |
+| `exp`   | number   | 是   | 过期时间。                        |
 
 Scope：
 
-| Scope | 说明 |
-|---|---|
-| `convert` | 允许创建转换任务。 |
-| `download` | 允许下载结果。 |
-| `read` | 读取类权限。 |
-| `list_engines` | 列出 engines。 |
-| `*` | 全部权限。 |
+| Scope          | 说明               |
+| -------------- | ------------------ |
+| `convert`      | 允许创建转换任务。 |
+| `download`     | 允许下载结果。     |
+| `read`         | 读取类权限。       |
+| `list_engines` | 列出 engines。     |
+| `*`            | 全部权限。         |
 
 ## 文件存储
 

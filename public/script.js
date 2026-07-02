@@ -1,4 +1,5 @@
 const webroot = document.querySelector("meta[name='webroot']").content;
+const csrfToken = document.querySelector("meta[name='csrf-token']")?.content || "";
 const fileInput = document.querySelector('input[type="file"]');
 const convertButton = document.querySelector("input[type='submit']");
 const fileNames = [];
@@ -10,6 +11,33 @@ let formatSelected = false;
 // 追蹤當前會話的所有上傳任務
 /** @type {Map<string, {taskId: string|null, file: File|null, status: string}>} */
 const uploadTasks = new Map();
+/** @type {Map<string, {file: File, row: HTMLTableRowElement, attempt: number, pending: boolean, removed: boolean, controller: AbortController|null, xhr: XMLHttpRequest|null, uploadId: string|null}>} */
+const uploadStates = new Map();
+
+function refreshConvertButton() {
+  convertButton.disabled = !(pendingFiles === 0 && formatSelected && fileNames.length > 0);
+}
+
+async function cancelUploadSession(state) {
+  const uploadId = state?.uploadId;
+  if (!uploadId) return true;
+  try {
+    const response = await fetch(`${webroot}/upload-cancel`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ upload_id: uploadId, csrf_token: csrfToken }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.success) {
+      throw new Error(payload.message || `Upload cleanup failed (${response.status})`);
+    }
+    state.uploadId = null;
+    return true;
+  } catch (error) {
+    console.warn("Upload session cleanup failed", error);
+    return false;
+  }
+}
 
 /**
  * 取得記憶體生命週期管理器
@@ -75,7 +103,8 @@ window.addEventListener("beforeunload", () => {
 // Get translation helper
 const getTranslation = (category, key, params) => {
   if (typeof window.t === "function") {
-    return window.t(category, key, params);
+    const translated = window.t(category, key, params);
+    if (translated !== `${category}.${key}`) return translated;
   }
   // Fallback to English if t is not available
   const fallbacks = {
@@ -84,6 +113,10 @@ const getTranslation = (category, key, params) => {
     "convert.titleWithType": "Convert .{fileType}",
     "convert.convertButton": "Convert",
     "convert.uploading": "Uploading...",
+    "common.retry": "Retry",
+    "errors.uploadCancelFailed": "Could not cancel upload. Please retry.",
+    "errors.uploadCleanupFailed": "Previous upload cleanup failed. Retry again.",
+    "errors.deleteFailed": "Could not delete file.",
   };
   let text = fallbacks[`${category}.${key}`] || key;
   if (params) {
@@ -139,6 +172,10 @@ document.addEventListener("drop", (e) => {
 // Extracted handleFile function for reusability in drag-and-drop and file input
 // 🧠 記憶體管理：File 物件參考只在上傳期間保持
 function handleFile(file) {
+  if (uploadStates.has(file.name)) {
+    console.warn(`A file named "${file.name}" is already in this job.`);
+    return;
+  }
   // 防重複檢查：如果這個檔案剛剛已經處理過，直接跳過
   const fileKey = getFileKey(file);
   if (recentlyProcessedFiles.has(fileKey)) {
@@ -157,12 +194,38 @@ function handleFile(file) {
   const fileName = file.name;
   const fileSizeKB = (file.size / 1024).toFixed(2);
 
-  row.innerHTML = `
-    <td>${fileName}</td>
-    <td><progress value="0" max="100" class="inline-block h-2 appearance-none overflow-hidden rounded-full border-0 bg-neutral-700 bg-none text-accent-500 accent-accent-500 [&::-moz-progress-bar]:bg-accent-500 [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:[background:none] [&[value]::-webkit-progress-value]:bg-accent-500 [&[value]::-webkit-progress-value]:transition-[inline-size]"></progress></td>
-    <td>${fileSizeKB} kB</td>
-    <td><a onclick="deleteRow(this)">${removeText}</a></td>
-  `;
+  row.dataset.fileName = fileName;
+  row.dataset.uploadStatus = "uploading";
+  const nameCell = document.createElement("td");
+  nameCell.textContent = fileName;
+  const progressCell = document.createElement("td");
+  const progress = document.createElement("progress");
+  progress.value = 0;
+  progress.max = 100;
+  progress.className =
+    "inline-block h-2 appearance-none overflow-hidden rounded-full border-0 bg-neutral-700 bg-none text-accent-500 accent-accent-500";
+  progress.setAttribute("aria-label", `${fileName} upload progress`);
+  progressCell.appendChild(progress);
+  const sizeCell = document.createElement("td");
+  sizeCell.textContent = `${fileSizeKB} kB`;
+  const actionCell = document.createElement("td");
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.textContent = removeText;
+  removeButton.addEventListener("click", () => deleteRow(removeButton));
+  actionCell.appendChild(removeButton);
+  const retryButton = document.createElement("button");
+  retryButton.type = "button";
+  retryButton.textContent = getTranslation("common", "retry");
+  retryButton.className = "ml-2 hidden";
+  retryButton.addEventListener("click", () => retryUpload(fileName));
+  actionCell.appendChild(retryButton);
+  const statusCell = document.createElement("td");
+  statusCell.className = "upload-status text-sm";
+  statusCell.setAttribute("role", "status");
+  statusCell.setAttribute("aria-live", "polite");
+  statusCell.textContent = getTranslation("convert", "uploading");
+  row.append(nameCell, progressCell, sizeCell, statusCell, actionCell);
 
   if (!fileType) {
     fileType = file.name.split(".").pop();
@@ -192,8 +255,16 @@ function handleFile(file) {
   // 改為使用 Map 追蹤
   const fileRowMap = window._fileRowMap || (window._fileRowMap = new Map());
   fileRowMap.set(fileName, row);
-
-  fileNames.push(fileName);
+  uploadStates.set(fileName, {
+    file,
+    row,
+    attempt: 0,
+    pending: false,
+    removed: false,
+    controller: null,
+    xhr: null,
+    uploadId: null,
+  });
 
   // 🧠 記憶體管理：建立任務上下文追蹤這個上傳
   createUploadTask(fileName);
@@ -210,6 +281,15 @@ const updateSearchBar = () => {
   const convertToGroupElements = document.querySelectorAll(".convert_to_group");
   const convertToGroups = {};
   const convertToElement = document.querySelector("select[name='convert_to']");
+
+  const clearFormatSelection = () => {
+    convertToElement.value = "";
+    formatSelected = false;
+    for (const candidate of document.querySelectorAll(".target[aria-selected='true']")) {
+      candidate.setAttribute("aria-selected", "false");
+    }
+    refreshConvertButton();
+  };
 
   // =========================================================================
   // 搜尋邏輯：同時支援目標格式和引擎名稱搜尋
@@ -275,14 +355,19 @@ const updateSearchBar = () => {
     const targets = Array.from(targetElements);
 
     for (const target of targets) {
-      target.onmousedown = () => {
+      target.setAttribute("aria-selected", "false");
+      target.onclick = () => {
+        for (const candidate of document.querySelectorAll(".target[aria-selected='true']")) {
+          candidate.setAttribute("aria-selected", "false");
+        }
         convertToElement.value = target.dataset.value;
         convertToInput.value = `${target.dataset.target} using ${target.dataset.converter}`;
+        target.setAttribute("aria-selected", "true");
         formatSelected = true;
-        if (pendingFiles === 0 && fileNames.length > 0) {
-          convertButton.disabled = false;
-        }
+        refreshConvertButton();
         showMatching("");
+        convertToPopup.classList.add("hidden");
+        convertToPopup.classList.remove("flex");
       };
     }
 
@@ -290,21 +375,23 @@ const updateSearchBar = () => {
   }
 
   convertToInput.addEventListener("input", (e) => {
+    const selected = document.querySelector(".target[aria-selected='true']");
+    const selectedLabel = selected
+      ? `${selected.dataset.target} using ${selected.dataset.converter}`
+      : "";
+    if (e.target.value !== selectedLabel) clearFormatSelection();
     showMatching(e.target.value.toLowerCase());
   });
 
   convertToInput.addEventListener("search", () => {
     // when the user clears the search bar using the 'x' button
-    convertButton.disabled = true;
-    formatSelected = false;
+    clearFormatSelection();
   });
 
   convertToInput.addEventListener("blur", (e) => {
     // Keep the popup open even when clicking on a target button
-    // for a split second to allow the click to go through
+    // so the subsequent click event can complete the selection.
     if (e?.relatedTarget?.classList?.contains("target")) {
-      convertToPopup.classList.add("hidden");
-      convertToPopup.classList.remove("flex");
       return;
     }
 
@@ -341,6 +428,41 @@ const setTitle = () => {
 const deleteRow = async (target) => {
   const filename = target.parentElement.parentElement.children[0].textContent;
   const row = target.parentElement.parentElement;
+  const state = uploadStates.get(filename);
+  if (state) {
+    state.removed = true;
+    state.controller?.abort();
+    state.xhr?.abort();
+    if (!(await cancelUploadSession(state))) {
+      state.removed = false;
+      const status = row.querySelector(".upload-status");
+      if (status) status.textContent = getTranslation("errors", "uploadCancelFailed");
+      refreshConvertButton();
+      return;
+    }
+  }
+  try {
+    const response = await fetch(`${webroot}/delete`, {
+      method: "POST",
+      body: JSON.stringify({ filename: filename, csrf_token: csrfToken }),
+      headers: { "Content-Type": "application/json" },
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.success) {
+      throw new Error(payload.message || `Delete failed (${response.status})`);
+    }
+  } catch (error) {
+    if (state) state.removed = false;
+    const status = row.querySelector(".upload-status");
+    if (status) status.textContent = error.message || getTranslation("errors", "deleteFailed");
+    refreshConvertButton();
+    return;
+  }
+  if (state?.pending) {
+    state.pending = false;
+    pendingFiles = Math.max(0, pendingFiles - 1);
+  }
+  uploadStates.delete(filename);
   row.remove();
 
   // 🧠 等級二：清理該檔案的上傳任務
@@ -354,7 +476,7 @@ const deleteRow = async (target) => {
 
   // remove from fileNames
   const index = fileNames.indexOf(filename);
-  fileNames.splice(index, 1);
+  if (index >= 0) fileNames.splice(index, 1);
 
   // reset fileInput
   fileInput.value = "";
@@ -363,238 +485,177 @@ const deleteRow = async (target) => {
   if (fileNames.length === 0) {
     fileType = null;
     fileInput.removeAttribute("accept");
-    convertButton.disabled = true;
+    refreshConvertButton();
     setTitle();
 
     // 🧠 等級二：清理所有殘留任務
     await cleanupAllUploadTasks();
   }
 
-  fetch(`${webroot}/delete`, {
-    method: "POST",
-    body: JSON.stringify({ filename: filename }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).catch((err) => console.log(err));
+  refreshConvertButton();
 };
 
-// ==================== 全域傳輸常數 ====================
-const CHUNK_THRESHOLD_BYTES = 10 * 1024 * 1024; // 10MB
-const CHUNK_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
-
 /**
- * 判斷是否需要使用 chunk 傳輸
+ * Complete one upload attempt and refresh conversion readiness.
  */
-function shouldUseChunkedUpload(fileSize) {
-  return fileSize > CHUNK_THRESHOLD_BYTES;
-}
-
-/**
- * 生成 UUID
- */
-function generateUploadId() {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
+async function finalizeUpload(fileName, row, attempt, success, message) {
+  const state = uploadStates.get(fileName);
+  if (!state || state.removed || state.attempt !== attempt) return;
+  if (state.pending) {
+    state.pending = false;
+    pendingFiles = Math.max(0, pendingFiles - 1);
   }
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+  row.dataset.uploadStatus = success ? "completed" : "failed";
+  const status = row.querySelector(".upload-status");
+  if (status) status.textContent = message;
+
+  if (success && !fileNames.includes(fileName)) fileNames.push(fileName);
+  if (success) {
+    const progress = row.querySelector("progress");
+    if (progress?.parentElement) progress.parentElement.remove();
+  }
+  if (!success) await cancelUploadSession(state);
+  const retryButton = row.querySelector("button:nth-of-type(2)");
+  if (retryButton) retryButton.classList.toggle("hidden", success);
+
+  await finishUploadTask(fileName, success ? "completed" : "failed");
+  convertButton.value = getTranslation("convert", "convertButton");
+  refreshConvertButton();
 }
 
-/**
- * 統一上傳檔案（自動判斷使用直傳或 chunk）
- *
- * 🧠 記憶體管理：
- * - 等級一：上傳完成後清除 File 參考
- * - 等級二：使用任務上下文追蹤生命週期
- *
- * @param {File} file - 要上傳的檔案
- * @param {HTMLElement} row - 對應的表格列
- * @param {string} fileName - 檔案名稱
- */
-const uploadFile = (file, row, fileName) => {
+const uploadFile = async (file, row, fileName) => {
+  const state = uploadStates.get(fileName);
+  if (!state || state.removed) return;
+  if (state.uploadId && !(await cancelUploadSession(state))) {
+    const status = row.querySelector(".upload-status");
+    if (status) status.textContent = getTranslation("errors", "uploadCleanupFailed");
+    return;
+  }
+  state.attempt += 1;
+  const attempt = state.attempt;
+  state.pending = true;
+  state.controller = new AbortController();
+  state.xhr = null;
+  const retryButton = row.querySelector("button:nth-of-type(2)");
+  if (retryButton) retryButton.classList.add("hidden");
+  row.dataset.uploadStatus = "uploading";
+  const status = row.querySelector(".upload-status");
+  if (status) status.textContent = getTranslation("convert", "uploading");
+  let progress = row.querySelector("progress");
+  if (!progress) {
+    progress = document.createElement("progress");
+    progress.max = 100;
+    row.children[1].appendChild(progress);
+  }
+  progress.value = 0;
   convertButton.disabled = true;
   convertButton.value = getTranslation("convert", "uploading");
   pendingFiles += 1;
-
-  if (shouldUseChunkedUpload(file.size)) {
-    // 大檔：使用 chunk 上傳
-    uploadFileChunked(file, row, fileName);
-  } else {
-    // 小檔：直接上傳
-    uploadFileDirect(file, row, fileName);
+  let session;
+  try {
+    const response = await fetch(`${webroot}/upload-info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ file_name: fileName, file_size: file.size }),
+      signal: state.controller.signal,
+    });
+    session = await response.json();
+    if (!response.ok || !session.success)
+      throw new Error(session.message || `Upload initialization failed (${response.status})`);
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      await finalizeUpload(
+        fileName,
+        row,
+        attempt,
+        false,
+        error.message || "Upload initialization failed",
+      );
+    }
+    return;
   }
+  state.uploadId = session.upload_id;
+  if (session.mode === "chunked") await uploadFileChunked(file, row, fileName, session, attempt);
+  else uploadFileDirect(file, row, fileName, session, attempt);
 };
 
-/**
- * 直接上傳（≤10MB）
- *
- * 🧠 記憶體管理：
- * - 上傳完成後立即標記任務完成
- * - 不在閉包中長期保持 File 參考
- *
- * @param {File} file
- * @param {HTMLElement} row
- * @param {string} fileName
- */
-const uploadFileDirect = (file, row, fileName) => {
+const uploadFileDirect = (file, row, fileName, session, attempt) => {
   const formData = new FormData();
+  formData.append("upload_id", session.upload_id);
   formData.append("file", file, fileName);
-
-  let xhr = new XMLHttpRequest();
-
+  const xhr = new XMLHttpRequest();
+  const state = uploadStates.get(fileName);
+  if (!state || state.attempt !== attempt) return;
+  state.xhr = xhr;
   xhr.open("POST", `${webroot}/upload`, true);
-
   xhr.onload = async () => {
     let data = {};
     try {
       data = JSON.parse(xhr.responseText);
-    } catch (e) {
-      console.log("Parse error:", e);
+    } catch (error) {
+      console.warn("Invalid upload response", error);
     }
-
-    pendingFiles -= 1;
-    if (pendingFiles === 0) {
-      if (formatSelected) {
-        convertButton.disabled = false;
-      }
-      convertButton.value = getTranslation("convert", "convertButton");
+    if (xhr.status < 200 || xhr.status >= 300 || !data.success) {
+      await finalizeUpload(
+        fileName,
+        row,
+        attempt,
+        false,
+        data.message || `Upload failed (${xhr.status})`,
+      );
+      return;
     }
-
-    // Remove the progress bar when upload is done
-    const progressbar = row.getElementsByTagName("progress");
-    if (progressbar[0]) {
-      progressbar[0].parentElement.remove();
-    }
-
-    // 🧠 等級二：標記任務完成
-    await finishUploadTask(fileName, "completed");
-
-    console.log(`✅ [Upload Complete] ${fileName} - Direct upload successful`);
+    await finalizeUpload(fileName, row, attempt, true, data.message || "Upload completed");
   };
-
-  xhr.upload.onprogress = (e) => {
-    const sent = e.loaded;
-    const total = e.total;
-    const percent = Math.round((100 * sent) / total);
-
-    const progressbar = row.getElementsByTagName("progress");
-    if (progressbar[0]) {
-      progressbar[0].value = percent;
-    }
+  xhr.upload.onprogress = (event) => {
+    if (!event.lengthComputable) return;
+    const progress = row.querySelector("progress");
+    if (progress) progress.value = Math.round((100 * event.loaded) / event.total);
   };
-
-  xhr.onerror = async (e) => {
-    console.log("Upload error:", e);
-    pendingFiles -= 1;
-    if (pendingFiles === 0) {
-      convertButton.value = getTranslation("convert", "convertButton");
-    }
-
-    // 🧠 等級二：標記任務失敗
-    await finishUploadTask(fileName, "failed");
+  xhr.onerror = async () => {
+    await finalizeUpload(fileName, row, attempt, false, "Upload connection failed");
   };
-
+  xhr.onabort = () => {};
   xhr.send(formData);
-
-  // 🧠 等級一：formData 在這裡超出作用域後可被 GC
-  // file 參考在 xhr.send() 後就不再需要
 };
 
-/**
- * Chunk 上傳（>10MB）
- *
- * 🧠 記憶體管理：
- * - 等級一：每個 chunk 用完立即釋放
- * - 等級三：逐 chunk 處理避免一次性佔用過多記憶體
- *
- * @param {File} file
- * @param {HTMLElement} row
- * @param {string} fileName
- */
-const uploadFileChunked = async (file, row, fileName) => {
-  const uploadId = generateUploadId();
-  const totalChunks = Math.ceil(file.size / CHUNK_SIZE_BYTES);
-  const fileSize = file.size; // 保存大小，避免後續參考 file
-
-  console.log(`Starting chunked upload: ${fileName}, size: ${fileSize}, chunks: ${totalChunks}`);
-
+const uploadFileChunked = async (file, row, fileName, session, attempt) => {
+  const state = uploadStates.get(fileName);
+  if (!state || state.attempt !== attempt) return;
   try {
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * CHUNK_SIZE_BYTES;
-      const end = Math.min(start + CHUNK_SIZE_BYTES, fileSize);
-
-      // 🧠 等級一：使用 slice 建立 chunk，不複製資料
-      const chunk = file.slice(start, end);
-
+    for (let chunkIndex = 0; chunkIndex < session.total_chunks; chunkIndex++) {
+      const start = chunkIndex * session.chunk_size;
       const formData = new FormData();
-      formData.append("upload_id", uploadId);
+      formData.append("upload_id", session.upload_id);
       formData.append("chunk_index", chunkIndex.toString());
-      formData.append("total_chunks", totalChunks.toString());
-      formData.append("file_name", fileName);
-      formData.append("total_size", fileSize.toString());
-      formData.append("chunk", chunk);
-
+      formData.append("chunk", file.slice(start, Math.min(start + session.chunk_size, file.size)));
       const response = await fetch(`${webroot}/upload-chunk`, {
         method: "POST",
         body: formData,
+        signal: state.controller.signal,
       });
-
-      if (!response.ok) {
-        throw new Error(`Chunk ${chunkIndex} upload failed: ${response.status}`);
-      }
-
-      // 🧠 等級一：chunk 和 formData 在這裡超出迴圈作用域，可被 GC
-      // 明確釋放參考（JavaScript 會自動處理，但這裡明確化意圖）
-      // chunk = null; formData = null;
-
-      // 更新進度
-      const percent = Math.round(((chunkIndex + 1) / totalChunks) * 100);
-      const progressbar = row.getElementsByTagName("progress");
-      if (progressbar[0]) {
-        progressbar[0].value = percent;
-      }
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.success)
+        throw new Error(
+          payload.message || `Chunk ${chunkIndex} upload failed (${response.status})`,
+        );
+      const progress = row.querySelector("progress");
+      if (progress) progress.value = Math.round(((chunkIndex + 1) / session.total_chunks) * 100);
     }
-
-    // 完成
-    pendingFiles -= 1;
-    if (pendingFiles === 0) {
-      if (formatSelected) {
-        convertButton.disabled = false;
-      }
-      convertButton.value = getTranslation("convert", "convertButton");
-    }
-
-    // Remove the progress bar
-    const progressbar = row.getElementsByTagName("progress");
-    if (progressbar[0]) {
-      progressbar[0].parentElement.remove();
-    }
-
-    // 🧠 等級二：標記任務完成
-    await finishUploadTask(fileName, "completed");
-
-    console.log(
-      `✅ [Upload Complete] ${fileName} - Chunked upload successful (${totalChunks} chunks)`,
-    );
+    await finalizeUpload(fileName, row, attempt, true, "Upload completed");
   } catch (error) {
+    if (error.name === "AbortError") return;
     console.error("Chunked upload failed:", error);
-    pendingFiles -= 1;
-    if (pendingFiles === 0) {
-      convertButton.value = getTranslation("convert", "convertButton");
-    }
-
-    // 🧠 等級二：標記任務失敗
-    await finishUploadTask(fileName, "failed");
+    await finalizeUpload(fileName, row, attempt, false, error.message || "Chunked upload failed");
   }
-
-  // 🧠 等級一：file 參考在這裡超出作用域，可被 GC
-  // 整個上傳過程結束後，File 物件不再被任何地方參考
 };
 
+function retryUpload(fileName) {
+  const state = uploadStates.get(fileName);
+  if (!state || state.pending || state.removed) return;
+  createUploadTask(fileName);
+  uploadFile(state.file, state.row, fileName);
+}
 const formConvert = document.querySelector(`form[action='${webroot}/convert']`);
 
 formConvert.addEventListener("submit", () => {

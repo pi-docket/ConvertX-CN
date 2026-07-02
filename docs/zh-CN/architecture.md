@@ -87,11 +87,12 @@ flowchart TD
 - 表：`users`、`file_names`、`jobs`、`api_keys`
 - WAL mode：启用
 
-注意：`.env.example` 中有 `DATA_DIR`，但当前数据库路径硬编码为 `./data/mydb.sqlite`，需标注待确认。
+数据库、上传、输出与自动产生的 secrets 都由 `DATA_DIR` 派生。
 
 ## 用户与登录
 
-用户相关逻辑在 `src/pages/user.tsx`。`JWT_SECRET` 用于 JWT/Cookie。未设置时 Web UI 会随机生成 secret，导致重启后旧 session 失效。
+用户相关逻辑在 `src/pages/user.tsx`。`JWT_SECRET` 用于 JWT/Cookie；未设置时
+`src/helpers/jwtSecret.ts` 会在数据目录建立并复用受保护的随机 secret。
 
 ## i18n 与主题
 

@@ -2,6 +2,16 @@ import Elysia, { t } from "elysia";
 import { getPossibleTargets } from "../converters/main";
 import { userService } from "./user";
 
+const selfSignedNotice = "（本部署自簽憑證，不代表 CA 身份認證）";
+
+function targetLabel(converter: string, target: string): string {
+  return converter === "PDF Packager" &&
+    target.endsWith("-s") &&
+    process.env.PDF_SIGN_SELF_SIGNED === "true"
+    ? `${target} ${selfSignedNotice}`
+    : target;
+}
+
 export const chooseConverter = new Elysia().use(userService).post(
   "/conversions",
   ({ body }) => {
@@ -38,7 +48,7 @@ export const chooseConverter = new Elysia().use(userService).post(
                     type="button"
                     safe
                   >
-                    {target}
+                    {targetLabel(converter, target)}
                   </button>
                 ))}
               </ul>
@@ -54,7 +64,7 @@ export const chooseConverter = new Elysia().use(userService).post(
             <optgroup label={converter}>
               {targets.map((target) => (
                 <option value={`${target},${converter}`} safe>
-                  {target}
+                  {targetLabel(converter, target)}
                 </option>
               ))}
             </optgroup>

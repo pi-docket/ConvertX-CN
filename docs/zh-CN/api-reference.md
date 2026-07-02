@@ -120,10 +120,10 @@ Content-Type: multipart/form-data
 
 Multipart fields：
 
-| Field | 类型 | 必填 | 说明 |
-|---|---|---|---|
-| `file` | file | 是 | 上传文件。 |
-| `params` 或 `options` | JSON string | 是 | 转换参数。 |
+| Field                 | 类型        | 必填 | 说明       |
+| --------------------- | ----------- | ---- | ---------- |
+| `file`                | file        | 是   | 上传文件。 |
+| `params` 或 `options` | JSON string | 是   | 转换参数。 |
 
 `params` JSON：
 
@@ -169,21 +169,21 @@ Authorization: Bearer <jwt>
 
 ## Error Response
 
-| Code | HTTP | 说明 |
-|---|---:|---|
-| `UNAUTHORIZED` | 401 | 未授权。 |
-| `INVALID_TOKEN` | 401 | Token 无效。 |
-| `TOKEN_EXPIRED` | 401 | Token 过期。 |
-| `MISSING_AUTH_HEADER` | 401 | 缺少 Authorization header。 |
-| `FORBIDDEN` | 403 | 权限不足。 |
-| `ENGINE_NOT_FOUND` | 404 | 引擎不存在。 |
-| `UNSUPPORTED_CONVERSION` | 400 | 不支持的转换。 |
-| `FILE_TOO_LARGE` | 413 | 上传文件过大。 |
-| `JOB_NOT_FOUND` | 404 | Job 不存在。 |
-| `JOB_NOT_READY` | 400 | Job 未完成。 |
-| `INVALID_INPUT` | 400 | 请求参数错误。 |
-| `INTERNAL_ERROR` | 500 | 内部错误。 |
-| `BACKEND_ERROR` | 502 | Web UI backend 调用失败。 |
+| Code                     | HTTP | 说明                        |
+| ------------------------ | ---: | --------------------------- |
+| `UNAUTHORIZED`           |  401 | 未授权。                    |
+| `INVALID_TOKEN`          |  401 | Token 无效。                |
+| `TOKEN_EXPIRED`          |  401 | Token 过期。                |
+| `MISSING_AUTH_HEADER`    |  401 | 缺少 Authorization header。 |
+| `FORBIDDEN`              |  403 | 权限不足。                  |
+| `ENGINE_NOT_FOUND`       |  404 | 引擎不存在。                |
+| `UNSUPPORTED_CONVERSION` |  400 | 不支持的转换。              |
+| `FILE_TOO_LARGE`         |  413 | 上传文件过大。              |
+| `JOB_NOT_FOUND`          |  404 | Job 不存在。                |
+| `JOB_NOT_READY`          |  400 | Job 未完成。                |
+| `INVALID_INPUT`          |  400 | 请求参数错误。              |
+| `INTERNAL_ERROR`         |  500 | 内部错误。                  |
+| `BACKEND_ERROR`          |  502 | Web UI backend 调用失败。   |
 
 ## 示例
 

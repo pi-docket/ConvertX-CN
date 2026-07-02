@@ -18,11 +18,11 @@
 
 ## 测试类型
 
-| 类型 | 路径 | 说明 |
-|---|---|---|
-| Converter tests | `tests/converters/` | 覆盖各转换器。 |
-| Transfer tests | `tests/transfer/` | 分块上传、下载、transfer 行为。 |
-| E2E tests | `tests/e2e/` | API、格式矩阵、翻译、综合流程。 |
+| 类型             | 路径                | 说明                                   |
+| ---------------- | ------------------- | -------------------------------------- |
+| Converter tests  | `tests/converters/` | 覆盖各转换器。                         |
+| Transfer tests   | `tests/transfer/`   | 分块上传、下载、transfer 行为。        |
+| E2E tests        | `tests/e2e/`        | API、格式矩阵、翻译、综合流程。        |
 | API Server tests | `api-server/tests/` | Rust API、GraphQL、integration tests。 |
 
 ## Web / TypeScript 测试

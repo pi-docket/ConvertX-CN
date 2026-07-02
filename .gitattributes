@@ -19,3 +19,7 @@
 
 # 確保模型目錄的 README 是純文字
 models/**/README.md text
+
+*.sh text eol=lf
+*.py text eol=lf
+Dockerfile* text eol=lf

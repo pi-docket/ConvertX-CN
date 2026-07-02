@@ -752,13 +752,20 @@ RUN rm -rf /tmp/hf_download_cache /root/.cache/huggingface \
 FROM python-tools AS release
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y --no-install-recommends gosu && rm -rf /var/lib/apt/lists/* \
+  && groupadd --gid 10001 convertx \
+  && useradd --uid 10001 --gid 10001 --home-dir /home/convertx --create-home --shell /usr/sbin/nologin convertx \
+  && mkdir -p /app/data /opt/convertx/cache/babeldoc /opt/convertx/config \
+  && chown -R 10001:10001 /app/data /home/convertx
+
 # 8.1 從 models stage 複製模型和配置
 COPY --from=models /opt/convertx /opt/convertx
-COPY --from=models /root/.cache/babeldoc /root/.cache/babeldoc
-COPY --from=models /root/mineru.json /root/mineru.json
+COPY --from=models /root/.cache/babeldoc /opt/convertx/cache/babeldoc
+COPY --from=models /root/mineru.json /opt/convertx/config/mineru.json
 
 COPY scripts/entrypoint.sh /opt/convertx/entrypoint.sh
 RUN chmod +x /opt/convertx/entrypoint.sh
+COPY scripts/pdf_sign.py /app/scripts/pdf_sign.py
 
 # 8.2 複製應用程式
 COPY --from=install /temp/prod/node_modules node_modules
@@ -768,28 +775,14 @@ COPY --from=prerelease /app/dist /app/dist
 # 8.3 確保字型目錄完整（fonts stage 已安裝，這裡確保 COPY 覆蓋）
 RUN mkdir -p /usr/share/fonts/truetype/custom
 COPY fonts/ /usr/share/fonts/truetype/custom/
-COPY models/ /root/.cache/babeldoc/models/
+COPY models/ /opt/convertx/cache/babeldoc/models/
 
+RUN chown -R 10001:10001 /opt/convertx/cache /opt/convertx/config /app/data
 # 8.4 更新字型快取
 RUN fc-cache -fv
 
 # ==============================================================================
 # PDF 簽章憑證
-# ==============================================================================
-RUN mkdir -p /app/certs && \
-  openssl req -x509 -newkey rsa:2048 \
-  -keyout /tmp/key.pem -out /tmp/cert.pem \
-  -days 3650 -nodes \
-  -subj "/CN=PDF Packager Default/O=ConvertX-CN/C=TW" && \
-  openssl pkcs12 -export \
-  -inkey /tmp/key.pem -in /tmp/cert.pem \
-  -out /app/certs/default.p12 \
-  -passout pass: && \
-  rm -f /tmp/key.pem /tmp/cert.pem && \
-  chmod 644 /app/certs/default.p12
-
-# ==============================================================================
-# Locale 設定
 # ==============================================================================
 RUN sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
   sed -i 's/# zh_TW.UTF-8 UTF-8/zh_TW.UTF-8 UTF-8/' /etc/locale.gen && \
@@ -863,9 +856,9 @@ RUN echo "======================================" && \
   else \
   echo "  ❌ MinerU Pipeline 模型不存在" && VALIDATION_PASSED=false; \
   fi && \
-  if [ -f "/root/mineru.json" ]; then \
+  if [ -f "/opt/convertx/config/mineru.json" ]; then \
   echo "  ✅ mineru.json 存在"; \
-  cat /root/mineru.json; \
+  cat /opt/convertx/config/mineru.json; \
   else \
   echo "  ❌ mineru.json 不存在" && VALIDATION_PASSED=false; \
   fi; \
@@ -894,7 +887,7 @@ RUN echo "======================================" && \
   \
   # 驗證 ONNX 模型
   echo "🔍 驗證 ONNX 模型..." && \
-  if [ -f "/root/.cache/babeldoc/models/doclayout_yolo_docstructbench_imgsz1024.onnx" ]; then \
+  if [ -f "/opt/convertx/cache/babeldoc/models/doclayout_yolo_docstructbench_imgsz1024.onnx" ]; then \
   echo "  ✅ DocLayout-YOLO ONNX 存在"; \
   else \
   echo "  ⚠️ DocLayout-YOLO ONNX 不存在"; \
@@ -941,7 +934,7 @@ ENV TRANSFORMERS_CACHE="/nonexistent"
 
 # MinerU 強制本地模型
 ENV MINERU_MODEL_SOURCE="local"
-ENV MINERU_CONFIG="/root/mineru.json"
+ENV MINERU_CONFIG="/opt/convertx/config/mineru.json"
 ENV MINERU_MODELS_DIR="/opt/convertx/models/mineru"
 # 📌 MinerU 後端配置：
 #   - pipeline: 純 OCR 模式（預設，穩定無需額外依賴）
@@ -963,15 +956,13 @@ ENV VLM_GGUF_MMPROJ="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509
 
 # BabelDOC 離線模式
 ENV BABELDOC_OFFLINE="1"
-ENV BABELDOC_CACHE_PATH="/root/.cache/babeldoc"
+ENV BABELDOC_CACHE_PATH="/opt/convertx/cache/babeldoc"
 
 # 禁止 pip 安裝
 ENV PIP_NO_INDEX="1"
 ENV PIP_NO_CACHE_DIR="1"
 
 # 5️⃣ PDF 簽章設定
-ENV PDF_SIGN_P12_PATH="/app/certs/default.p12"
-ENV PDF_SIGN_P12_PASSWORD=""
 ENV PDF_SIGN_REASON="ConvertX-CN PDF Packager"
 ENV PDF_SIGN_LOCATION="Taiwan"
 ENV PDF_SIGN_CONTACT="convertx-cn@localhost"
@@ -979,6 +970,9 @@ ENV PDF_SIGN_CONTACT="convertx-cn@localhost"
 # 6️⃣ 應用程式設定
 ENV PANDOC_PDF_ENGINE=pdflatex
 ENV NODE_ENV=production
+ENV HOME=/home/convertx
+ENV PATH=/usr/local/bin:/usr/bin:/bin
+ENV DATA_DIR=/app/data
 
 # ==============================================================================
 # 暴露端口 & 啟動

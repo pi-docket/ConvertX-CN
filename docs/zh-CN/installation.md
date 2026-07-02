@@ -54,11 +54,11 @@ docker run -d \
 
 ## Lite / Standard / Full
 
-| 版本 | Dockerfile | 说明 |
-|---|---|---|
-| Lite | `Dockerfile.lite` | 轻量版本，保留常见转换工具，部分高级功能可能缺失。 |
-| Standard | `Dockerfile` | 默认推荐版本，包含主要系统工具、Python 工具、OCR、PDF 翻译、MinerU 相关依赖与模型准备流程。 |
-| Full | `Dockerfile.full` | 基于 Standard 扩展，当前文件中大量扩展 OCR/TeX 依赖以注释形式存在，实际发布差异需要复核。 |
+| 版本     | Dockerfile        | 说明                                                                                        |
+| -------- | ----------------- | ------------------------------------------------------------------------------------------- |
+| Lite     | `Dockerfile.lite` | 轻量版本，保留常见转换工具，部分高级功能可能缺失。                                          |
+| Standard | `Dockerfile`      | 默认推荐版本，包含主要系统工具、Python 工具、OCR、PDF 翻译、MinerU 相关依赖与模型准备流程。 |
+| Full     | `Dockerfile.full` | 基于 Standard 扩展，当前文件中大量扩展 OCR/TeX 依赖以注释形式存在，实际发布差异需要复核。   |
 
 ## API Server
 

@@ -13,10 +13,10 @@
 
 ## 语言入口
 
-| Language | Status | Entry |
-|---|---|---|
-| 简体中文 | 当前主要维护版本 | [./zh-CN/README.md](./zh-CN/README.md) |
-| English | Planned / placeholder | [./en/README.md](./en/README.md) |
+| Language | Status                | Entry                                  |
+| -------- | --------------------- | -------------------------------------- |
+| 简体中文 | 当前主要维护版本      | [./zh-CN/README.md](./zh-CN/README.md) |
+| English  | Planned / placeholder | [./en/README.md](./en/README.md)       |
 
 ## 共享素材
 

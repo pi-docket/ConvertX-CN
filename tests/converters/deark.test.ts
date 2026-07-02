@@ -1,8 +1,20 @@
-import { test, expect, describe, mock } from "bun:test";
+import { afterEach, beforeEach, test, expect, describe, mock } from "bun:test";
+import { mkdirSync, rmSync } from "node:fs";
+import { join } from "node:path";
 import { convert, properties } from "../../src/converters/deark";
 import type { ExecFileFn } from "../../src/converters/types";
 
 describe("deark converter", () => {
+  const testDir = "./test-output-deark";
+
+  beforeEach(() => {
+    rmSync(testDir, { recursive: true, force: true });
+    mkdirSync(testDir, { recursive: true });
+  });
+
+  afterEach(() => {
+    rmSync(testDir, { recursive: true, force: true });
+  });
   test("properties should have correct structure", () => {
     expect(properties).toBeDefined();
     expect(properties.from).toBeDefined();
@@ -43,10 +55,10 @@ describe("deark converter", () => {
     // This is a simplified test
     try {
       await convert(
-        "/tmp/test.zip",
+        join(testDir, "test.zip"),
         "zip",
         "extract",
-        "/tmp/output/test",
+        join(testDir, "output", "test"),
         {},
         mockExecFile as ExecFileFn,
       );
@@ -69,10 +81,10 @@ describe("deark converter", () => {
 
     try {
       await convert(
-        "/tmp/test.unknown",
+        join(testDir, "test.unknown"),
         "unknown",
         "extract",
-        "/tmp/output/test",
+        join(testDir, "output", "test"),
         {},
         mockExecFile as ExecFileFn,
       );

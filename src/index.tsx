@@ -1,11 +1,10 @@
-import { rmSync } from "node:fs";
 import { html } from "@elysiajs/html";
 import { staticPlugin } from "@elysiajs/static";
 import { Elysia } from "elysia";
 import "./helpers/printVersions";
 import db from "./db/db";
 import { Jobs } from "./db/types";
-import { AUTO_DELETE_EVERY_N_HOURS, WEBROOT } from "./helpers/env";
+import { AUTO_DELETE_EVERY_N_HOURS, HTTP_ALLOWED, WEBROOT } from "./helpers/env";
 import { displayStartupInfo, WEB_PORT } from "./helpers/startupStatus";
 import { chooseConverter } from "./pages/chooseConverter";
 import { convert } from "./pages/convert";
@@ -18,28 +17,41 @@ import { listConverters } from "./pages/listConverters";
 import { results } from "./pages/results";
 import { root } from "./pages/root";
 import { upload } from "./pages/upload";
-import { uploadChunk, uploadInfo } from "./pages/uploadChunk";
+import { uploadCancel, uploadChunk, uploadInfo } from "./pages/uploadChunk";
 import { user } from "./pages/user";
 import { healthcheck } from "./pages/healthcheck";
 import { inferenceApi } from "./pages/inference";
 import { inferenceService } from "./inference";
 import { enginesApi } from "./pages/enginesApi";
 import { convertersApi } from "./pages/convertersApi";
-import { rasApi } from "./pages/rasApi";
 import { memoryDiagnostics } from "./pages/memoryDiagnostics";
+import { outputDir, uploadsDir } from "./helpers/paths";
+import { CHUNK_THRESHOLD_BYTES } from "./transfer";
+import { webActor } from "./application/actor";
+import { artifactService } from "./application/artifactService";
 
-export const uploadsDir = "./data/uploads/";
-export const outputDir = "./data/output/";
+export { outputDir, uploadsDir };
 
 // Fix for Elysia issue with Bun, (see https://github.com/oven-sh/bun/issues/12161)
 process.getBuiltinModule = require;
 
 const app = new Elysia({
   serve: {
-    maxRequestBodySize: Number.MAX_SAFE_INTEGER,
+    maxRequestBodySize: CHUNK_THRESHOLD_BYTES + 1024 * 1024,
   },
   prefix: WEBROOT,
 })
+  .onAfterHandle(({ set }) => {
+    set.headers["x-content-type-options"] = "nosniff";
+    set.headers["x-frame-options"] = "DENY";
+    set.headers["referrer-policy"] = "strict-origin-when-cross-origin";
+    set.headers["permissions-policy"] = "camera=(), microphone=(), geolocation=()";
+    set.headers["content-security-policy"] =
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'";
+    if (!HTTP_ALLOWED) {
+      set.headers["strict-transport-security"] = "max-age=31536000; includeSubDomains";
+    }
+  })
   .use(html())
   .use(
     staticPlugin({
@@ -52,6 +64,7 @@ const app = new Elysia({
   .use(upload)
   .use(uploadChunk)
   .use(uploadInfo)
+  .use(uploadCancel)
   .use(history)
   .use(convert)
   .use(download)
@@ -65,7 +78,6 @@ const app = new Elysia({
   .use(inferenceApi)
   .use(enginesApi)
   .use(convertersApi)
-  .use(rasApi)
   .use(memoryDiagnostics)
   .onError(({ error }) => {
     console.error(error);
@@ -105,18 +117,12 @@ const clearJobs = () => {
     .all(new Date(Date.now() - AUTO_DELETE_EVERY_N_HOURS * 60 * 60 * 1000).toISOString());
 
   for (const job of jobs) {
-    // delete the directories
-    rmSync(`${outputDir}${job.user_id}/${job.id}`, {
-      recursive: true,
-      force: true,
-    });
-    rmSync(`${uploadsDir}${job.user_id}/${job.id}`, {
-      recursive: true,
-      force: true,
-    });
-
-    // delete the job
-    db.query("DELETE FROM jobs WHERE id = ?").run(job.id);
+    try {
+      const actor = webActor(String(job.user_id));
+      artifactService.deleteOwnedJob(actor, job.id);
+    } catch (error) {
+      console.error(`[Cleanup] Failed to delete job ${job.id}`, error);
+    }
   }
 
   setTimeout(clearJobs, AUTO_DELETE_EVERY_N_HOURS * 60 * 60 * 1000);

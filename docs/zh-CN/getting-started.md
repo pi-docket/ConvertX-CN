@@ -29,7 +29,8 @@ cd convertx-cn
 cp .env.example .env
 ```
 
-编辑 `.env`，至少设置固定的 `JWT_SECRET`：
+可选：在 `.env` 自行管理固定的 `JWT_SECRET`；若省略，Web UI 会在
+`data/.secrets/jwt-secret` 安全生成并跨重启沿用：
 
 ```env
 JWT_SECRET=replace-with-a-random-secret-at-least-32-chars

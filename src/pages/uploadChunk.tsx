@@ -5,58 +5,53 @@
  */
 
 import { Elysia, t } from "elysia";
-import { uploadsDir } from "../index";
+import { webActor } from "../application/actor";
+import { uploadService, UploadServiceError } from "../application/uploadService";
 import { userService } from "./user";
-import sanitize from "sanitize-filename";
-import {
-  handleChunkUpload,
-  shouldUseChunkedUpload,
-  CHUNK_SIZE_BYTES,
-  calculateChunkCount,
-} from "../transfer";
+import { verifyCsrf } from "../helpers/csrf";
+
+function uploadError(error: unknown, set: { status?: number | string }) {
+  if (error instanceof UploadServiceError) {
+    set.status = error.status;
+    return { success: false, code: error.code, message: error.message };
+  }
+  console.error("Chunk upload failed:", error);
+  set.status = 500;
+  return { success: false, code: "UPLOAD_FAILED", message: "Upload failed" };
+}
 
 export const uploadChunk = new Elysia().use(userService).post(
   "/upload-chunk",
-  async ({ body, user, cookie: { jobId } }) => {
+  async ({ body, user, cookie: { jobId }, set }) => {
     if (!jobId?.value) {
-      return {
-        success: false,
-        message: "No active job session",
-      };
+      set.status = 400;
+      return { success: false, code: "NO_ACTIVE_JOB", message: "No active job session" };
     }
 
-    const { upload_id, chunk_index, total_chunks, file_name, total_size, chunk } = body;
-
-    const sanitizedFileName = sanitize(file_name);
-    const userUploadsDir = `${uploadsDir}${user.id}/${jobId.value}/`;
-
     // 取得 chunk 資料
-    const chunkData = chunk instanceof Blob ? await chunk.arrayBuffer() : chunk;
-
-    const result = await handleChunkUpload(
-      upload_id,
-      parseInt(chunk_index, 10),
-      parseInt(total_chunks, 10),
-      chunkData,
-      sanitizedFileName,
-      parseInt(total_size, 10),
-      user.id,
-      jobId.value,
-      `${uploadsDir}${user.id}/`,
-      userUploadsDir,
-    );
-
-    return result;
+    try {
+      const result = await uploadService.chunk(
+        webActor(user.id),
+        jobId.value,
+        body.upload_id,
+        Number(body.chunk_index),
+        body.chunk,
+      );
+      const { file_path: _filePath, ...response } = result;
+      return response;
+    } catch (error) {
+      return uploadError(error, set);
+    }
   },
   {
-    body: t.Object({
-      upload_id: t.String(),
-      chunk_index: t.String(),
-      total_chunks: t.String(),
-      file_name: t.String(),
-      total_size: t.String(),
-      chunk: t.File(),
-    }),
+    body: t.Object(
+      {
+        upload_id: t.String(),
+        chunk_index: t.String(),
+        chunk: t.File(),
+      },
+      { additionalProperties: false },
+    ),
     auth: true,
   },
 );
@@ -66,22 +61,59 @@ export const uploadChunk = new Elysia().use(userService).post(
  */
 export const uploadInfo = new Elysia().use(userService).post(
   "/upload-info",
-  async ({ body }) => {
-    const { file_size } = body;
-    const size = parseInt(file_size, 10);
-
-    const useChunked = shouldUseChunkedUpload(size);
-
-    return {
-      use_chunked: useChunked,
-      chunk_size: CHUNK_SIZE_BYTES,
-      total_chunks: useChunked ? calculateChunkCount(size) : 1,
-    };
+  async ({ body, user, cookie: { jobId }, set }) => {
+    if (!jobId?.value) {
+      set.status = 400;
+      return { success: false, code: "NO_ACTIVE_JOB", message: "No active job session" };
+    }
+    try {
+      return uploadService.initialize(
+        webActor(user.id),
+        jobId.value,
+        body.file_name,
+        Number(body.file_size),
+      );
+    } catch (error) {
+      return uploadError(error, set);
+    }
   },
   {
-    body: t.Object({
-      file_size: t.String(),
-    }),
+    body: t.Object(
+      {
+        file_size: t.Number({ minimum: 0 }),
+        file_name: t.String(),
+      },
+      { additionalProperties: false },
+    ),
+    auth: true,
+  },
+);
+
+export const uploadCancel = new Elysia().use(userService).post(
+  "/upload-cancel",
+  ({ body, request, user, cookie: { jobId, csrf }, set }) => {
+    if (!jobId?.value) {
+      set.status = 400;
+      return { success: false, code: "NO_ACTIVE_JOB", message: "No active job session" };
+    }
+    if (
+      !verifyCsrf(
+        request,
+        body.csrf_token,
+        typeof csrf?.value === "string" ? csrf.value : undefined,
+      )
+    ) {
+      set.status = 403;
+      return { success: false, code: "INVALID_CSRF", message: "Invalid CSRF token or Origin" };
+    }
+    uploadService.cancel(webActor(user.id), jobId.value, body.upload_id);
+    return { success: true };
+  },
+  {
+    body: t.Object(
+      { upload_id: t.String(), csrf_token: t.String() },
+      { additionalProperties: false },
+    ),
     auth: true,
   },
 );

@@ -1,8 +1,10 @@
 import { Elysia } from "elysia";
 import { BaseHtml } from "../components/base";
 import { Header } from "../components/header";
-import db from "../db/db";
-import { Filename, Jobs } from "../db/types";
+import { Filename } from "../db/types";
+import { webActor } from "../application/actor";
+import { jobService } from "../application/jobService";
+import { ensureCsrfToken } from "../helpers/csrf";
 import { ALLOW_UNAUTHENTICATED, HIDE_HISTORY, LANGUAGE, TIMEZONE, WEBROOT } from "../helpers/env";
 import { localeService } from "../i18n/service";
 import { userService } from "./user";
@@ -14,7 +16,7 @@ export const history = new Elysia()
   .use(localeService)
   .get(
     "/history",
-    async ({ redirect, user, locale, t }) => {
+    async ({ redirect, user, locale, t, cookie: { csrf } }) => {
       if (HIDE_HISTORY) {
         return redirect(`${WEBROOT}/`, 302);
       }
@@ -23,17 +25,11 @@ export const history = new Elysia()
         return redirect(`${WEBROOT}/login`, 302);
       }
 
-      let userJobs = db
-        .query("SELECT * FROM jobs WHERE user_id = ?")
-        .as(Jobs)
-        .all(user.id)
-        .reverse();
+      const actor = webActor(user.id);
+      let userJobs = jobService.listOwnedJobs(actor);
 
       for (const job of userJobs) {
-        const files = db
-          .query("SELECT * FROM file_names WHERE job_id = ?")
-          .as(Filename)
-          .all(job.id);
+        const files = jobService.listFiles(actor, job.id);
 
         job.finished_files = files.length;
         job.files_detailed = files;
@@ -41,9 +37,15 @@ export const history = new Elysia()
 
       // Filter out jobs with no files
       userJobs = userJobs.filter((job) => job.num_files > 0);
+      const csrfToken = ensureCsrfToken(csrf);
 
       return (
-        <BaseHtml webroot={WEBROOT} title="ConvertX-CN | Results" locale={locale}>
+        <BaseHtml
+          webroot={WEBROOT}
+          title="ConvertX-CN | Results"
+          locale={locale}
+          csrfToken={csrfToken}
+        >
           <>
             <Header
               webroot={WEBROOT}
@@ -52,6 +54,7 @@ export const history = new Elysia()
               loggedIn
               locale={locale}
               t={t}
+              csrfToken={csrfToken}
             />
             <main
               class={`
@@ -240,15 +243,22 @@ export const history = new Elysia()
                             >
                               <EyeIcon />
                             </a>
-                            <a
-                              class={`
+                            <form
+                              method="post"
+                              action={`${WEBROOT}/delete/${job.id}`}
+                              onsubmit="return confirm('Delete this job?')"
+                            >
+                              <input type="hidden" name="csrfToken" value={csrfToken} />
+                              <button
+                                type="submit"
+                                class={`
                                 text-accent-500 underline
                                 hover:text-accent-400
                               `}
-                              href={`${WEBROOT}/delete/${job.id}`}
-                            >
-                              <DeleteIcon />
-                            </a>
+                              >
+                                <DeleteIcon />
+                              </button>
+                            </form>
                           </td>
                         </tr>
                         <tr
@@ -387,7 +397,7 @@ export const history = new Elysia()
                       headers: {
                         'Content-Type': 'application/json',
                       },
-                      body: JSON.stringify({ jobIds }),
+                      body: JSON.stringify({ jobIds, csrfToken: '${csrfToken}' }),
                     });
 
                     if (!response.ok) {

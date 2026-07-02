@@ -60,7 +60,17 @@ const refreshData = async () => {
   const progressData = await fetchProgressJson();
 
   if (progressData && !progressData.error) {
-    const { jobId: jid, totalFiles, completedFiles, progress, files, status } = progressData;
+    const {
+      jobId: jid,
+      totalFiles,
+      completedFiles,
+      progress,
+      files,
+      status,
+      terminal,
+      successCount,
+      failedCount,
+    } = progressData;
 
     // 檢查新完成的檔案
     for (const file of files) {
@@ -79,7 +89,7 @@ const refreshData = async () => {
     updateProgressBar(completedFiles, totalFiles);
 
     // 如果完成
-    if (completedFiles === totalFiles && totalFiles > 0) {
+    if (terminal) {
       const elapsed = formatDuration(Date.now() - startTime);
       console.log(
         `✅ [Conversion Complete] Job ${jid} | All ${totalFiles} files converted | Total time: ${elapsed}`,

@@ -8,11 +8,12 @@
  */
 
 import { execSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 /** E2E 測試輸出目錄 */
-export const E2E_OUTPUT_DIR = "tests/e2e/output";
+export const E2E_OUTPUT_DIR = join(tmpdir(), `convertx-e2e-${process.pid}`);
 
 /** E2E 測試 fixtures 目錄 */
 export const E2E_FIXTURES_DIR = "tests/e2e/fixtures";
@@ -86,12 +87,29 @@ export function detectAvailableTools(): AvailableTools {
  * 清理並建立輸出目錄
  */
 export function setupOutputDir(subDir?: string): string {
-  const outputDir = subDir ? join(E2E_OUTPUT_DIR, subDir) : E2E_OUTPUT_DIR;
+  let outputDir = subDir ? join(E2E_OUTPUT_DIR, subDir) : E2E_OUTPUT_DIR;
 
   if (existsSync(outputDir)) {
     rmSync(outputDir, { recursive: true, force: true });
   }
-  mkdirSync(outputDir, { recursive: true });
+  const waitBuffer = new Int32Array(new SharedArrayBuffer(4));
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    try {
+      mkdirSync(outputDir, { recursive: true });
+      break;
+    } catch (error) {
+      // Some shared filesystems briefly report EEXIST while a recursive removal settles.
+      const code = error instanceof Error && "code" in error ? error.code : undefined;
+      if (code !== "EEXIST") throw error;
+      if (existsSync(outputDir) && statSync(outputDir).isDirectory()) break;
+      if (attempt === 49) {
+        outputDir = join(E2E_OUTPUT_DIR, `${subDir ?? "run"}-${process.pid}-${Date.now()}`);
+        mkdirSync(outputDir, { recursive: true });
+        break;
+      }
+      Atomics.wait(waitBuffer, 0, 0, 10);
+    }
+  }
 
   return outputDir;
 }

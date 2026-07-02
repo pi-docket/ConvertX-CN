@@ -57,6 +57,8 @@ const inferenceWebrootMeta = document.querySelector("meta[name='webroot']");
 const inferenceWebroot = inferenceWebrootMeta
   ? inferenceWebrootMeta.getAttribute("content") || ""
   : "";
+const inferenceCsrfToken =
+  document.querySelector("meta[name='csrf-token']")?.getAttribute("content") || "";
 
 // 狀態追蹤
 let inferenceEnabled = true;
@@ -188,6 +190,7 @@ async function logDismissEvent(inputExt, dismissedFormat, dismissedEngine) {
           input_ext: inputExt,
           dismissed_format: dismissedFormat,
           dismissed_engine: dismissedEngine,
+          csrf_token: inferenceCsrfToken,
         }),
       });
 
@@ -381,7 +384,6 @@ function handleSearchClear(inputExt) {
     logDismissEvent(inputExt, lastInferredToken, lastInferredEngine || undefined);
 
     // 取消預調用
-    cancelWarmup();
 
     console.log(`❌ User dismissed inference: ${lastInferredToken}`);
   }
@@ -401,7 +403,6 @@ function handleSearchClear(inputExt) {
 function handleManualInput() {
   if (isInferredValue) {
     // 使用者手動修改，取消預調用
-    cancelWarmup();
     isInferredValue = false;
 
     // 移除視覺提示

@@ -1,6 +1,14 @@
 import { execFile as execFileOriginal } from "node:child_process";
-import { mkdirSync, existsSync, readdirSync, unlinkSync, rmdirSync, copyFileSync } from "node:fs";
-import { join, basename, dirname } from "node:path";
+import {
+  mkdirSync,
+  existsSync,
+  readdirSync,
+  unlinkSync,
+  rmdirSync,
+  copyFileSync,
+  renameSync,
+} from "node:fs";
+import { join, basename, dirname, extname, resolve } from "node:path";
 import type { ExecFileFn } from "./types";
 
 /**
@@ -157,7 +165,9 @@ export const properties = {
     document: ["pdf"],
   },
   to: {
-    document: [...ALL_CHIPS] as string[],
+    document: ALL_CHIPS.filter(
+      (chip) => process.env.PDF_SIGNING_AVAILABLE === "true" || !chip.endsWith("-s"),
+    ) as string[],
   },
   // 某些 chip 輸出 .tar（images, all-*），其他輸出 .pdf
   // PDF Packager 不使用 outputMode，而是根據 chip 動態決定輸出類型
@@ -451,11 +461,12 @@ async function protectPdf(
  * 使用系統內建的 Python endesive 庫進行 PDF 數位簽章
  *
  * 預設配置（開箱即用）：
- *   - PDF_SIGN_P12_PATH: /app/certs/default.p12（內建自簽憑證）
- *   - PDF_SIGN_P12_PASSWORD: （空密碼）
+ *   - PDF_SIGN_P12_PATH: ${DATA_DIR}/certs/signing.p12（部署首次啟動產生的自簽憑證）
+ *   - PDF_SIGN_P12_PASSWORD_FILE: ${DATA_DIR}/certs/signing.password（隨機密碼）
  *
  * 自訂配置（使用自己的憑證）：
  *   - PDF_SIGN_P12_PATH: PKCS12 憑證檔案路徑
+ *   - PDF_SIGN_P12_PASSWORD_FILE: 密碼檔路徑（優先於 password env）
  *   - PDF_SIGN_P12_PASSWORD: PKCS12 憑證密碼（選用）
  *   - PDF_SIGN_REASON: 簽章原因（選用）
  *   - PDF_SIGN_LOCATION: 簽章地點（選用）
@@ -469,7 +480,8 @@ async function signPdf(inputPdf: string, outputPdf: string, execFile: ExecFileFn
   console.log(`[PDFPackager] ✍️ 執行 PDF 數位簽章`);
 
   // 使用預設憑證或自訂憑證
-  const p12Path = process.env.PDF_SIGN_P12_PATH || "/app/certs/default.p12";
+  const p12Path =
+    process.env.PDF_SIGN_P12_PATH || `${process.env.DATA_DIR || "./data"}/certs/signing.p12`;
 
   // 檢查憑證是否存在（僅在非測試環境檢查）
   if (!existsSync(p12Path) && process.env.NODE_ENV !== "test") {
@@ -497,7 +509,8 @@ async function signPdf(inputPdf: string, outputPdf: string, execFile: ExecFileFn
         "SIGNING_NOT_CONFIGURED: 數位簽章功能需要配置 PKCS12 憑證。\n" +
           "請設定以下環境變數：\n" +
           "  PDF_SIGN_P12_PATH=/path/to/certificate.p12\n" +
-          "  PDF_SIGN_P12_PASSWORD=your_password (選用)",
+          "  PDF_SIGN_P12_PASSWORD_FILE=/run/secrets/signing-password（建議）\n" +
+          "  PDF_SIGN_P12_PASSWORD=your_password（未使用密碼檔時選用）",
       );
     }
 
@@ -846,6 +859,17 @@ export async function convert(
         break;
       default:
         throw new Error(`INVALID_CHIP_KIND: 未知的 chip 類型`);
+    }
+
+    if (
+      extname(targetPath).toLocaleLowerCase() === extname(outputFile).toLocaleLowerCase() &&
+      resolve(outputFile) !== resolve(targetPath)
+    ) {
+      if (existsSync(targetPath)) {
+        throw new Error(`OUTPUT_EXISTS: Refusing to overwrite ${basename(targetPath)}`);
+      }
+      renameSync(outputFile, targetPath);
+      outputFile = targetPath;
     }
 
     console.log(``);

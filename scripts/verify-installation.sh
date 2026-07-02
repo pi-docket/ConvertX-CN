@@ -264,7 +264,8 @@ verify_pdf_signing() {
     echo "🔐 PDF 簽章"
     echo "=============================================="
     
-    check_file "/app/certs/default.p12" "預設憑證" "false"
+    check_command "openssl" "OpenSSL"
+    check_file "/opt/convertx/entrypoint.sh" "runtime certificate initializer" "true"
 }
 
 # ==============================================================================

@@ -117,7 +117,7 @@ describe("BabelDOC converter - config based CLI", () => {
 
       if (cmd === "tar") {
         expect(args[0]).toBe("-cf");
-        writeFileSync(args[1] as string, "mock archive");
+        writeFileSync(args[1] as string, "mock tar archive");
         callback(null, "Archive created", "");
       }
     };
@@ -182,7 +182,7 @@ describe("BabelDOC converter - config based CLI", () => {
       }
 
       if (cmd === "tar") {
-        writeFileSync(args[1] as string, "mock archive");
+        writeFileSync(args[1] as string, "mock tar archive");
         callback(null, "Archive created", "");
       }
     };
@@ -231,7 +231,7 @@ describe("BabelDOC converter - config based CLI", () => {
       }
 
       if (cmd === "tar") {
-        writeFileSync(args[1] as string, "mock archive");
+        writeFileSync(args[1] as string, "mock tar archive");
         callback(null, "Archive created", "");
       }
     };
@@ -289,7 +289,7 @@ describe("BabelDOC converter - config based CLI", () => {
         },
         mockExecFile,
       ),
-    ).rejects.toThrow("BabelDOC subprocess failed");
+    ).rejects.toThrow(/BabelDOC subprocess failed|BabelDOC translation failed/);
 
     expect(configPath.length).toBeGreaterThan(0);
     expect(existsSync(configPath)).toBe(false);
@@ -329,7 +329,7 @@ describe("BabelDOC converter - config based CLI", () => {
       }
 
       if (cmd === "tar") {
-        writeFileSync(args[1] as string, "mock archive");
+        writeFileSync(args[1] as string, "mock tar archive");
         callback(null, "Archive created", "");
       }
     };

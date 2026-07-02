@@ -1,42 +1,40 @@
 import { Elysia, t } from "elysia";
-import db from "../db/db";
-import { WEBROOT } from "../helpers/env";
-import { uploadsDir } from "../index";
+import { webActor } from "../application/actor";
+import { uploadService, UploadServiceError } from "../application/uploadService";
 import { userService } from "./user";
-import sanitize from "sanitize-filename";
 
 export const upload = new Elysia().use(userService).post(
   "/upload",
-  async ({ body, redirect, user, cookie: { jobId } }) => {
+  async ({ body, user, cookie: { jobId }, set }) => {
     if (!jobId?.value) {
-      return redirect(`${WEBROOT}/`, 302);
+      set.status = 400;
+      return { success: false, code: "NO_ACTIVE_JOB", message: "No active job session" };
     }
 
-    const existingJob = await db
-      .query("SELECT * FROM jobs WHERE id = ? AND user_id = ?")
-      .get(jobId.value, user.id);
-
-    if (!existingJob) {
-      return redirect(`${WEBROOT}/`, 302);
-    }
-
-    const userUploadsDir = `${uploadsDir}${user.id}/${jobId.value}/`;
-
-    if (body?.file) {
-      if (Array.isArray(body.file)) {
-        for (const file of body.file) {
-          const santizedFileName = sanitize(file.name);
-          await Bun.write(`${userUploadsDir}${santizedFileName}`, file);
+    try {
+      const actor = webActor(user.id);
+      const files = Array.isArray(body.file) ? body.file : [body.file];
+      const uploaded: string[] = [];
+      for (const file of files) {
+        const result = await uploadService.direct(actor, jobId.value, body.upload_id, file);
+        uploaded.push(file.name);
+        if (!result.success) {
+          throw new UploadServiceError("INVALID_FILE_SIZE", result.message);
         }
-      } else {
-        const santizedFileName = sanitize(body.file["name"]);
-        await Bun.write(`${userUploadsDir}${santizedFileName}`, body.file);
       }
+      return { success: true, message: "Files uploaded successfully.", files: uploaded };
+    } catch (error) {
+      if (error instanceof UploadServiceError) {
+        set.status = error.status;
+        return { success: false, code: error.code, message: error.message };
+      }
+      console.error("Direct upload failed:", error);
+      set.status = 500;
+      return { success: false, code: "UPLOAD_FAILED", message: "Upload failed" };
     }
-
-    return {
-      message: "Files uploaded successfully.",
-    };
   },
-  { body: t.Object({ file: t.Files() }), auth: true },
+  {
+    body: t.Object({ upload_id: t.String(), file: t.File() }, { additionalProperties: false }),
+    auth: true,
+  },
 );

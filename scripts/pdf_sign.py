@@ -6,6 +6,7 @@ PDF 數位簽章腳本
 
 環境變數：
   - PDF_SIGN_P12_PATH: PKCS12 憑證檔案路徑（必須）
+  - PDF_SIGN_P12_PASSWORD_FILE: PKCS12 密碼檔路徑（優先）
   - PDF_SIGN_P12_PASSWORD: PKCS12 憑證密碼（選用，預設為空）
   - PDF_SIGN_REASON: 簽章原因（選用）
   - PDF_SIGN_LOCATION: 簽章地點（選用）
@@ -36,15 +37,21 @@ def main():
     output_pdf = sys.argv[2]
 
     # 檢查環境變數（支援預設憑證）
-    p12_path = os.environ.get("PDF_SIGN_P12_PATH", "/app/certs/default.p12")
-    p12_password = os.environ.get("PDF_SIGN_P12_PASSWORD", "")
+    data_dir = os.environ.get("DATA_DIR", "./data")
+    p12_path = os.environ.get("PDF_SIGN_P12_PATH", os.path.join(data_dir, "certs", "signing.p12"))
+    password_file = os.environ.get("PDF_SIGN_P12_PASSWORD_FILE", "")
+    if password_file:
+        with open(password_file, "r", encoding="utf-8") as password_handle:
+            p12_password = password_handle.read().strip()
+    else:
+        p12_password = os.environ.get("PDF_SIGN_P12_PASSWORD", "")
     sign_reason = os.environ.get("PDF_SIGN_REASON", "ConvertX-CN PDF Packager")
     sign_location = os.environ.get("PDF_SIGN_LOCATION", "ConvertX-CN")
     sign_contact = os.environ.get("PDF_SIGN_CONTACT", "")
 
     if not os.path.exists(p12_path):
         print(f"錯誤: 憑證檔案不存在: {p12_path}", file=sys.stderr)
-        print("提示: Docker 環境預設使用 /app/certs/default.p12", file=sys.stderr)
+        print("提示: Docker 環境預設使用 ${DATA_DIR}/certs/signing.p12", file=sys.stderr)
         print("      如需使用自訂憑證，請設定 PDF_SIGN_P12_PATH 環境變數", file=sys.stderr)
         sys.exit(2)
 

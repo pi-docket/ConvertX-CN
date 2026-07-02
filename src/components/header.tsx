@@ -15,6 +15,7 @@ export const Header = ({
   webroot = "",
   locale = defaultLocale,
   t = createTranslator(defaultLocale),
+  csrfToken,
 }: {
   loggedIn?: boolean;
   accountRegistration?: boolean;
@@ -23,6 +24,7 @@ export const Header = ({
   webroot?: string;
   locale?: SupportedLocale;
   t?: Translator;
+  csrfToken?: string;
 }) => {
   let rightNav: JSX.Element;
   if (loggedIn) {
@@ -58,16 +60,16 @@ export const Header = ({
         ) : null}
         {!allowUnauthenticated ? (
           <li>
-            <a
-              class={`
-                text-accent-600 transition-all
-                hover:text-accent-500 hover:underline
-              `}
-              href={`${webroot}/logoff`}
-              safe
-            >
-              {t("nav", "logout")}
-            </a>
+            <form method="post" action={`${webroot}/logoff`}>
+              <input type="hidden" name="csrfToken" value={csrfToken ?? ""} />
+              <button
+                type="submit"
+                class="text-accent-600 transition-all hover:text-accent-500 hover:underline"
+                safe
+              >
+                {t("nav", "logout")}
+              </button>
+            </form>
           </li>
         ) : null}
         <li>

@@ -42,7 +42,7 @@ describe("PDFMathTranslate converter - Chinese translation", () => {
 
   afterEach(() => {
     if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+      rmSync(testDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
     }
   });
 
@@ -61,12 +61,12 @@ describe("PDFMathTranslate converter - Chinese translation", () => {
           "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
           "",
         );
-      } else if (cmd === "pdf2zh") {
+      } else if (cmd === "pdf2zh_next") {
         pdf2zhCalled = true;
         pdf2zhArgs = args;
 
         // Simulate pdf2zh creating output files
-        const outputDirIndex = args.indexOf("-o");
+        const outputDirIndex = args.indexOf("--output");
         if (outputDirIndex !== -1 && args[outputDirIndex + 1]) {
           const outputDir = args[outputDirIndex + 1];
           if (!existsSync(outputDir)) {
@@ -90,10 +90,10 @@ describe("PDFMathTranslate converter - Chinese translation", () => {
     await convert(testInputFile, "pdf", "pdf-zh", targetPath, undefined, mockExecFile);
 
     expect(pdf2zhCalled).toBe(true);
-    expect(pdf2zhArgs).toContain("-lo");
+    expect(pdf2zhArgs).toContain("--lang-out");
     expect(pdf2zhArgs).toContain("zh-CN"); // zh is normalized to zh-CN
-    expect(pdf2zhArgs).toContain("-o");
-    expect(pdf2zhArgs).toContain("-s"); // Translation service
+    expect(pdf2zhArgs).toContain("--output");
+    expect(pdf2zhArgs).toContain("--google"); // Translation service
   });
 });
 
@@ -110,7 +110,7 @@ describe("PDFMathTranslate converter - English translation", () => {
 
   afterEach(() => {
     if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+      rmSync(testDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
     }
   });
 
@@ -128,9 +128,9 @@ describe("PDFMathTranslate converter - English translation", () => {
           "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
           "",
         );
-      } else if (cmd === "pdf2zh") {
+      } else if (cmd === "pdf2zh_next") {
         pdf2zhArgs = args;
-        const outputDirIndex = args.indexOf("-o");
+        const outputDirIndex = args.indexOf("--output");
         if (outputDirIndex !== -1 && args[outputDirIndex + 1]) {
           const outputDir = args[outputDirIndex + 1];
           if (!existsSync(outputDir)) {
@@ -147,7 +147,7 @@ describe("PDFMathTranslate converter - English translation", () => {
     const targetPath = join(testDir, "output.tar");
     await convert(testInputFile, "pdf", "pdf-en", targetPath, undefined, mockExecFile);
 
-    expect(pdf2zhArgs).toContain("-lo");
+    expect(pdf2zhArgs).toContain("--lang-out");
     expect(pdf2zhArgs).toContain("en");
   });
 });
@@ -165,7 +165,7 @@ describe("PDFMathTranslate converter - Japanese translation", () => {
 
   afterEach(() => {
     if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+      rmSync(testDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
     }
   });
 
@@ -183,9 +183,9 @@ describe("PDFMathTranslate converter - Japanese translation", () => {
           "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
           "",
         );
-      } else if (cmd === "pdf2zh") {
+      } else if (cmd === "pdf2zh_next") {
         pdf2zhArgs = args;
-        const outputDirIndex = args.indexOf("-o");
+        const outputDirIndex = args.indexOf("--output");
         if (outputDirIndex !== -1 && args[outputDirIndex + 1]) {
           const outputDir = args[outputDirIndex + 1];
           if (!existsSync(outputDir)) {
@@ -202,7 +202,7 @@ describe("PDFMathTranslate converter - Japanese translation", () => {
     const targetPath = join(testDir, "output.tar");
     await convert(testInputFile, "pdf", "pdf-ja", targetPath, undefined, mockExecFile);
 
-    expect(pdf2zhArgs).toContain("-lo");
+    expect(pdf2zhArgs).toContain("--lang-out");
     expect(pdf2zhArgs).toContain("ja");
   });
 });
@@ -220,7 +220,7 @@ describe("PDFMathTranslate converter - Traditional Chinese", () => {
 
   afterEach(() => {
     if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+      rmSync(testDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
     }
   });
 
@@ -238,9 +238,9 @@ describe("PDFMathTranslate converter - Traditional Chinese", () => {
           "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
           "",
         );
-      } else if (cmd === "pdf2zh") {
+      } else if (cmd === "pdf2zh_next") {
         pdf2zhArgs = args;
-        const outputDirIndex = args.indexOf("-o");
+        const outputDirIndex = args.indexOf("--output");
         if (outputDirIndex !== -1 && args[outputDirIndex + 1]) {
           const outputDir = args[outputDirIndex + 1];
           if (!existsSync(outputDir)) {
@@ -257,7 +257,7 @@ describe("PDFMathTranslate converter - Traditional Chinese", () => {
     const targetPath = join(testDir, "output.tar");
     await convert(testInputFile, "pdf", "pdf-zh-TW", targetPath, undefined, mockExecFile);
 
-    expect(pdf2zhArgs).toContain("-lo");
+    expect(pdf2zhArgs).toContain("--lang-out");
     expect(pdf2zhArgs).toContain("zh-TW");
   });
 });
@@ -275,7 +275,7 @@ describe("PDFMathTranslate converter - Output structure", () => {
 
   afterEach(() => {
     if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+      rmSync(testDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
     }
   });
 
@@ -294,8 +294,8 @@ describe("PDFMathTranslate converter - Output structure", () => {
           "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
           "",
         );
-      } else if (cmd === "pdf2zh") {
-        const outputDirIndex = args.indexOf("-o");
+      } else if (cmd === "pdf2zh_next") {
+        const outputDirIndex = args.indexOf("--output");
         if (outputDirIndex !== -1 && args[outputDirIndex + 1]) {
           const outputDir = args[outputDirIndex + 1];
           if (!existsSync(outputDir)) {
@@ -344,8 +344,8 @@ describe("PDFMathTranslate converter - Output structure", () => {
           "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
           "",
         );
-      } else if (cmd === "pdf2zh") {
-        const outputDirIndex = args.indexOf("-o");
+      } else if (cmd === "pdf2zh_next") {
+        const outputDirIndex = args.indexOf("--output");
         if (outputDirIndex !== -1 && args[outputDirIndex + 1]) {
           const outputDir = args[outputDirIndex + 1];
           if (!existsSync(outputDir)) {
@@ -376,7 +376,7 @@ describe("PDFMathTranslate converter - Output structure", () => {
 });
 
 describe("PDFMathTranslate converter - Error handling", () => {
-  const testDir = "./test-output-pdfmathtranslate-error";
+  const testDir = "./test-output-pdfmathtranslate-error-runtime";
   const testInputFile = join(testDir, "input.pdf");
 
   beforeEach(() => {
@@ -388,7 +388,7 @@ describe("PDFMathTranslate converter - Error handling", () => {
 
   afterEach(() => {
     if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+      rmSync(testDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
     }
   });
 
@@ -404,7 +404,7 @@ describe("PDFMathTranslate converter - Error handling", () => {
           "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
           "",
         );
-      } else if (cmd === "pdf2zh") {
+      } else if (cmd === "pdf2zh_next") {
         const error = new Error("Translation failed") as ExecFileException;
         callback(error, "", "Error: Translation service unavailable");
       }
@@ -429,7 +429,7 @@ describe("PDFMathTranslate converter - Error handling", () => {
           "This is a comprehensive test PDF with more than enough text content to ensure that the OCR detection threshold of 100 characters is exceeded and the PDF is not treated as a scanned document requiring OCR processing.",
           "",
         );
-      } else if (cmd === "pdf2zh") {
+      } else if (cmd === "pdf2zh_next") {
         // Don't create any output files
         callback(null, "Complete", "");
       } else if (cmd === "tar") {

@@ -77,7 +77,8 @@ describe("API Structure", () => {
   test("轉換器模組應該能正確載入", async () => {
     const converters = await import("../../src/converters/main");
     expect(converters).toBeDefined();
-    expect(converters.handleConvert).toBeInstanceOf(Function);
+    expect(converters.mainConverter).toBeInstanceOf(Function);
+    expect(converters.getConversionOutputFileName).toBeInstanceOf(Function);
   });
 
   test("資料庫模組應該能正確載入", async () => {
@@ -220,8 +221,8 @@ describe("Transfer Module", () => {
   });
 
   test("Upload Manager 應該能正確載入", async () => {
-    const uploadManager = await import("../../src/transfer/uploadManager");
-    expect(uploadManager).toBeDefined();
+    const uploadService = await import("../../src/application/uploadService");
+    expect(uploadService.UploadService).toBeDefined();
   });
 
   test("Download Manager 應該能正確載入", async () => {

@@ -2,5 +2,4 @@
 bun = "1.3.6"
 
 [env]
-JWT_SECRET = "aLongAndSecretStringUsedToSignTheJSONWebToken1234"
 FFMPEG_OUTPUT_ARGS = "-preset veryfast -threads 2"

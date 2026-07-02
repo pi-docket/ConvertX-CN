@@ -19,6 +19,35 @@ export const WEBROOT = process.env.WEBROOT ?? "";
 
 export const LANGUAGE = process.env.LANGUAGE?.toLowerCase() || "en";
 
+export const DATA_DIR = process.env.DATA_DIR?.trim() || "./data";
+
+const DEFAULT_HTTP_ALLOWED_FILE_SIZE = 500 * 1024 * 1024;
+
+function parsePositiveIntegerEnv(name: string, fallback: number): number {
+  const raw = process.env[name]?.trim();
+  if (!raw) return fallback;
+
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value) || value <= 0) {
+    throw new Error(`${name} must be a positive integer number of bytes`);
+  }
+  return value;
+}
+
+export const HTTP_ALLOWED_FILE_SIZE = parsePositiveIntegerEnv(
+  "HTTP_ALLOWED_FILE_SIZE",
+  DEFAULT_HTTP_ALLOWED_FILE_SIZE,
+);
+
+export const MAX_FILES_PER_JOB = parsePositiveIntegerEnv("MAX_FILES_PER_JOB", 100);
+export const MAX_UPLOAD_SESSIONS_PER_USER = parsePositiveIntegerEnv(
+  "MAX_UPLOAD_SESSIONS_PER_USER",
+  100,
+);
+
+export const JWT_SECRET_FILE =
+  process.env.JWT_SECRET_FILE?.trim() || `${DATA_DIR}/.secrets/jwt-secret`;
+
 export const MAX_CONVERT_PROCESS =
   process.env.MAX_CONVERT_PROCESS && Number(process.env.MAX_CONVERT_PROCESS) > 0
     ? Number(process.env.MAX_CONVERT_PROCESS)

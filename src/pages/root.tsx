@@ -1,4 +1,5 @@
 import { randomInt } from "node:crypto";
+import { version } from "../../package.json";
 import { JWTPayloadSpec } from "@elysiajs/jwt";
 import { Elysia, t } from "elysia";
 import { BaseHtml } from "../components/base";
@@ -15,16 +16,21 @@ import {
   WEBROOT,
 } from "../helpers/env";
 import { localeService } from "../i18n/service";
-import { FIRST_RUN, userService } from "./user";
+import { ensureCsrfToken } from "../helpers/csrf";
+import { jobService } from "../application/jobService";
+import { webActor } from "../application/actor";
+import { isFirstRun, userService } from "./user";
+
+const scriptVersion = `${version}-${Bun.file("public/script.js").lastModified}`;
 
 export const root = new Elysia()
   .use(userService)
   .use(localeService)
   .get(
     "/",
-    async ({ jwt, redirect, cookie: { auth, jobId }, locale, t }) => {
+    async ({ jwt, redirect, cookie: { auth, jobId, csrf }, locale, t }) => {
       if (!ALLOW_UNAUTHENTICATED) {
-        if (FIRST_RUN) {
+        if (isFirstRun()) {
           return redirect(`${WEBROOT}/setup`, 302);
         }
 
@@ -36,30 +42,26 @@ export const root = new Elysia()
       // validate jwt
       let user: ({ id: string } & JWTPayloadSpec) | false = false;
       if (ALLOW_UNAUTHENTICATED) {
-        const newUserId = String(
-          UNAUTHENTICATED_USER_SHARING
-            ? 0
-            : randomInt(2 ** 24, Math.min(2 ** 48 + 2 ** 24 - 1, Number.MAX_SAFE_INTEGER)),
-        );
-        const accessToken = await jwt.sign({
-          id: newUserId,
-        });
-
-        user = { id: newUserId };
-        if (!auth) {
-          return {
-            message: t("auth", "noCookies"),
-          };
+        user = auth?.value ? await jwt.verify(auth.value) : false;
+        if (user === false || !user.id) {
+          const newUserId = String(
+            UNAUTHENTICATED_USER_SHARING
+              ? 0
+              : randomInt(2 ** 24, Math.min(2 ** 48 + 2 ** 24 - 1, Number.MAX_SAFE_INTEGER)),
+          );
+          const accessToken = await jwt.sign({ id: newUserId });
+          user = { id: newUserId };
+          if (!auth) {
+            return { message: t("auth", "noCookies") };
+          }
+          auth.set({
+            value: accessToken,
+            httpOnly: true,
+            secure: !HTTP_ALLOWED,
+            maxAge: 24 * 60 * 60,
+            sameSite: "strict",
+          });
         }
-
-        // set cookie
-        auth.set({
-          value: accessToken,
-          httpOnly: true,
-          secure: !HTTP_ALLOWED,
-          maxAge: 24 * 60 * 60,
-          sameSite: "strict",
-        });
       } else if (auth?.value) {
         user = await jwt.verify(auth.value);
 
@@ -84,15 +86,17 @@ export const root = new Elysia()
         return redirect(`${WEBROOT}/login`, 302);
       }
 
-      // create a new job
-      db.query("INSERT INTO jobs (user_id, date_created) VALUES (?, ?)").run(
-        user.id,
-        new Date().toISOString(),
-      );
-
-      const { id } = db
-        .query("SELECT id FROM jobs WHERE user_id = ? ORDER BY id DESC")
-        .get(user.id) as { id: number };
+      const actor = webActor(user.id);
+      let id: number | undefined;
+      if (jobId?.value) {
+        try {
+          const existingJob = jobService.getOwnedJob(actor, jobId.value);
+          if (existingJob?.status === "pending") id = Number(existingJob.id);
+        } catch {
+          // Invalid or cross-owner cookies are replaced with a fresh pending job.
+        }
+      }
+      id ??= jobService.create(actor);
 
       if (!jobId) {
         return { message: t("auth", "cookiesRequired") };
@@ -108,8 +112,9 @@ export const root = new Elysia()
 
       console.log("jobId set to:", id);
 
+      const csrfToken = ensureCsrfToken(csrf);
       return (
-        <BaseHtml webroot={WEBROOT} locale={locale}>
+        <BaseHtml webroot={WEBROOT} locale={locale} csrfToken={csrfToken}>
           <>
             <Header
               webroot={WEBROOT}
@@ -119,6 +124,7 @@ export const root = new Elysia()
               loggedIn
               locale={locale}
               t={t}
+              csrfToken={csrfToken}
             />
             <main
               class={`
@@ -245,6 +251,11 @@ export const root = new Elysia()
                               safe
                             >
                               {target}
+                              {converter === "PDF Packager" &&
+                              target.endsWith("-s") &&
+                              process.env.PDF_SIGN_SELF_SIGNED === "true"
+                                ? t("convert", "selfSignedNotice")
+                                : ""}
                             </button>
                           ))}
                         </ul>
@@ -262,6 +273,11 @@ export const root = new Elysia()
                         {targets.map((target) => (
                           <option value={`${target},${converter}`} safe>
                             {target}
+                            {converter === "PDF Packager" &&
+                            target.endsWith("-s") &&
+                            process.env.PDF_SIGN_SELF_SIGNED === "true"
+                              ? t("convert", "selfSignedNotice")
+                              : ""}
                           </option>
                         ))}
                       </optgroup>
@@ -288,7 +304,7 @@ export const root = new Elysia()
                 </div>
               </form>
             </main>
-            <script src="script.js" defer />
+            <script src={`${WEBROOT}/script.js?v=${scriptVersion}`} defer />
           </>
         </BaseHtml>
       );
@@ -298,6 +314,7 @@ export const root = new Elysia()
         auth: t.Optional(t.String()),
         jobId: t.Optional(t.String()),
         locale: t.Optional(t.String()),
+        csrf: t.Optional(t.String()),
       }),
     },
   );

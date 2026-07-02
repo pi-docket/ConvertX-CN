@@ -35,8 +35,6 @@ export const ALLOWED_ARCHIVE_FORMAT = ".tar";
 /**
  * TRA 封裝格式（ConvertX-CN 標準多輸出封裝）
  */
-export const TRA_FORMAT = ".tra";
-
 /**
  * 禁止的封裝格式
  */
