@@ -5,6 +5,7 @@ import { Header } from "../components/header";
 import { Filename, Jobs } from "../db/types";
 import { webActor } from "../application/actor";
 import { jobService } from "../application/jobService";
+import { buildDownloadUrl } from "../helpers/buildDownloadUrl";
 import { ensureCsrfToken } from "../helpers/csrf";
 import { ALLOW_UNAUTHENTICATED, WEBROOT } from "../helpers/env";
 import { DownloadIcon } from "../icons/download";
@@ -95,7 +96,8 @@ export function ResultsArticle({
           {files.map((file) => {
             const isTarFile = file.output_file_name.endsWith(".tar");
             const downloadable = file.status === "completed";
-            const downloadHref = `${WEBROOT}/download/${encodeURIComponent(String(job.user_id))}/${encodeURIComponent(String(job.id))}/${encodeURIComponent(file.output_file_name)}`;
+            const outputPath = `${encodeURIComponent(String(job.user_id))}/${encodeURIComponent(String(job.id))}/`;
+            const downloadHref = buildDownloadUrl(WEBROOT, outputPath, file.output_file_name);
             return (
               <tr style="border-bottom: 1px solid var(--glass-divider);">
                 <td class="table-cell-padding px-2 sm:px-4" title={file.output_file_name} safe>
