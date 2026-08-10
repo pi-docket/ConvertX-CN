@@ -482,10 +482,10 @@ RUN set -ex && \
 # 4.10.1 Calibre 官方二進制安裝
 # 📦 版本 9.4.0 - 2026-02 官方最新穩定版（比 9.2.1 新）
 # 💡 v9.4 新功能：改進 EPUB 轉換、更好的 DOCX 支援
-# 🔗 https://github.com/kovidgoyal/calibre/releases/tag/v9.4.0
+# 🔗 https://github.com/kovidgoyal/calibre/releases/tag/v9.13.0
 # ⚠️注意：官方 binary 自帶所有依賴，不依賴系統 libxml2 ABI
 # ⚠️重要：Calibre 的 ebook-convert 在 PDF 生成時需要 QtWebEngine runtime 依賴
-ARG CALIBRE_VERSION=9.4.0
+ARG CALIBRE_VERSION=9.13.0
 RUN set -ex && \
   apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
