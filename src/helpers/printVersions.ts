@@ -68,10 +68,10 @@ const tools = [
     formatter: (s: string) => s.split("\n")[0],
   },
   {
-    cmd: "dasel --version",
+    cmd: "dasel version",
     name: "dasel",
     errorMsg: "dasel is not installed.",
-    formatter: (s: string) => s.split("\n")[0],
+    formatter: (s: string) => `dasel ${s.split("\n")[0]}`,
   },
   {
     cmd: "xelatex -version",
@@ -116,12 +116,11 @@ const tools = [
     formatter: (s: string) => s.split("\n")[0],
   },
   {
-    cmd: "which msgconvert && dpkg -l libemail-outlook-message-perl | tail -1 | awk '{print $3}'",
+    cmd: "perl -MEmail::Outlook::Message -e 'print $Email::Outlook::Message::VERSION'",
     name: "msgconvert",
     errorMsg: "msgconvert (libemail-outlook-message-perl) is not installed",
     formatter: (s: string) => {
-      const lines = s.split("\n").filter((l) => l.trim());
-      return `msgconvert v${lines[lines.length - 1] || "unknown"}`;
+      return `msgconvert v${s.split("\n")[0] || "unknown"}`;
     },
   },
   {

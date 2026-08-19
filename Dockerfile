@@ -462,7 +462,8 @@ RUN set -ex && \
 ARG PANDOC_VERSION=3.8.3
 RUN set -ex && \
   apt-get update --fix-missing && \
-  apt-get install -y --no-install-recommends libemail-outlook-message-perl && \
+  apt-get install -y --no-install-recommends \
+  libemail-address-perl libemail-outlook-message-perl && \
   rm -rf /var/lib/apt/lists/* && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
