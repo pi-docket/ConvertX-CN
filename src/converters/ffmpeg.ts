@@ -1,5 +1,8 @@
-import { execFile as execFileOriginal } from "node:child_process";
-import { ExecFileFn } from "./types";
+import {
+  execFile as execFileOriginal,
+  type ChildProcess,
+  type ExecFileOptions,
+} from "node:child_process";
 import {
   isImageOutput,
   isSequenceOutput,
@@ -7,6 +10,20 @@ import {
   getPixelFormatArgs,
   validateFFmpegArgs,
 } from "../transfer";
+
+// ffmpeg streams continuous progress to stderr, so a long conversion overflows
+// execFile's 1 MB default maxBuffer and fails with "stderr maxBuffer length
+// exceeded" (issue #565). Raise it well above that. The options object must be
+// passed before the callback: execFile ignores an options argument placed after
+// the callback, which is why the shared ExecFileFn type cannot carry it.
+const FFMPEG_MAX_BUFFER = 1024 * 1024 * 64; // 64 MB
+
+type FfmpegExecFile = (
+  cmd: string,
+  args: string[],
+  options: ExecFileOptions,
+  callback: (err: Error | null, stdout: string, stderr: string) => void,
+) => ChildProcess | void;
 
 /**
  * FFmpeg 7.1.1 轉換器
@@ -721,7 +738,7 @@ export async function convert(
   convertTo: string,
   targetPath: string,
   options?: unknown,
-  execFile: ExecFileFn = execFileOriginal, // to make it mockable
+  execFile: FfmpegExecFile = execFileOriginal as FfmpegExecFile, // to make it mockable
 ): Promise<string> {
   let extraArgs: string[] = [];
   let message = "Done";
@@ -803,27 +820,32 @@ export async function convert(
   }
 
   return new Promise((resolve, reject) => {
-    execFile("ffmpeg", finalArgs, (error, stdout, stderr) => {
-      if (error) {
-        reject(`error: ${error}`);
-      }
-
-      if (stdout) {
-        console.log(`stdout: ${stdout}`);
-      }
-
-      if (stderr) {
-        // 過濾已知的 deprecated warning
-        const filteredStderr = stderr
-          .split("\n")
-          .filter((line) => !line.includes("deprecated pixel format"))
-          .join("\n");
-        if (filteredStderr.trim()) {
-          console.error(`stderr: ${filteredStderr}`);
+    execFile(
+      "ffmpeg",
+      finalArgs,
+      { maxBuffer: FFMPEG_MAX_BUFFER },
+      (error, stdout, stderr) => {
+        if (error) {
+          reject(`error: ${error}`);
         }
-      }
 
-      resolve(message);
-    });
+        if (stdout) {
+          console.log(`stdout: ${stdout}`);
+        }
+
+        if (stderr) {
+          // 過濾已知的 deprecated warning
+          const filteredStderr = stderr
+            .split("\n")
+            .filter((line) => !line.includes("deprecated pixel format"))
+            .join("\n");
+          if (filteredStderr.trim()) {
+            console.error(`stderr: ${filteredStderr}`);
+          }
+        }
+
+        resolve(message);
+      },
+    );
   });
 }
