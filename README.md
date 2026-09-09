@@ -14,7 +14,7 @@ ConvertX-CN 是一个以 Docker 为主要交付方式的文件转换服务，提
 ## 主要特色
 
 - 支持多类文件转换：影音、图片、文档、电子书、PDF、OCR、向量图、3D 模型与结构化数据。
-- 内置多种转换引擎，包括 FFmpeg、ImageMagick、GraphicsMagick、libvips、LibreOffice、Pandoc、Calibre、Inkscape、PDFMathTranslate、BabelDOC、MinerU、OCRmyPDF 等。
+- 内置多种转换引擎，包括 FFmpeg、ImageMagick、GraphicsMagick、libvips、LibreOffice、Pandoc、Calibre、Inkscape、pdftops、PDFMathTranslate、MinerU、OCRmyPDF 等。
 - 提供 Web UI，支持用户登录、上传、转换、下载和历史记录。
 - 提供 Lite / Standard / Full 映像选择，便于在镜像体积与功能完整度之间取舍。
 - 提供可选 API Server，用于 REST API、JWT 鉴权与任务式转换流程；该部分仍可能重构。
