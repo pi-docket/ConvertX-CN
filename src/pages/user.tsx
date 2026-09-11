@@ -1,4 +1,3 @@
-import { jwt } from "@elysiajs/jwt";
 import { Elysia, t } from "elysia";
 import { BaseHtml } from "../components/base";
 import { Header } from "../components/header";
@@ -14,9 +13,11 @@ import {
   WEBROOT,
 } from "../helpers/env";
 import { localeService } from "../i18n/service";
+import { userService } from "../services/user";
+
+export { userService } from "../services/user";
 
 import { ensureCsrfToken, verifyCsrf } from "../helpers/csrf";
-import { JWT_SECRET } from "../helpers/jwtSecret";
 
 export function isFirstRun(): boolean {
   return db.query("SELECT id FROM users LIMIT 1").get() === null;
@@ -45,62 +46,6 @@ function getCookieOptions() {
     path: WEBROOT || "/",
   };
 }
-
-export const userService = new Elysia({ name: "user/service" })
-  .use(
-    jwt({
-      name: "jwt",
-      schema: t.Object({
-        id: t.String(),
-      }),
-      secret: JWT_SECRET,
-      exp: "7d",
-    }),
-  )
-  .model({
-    signIn: t.Object({
-      csrfToken: t.String({ minLength: 16, maxLength: 256 }),
-      email: t.String({ format: "email", minLength: 3, maxLength: 254 }),
-      password: t.String({ minLength: 1, maxLength: 128 }),
-    }),
-    registration: t.Object({
-      csrfToken: t.String({ minLength: 16, maxLength: 256 }),
-      email: t.String({ format: "email", minLength: 3, maxLength: 254 }),
-      password: t.String({ minLength: 8, maxLength: 128 }),
-    }),
-    session: t.Cookie({
-      csrf: t.Optional(t.String()),
-      auth: t.String(),
-      jobId: t.Optional(t.String()),
-    }),
-    optionalSession: t.Cookie({
-      csrf: t.Optional(t.String()),
-      auth: t.Optional(t.String()),
-      jobId: t.Optional(t.String()),
-    }),
-  })
-  .macro("auth", {
-    cookie: "session",
-    async resolve({ status, jwt, cookie: { auth } }) {
-      if (!auth.value) {
-        return status(401, {
-          success: false,
-          message: "Unauthorized",
-        });
-      }
-      const user = await jwt.verify(auth.value);
-      if (!user) {
-        return status(401, {
-          success: false,
-          message: "Unauthorized",
-        });
-      }
-      return {
-        success: true,
-        user,
-      };
-    },
-  });
 
 export const user = new Elysia()
   .use(userService)
