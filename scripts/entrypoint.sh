@@ -5,6 +5,17 @@ DATA_DIR="${DATA_DIR:-/app/data}"
 CERT_DIR="$DATA_DIR/certs"
 APP_USER="convertx"
 
+validate_numeric_env() {
+  name="$1"
+  value="$2"
+  case "$value" in
+    ""|*[!0-9]*)
+      echo "[FATAL] $name must be a numeric integer." >&2
+      exit 1
+      ;;
+  esac
+}
+
 read_password() {
   if [ -n "${PDF_SIGN_P12_PASSWORD_FILE:-}" ]; then
     [ -r "$PDF_SIGN_P12_PASSWORD_FILE" ] || { echo "[FATAL] PDF_SIGN_P12_PASSWORD_FILE is not readable" >&2; exit 1; }
@@ -85,15 +96,40 @@ validate_signing() {
 }
 
 if [ "$(id -u)" = "0" ]; then
+  if [ -n "${PGID:-}" ] && [ -z "${PUID:-}" ]; then
+    echo "[FATAL] PGID requires PUID to be set." >&2
+    exit 1
+  fi
+  if [ -n "${PUID:-}" ]; then
+    validate_numeric_env "PUID" "$PUID"
+    runtime_uid="$PUID"
+    runtime_gid="${PGID:-$PUID}"
+    validate_numeric_env "PGID" "$runtime_gid"
+    umask "${UMASK:-002}"
+  else
+    runtime_uid="$(id -u "$APP_USER")"
+    runtime_gid="$(id -g "$APP_USER")"
+    if [ -n "${UMASK:-}" ]; then
+      umask "$UMASK"
+    fi
+  fi
+
+  if [ "$runtime_gid" != "$(id -g "$APP_USER")" ]; then
+    groupmod -o -g "$runtime_gid" "$APP_USER"
+  fi
+  if [ "$runtime_uid" != "$(id -u "$APP_USER")" ]; then
+    usermod -o -u "$runtime_uid" "$APP_USER"
+  fi
+
   mkdir -p "$DATA_DIR"
   marker="$DATA_DIR/.permissions-v1"
   if [ ! -e "$marker" ]; then
-    chown -R 10001:10001 "$DATA_DIR"
+    chown -R "$runtime_uid:$runtime_gid" "$DATA_DIR"
     : > "$marker"
-    chown 10001:10001 "$marker"
+    chown "$runtime_uid:$runtime_gid" "$marker"
   fi
   prepare_signing
-  chown -R 10001:10001 "$CERT_DIR" 2>/dev/null || true
+  chown -R "$runtime_uid:$runtime_gid" "$CERT_DIR" /home/convertx 2>/dev/null || true
   exec gosu "$APP_USER" "$0" "$@"
 fi
 

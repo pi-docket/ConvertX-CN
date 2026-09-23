@@ -65,10 +65,14 @@ docker run -d \
   --name convertx-cn \
   --restart unless-stopped \
   -p 3000:3000 \
+  -e PUID=1000 \
+  -e PGID=1000 \
   -v ./data:/app/data \
   --env-file .env \
   convertx/convertx-cn:latest
 ```
+
+`PUID` / `PGID` 可选，用于让容器内进程使用指定宿主机 UID/GID 访问挂载的 `./data`；通常设置为 `id -u` 和 `id -g` 的输出。需要调整新文件权限时可同时设置 `UMASK`。
 
 ## 在线演示(正在維護)
 
