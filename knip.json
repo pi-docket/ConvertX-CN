@@ -16,8 +16,7 @@
     "src/helpers/apiKeys.ts",
     "src/helpers/env.ts",
     "src/db/types.ts",
-    "src/ai/**",
-    "src/security/**"
+    "src/ai/**"
   ],
   "ignoreDependencies": [],
   "ignoreExportsUsedInFile": true

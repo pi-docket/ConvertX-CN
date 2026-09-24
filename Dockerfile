@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN 官方 Docker Image
-# 版本：v0.1.26 - CPU-only 輕量版
+# 版本：v0.1.27 - CPU-only 輕量版
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -48,7 +48,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN - 完全離線化檔案轉換服務"
-LABEL org.opencontainers.image.version="v0.1.26"
+LABEL org.opencontainers.image.version="v0.1.27"
 WORKDIR /app
 
 # 設定非互動模式

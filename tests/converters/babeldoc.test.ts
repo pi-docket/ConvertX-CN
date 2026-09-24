@@ -2,7 +2,7 @@ import { test, expect, describe, beforeEach, afterEach } from "bun:test";
 import { convert, properties } from "../../src/converters/babeldoc";
 import type { ExecFileException } from "node:child_process";
 import { type ExecFileFn } from "../../src/converters/types";
-import { mkdirSync, existsSync, writeFileSync, rmSync, readFileSync } from "node:fs";
+import { mkdirSync, existsSync, writeFileSync, rmSync, readFileSync, statSync } from "node:fs";
 import { join, dirname, basename } from "node:path";
 
 test.skip("dummy - required to trigger test detection", () => {});
@@ -31,6 +31,40 @@ describe("BabelDOC converter - config based CLI", () => {
   afterEach(() => {
     if (existsSync(testDir)) {
       rmSync(testDir, { recursive: true, force: true });
+    }
+  });
+
+  test("requires a deployment key before invoking BabelDOC", async () => {
+    const previous = process.env.SILICONFLOW_API_KEY;
+    delete process.env.SILICONFLOW_API_KEY;
+    let invoked = false;
+    const mockExecFile: ExecFileFn = (cmd, _args, callback) => {
+      if (cmd === "pdftotext") {
+        callback(
+          null,
+          "A long searchable PDF document with enough text to avoid OCR processing. This paragraph deliberately exceeds the text detection threshold with additional words for predictable behavior.",
+          "",
+        );
+      } else {
+        invoked = true;
+      }
+    };
+
+    try {
+      await expect(
+        convert(
+          testInputFile,
+          "pdf",
+          "pdf-zh",
+          join(testDir, "missing-key.tar"),
+          undefined,
+          mockExecFile,
+        ),
+      ).rejects.toThrow("SILICONFLOW_API_KEY is required");
+      expect(invoked).toBe(false);
+    } finally {
+      if (previous === undefined) delete process.env.SILICONFLOW_API_KEY;
+      else process.env.SILICONFLOW_API_KEY = previous;
     }
   });
 
@@ -68,6 +102,10 @@ describe("BabelDOC converter - config based CLI", () => {
         const inputPath = args[filesIndex + 1] as string;
 
         expect(existsSync(configPath)).toBe(true);
+        if (process.platform !== "win32") {
+          expect(statSync(configPath).mode & 0o777).toBe(0o600);
+          expect(statSync(dirname(configPath)).mode & 0o777).toBe(0o700);
+        }
         configContent = readFileSync(configPath, "utf8");
 
         const inputBase = basename(inputPath, ".pdf");
@@ -79,6 +117,7 @@ describe("BabelDOC converter - config based CLI", () => {
 
       if (cmd === "tar") {
         expect(args[0]).toBe("-cf");
+        writeFileSync(args[1] as string, "mock archive");
         callback(null, "Archive created", "");
       }
     };
@@ -143,6 +182,7 @@ describe("BabelDOC converter - config based CLI", () => {
       }
 
       if (cmd === "tar") {
+        writeFileSync(args[1] as string, "mock archive");
         callback(null, "Archive created", "");
       }
     };
@@ -191,6 +231,7 @@ describe("BabelDOC converter - config based CLI", () => {
       }
 
       if (cmd === "tar") {
+        writeFileSync(args[1] as string, "mock archive");
         callback(null, "Archive created", "");
       }
     };
@@ -248,7 +289,7 @@ describe("BabelDOC converter - config based CLI", () => {
         },
         mockExecFile,
       ),
-    ).rejects.toThrow("BabelDOC translation failed");
+    ).rejects.toThrow("BabelDOC subprocess failed");
 
     expect(configPath.length).toBeGreaterThan(0);
     expect(existsSync(configPath)).toBe(false);
@@ -288,6 +329,7 @@ describe("BabelDOC converter - config based CLI", () => {
       }
 
       if (cmd === "tar") {
+        writeFileSync(args[1] as string, "mock archive");
         callback(null, "Archive created", "");
       }
     };
