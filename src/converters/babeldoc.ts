@@ -8,19 +8,14 @@ import {
   copyFileSync,
   statSync,
   writeFileSync,
+  mkdtempSync,
 } from "node:fs";
 import { join, basename, dirname } from "node:path";
 import { ExecFileFn } from "./types";
 import { getArchiveFileName } from "../transfer";
 import { ensureSearchablePdf, cleanupOcrTempFile } from "../helpers/pdfOcr";
-import { getApiKey, clearApiKey } from "../security/keyProvider";
+import { getApiKey } from "../security/keyProvider";
 import { BABELDOC_ENGINE } from "../helpers/env";
-
-/** 截斷過長的 log 文本 */
-function truncateLog(text: string, maxLen = 2000): string {
-  if (text.length <= maxLen) return text;
-  return `${text.slice(0, maxLen)}\n... (truncated, total ${text.length} chars)`;
-}
 
 /**
  * BabelDOC Content Engine
@@ -99,7 +94,10 @@ export const properties = {
  * @param convertTo 格式如 "pdf-zh"、"md-en"、"html-ja"
  * @returns { lang: 目標語言代碼, format: 輸出格式 }
  */
-function extractTargetInfo(convertTo: string): { lang: string; format: OutputFormat } {
+function extractTargetInfo(convertTo: string): {
+  lang: string;
+  format: OutputFormat;
+} {
   // convertTo 格式: <format>-<lang>
   // 例如: pdf-zh, md-en, html-ja
   const match = convertTo.match(/^(pdf|md|html)-(.+)$/);
@@ -220,17 +218,8 @@ interface BabelDocRuntimeConfig {
   cleanup: () => void;
 }
 
-function xorDecryptHex(hexValue: string, key: string): string {
-  const encoded = Buffer.from(hexValue, "hex").toString("latin1");
-  return [...encoded]
-    .map((char, i) => String.fromCharCode(char.charCodeAt(0) ^ key.charCodeAt(i % key.length)))
-    .join("");
-}
-
-const BABELDOC_SECRET_KEY_PARTS = ["c0n", "v3r", "tx-", "bdo", "c"] as const;
-const BABELDOC_SECRET_KEY = BABELDOC_SECRET_KEY_PARTS.join("");
-const BABELDOC_MODEL_ENCRYPTED = "17550015561c005765170a1616025e433b675f433a";
-const BABELDOC_BASE_URL_ENCRYPTED = "0b441a0640485b574c120d41100a5c07155c1c121442154a0c0d4c465f";
+const BABELDOC_MODEL = "tencent/Hunyuan-MT-7B";
+const BABELDOC_BASE_URL = "https://api.siliconflow.cn/v1";
 
 /**
  * 取得翻譯服務的 CLI 參數
@@ -254,7 +243,7 @@ async function createTempBabelDocConfig(
   // 如果是 placeholder 或未配置，拋出錯誤
   if (engine === "placeholder" || !engine) {
     throw new Error(
-      "Translation is not configured. Please set BABELDOC_ENGINE to one of: siliconflow, openai, deepseek, custom",
+      "Translation is disabled. Set BABELDOC_ENGINE=siliconflow and SILICONFLOW_API_KEY",
     );
   }
 
@@ -264,11 +253,10 @@ async function createTempBabelDocConfig(
     let configPath = "";
 
     try {
-      // 每次請求都重新取得 API key，禁止重用快取。
       apiKey = await fetchApiKey();
 
-      const modelName = xorDecryptHex(BABELDOC_MODEL_ENCRYPTED, BABELDOC_SECRET_KEY);
-      const baseUrl = xorDecryptHex(BABELDOC_BASE_URL_ENCRYPTED, BABELDOC_SECRET_KEY);
+      const modelName = BABELDOC_MODEL;
+      const baseUrl = BABELDOC_BASE_URL;
       const configLang = toBabelDocConfigLang(targetLang);
       configPath = join(
         outputDir,
@@ -287,7 +275,11 @@ async function createTempBabelDocConfig(
         "",
       ].join("\n");
 
-      writeFileSync(configPath, configContent, { encoding: "utf8" });
+      writeFileSync(configPath, configContent, {
+        encoding: "utf8",
+        mode: 0o600,
+        flag: "wx",
+      });
 
       return {
         configPath,
@@ -296,7 +288,6 @@ async function createTempBabelDocConfig(
           if (configPath && existsSync(configPath)) {
             unlinkSync(configPath);
           }
-          clearApiKey(apiKey);
           apiKey = "";
         },
       };
@@ -310,7 +301,6 @@ async function createTempBabelDocConfig(
         }
       }
       if (apiKey) {
-        clearApiKey(apiKey);
         apiKey = "";
       }
       const originalMsg = error instanceof Error ? error.message : String(error);
@@ -385,14 +375,9 @@ async function runBabelDoc(
               : "0";
         console.log(`[BabelDOC] Process exit code: ${exitCode}`);
 
-        if (stdout) {
-          console.log(`[BabelDOC] stdout:\n${truncateLog(stdout)}`);
-        } else {
-          console.log(`[BabelDOC] stdout: (empty)`);
-        }
-        if (stderr) {
-          console.warn(`[BabelDOC] stderr:\n${truncateLog(stderr)}`);
-        }
+        // BabelDOC may echo its configuration, including the API key.
+        // Never emit raw subprocess output to logs or propagated errors.
+        console.log(`[BabelDOC] stdout bytes: ${stdout.length}, stderr bytes: ${stderr.length}`);
 
         // 列出輸出目錄內容以供診斷
         let outputDirFiles: string[] = [];
@@ -408,13 +393,7 @@ async function runBabelDoc(
         }
 
         if (error) {
-          const stderrSnippet = stderr ? `\nstderr: ${truncateLog(stderr, 500)}` : "";
-          const stdoutSnippet = stdout ? `\nstdout: ${truncateLog(stdout, 500)}` : "";
-          reject(
-            new Error(
-              `BabelDOC subprocess failed (exit: ${exitCode}): ${error.message}${stderrSnippet}${stdoutSnippet}`,
-            ),
-          );
+          reject(new Error(`BabelDOC subprocess failed (exit: ${exitCode})`));
           return;
         }
 
@@ -536,7 +515,7 @@ export async function convert(
     typeof (options as { _babeldocGetApiKey?: unknown })._babeldocGetApiKey === "function"
       ? ((options as { _babeldocGetApiKey: () => Promise<string> })
           ._babeldocGetApiKey as () => Promise<string>)
-      : () => getApiKey({ disableCache: true });
+      : getApiKey;
 
   let ocrTempFile: string | undefined;
   let tempDir: string | undefined;
@@ -575,11 +554,8 @@ export async function convert(
     // 4. 建立臨時輸出目錄
     const outputDir = dirname(targetPath);
     const inputFileName = basename(filePath, `.${fileType}`);
-    tempDir = join(outputDir, `${inputFileName}_babeldoc_${Date.now()}`);
-
-    if (!existsSync(tempDir)) {
-      mkdirSync(tempDir, { recursive: true });
-    }
+    mkdirSync(outputDir, { recursive: true });
+    tempDir = mkdtempSync(join(outputDir, `${inputFileName}_babeldoc_`));
     console.log(`[BabelDOC] Step 4: Temp dir created: ${tempDir}`);
 
     // 5. 建立封裝用目錄

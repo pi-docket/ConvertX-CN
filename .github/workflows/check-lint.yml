@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -29,5 +31,20 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Run lint
-        run: bun run lint
+      - name: Run type, dependency and ESLint checks
+        run: |
+          bun run lint:tsc
+          bun run lint:knip
+          bun run lint:eslint
+
+      - name: Check formatting of changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            BASE_SHA="$(git rev-parse HEAD^)"
+          fi
+          mapfile -d '' files < <(git diff --name-only --diff-filter=ACMR -z "$BASE_SHA" HEAD)
+          if ((${#files[@]})); then
+            bunx prettier --check --ignore-unknown "${files[@]}"
+          fi

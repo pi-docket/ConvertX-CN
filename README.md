@@ -115,6 +115,15 @@ API Server 是可选服务，不影响 Web UI 的基本使用。当前实现位�
 
 ## 安全提醒
 
+### v0.1.27 SiliconFlow 設定
+
+SiliconFlow 翻譯改為使用部署者自己的 API key。請在容器環境或私有設定中提供
+`SILICONFLOW_API_KEY`，例如 Docker Compose 的 `environment` 或 `env_file`；
+勿將真實金鑰提交到 Git。`BABELDOC_ENGINE=siliconflow` 為預設值，若未設定
+API key，翻譯會明確報錯。舊版內建 Worker 與 `CONVERTX_WORKER_URL`、
+`CONVERTX_ENCRYPTION_KEY` 已停用。BabelDOC 僅支援 SiliconFlow；
+`openai`、`deepseek`、`custom` 只供文字翻譯管理器使用。
+
 - 生产环境必须设置固定、随机且足够长的 `JWT_SECRET`。
 - 公开部署时请使用 HTTPS，并正确配置反向代理相关环境变量。
 - 不建议在公网开启未认证访问。
