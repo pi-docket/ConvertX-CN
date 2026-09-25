@@ -482,7 +482,7 @@ RUN set -ex && \
 # 4.10.1 Calibre 官方二進制安裝
 # 📦 版本 9.4.0 - 2026-02 官方最新穩定版（比 9.2.1 新）
 # 💡 v9.4 新功能：改進 EPUB 轉換、更好的 DOCX 支援
-# 🔗 https://github.com/kovidgoyal/calibre/releases/tag/v9.4.0
+# 🔗 https://download.calibre-ebook.com/9.4.0/
 # ⚠️注意：官方 binary 自帶所有依賴，不依賴系統 libxml2 ABI
 # ⚠️重要：Calibre 的 ebook-convert 在 PDF 生成時需要 QtWebEngine runtime 依賴
 ARG CALIBRE_VERSION=9.4.0
@@ -501,9 +501,9 @@ RUN set -ex && \
   rm -rf /var/lib/apt/lists/* && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
-  CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-arm64.txz"; \
+  CALIBRE_URL="https://download.calibre-ebook.com/${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-arm64.txz"; \
   else \
-  CALIBRE_URL="https://github.com/kovidgoyal/calibre/releases/download/v${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz"; \
+  CALIBRE_URL="https://download.calibre-ebook.com/${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz"; \
   fi && \
   echo "📦 下載 Calibre ${CALIBRE_VERSION}..." && \
   curl -fsSL --retry 3 --retry-delay 5 "${CALIBRE_URL}" -o /tmp/calibre.txz && \
