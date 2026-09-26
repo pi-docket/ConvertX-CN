@@ -124,6 +124,12 @@ const tools = [
     },
   },
   {
+    cmd: "markitdown -v",
+    name: "markitdown",
+    errorMsg: "markitdown is not installed",
+    formatter: (s: string) => s.split("\n")[0],
+  },
+  {
     cmd: "bun -v",
     name: "Bun",
     errorMsg: "Bun is not installed. wait what",
