@@ -16,7 +16,7 @@
  * - API key 使用完畢後立即清除
  */
 
-import { getApiKey, clearApiKey } from "../security/keyProvider";
+import { getApiKey } from "../security/keyProvider";
 import { translateText as siliconflowTranslate, type SiliconFlowConfig } from "./siliconflowClient";
 import type {
   TranslationProvider,
@@ -43,21 +43,10 @@ export class SiliconFlowTranslationProvider implements TranslationProvider {
   /**
    * 檢查服務是否可用
    *
-   * SiliconFlow 使用內置密鑰，始終可用
-   * 除非用戶自定義部署時配置錯誤
+   * 只有部署者提供 API key 時才可用。
    */
   async isAvailable(): Promise<boolean> {
-    try {
-      // SiliconFlow 已內置密鑰，始終可用
-      // 如果用戶使用 CONVERTX_ENCRYPTION_KEY 或 CONVERTX_WORKER_URL 自定義部署
-      // getApiKey() 會在實際使用時檢查配置有效性
-      return true;
-    } catch (error) {
-      console.warn(
-        `[SiliconFlow] Availability check failed: ${error instanceof Error ? error.message : String(error)}`,
-      );
-      return false;
-    }
+    return Boolean(process.env.SILICONFLOW_API_KEY?.trim());
   }
 
   /**
@@ -95,12 +84,6 @@ export class SiliconFlowTranslationProvider implements TranslationProvider {
       throw new Error(
         `SiliconFlow translation failed: ${error instanceof Error ? error.message : String(error)}`,
       );
-    } finally {
-      // 3. 清除 API key（關鍵安全步驟）
-      if (apiKey) {
-        clearApiKey(apiKey);
-        apiKey = undefined; // 確保引用被清除
-      }
     }
   }
 }
@@ -145,12 +128,6 @@ export async function translate(
     throw new Error(
       `Translation failed: ${error instanceof Error ? error.message : String(error)}`,
     );
-  } finally {
-    // 3. 清除 API key（關鍵安全步驟）
-    if (apiKey) {
-      clearApiKey(apiKey);
-      apiKey = undefined; // 確保引用被清除
-    }
   }
 }
 
@@ -220,12 +197,6 @@ export async function translateBatch(
     throw new Error(
       `Batch translation failed: ${error instanceof Error ? error.message : String(error)}`,
     );
-  } finally {
-    // 4. 清除 API key
-    if (apiKey) {
-      clearApiKey(apiKey);
-      apiKey = undefined;
-    }
   }
 }
 

@@ -39,7 +39,7 @@ jobs:
         run: bun install
 
       - name: Run unit and mock tests
-        run: bun test tests/e2e/converters.mock.test.ts tests/e2e/api.e2e.test.ts
+        run: bun test tests/e2e/converters.mock.test.ts tests/e2e/api.e2e.test.ts tests/converters/siliconflow-key.test.ts tests/converters/babeldoc.test.ts
 
       - name: Run available E2E tests
         run: bun test tests/e2e/converters.e2e.test.ts --timeout 120000

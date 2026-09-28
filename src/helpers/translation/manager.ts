@@ -123,11 +123,15 @@ export class TranslationServiceManager {
    *
    * 優先順序：
    * 1. 環境變數設定的服務（如果可用）
-   * 2. SiliconFlow（預設 fallback）
-   * 3. Placeholder（如果都不可用）
+   * 未配置金鑰時明確報錯，不默默改用其他付費供應商。
    */
   async getBestProvider(): Promise<TranslationProvider> {
-    // 嘗試環境變數設定的服務
+    if (this.preferredProvider === "siliconflow") {
+      if (!process.env.SILICONFLOW_API_KEY?.trim()) {
+        throw new Error("SILICONFLOW_API_KEY is required for SiliconFlow translation");
+      }
+    }
+
     const preferredProvider = this.getOrCreateProvider(this.preferredProvider);
     if (preferredProvider) {
       const available = await preferredProvider.isAvailable();
@@ -136,19 +140,7 @@ export class TranslationServiceManager {
       }
     }
 
-    // Fallback: 嘗試 SiliconFlow
-    if (this.preferredProvider !== "siliconflow") {
-      const siliconflow = this.getOrCreateProvider("siliconflow");
-      if (siliconflow) {
-        const available = await siliconflow.isAvailable();
-        if (available) {
-          return siliconflow;
-        }
-      }
-    }
-
-    // 最後回傳 placeholder（會拋出錯誤）
-    return new PlaceholderTranslationProvider();
+    throw new Error(`Translation provider "${this.preferredProvider}" is unavailable`);
   }
 
   /**

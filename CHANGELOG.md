@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.27](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.27) (2026-09-24)
+
+- **Breaking change:** SiliconFlow now requires the deployment owner's `SILICONFLOW_API_KEY`. The bundled Worker URL, shared decryption secret and key cache have been removed. Existing `CONVERTX_WORKER_URL` and `CONVERTX_ENCRYPTION_KEY` settings are ignored.
+- BabelDOC creates its temporary credential file with mode `0600` inside a private temporary directory, removes it after translation, and never logs raw subprocess output. A forced process termination can still leave the file until the temporary directory is cleaned up.
+- BabelDOC supports `siliconflow` and `placeholder`; OpenAI, DeepSeek and custom providers remain available only through the text translation manager. Missing credentials now fail explicitly without switching providers.
+- CI runs focused credential and BabelDOC tests on pull requests.
+
 ## [0.1.26](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.26) (2026-03-05)
 
 翻譯系統革新、移除本地 LLM 依賴、核心安全加固。

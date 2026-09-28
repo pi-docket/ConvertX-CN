@@ -250,10 +250,7 @@ async function callChatCompletion(
     });
 
     if (!response.ok) {
-      const errorText = await response.text().catch(() => "Unknown error");
-      throw new Error(
-        `SiliconFlow API error ${response.status}: ${response.statusText}\n${errorText}`,
-      );
+      throw new Error(`SiliconFlow API error ${response.status}: ${response.statusText}`);
     }
 
     const data = (await response.json()) as ChatCompletionResponse;
