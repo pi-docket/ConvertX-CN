@@ -14,42 +14,42 @@ mock.module("node:child_process", () => ({
       _options: unknown,
       cb: (error: Error | null, stdout: string, stderr: string) => void,
     ) => {
-    const shouldError = (process.env.MOCK_EXEC_ERROR || "")
-      .split(",")
-      .some((p) => p && cmd.includes(p));
+      const shouldError = (process.env.MOCK_EXEC_ERROR || "")
+        .split(",")
+        .some((p) => p && cmd.includes(p));
 
-    if (shouldError) {
-      cb(new Error(`${cmd} not found`), "", "");
+      if (shouldError) {
+        cb(new Error(`${cmd} not found`), "", "");
+        return mockChildProcess();
+      }
+
+      // resvg, bun, heif-info, dasel, and the perl one-liner (msgconvert) print just
+      // the bare version number — the source code itself prepends the tool name as a label.
+      if (
+        cmd.startsWith("resvg") ||
+        cmd.startsWith("bun") ||
+        cmd.startsWith("heif-info") ||
+        cmd.startsWith("dasel") ||
+        cmd.startsWith("perl")
+      ) {
+        cb(null, "1.0.0\n", "");
+        return mockChildProcess();
+      }
+
+      // assimp's real output is multi-line; the source reads line index 5.
+      if (cmd.startsWith("assimp")) {
+        cb(null, "l1\nl2\nl3\nl4\nl5\nVersion 1.0.0 (GIT commit abc123)\n", "");
+        return mockChildProcess();
+      }
+
+      // magick prefixes its version line with "Version: ".
+      if (cmd.startsWith("magick")) {
+        cb(null, "Version: ImageMagick v1.0.0\n", "");
+        return mockChildProcess();
+      }
+
+      cb(null, `${cmd} v1.0.0\n`, "");
       return mockChildProcess();
-    }
-
-    // resvg, bun, heif-info, dasel, and the perl one-liner (msgconvert) print just
-    // the bare version number — the source code itself prepends the tool name as a label.
-    if (
-      cmd.startsWith("resvg") ||
-      cmd.startsWith("bun") ||
-      cmd.startsWith("heif-info") ||
-      cmd.startsWith("dasel") ||
-      cmd.startsWith("perl")
-    ) {
-      cb(null, "1.0.0\n", "");
-      return mockChildProcess();
-    }
-
-    // assimp's real output is multi-line; the source reads line index 5.
-    if (cmd.startsWith("assimp")) {
-      cb(null, "l1\nl2\nl3\nl4\nl5\nVersion 1.0.0 (GIT commit abc123)\n", "");
-      return mockChildProcess();
-    }
-
-    // magick prefixes its version line with "Version: ".
-    if (cmd.startsWith("magick")) {
-      cb(null, "Version: ImageMagick v1.0.0\n", "");
-      return mockChildProcess();
-    }
-
-    cb(null, `${cmd} v1.0.0\n`, "");
-    return mockChildProcess();
     },
   ),
 }));
