@@ -1,11 +1,26 @@
 # Changelog
 
-## [0.1.27](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.27) (2026-09-24)
+## [0.1.27](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.27) (2026-09-29)
+
+正式版安全與轉換流程加固發布。
+
+### 🔒 Security & Reliability
 
 - **Breaking change:** SiliconFlow now requires the deployment owner's `SILICONFLOW_API_KEY`. The bundled Worker URL, shared decryption secret and key cache have been removed. Existing `CONVERTX_WORKER_URL` and `CONVERTX_ENCRYPTION_KEY` settings are ignored.
 - BabelDOC creates its temporary credential file with mode `0600` inside a private temporary directory, removes it after translation, and never logs raw subprocess output. A forced process termination can still leave the file until the temporary directory is cleaned up.
 - BabelDOC supports `siliconflow` and `placeholder`; OpenAI, DeepSeek and custom providers remain available only through the text translation manager. Missing credentials now fail explicitly without switching providers.
+- 加固 Web 轉換流程，收斂上傳、下載、刪除與結果頁面的狀態管理
+- 新增 CSRF、JWT secret、路徑與環境變數輔助模組，降低部署與請求處理風險
+- 強化 job、artifact、upload orchestration 服務，改善並發提交與檔案生命週期處理
+- 補強 Docker runtime、entrypoint、HTTP P0、狀態回歸與上傳服務安全測試
+
+### 🧰 Maintenance
+
+- 更新 Docker、compose、entrypoint 與安裝驗證腳本
+- 調整 Transfer 相關實作與測試，移除舊式前端 transfer 腳本
+- 補充應用架構與中文文件，更新 API、部署、配置、引擎與排錯說明
 - CI runs focused credential and BabelDOC tests on pull requests.
+- 版本號同步更新至 0.1.27
 
 ## [0.1.26](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.26) (2026-03-05)
 
