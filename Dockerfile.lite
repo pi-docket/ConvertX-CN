@@ -31,7 +31,7 @@
 #   - libvips（用 GraphicsMagick 替代）
 #   - OCR/Tesseract
 #   - AI 模型 / VLM / YOLO
-#   - PDFMathTranslate / BabelDOC / MinerU
+#   - PDFMathTranslate / MinerU
 #
 # 📊 Image 大小：目標 < 1.5 GB
 #

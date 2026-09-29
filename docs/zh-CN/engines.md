@@ -20,18 +20,18 @@ Web UI 的实际 converter 清单以 `src/converters/main.ts` 为准。输入和
 
 ## 引擎分类
 
-| 分类               | 引擎                                                                    |
-| ------------------ | ----------------------------------------------------------------------- |
-| 影音               | FFmpeg                                                                  |
-| 图片               | ImageMagick、GraphicsMagick、libvips、libheif、libjxl                   |
-| 文档               | LibreOffice、Pandoc、MarkItDown                                         |
-| 电子书             | Calibre、Pandoc、LibreOffice                                            |
-| PDF 处理           | PDF Packager、PDFMathTranslate、BabelDOC、OCRmyPDF、LibreOffice、Pandoc |
-| OCR                | OCRmyPDF、MinerU、PDFMathTranslate/BabelDOC 前处理 OCR                  |
-| 向量图             | Inkscape、resvg、Potrace、VTracer、dvisvgm、XeLaTeX                     |
-| 3D 模型            | Assimp                                                                  |
-| 数据格式           | Dasel、VCF to CSV                                                       |
-| 压缩/解包/特殊格式 | deark、PDF Packager、TRA multi-output packaging                         |
+| 分类               | 引擎                                                          |
+| ------------------ | ------------------------------------------------------------- |
+| 影音               | FFmpeg                                                        |
+| 图片               | ImageMagick、GraphicsMagick、libvips、libheif、libjxl         |
+| 文档               | LibreOffice、Pandoc、MarkItDown                               |
+| 电子书             | Calibre、Pandoc、LibreOffice                                  |
+| PDF 处理           | PDF Packager、PDFMathTranslate、OCRmyPDF、LibreOffice、Pandoc |
+| OCR                | OCRmyPDF、MinerU、PDFMathTranslate 前处理 OCR                 |
+| 向量图             | Inkscape、resvg、Potrace、VTracer、dvisvgm、XeLaTeX           |
+| 3D 模型            | Assimp                                                        |
+| 数据格式           | Dasel、VCF to CSV                                             |
+| 压缩/解包/特殊格式 | deark、PDF Packager、TRA multi-output packaging               |
 
 ## 引擎总览
 
@@ -58,25 +58,24 @@ Web UI 的实际 converter 清单以 `src/converters/main.ts` 为准。输入和
 | `vcf`              | VCF to CSV       | 联系人格式转换                      | 内置逻辑                                                | `src/converters/vcf.ts`              | `tests/converters/vcf.test.ts`              | 已注册                  |
 | `markitDown`       | MarkItDown       | 多格式到 Markdown                   | `markitdown`                                            | `src/converters/markitdown.ts`       | `tests/converters/markitdown.test.ts`       | 已注册                  |
 | `MinerU`           | MinerU           | PDF 到 Markdown / 结构化输出        | `mineru`、模型、可能需要 VLM                            | `src/converters/mineru.ts`           | `tests/converters/mineru.test.ts`           | 已注册，模型状态需验证  |
-| `PDFMathTranslate` | PDFMathTranslate | PDF 翻译                            | `pdf2zh_next`、BabelDOC cache                           | `src/converters/pdfmathtranslate.ts` | `tests/converters/pdfmathtranslate.test.ts` | 已注册                  |
-| `BabelDOC`         | BabelDOC         | PDF 翻译 / 文档处理                 | `babeldoc`、LLM key 可选                                | `src/converters/babeldoc.ts`         | `tests/converters/babeldoc.test.ts`         | 已注册                  |
+| `PDFMathTranslate` | PDFMathTranslate | PDF 翻译                            | `pdf2zh_next`、DocLayout-YOLO cache                     | `src/converters/pdfmathtranslate.ts` | `tests/converters/pdfmathtranslate.test.ts` | 已注册                  |
 | `OCRmyPDF`         | OCRmyPDF         | PDF OCR                             | `ocrmypdf`、Tesseract                                   | `src/converters/ocrmypdf.ts`         | `tests/converters/ocrmypdf.test.ts`         | 已注册                  |
 | `PDF Packager`     | PDF Packager     | PDF 图片化、PDF/A、加密、签名、打包 | poppler、qpdf、ghostscript、img2pdf、python sign script | `src/converters/pdfpackager.ts`      | `tests/converters/pdfpackager.test.ts`      | 已注册                  |
 | `deark`            | deark            | 特殊/旧格式解包                     | `deark`、`tar`                                          | `src/converters/deark.ts`            | `tests/converters/deark.test.ts`            | 已注册                  |
 
 ## 版本与架构支持
 
-| 引擎                        | Lite       | Standard | Full | amd64  | arm64    | 备注                                                   |
-| --------------------------- | ---------- | -------- | ---- | ------ | -------- | ------------------------------------------------------ |
-| FFmpeg                      | 支持       | 支持     | 支持 | 支持   | 待确认   | Lite 使用 apt，Standard 使用静态包下载逻辑。           |
-| ImageMagick                 | 待确认     | 支持     | 支持 | 支持   | 待确认   | 以实际镜像验证为准。                                   |
-| GraphicsMagick              | 支持       | 支持     | 支持 | 支持   | 支持     | Dockerfile.lite 与 Standard 均安装。                   |
-| LibreOffice                 | 支持       | 支持     | 支持 | 支持   | 待确认   | 大文件和字体支持需验证。                               |
-| Pandoc                      | 支持       | 支持     | 支持 | 支持   | 待确认   | PDF 输出可能依赖 TeX。                                 |
-| resvg                       | amd64 支持 | 支持     | 支持 | 支持   | 可能禁用 | 代码会检查 `RESVG_DISABLED` 和 disabled-engines 文件。 |
-| MinerU                      | 待确认     | 支持     | 支持 | 待确认 | 待确认   | 模型、PyTorch、VLM 支持需验证。                        |
-| PDFMathTranslate / BabelDOC | 待确认     | 支持     | 支持 | 待确认 | 待确认   | 依赖 Python 包、cache、可能外部 API。                  |
-| OCRmyPDF                    | 待确认     | 支持     | 支持 | 待确认 | 待确认   | 语言包支持与镜像差异相关。                             |
+| 引擎             | Lite       | Standard | Full | amd64  | arm64    | 备注                                                   |
+| ---------------- | ---------- | -------- | ---- | ------ | -------- | ------------------------------------------------------ |
+| FFmpeg           | 支持       | 支持     | 支持 | 支持   | 待确认   | Lite 使用 apt，Standard 使用静态包下载逻辑。           |
+| ImageMagick      | 待确认     | 支持     | 支持 | 支持   | 待确认   | 以实际镜像验证为准。                                   |
+| GraphicsMagick   | 支持       | 支持     | 支持 | 支持   | 支持     | Dockerfile.lite 与 Standard 均安装。                   |
+| LibreOffice      | 支持       | 支持     | 支持 | 支持   | 待确认   | 大文件和字体支持需验证。                               |
+| Pandoc           | 支持       | 支持     | 支持 | 支持   | 待确认   | PDF 输出可能依赖 TeX。                                 |
+| resvg            | amd64 支持 | 支持     | 支持 | 支持   | 可能禁用 | 代码会检查 `RESVG_DISABLED` 和 disabled-engines 文件。 |
+| MinerU           | 待确认     | 支持     | 支持 | 待确认 | 待确认   | 模型、PyTorch、VLM 支持需验证。                        |
+| PDFMathTranslate | 待确认     | 支持     | 支持 | 待确认 | 待确认   | 依赖 Python 包、cache、可能外部 API。                  |
+| OCRmyPDF         | 待确认     | 支持     | 支持 | 待确认 | 待确认   | 语言包支持与镜像差异相关。                             |
 
 ## 常见失败原因
 

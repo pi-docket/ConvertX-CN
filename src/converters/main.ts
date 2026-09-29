@@ -30,7 +30,6 @@ import {
   convert as convertPDFMathTranslate,
   properties as propertiesPDFMathTranslate,
 } from "./pdfmathtranslate";
-import { convert as convertBabelDoc, properties as propertiesBabelDoc } from "./babeldoc";
 import { convert as convertOcrMyPdf, properties as propertiesOcrMyPdf } from "./ocrmypdf";
 import {
   convert as convertPdfPackager,
@@ -176,10 +175,6 @@ const properties: Record<
   PDFMathTranslate: {
     properties: propertiesPDFMathTranslate,
     converter: convertPDFMathTranslate,
-  },
-  BabelDOC: {
-    properties: propertiesBabelDoc,
-    converter: convertBabelDoc,
   },
   OCRmyPDF: {
     properties: propertiesOcrMyPdf,

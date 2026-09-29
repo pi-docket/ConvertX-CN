@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN 官方 Docker Image
-# 版本：v0.1.27 - CPU-only 輕量版
+# 版本：v0.1.28 - CPU-only 輕量版
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -13,7 +13,7 @@
 # 🔒 Offline-first 設計原則：
 #   1. Runtime（docker run 後）：
 #      ❌ 禁止任何模型、字型、tokenizer、metadata 下載
-#      ❌ MinerU / BabelDOC / PDFMathTranslate 不得嘗試連網
+#      ❌ MinerU / PDFMathTranslate 不得嘗試連網
 #      ✅ 只有翻譯服務（Google / DeepL / Azure / OpenAI）允許連網
 #   2. Build time（docker build 時）：
 #      ✅ 允許連網下載所有資源
@@ -21,7 +21,7 @@
 #
 # 🤖 預下載模型清單：
 #   - PDFMathTranslate: DocLayout-YOLO ONNX（佈局分析）
-#   - BabelDOC: DocLayout-YOLO + 字型資源 + tiktoken
+#   - PDFMathTranslate: DocLayout-YOLO + 字型資源 + tiktoken
 #   - MinerU: PDF-Extract-Kit-1.0（Pipeline 模型）
 #
 # 🏗️ Multi-Stage Build 結構：
@@ -48,7 +48,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN - 完全離線化檔案轉換服務"
-LABEL org.opencontainers.image.version="v0.1.27"
+LABEL org.opencontainers.image.version="v0.1.28"
 WORKDIR /app
 
 # 設定非互動模式
@@ -588,7 +588,7 @@ RUN apt-get update --fix-missing && \
 RUN mkdir -p /usr/share/fonts/truetype/custom
 COPY fonts/ /usr/share/fonts/truetype/custom/
 
-# 5.3 設定 BabelDOC 字型目錄
+# 5.3 設定 PDFMathTranslate 字型目錄
 RUN mkdir -p /root/.cache/babeldoc/fonts && \
   for font in GoNotoKurrent-Regular.ttf SourceHanSerifCN-Regular.ttf \
   SourceHanSerifTW-Regular.ttf SourceHanSerifJP-Regular.ttf \
@@ -649,16 +649,12 @@ RUN uv pip install --system --break-system-packages --no-cache "markitdown[all]"
 RUN uv pip install --system --break-system-packages --no-cache ocrmypdf
 
 # 6.7 pdf2zh-next（PDFMathTranslate 2.0）
-# 💡 使用新版 pdf2zh-next，基於 BabelDOC 後端
+# 💡 使用新版 pdf2zh-next
 # 💡 命令格式：pdf2zh_next <file> --lang-out <lang> --output <dir> --<service>
 # 📦 套件名稱：pdf2zh-next（不是 pdf2zh）
 RUN uv pip install --system --break-system-packages --no-cache pdf2zh-next
 
-# 6.8 babeldoc（pdf2zh-next 依賴，但可能需要獨立安裝）
-RUN uv pip install --system --break-system-packages --no-cache babeldoc || \
-  echo "⚠️ babeldoc 安裝可能有警告"
-
-# 6.9 MinerU（僅 AMD64，CPU-only 模式）
+# 6.8 MinerU（僅 AMD64，CPU-only 模式）
 # 💡 明確安裝 PyTorch CPU 版本，避免 torch 未定義錯誤
 # 💡 使用官方 PyTorch CPU wheel（不含 CUDA）
 # 💡 設置 CUDA_VISIBLE_DEVICES="" 強制使用 CPU
@@ -709,7 +705,7 @@ FROM python-tools AS models
 
 # 設定模型目錄環境變數
 ENV MINERU_MODELS_DIR="/opt/convertx/models/mineru"
-ENV BABELDOC_CACHE_DIR="/root/.cache/babeldoc"
+ENV PDFMATHTRANSLATE_CACHE_DIR="/root/.cache/babeldoc"
 
 # 7.1 創建目錄結構
 RUN mkdir -p /opt/convertx/models/mineru && \
@@ -729,20 +725,11 @@ RUN chmod +x /tmp/download-mineru-models.sh && /tmp/download-mineru-models.sh &&
 COPY scripts/generate-mineru-config.sh /tmp/generate-mineru-config.sh
 RUN chmod +x /tmp/generate-mineru-config.sh && /tmp/generate-mineru-config.sh && rm -f /tmp/generate-mineru-config.sh
 
-# 7.5 BabelDOC warmup
-RUN set -ex && \
-  export BABELDOC_CACHE_PATH="/root/.cache/babeldoc" && \
-  if command -v babeldoc >/dev/null 2>&1; then \
-  babeldoc --warmup 2>&1 || echo "⚠️ warmup 可能有警告"; \
-  else \
-  echo "⚠️ babeldoc 不可用，跳過 warmup"; \
-  fi
-
-# 7.6 下載 tiktoken 編碼
+# 7.5 下載 tiktoken 編碼
 COPY scripts/download-tiktoken.sh /tmp/download-tiktoken.sh
 RUN chmod +x /tmp/download-tiktoken.sh && /tmp/download-tiktoken.sh && rm -f /tmp/download-tiktoken.sh
 
-# 7.7 清理下載快取
+# 7.6 清理下載快取
 RUN rm -rf /tmp/hf_download_cache /root/.cache/huggingface \
   /root/.cache/pip /root/.cache/uv && \
   find /usr -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
@@ -867,14 +854,6 @@ RUN echo "======================================" && \
   echo "  ⚠️ ARM64：跳過 MinerU 驗證"; \
   fi && \
   \
-  # 驗證 BabelDOC
-  echo "🔍 驗證 BabelDOC..." && \
-  if command -v babeldoc >/dev/null 2>&1; then \
-  echo "  ✅ babeldoc: $(which babeldoc)"; \
-  else \
-  echo "  ⚠️ babeldoc 不可用"; \
-  fi && \
-  \
   # 驗證 pdf2zh
   echo "🔍 驗證 pdf2zh..." && \
   if command -v pdf2zh >/dev/null 2>&1; then \
@@ -923,7 +902,6 @@ ENV CALIBRE_USE_SYSTEM_THEME="0"
 
 # 3️⃣ 翻譯服務設定（這是唯一允許連網的服務）
 ENV PDFMATHTRANSLATE_SERVICE="google"
-ENV BABELDOC_SERVICE="google"
 
 # 4️⃣ 🔒 強制離線模式（禁止模型/資源下載）
 # HuggingFace 完全離線
@@ -955,9 +933,8 @@ ENV LLAMA_SERVER_PORT="11785"
 ENV VLM_GGUF_MODEL="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.Q6_K.gguf"
 ENV VLM_GGUF_MMPROJ="/opt/convertx/models/vlm/mineru2.5-2509-1.2b/MinerU2.5-2509-1.2B.mmproj-Q8_0.gguf"
 
-# BabelDOC 離線模式
-ENV BABELDOC_OFFLINE="1"
-ENV BABELDOC_CACHE_PATH="/opt/convertx/cache/babeldoc"
+# PDFMathTranslate cache
+ENV PDFMATHTRANSLATE_CACHE_PATH="/opt/convertx/cache/babeldoc"
 
 # 禁止 pip 安裝
 ENV PIP_NO_INDEX="1"

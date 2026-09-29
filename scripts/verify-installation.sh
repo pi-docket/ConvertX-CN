@@ -165,7 +165,6 @@ verify_python_tools() {
     check_command "uv" "uv"
     check_command "markitdown" "markitdown"
     check_command "pdf2zh" "PDFMathTranslate"
-    check_command "babeldoc" "BabelDOC"
     check_command "mineru" "MinerU" "true" "x86_64"
 }
 
@@ -182,9 +181,9 @@ verify_models() {
     check_file "/root/mineru.json" "MinerU 配置檔" "true" "x86_64"
     echo "  ℹ️ 本地 VLM / GGUF 模型檢查已移除（pipeline-only）"
     
-    # BabelDOC 模型
-    check_file "/root/.cache/babeldoc/models/doclayout_yolo_docstructbench_imgsz1024.onnx" "DocLayout-YOLO ONNX" "false"
-    check_dir "/root/.cache/babeldoc" "BabelDOC 快取" "false"
+    # PDFMathTranslate 模型
+    check_file "${PDFMATHTRANSLATE_CACHE_PATH:-/root/.cache/babeldoc}/models/doclayout_yolo_docstructbench_imgsz1024.onnx" "DocLayout-YOLO ONNX" "false"
+    check_dir "${PDFMATHTRANSLATE_CACHE_PATH:-/root/.cache/babeldoc}" "PDFMathTranslate 快取" "false"
 }
 
 # ==============================================================================
@@ -280,7 +279,7 @@ verify_offline_mode() {
         "HF_HUB_OFFLINE"
         "TRANSFORMERS_OFFLINE"
         "MINERU_MODEL_SOURCE"
-        "BABELDOC_OFFLINE"
+        "PDFMATHTRANSLATE_CACHE_PATH"
     )
     
     for var in "${vars[@]}"; do

@@ -30,7 +30,6 @@ import { properties as vcfProps } from "../../src/converters/vcf";
 import { properties as markitdownProps } from "../../src/converters/markitdown";
 import { properties as mineruProps } from "../../src/converters/mineru";
 import { properties as pdfmathtranslateProps } from "../../src/converters/pdfmathtranslate";
-import { properties as babeldocProps } from "../../src/converters/babeldoc";
 import { properties as ocrmypdfProps } from "../../src/converters/ocrmypdf";
 
 // ============================================================================
@@ -872,8 +871,8 @@ describe("Markitdown 格式", () => {
     expect(toFormats).toContain("md");
   });
 
-  test("輸入格式數量應等於 6 種", () => {
-    expect(fromFormats.length).toBe(6);
+  test("輸入格式數量應等於 14 種", () => {
+    expect(fromFormats.length).toBe(14);
     console.log(`Markitdown 輸入格式：${fromFormats.length} 種`);
   });
 
@@ -988,62 +987,6 @@ describe("PDFMathTranslate 格式", () => {
 });
 
 // ============================================================================
-// BabelDOC 格式測試
-// ============================================================================
-describe("BabelDOC 格式", () => {
-  const fromFormats = babeldocProps.from.document;
-  const toFormats = babeldocProps.to.document;
-
-  // PDF 輸出格式
-  const pdfOutputFormats = ["pdf-en", "pdf-zh", "pdf-zh-TW", "pdf-ja", "pdf-ko"];
-  // Markdown 輸出格式
-  const mdOutputFormats = ["md-en", "md-zh", "md-zh-TW", "md-ja", "md-ko"];
-  // HTML 輸出格式
-  const htmlOutputFormats = ["html-en", "html-zh", "html-zh-TW", "html-ja", "html-ko"];
-
-  test("輸入格式應為 pdf", () => {
-    expect(fromFormats).toContain("pdf");
-  });
-
-  test("應包含 PDF 輸出格式", () => {
-    for (const format of pdfOutputFormats) {
-      expect(toFormats).toContain(format);
-    }
-  });
-
-  test("應包含 Markdown 輸出格式", () => {
-    for (const format of mdOutputFormats) {
-      expect(toFormats).toContain(format);
-    }
-  });
-
-  test("應包含 HTML 輸出格式", () => {
-    for (const format of htmlOutputFormats) {
-      expect(toFormats).toContain(format);
-    }
-  });
-
-  test("輸入格式數量應等於 1 種", () => {
-    expect(fromFormats.length).toBe(1);
-    console.log(`BabelDOC 輸入格式：${fromFormats.length} 種`);
-  });
-
-  test("輸出格式數量應等於 45 種（3 格式 x 15 語言）", () => {
-    expect(toFormats.length).toBe(45);
-    console.log(`BabelDOC 輸出格式：${toFormats.length} 種`);
-  });
-
-  test("應包含所有實際輸出格式（完整驗證）", () => {
-    for (const format of toFormats) {
-      expect(typeof format).toBe("string");
-      expect(format.length).toBeGreaterThan(0);
-      // 驗證格式為 <type>-<lang>
-      expect(format).toMatch(/^(pdf|md|html)-.+$/);
-    }
-  });
-});
-
-// ============================================================================
 // OCRmyPDF 格式測試
 // ============================================================================
 describe("OCRmyPDF 格式", () => {
@@ -1094,7 +1037,7 @@ describe("OCRmyPDF 格式", () => {
 // 格式總覽測試
 // ============================================================================
 describe("格式總覽", () => {
-  test("所有 24 個轉換器都有定義格式", () => {
+  test("所有 23 個轉換器都有定義格式", () => {
     // 驗證所有轉換器的 properties 都存在
     expect(ffmpegProps).toBeDefined();
     expect(imagemagickProps).toBeDefined();
@@ -1118,7 +1061,6 @@ describe("格式總覽", () => {
     expect(markitdownProps).toBeDefined();
     expect(mineruProps).toBeDefined();
     expect(pdfmathtranslateProps).toBeDefined();
-    expect(babeldocProps).toBeDefined();
     expect(ocrmypdfProps).toBeDefined();
   });
 
@@ -1187,11 +1129,6 @@ describe("格式總覽", () => {
         name: "PDFMathTranslate",
         from: pdfmathtranslateProps.from.document.length,
         to: pdfmathtranslateProps.to.document.length,
-      },
-      {
-        name: "BabelDOC",
-        from: babeldocProps.from.document.length,
-        to: babeldocProps.to.document.length,
       },
       {
         name: "OCRmyPDF",

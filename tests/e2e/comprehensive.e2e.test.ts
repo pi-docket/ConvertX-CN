@@ -76,7 +76,6 @@ const TOOLS = {
   vtracer: () => checkTool("vtracer"),
   assimp: () => checkTool("assimp", "version"),
   pdf2zh: () => checkTool("pdf2zh"),
-  babeldoc: () => checkTool("babeldoc"),
   mineru: () => checkTool("mineru"),
   markitdown: () => checkTool("markitdown"),
   xelatex: () => checkTool("xelatex"),
@@ -699,47 +698,6 @@ describe("🌍 多語言翻譯 Multilingual Translation", () => {
             console.log(
               `  ✓ PDF → ${lang.name}: ${result.outputSize} bytes (${result.duration}ms)`,
             );
-          } else {
-            stats.failed++;
-          }
-
-          expect(result.success).toBe(true);
-        },
-        TIMEOUT.translation,
-      );
-    }
-  });
-
-  // BabelDOC 測試
-  describe("BabelDOC (進階 PDF 翻譯)", () => {
-    for (const lang of LANGUAGES.slice(0, 2)) {
-      // 只測試中英
-      test.skip(
-        `PDF → ${lang.name} (babeldoc)`,
-        async () => {
-          if (!availableTools.babeldoc) {
-            stats.skipped++;
-            stats.total++;
-            console.log(`⏭ Skipping: babeldoc not available`);
-            return;
-          }
-
-          stats.total++;
-          const inputPath = join(E2E_FIXTURES_DIR, "sample.pdf");
-          const outputPath = join(outputDir, `babeldoc_${lang.code}.tar`);
-
-          if (!existsSync(inputPath)) {
-            stats.skipped++;
-            console.log(`⏭ Skipping: sample.pdf not found in fixtures`);
-            return;
-          }
-
-          const result = await runConversion("babeldoc", inputPath, outputPath);
-          stats.results.push(result);
-
-          if (result.success) {
-            stats.passed++;
-            console.log(`  ✓ PDF → ${lang.name} (babeldoc): ${result.outputSize} bytes`);
           } else {
             stats.failed++;
           }

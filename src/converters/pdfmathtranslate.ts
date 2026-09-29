@@ -23,8 +23,8 @@ type TranslationService = (typeof TRANSLATION_SERVICES)[number];
  *   pdf2zh_next <file> --lang-out <lang> --output <dir> --<service>
  *
  * 模型路徑說明：
- *   - pdf2zh_next 使用 babeldoc.assets 內部載入 ONNX 模型
- *   - 模型預先下載到 /root/.cache/babeldoc/models/ 目錄
+ *   - pdf2zh_next 內部載入 DocLayout-YOLO ONNX 模型
+ *   - 模型預先下載到 PDFMathTranslate cache models 目錄
  *   - Runtime 不會再下載任何模型（由 Docker build 預下載）
  */
 
@@ -47,10 +47,10 @@ const SUPPORTED_LANGUAGES = [
   "th", // Thai
 ] as const;
 
-// 模型路徑（BabelDOC cache 目錄，由 pdf2zh_next 內部使用）
-// 注意：pdf2zh_next 會自動從 babeldoc.assets 載入模型，此路徑僅供參考
-const BABELDOC_CACHE_PATH = process.env.BABELDOC_CACHE_PATH || "/root/.cache/babeldoc";
-const MODELS_PATH = `${BABELDOC_CACHE_PATH}/models`;
+// 模型路徑（pdf2zh_next 內部資產 cache 目錄）
+const PDFMATHTRANSLATE_CACHE_PATH =
+  process.env.PDFMATHTRANSLATE_CACHE_PATH || "/root/.cache/babeldoc";
+const MODELS_PATH = `${PDFMATHTRANSLATE_CACHE_PATH}/models`;
 
 // 生成 from/to 格式映射
 function generateLanguageMappings(): {
@@ -118,9 +118,9 @@ function normalizeLanguageCode(lang: string): string {
  * @returns 模型是否存在
  */
 function checkModelsExist(): boolean {
-  // 檢查 BabelDOC ONNX 模型目錄是否存在
+  // 檢查 DocLayout-YOLO ONNX 模型目錄是否存在
   if (!existsSync(MODELS_PATH)) {
-    console.warn(`[PDFMathTranslate] BabelDOC models directory not found: ${MODELS_PATH}`);
+    console.warn(`[PDFMathTranslate] models directory not found: ${MODELS_PATH}`);
     console.warn(`[PDFMathTranslate] Models should be pre-downloaded during Docker build.`);
     return false;
   }
@@ -208,8 +208,8 @@ function runPdf2zhWithService(
 
     const args = [inputPath, "--lang-out", targetLang, "--output", outputDir, `--${service}`];
 
-    // pdf2zh_next 使用 babeldoc.assets 內部載入模型，不需要手動指定 --onnx 參數
-    // 模型路徑：/root/.cache/babeldoc/models/doclayout_yolo_docstructbench_imgsz1024.onnx
+    // pdf2zh_next 會自行載入 DocLayout-YOLO，不需要手動指定 --onnx 參數
+    // 模型路徑：PDFMathTranslate cache models/doclayout_yolo_docstructbench_imgsz1024.onnx
 
     console.log(`[PDFMathTranslate] Running: pdf2zh_next ${args.join(" ")} (service: ${service})`);
 

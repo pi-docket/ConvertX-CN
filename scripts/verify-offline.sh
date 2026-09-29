@@ -10,8 +10,7 @@
 #
 # 驗證項目：
 #   1. MinerU：可執行 + 模型存在 + 配置正確
-#   2. BabelDOC：可執行 + cache 存在
-#   3. PDFMathTranslate (pdf2zh)：可執行 + ONNX 模型存在
+#   2. PDFMathTranslate (pdf2zh)：可執行 + ONNX 模型存在
 #   4. ImageMagick：可執行
 #   5. 字型：自訂字型已安裝
 #   6. 環境變數：離線模式已正確設定
@@ -153,29 +152,19 @@ echo ""
 
 # ==============================================================================
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📦 2. BabelDOC 驗證"
+echo "📦 2. PDFMathTranslate cache 驗證"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 # ==============================================================================
 
-check_command "babeldoc" "BabelDOC CLI"
-
 # 檢查 cache 目錄
-check_dir "/root/.cache/babeldoc" "BabelDOC Cache"
-check_dir "/root/.cache/babeldoc/models" "BabelDOC Models"
-check_dir "/root/.cache/babeldoc/fonts" "BabelDOC Fonts"
+PDFMATHTRANSLATE_CACHE="${PDFMATHTRANSLATE_CACHE_PATH:-/root/.cache/babeldoc}"
+check_dir "$PDFMATHTRANSLATE_CACHE" "PDFMathTranslate Cache"
+check_dir "$PDFMATHTRANSLATE_CACHE/models" "PDFMathTranslate Models"
+check_dir "$PDFMATHTRANSLATE_CACHE/fonts" "PDFMathTranslate Fonts"
 
 # 檢查 ONNX 模型
-BABELDOC_ONNX="/root/.cache/babeldoc/models/doclayout_yolo_docstructbench_imgsz1024.onnx"
-check_file "$BABELDOC_ONNX" "DocLayout-YOLO ONNX"
-
-# 測試 babeldoc --help（不應觸發下載）
-if command -v babeldoc >/dev/null 2>&1; then
-    if timeout 10 babeldoc --help >/dev/null 2>&1; then
-        pass "babeldoc --help 可離線執行"
-    else
-        warn "babeldoc --help 執行異常"
-    fi
-fi
+PDFMATHTRANSLATE_ONNX="$PDFMATHTRANSLATE_CACHE/models/doclayout_yolo_docstructbench_imgsz1024.onnx"
+check_file "$PDFMATHTRANSLATE_ONNX" "DocLayout-YOLO ONNX"
 echo ""
 
 # ==============================================================================
@@ -253,9 +242,8 @@ check_env "MINERU_MODEL_SOURCE" "local"
 check_env "MINERU_CONFIG"
 
 echo ""
-echo "📋 BabelDOC 設定："
-check_env "BABELDOC_OFFLINE" "1"
-check_env "BABELDOC_CACHE_PATH"
+echo "📋 PDFMathTranslate 設定："
+check_env "PDFMATHTRANSLATE_CACHE_PATH"
 
 echo ""
 echo "📋 pip 設定："

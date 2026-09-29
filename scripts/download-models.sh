@@ -2,7 +2,7 @@
 # ==============================================================================
 # ConvertX-CN 模型下載腳本
 # ==============================================================================
-# 用途：下載所有 AI 模型（MinerU, BabelDOC, PDFMathTranslate）
+# 用途：下載所有 AI 模型（MinerU, PDFMathTranslate）
 # 執行環境：Docker build stage (models-download)
 # 
 # ⚠️ 重要：此腳本在 build time 執行，下載所有模型到固定目錄
@@ -32,11 +32,11 @@ log_info "檢測架構: ${ARCH}"
 # ==============================================================================
 MODELS_BASE_DIR="/opt/convertx/models"
 MINERU_MODELS_DIR="${MODELS_BASE_DIR}/mineru"
-BABELDOC_CACHE_DIR="/root/.cache/babeldoc"
-BABELDOC_MODELS_DIR="${BABELDOC_CACHE_DIR}/models"
-BABELDOC_FONTS_DIR="${BABELDOC_CACHE_DIR}/fonts"
-BABELDOC_CMAP_DIR="${BABELDOC_CACHE_DIR}/cmap"
-BABELDOC_TIKTOKEN_DIR="${BABELDOC_CACHE_DIR}/tiktoken"
+PDFMATHTRANSLATE_CACHE_DIR="/root/.cache/babeldoc"
+PDFMATHTRANSLATE_MODELS_DIR="${PDFMATHTRANSLATE_CACHE_DIR}/models"
+PDFMATHTRANSLATE_FONTS_DIR="${PDFMATHTRANSLATE_CACHE_DIR}/fonts"
+PDFMATHTRANSLATE_CMAP_DIR="${PDFMATHTRANSLATE_CACHE_DIR}/cmap"
+PDFMATHTRANSLATE_TIKTOKEN_DIR="${PDFMATHTRANSLATE_CACHE_DIR}/tiktoken"
 
 # ==============================================================================
 # 創建目錄結構
@@ -45,10 +45,10 @@ create_directories() {
     log_info "創建模型目錄結構..."
     
     mkdir -p "${MINERU_MODELS_DIR}"
-    mkdir -p "${BABELDOC_MODELS_DIR}"
-    mkdir -p "${BABELDOC_FONTS_DIR}"
-    mkdir -p "${BABELDOC_CMAP_DIR}"
-    mkdir -p "${BABELDOC_TIKTOKEN_DIR}"
+    mkdir -p "${PDFMATHTRANSLATE_MODELS_DIR}"
+    mkdir -p "${PDFMATHTRANSLATE_FONTS_DIR}"
+    mkdir -p "${PDFMATHTRANSLATE_CMAP_DIR}"
+    mkdir -p "${PDFMATHTRANSLATE_TIKTOKEN_DIR}"
     
     log_success "目錄結構創建完成"
 }
@@ -142,29 +142,6 @@ PYTHON
 }
 
 # ==============================================================================
-# BabelDOC warmup（下載所有資源）
-# ==============================================================================
-babeldoc_warmup() {
-    log_info "執行 BabelDOC warmup..."
-    
-    export BABELDOC_CACHE_PATH="${BABELDOC_CACHE_DIR}"
-    
-    if command -v babeldoc >/dev/null 2>&1; then
-        babeldoc --warmup 2>&1 || {
-            log_warn "BabelDOC warmup 可能有警告，但繼續"
-        }
-        
-        log_info "BabelDOC 快取內容:"
-        ls -la "${BABELDOC_CACHE_DIR}/" 2>/dev/null || true
-        du -sh "${BABELDOC_CACHE_DIR}/" 2>/dev/null || true
-    else
-        log_warn "babeldoc 不可用，跳過 warmup"
-    fi
-    
-    log_success "BabelDOC warmup 完成"
-}
-
-# ==============================================================================
 # 下載 tiktoken 編碼
 # ==============================================================================
 download_tiktoken() {
@@ -205,13 +182,13 @@ setup_onnx_models() {
     
     for src in "${SRC_PATHS[@]}"; do
         if [ -f "${src}" ]; then
-            cp "${src}" "${BABELDOC_MODELS_DIR}/"
-            log_success "已複製 ONNX 模型: ${src} -> ${BABELDOC_MODELS_DIR}/"
+            cp "${src}" "${PDFMATHTRANSLATE_MODELS_DIR}/"
+            log_success "已複製 ONNX 模型: ${src} -> ${PDFMATHTRANSLATE_MODELS_DIR}/"
             return 0
         fi
     done
     
-    log_warn "未找到預下載的 ONNX 模型，將依賴 babeldoc --warmup"
+    log_warn "未找到預下載的 ONNX 模型，PDFMathTranslate 可能需要在建置階段提供模型"
 }
 
 # ==============================================================================
@@ -243,19 +220,19 @@ verify_downloads() {
         echo "  ⚠️ MinerU: ARM64 跳過"
     fi
     
-    # BabelDOC
-    if [ -d "${BABELDOC_CACHE_DIR}" ]; then
+    # PDFMathTranslate
+    if [ -d "${PDFMATHTRANSLATE_CACHE_DIR}" ]; then
         local size
-        size=$(du -sh "${BABELDOC_CACHE_DIR}" 2>/dev/null | awk '{print $1}')
-        echo "  ✅ BabelDOC 快取: ${size}"
+        size=$(du -sh "${PDFMATHTRANSLATE_CACHE_DIR}" 2>/dev/null | awk '{print $1}')
+        echo "  ✅ PDFMathTranslate 快取: ${size}"
     else
-        echo "  ⚠️ BabelDOC 快取: 不存在"
+        echo "  ⚠️ PDFMathTranslate 快取: 不存在"
     fi
     
     # ONNX 模型
-    if [ -f "${BABELDOC_MODELS_DIR}/doclayout_yolo_docstructbench_imgsz1024.onnx" ]; then
+    if [ -f "${PDFMATHTRANSLATE_MODELS_DIR}/doclayout_yolo_docstructbench_imgsz1024.onnx" ]; then
         local size
-        size=$(ls -lh "${BABELDOC_MODELS_DIR}/doclayout_yolo_docstructbench_imgsz1024.onnx" | awk '{print $5}')
+        size=$(ls -lh "${PDFMATHTRANSLATE_MODELS_DIR}/doclayout_yolo_docstructbench_imgsz1024.onnx" | awk '{print $5}')
         echo "  ✅ DocLayout-YOLO ONNX: ${size}"
     else
         echo "  ⚠️ DocLayout-YOLO ONNX: 不存在"
@@ -294,7 +271,6 @@ main() {
     download_mineru_models
     generate_mineru_config
     setup_onnx_models
-    babeldoc_warmup
     download_tiktoken
     verify_downloads
     cleanup_cache

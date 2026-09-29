@@ -3,7 +3,6 @@
  *
  * 測試涵蓋：
  * - PDFMathTranslate (pdf2zh)
- * - BabelDOC
  * - 支援語言：中文（簡繁）、英文、日文、韓文、德文、法文等
  *
  * 注意：這些測試需要：
@@ -209,7 +208,6 @@ beforeAll(async () => {
   console.log("  檢測翻譯工具...");
   translators = {
     pdf2zh: checkTranslator("pdf2zh"),
-    babeldoc: checkTranslator("babeldoc"),
   };
 
   for (const [name, status] of Object.entries(translators)) {
@@ -370,94 +368,6 @@ describe("📚 PDFMathTranslate (pdf2zh)", () => {
   });
 });
 
-// =============================================================================
-// BabelDOC 測試
-// =============================================================================
-
-describe("🌐 BabelDOC", () => {
-  describe("PDF 翻譯", () => {
-    const testLanguages = SUPPORTED_LANGUAGES.filter((l) => ["zh", "ja"].includes(l.code));
-
-    for (const lang of testLanguages) {
-      test(
-        `英文 → ${lang.nativeName} (${lang.code})`,
-        async () => {
-          stats.total++;
-
-          if (!translators.babeldoc?.available) {
-            stats.skipped++;
-            console.log(`  ⏭ 跳過: babeldoc 不可用`);
-            return;
-          }
-
-          if (!existsSync(testPdfPath)) {
-            stats.skipped++;
-            console.log(`  ⏭ 跳過: 測試 PDF 不存在`);
-            return;
-          }
-
-          const outputPath = join(E2E_OUTPUT_DIR, `babeldoc_en_to_${lang.code}.tar`);
-          const startTime = Date.now();
-          const inputSize = statSync(testPdfPath).size;
-
-          try {
-            const module = await import("../../src/converters/babeldoc");
-
-            // 設置目標語言
-            process.env.BABELDOC_TARGET_LANG = lang.code;
-
-            await module.convert(testPdfPath, "pdf", "tar", outputPath);
-
-            const duration = Date.now() - startTime;
-            const outputSize = existsSync(outputPath) ? statSync(outputPath).size : 0;
-            const success = outputSize > 0;
-
-            stats.results.push({
-              translator: "babeldoc",
-              sourceLang: "en",
-              targetLang: lang.code,
-              success,
-              duration,
-              inputSize,
-              outputSize,
-            });
-
-            if (success) {
-              stats.passed++;
-              console.log(
-                `  ✓ en → ${lang.code}: ${outputSize} bytes (${(duration / 1000).toFixed(1)}s)`,
-              );
-            } else {
-              stats.failed++;
-              console.log(`  ✗ en → ${lang.code}: 輸出為空`);
-            }
-
-            expect(success).toBe(true);
-          } catch (error) {
-            const duration = Date.now() - startTime;
-            stats.failed++;
-            stats.results.push({
-              translator: "babeldoc",
-              sourceLang: "en",
-              targetLang: lang.code,
-              success: false,
-              duration,
-              inputSize,
-              outputSize: 0,
-              error: String(error),
-            });
-            console.log(`  ✗ en → ${lang.code}: ${error}`);
-            throw error;
-          }
-        },
-        TIMEOUT,
-      );
-    }
-  });
-});
-
-// =============================================================================
-// 語言矩陣測試
 // =============================================================================
 
 describe("🔤 語言矩陣測試 Language Matrix", () => {

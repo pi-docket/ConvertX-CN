@@ -43,15 +43,13 @@
 
 ## 安全设置
 
-| 变量                           | 必填 | 默认值  | 示例    | 影响功能             | 适用服务 | 来源文件                      | 注意事项                           |
-| ------------------------------ | ---- | ------- | ------- | -------------------- | -------- | ----------------------------- | ---------------------------------- |
-| `HTTP_ALLOWED`                 | 否   | `false` | `true`  | 是否允许 HTTP        | Web UI   | `src/helpers/env.ts`          | 本地测试可开，生产建议使用 HTTPS。 |
-| `TRUST_PROXY`                  | 否   | `false` | `true`  | 信任 `X-Forwarded-*` | Web UI   | `src/helpers/env.ts`          | 反向代理 HTTPS 常需要开启。        |
-| `ACCOUNT_REGISTRATION`         | 否   | `true`  | `false` | 是否允许注册         | Web UI   | `src/helpers/env.ts`          | 公开部署建议关闭。                 |
-| `ALLOW_UNAUTHENTICATED`        | 否   | `false` | `true`  | 是否允许未登录使用   | Web UI   | `src/helpers/env.ts`          | 公开部署高风险。                   |
-| `UNAUTHENTICATED_USER_SHARING` | 否   | `false` | `true`  | 未认证用户共享行为   | Web UI   | `src/helpers/env.ts`          | 具体行为需按页面流程确认。         |
-| `CONVERTX_WORKER_URL`          | 否   | 内置值  | URL     | 加密 key provider    | Web UI   | `src/security/keyProvider.ts` | 待确认使用场景。                   |
-| `CONVERTX_ENCRYPTION_KEY`      | 否   | 内置值  | hex key | 加密 key provider    | Web UI   | `src/security/keyProvider.ts` | 待确认使用场景。                   |
+| 变量                           | 必填 | 默认值  | 示例    | 影响功能             | 适用服务 | 来源文件             | 注意事项                           |
+| ------------------------------ | ---- | ------- | ------- | -------------------- | -------- | -------------------- | ---------------------------------- |
+| `HTTP_ALLOWED`                 | 否   | `false` | `true`  | 是否允许 HTTP        | Web UI   | `src/helpers/env.ts` | 本地测试可开，生产建议使用 HTTPS。 |
+| `TRUST_PROXY`                  | 否   | `false` | `true`  | 信任 `X-Forwarded-*` | Web UI   | `src/helpers/env.ts` | 反向代理 HTTPS 常需要开启。        |
+| `ACCOUNT_REGISTRATION`         | 否   | `true`  | `false` | 是否允许注册         | Web UI   | `src/helpers/env.ts` | 公开部署建议关闭。                 |
+| `ALLOW_UNAUTHENTICATED`        | 否   | `false` | `true`  | 是否允许未登录使用   | Web UI   | `src/helpers/env.ts` | 公开部署高风险。                   |
+| `UNAUTHENTICATED_USER_SHARING` | 否   | `false` | `true`  | 未认证用户共享行为   | Web UI   | `src/helpers/env.ts` | 具体行为需按页面流程确认。         |
 
 ## 转换设置
 
@@ -64,30 +62,28 @@
 
 ## 引擎设置
 
-| 变量                           | 必填 | 默认值                                            | 示例                               | 影响功能              | 适用服务        | 来源文件                                                          | 注意事项                                                                 |
-| ------------------------------ | ---- | ------------------------------------------------- | ---------------------------------- | --------------------- | --------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `FFMPEG_ARGS`                  | 否   | 空                                                | `-hwaccel cuda`                    | FFmpeg 输入参数       | Web UI          | `src/converters/ffmpeg.ts`                                        | 参数以空白切分。                                                         |
-| `FFMPEG_OUTPUT_ARGS`           | 否   | 空                                                | `-c:v h264_nvenc`                  | FFmpeg 输出参数       | Web UI          | `src/converters/ffmpeg.ts`                                        | 依赖宿主机与镜像支持。                                                   |
-| `IMAGEMAGICK_COMMAND`          | 否   | `magick`                                          | `convert`                          | ImageMagick 命令      | Web UI          | `src/converters/imagemagick.ts`                                   | 用于兼容不同安装方式。                                                   |
-| `OCR_LANG`                     | 否   | `eng+chi_tra+chi_sim+jpn`                         | `eng+chi_sim`                      | OCR 语言              | Web UI          | `src/helpers/pdfOcr.ts`                                           | 需要容器内有对应 Tesseract 语言包。                                      |
-| `PDFMATHTRANSLATE_SERVICE`     | 否   | 代码内默认服务                                    | `google`                           | PDFMathTranslate 服务 | Web UI          | `src/converters/pdfmathtranslate.ts`                              | 可用服务需实测。                                                         |
-| `PDFMATHTRANSLATE_MODELS_PATH` | 否   | 待确认                                            | `/models`                          | PDF 翻译模型路径      | 待确认          | `.env.example`                                                    | 未在 env 搜索中确认读取。                                                |
-| `MINERU_MODE`                  | 否   | `pipeline`                                        | `vlm`                              | MinerU 模式           | Web UI          | `src/helpers/env.ts`                                              | `MINERU_BACKEND` 包含 `vlm` 时也会切到 VLM。                             |
-| `MINERU_BACKEND`               | 否   | Dockerfile 中为 `pipeline`                        | `pipeline`                         | MinerU backend        | Web UI / Docker | `src/helpers/env.ts`、`src/converters/mineru.ts`、`Dockerfile`    | VLM 支持需按镜像确认。                                                   |
-| `MINERU_VLM_URL`               | 否   | helper 默认                                       | URL                                | VLM server 地址       | Web UI          | `src/converters/mineru.ts`                                        | 待确认外部服务要求。                                                     |
-| `MINERU_CONFIG`                | 否   | Dockerfile 设置                                   | `/opt/convertx/config/mineru.json` | MinerU 配置           | Docker / MinerU | `Dockerfile`                                                      | Runtime 使用非 root 可读路径。                                           |
-| `MINERU_MODELS_DIR`            | 否   | Dockerfile 设置                                   | `/opt/convertx/models/mineru`      | MinerU 模型目录       | Docker / MinerU | `Dockerfile`                                                      | 模型是否完整需验证。                                                     |
-| `BABELDOC_ENGINE`              | 否   | `siliconflow`                                     | `openai`                           | BabelDOC 翻译引擎     | Web UI          | `src/helpers/env.ts`、`src/converters/babeldoc.ts`                | 代码当前支持情况需以 converter 为准。                                    |
-| `BABELDOC_CACHE_PATH`          | 否   | Docker 为 `/opt/convertx/cache/babeldoc`          | `/cache/babeldoc`                  | BabelDOC cache        | Web UI / Docker | `src/converters/babeldoc.ts`、`pdfmathtranslate.ts`、`Dockerfile` | Runtime 不依赖 `/root`；影响模型、字体、缓存。                           |
-| `OPENAI_API_KEY`               | 否   | 空                                                | `sk-...`                           | OpenAI 翻译           | Web UI          | `src/helpers/env.ts`、`src/helpers/apiKeys.ts`                    | 仅在相应引擎模式下需要。                                                 |
-| `DEEPSEEK_API_KEY`             | 否   | 空                                                | `sk-...`                           | DeepSeek 翻译         | Web UI          | `src/helpers/env.ts`、`src/helpers/apiKeys.ts`                    | 仅在相应引擎模式下需要。                                                 |
-| `OTHER_LLM_API_KEY`            | 否   | 空                                                | `token`                            | Custom LLM            | Web UI          | `src/helpers/env.ts`、`src/helpers/apiKeys.ts`                    | 与 `CUSTOM_LLM_BASE_URL` 配合。                                          |
-| `CUSTOM_LLM_BASE_URL`          | 否   | 空                                                | `https://api.example.com/v1`       | Custom LLM endpoint   | Web UI          | `src/helpers/env.ts`                                              | 与 `OTHER_LLM_API_KEY` 配合。                                            |
-| `RESVG_DISABLED`               | 否   | 未禁用                                            | `1`                                | 禁用 resvg            | Web UI          | `src/converters/resvg.ts`                                         | arm64 构建失败也会通过 disabled-engines 文件禁用。                       |
-| `PDF_SIGN_P12_PATH`            | 否   | `${DATA_DIR}/certs/signing.p12`                   | `/run/secrets/signing.p12`         | PDF Packager 签名     | Web UI / Docker | `scripts/entrypoint.sh`、`src/converters/pdfpackager.ts`          | 未设置时首次启动产生部署专用自签证书；显式设置的证书验证失败会终止启动。 |
-| `PDF_SIGN_P12_PASSWORD_FILE`   | 否   | 自动证书使用 `${DATA_DIR}/certs/signing.password` | `/run/secrets/signing-password`    | PKCS12 密码           | Web UI / Docker | `scripts/entrypoint.sh`、`scripts/pdf_sign.py`                    | 优先于 `PDF_SIGN_P12_PASSWORD`。                                         |
-| `PDF_SIGN_P12_PASSWORD`        | 否   | 空                                                | secret                             | PKCS12 密码           | Web UI / Docker | `scripts/entrypoint.sh`、`scripts/pdf_sign.py`                    | 建议改用密码文件。                                                       |
-| `PDF_SIGN_SCRIPT_PATH`         | 否   | `/app/scripts/pdf_sign.py`                        | `/app/scripts/pdf_sign.py`         | PDF 签名脚本          | Web UI          | `src/converters/pdfpackager.ts`                                   | 依赖 Python 签名脚本。                                                   |
+| 变量                          | 必填 | 默认值                                            | 示例                               | 影响功能              | 适用服务        | 来源文件                                                       | 注意事项                                                                 |
+| ----------------------------- | ---- | ------------------------------------------------- | ---------------------------------- | --------------------- | --------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `FFMPEG_ARGS`                 | 否   | 空                                                | `-hwaccel cuda`                    | FFmpeg 输入参数       | Web UI          | `src/converters/ffmpeg.ts`                                     | 参数以空白切分。                                                         |
+| `FFMPEG_OUTPUT_ARGS`          | 否   | 空                                                | `-c:v h264_nvenc`                  | FFmpeg 输出参数       | Web UI          | `src/converters/ffmpeg.ts`                                     | 依赖宿主机与镜像支持。                                                   |
+| `IMAGEMAGICK_COMMAND`         | 否   | `magick`                                          | `convert`                          | ImageMagick 命令      | Web UI          | `src/converters/imagemagick.ts`                                | 用于兼容不同安装方式。                                                   |
+| `OCR_LANG`                    | 否   | `eng+chi_tra+chi_sim+jpn`                         | `eng+chi_sim`                      | OCR 语言              | Web UI          | `src/helpers/pdfOcr.ts`                                        | 需要容器内有对应 Tesseract 语言包。                                      |
+| `PDFMATHTRANSLATE_SERVICE`    | 否   | 代码内默认服务                                    | `google`                           | PDFMathTranslate 服务 | Web UI          | `src/converters/pdfmathtranslate.ts`                           | 可用服务需实测。                                                         |
+| `PDFMATHTRANSLATE_CACHE_PATH` | 否   | Docker 为 `/opt/convertx/cache/babeldoc`          | `/cache/pdfmathtranslate`          | PDF 翻译模型缓存      | Web UI / Docker | `src/converters/pdfmathtranslate.ts`、`Dockerfile`             | 保留旧 cache 目录兼容 pdf2zh-next 内部资产布局。                         |
+| `MINERU_MODE`                 | 否   | `pipeline`                                        | `vlm`                              | MinerU 模式           | Web UI          | `src/helpers/env.ts`                                           | `MINERU_BACKEND` 包含 `vlm` 时也会切到 VLM。                             |
+| `MINERU_BACKEND`              | 否   | Dockerfile 中为 `pipeline`                        | `pipeline`                         | MinerU backend        | Web UI / Docker | `src/helpers/env.ts`、`src/converters/mineru.ts`、`Dockerfile` | VLM 支持需按镜像确认。                                                   |
+| `MINERU_VLM_URL`              | 否   | helper 默认                                       | URL                                | VLM server 地址       | Web UI          | `src/converters/mineru.ts`                                     | 待确认外部服务要求。                                                     |
+| `MINERU_CONFIG`               | 否   | Dockerfile 设置                                   | `/opt/convertx/config/mineru.json` | MinerU 配置           | Docker / MinerU | `Dockerfile`                                                   | Runtime 使用非 root 可读路径。                                           |
+| `MINERU_MODELS_DIR`           | 否   | Dockerfile 设置                                   | `/opt/convertx/models/mineru`      | MinerU 模型目录       | Docker / MinerU | `Dockerfile`                                                   | 模型是否完整需验证。                                                     |
+| `OPENAI_API_KEY`              | 否   | 空                                                | `sk-...`                           | OpenAI 翻译           | Web UI          | `src/helpers/env.ts`、`src/helpers/apiKeys.ts`                 | 仅在相应引擎模式下需要。                                                 |
+| `DEEPSEEK_API_KEY`            | 否   | 空                                                | `sk-...`                           | DeepSeek 翻译         | Web UI          | `src/helpers/env.ts`、`src/helpers/apiKeys.ts`                 | 仅在相应引擎模式下需要。                                                 |
+| `OTHER_LLM_API_KEY`           | 否   | 空                                                | `token`                            | Custom LLM            | Web UI          | `src/helpers/env.ts`、`src/helpers/apiKeys.ts`                 | 与 `CUSTOM_LLM_BASE_URL` 配合。                                          |
+| `CUSTOM_LLM_BASE_URL`         | 否   | 空                                                | `https://api.example.com/v1`       | Custom LLM endpoint   | Web UI          | `src/helpers/env.ts`                                           | 与 `OTHER_LLM_API_KEY` 配合。                                            |
+| `RESVG_DISABLED`              | 否   | 未禁用                                            | `1`                                | 禁用 resvg            | Web UI          | `src/converters/resvg.ts`                                      | arm64 构建失败也会通过 disabled-engines 文件禁用。                       |
+| `PDF_SIGN_P12_PATH`           | 否   | `${DATA_DIR}/certs/signing.p12`                   | `/run/secrets/signing.p12`         | PDF Packager 签名     | Web UI / Docker | `scripts/entrypoint.sh`、`src/converters/pdfpackager.ts`       | 未设置时首次启动产生部署专用自签证书；显式设置的证书验证失败会终止启动。 |
+| `PDF_SIGN_P12_PASSWORD_FILE`  | 否   | 自动证书使用 `${DATA_DIR}/certs/signing.password` | `/run/secrets/signing-password`    | PKCS12 密码           | Web UI / Docker | `scripts/entrypoint.sh`、`scripts/pdf_sign.py`                 | 优先于 `PDF_SIGN_P12_PASSWORD`。                                         |
+| `PDF_SIGN_P12_PASSWORD`       | 否   | 空                                                | secret                             | PKCS12 密码           | Web UI / Docker | `scripts/entrypoint.sh`、`scripts/pdf_sign.py`                 | 建议改用密码文件。                                                       |
+| `PDF_SIGN_SCRIPT_PATH`        | 否   | `/app/scripts/pdf_sign.py`                        | `/app/scripts/pdf_sign.py`         | PDF 签名脚本          | Web UI          | `src/converters/pdfpackager.ts`                                | 依赖 Python 签名脚本。                                                   |
 
 ## API Server 设置
 
@@ -104,17 +100,16 @@
 
 ## Docker 设置差异
 
-- `Dockerfile` 设置 MinerU、BabelDOC、模型路径、禁止 pip 安装等运行环境。
+- `Dockerfile` 设置 MinerU、PDFMathTranslate、模型路径、禁止 pip 安装等运行环境。
 - `Dockerfile.lite` 安装较少工具，部分引擎不可用或待确认。
 - `Dockerfile.full` 当前多处扩展依赖为注释，实际 Full 发布能力需复核。
 
 ## 待确认或可能已废弃
 
-| 变量                           | 状态       | 原因                                                                   |
-| ------------------------------ | ---------- | ---------------------------------------------------------------------- |
-| `DATA_DIR`                     | 待确认     | 示例中出现，但 `src/db/db.ts` 当前使用 `./data/mydb.sqlite`。          |
-| `HTTP_ALLOWED_FILE_SIZE`       | 待确认     | 示例中出现，未在 env 搜索中确认读取。                                  |
-| `PDFMATHTRANSLATE_MODELS_PATH` | 待确认     | 示例中出现，未确认代码读取。                                           |
-| `ENABLE_SWAGGER`               | 可能已废弃 | API env example 中出现，但当前未看到 Swagger route。                   |
-| `JWT_EXPIRATION_SECS`          | 可能已废弃 | API Server 当前只验证外部 JWT，不签发 token。                          |
-| `ENABLE_RAS_API`               | 待确认     | Web UI status helper 会读取，但 compose 使用 profile 控制 API Server。 |
+| 变量                     | 状态       | 原因                                                                   |
+| ------------------------ | ---------- | ---------------------------------------------------------------------- |
+| `DATA_DIR`               | 待确认     | 示例中出现，但 `src/db/db.ts` 当前使用 `./data/mydb.sqlite`。          |
+| `HTTP_ALLOWED_FILE_SIZE` | 待确认     | 示例中出现，未在 env 搜索中确认读取。                                  |
+| `ENABLE_SWAGGER`         | 可能已废弃 | API env example 中出现，但当前未看到 Swagger route。                   |
+| `JWT_EXPIRATION_SECS`    | 可能已废弃 | API Server 当前只验证外部 JWT，不签发 token。                          |
+| `ENABLE_RAS_API`         | 待确认     | Web UI status helper 会读取，但 compose 使用 profile 控制 API Server。 |

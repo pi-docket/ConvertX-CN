@@ -85,7 +85,7 @@ check_dependencies() {
     done
     
     # 檢查翻譯工具
-    local translators=("pdf2zh" "babeldoc")
+    local translators=("pdf2zh")
     for translator in "${translators[@]}"; do
         if command -v "$translator" &> /dev/null; then
             print_success "$translator found"

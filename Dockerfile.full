@@ -247,7 +247,7 @@ FROM convertx/convertx-cn:latest
 # ℹ️ 一般版已內建功能（CPU-only，約 3-5GB）：
 #   - 核心轉換：LibreOffice, FFmpeg, ImageMagick, Pandoc, Inkscape
 #   - OCR：Tesseract（7 種語言）
-#   - PDF 翻譯：PDFMathTranslate, BabelDOC
+#   - PDF 翻譯：PDFMathTranslate
 #   - PDF 轉 MD：MinerU（CPU 模式，使用 pipeline backend）
 #   - 字型：Noto CJK, Liberation, 標楷體
 #   - TexLive：基礎 + CJK + 德法

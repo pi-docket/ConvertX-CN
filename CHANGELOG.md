@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.28](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.28) (2026-09-29)
+
+正式版上游优化合并与 BabelDOC 引擎移除发布。
+
+### Breaking Changes
+
+- 移除独立 `BabelDOC` 转换引擎、SiliconFlow credential provider、文字翻译 manager，以及对应配置、测试与 API Server registry 项。
+- `BABELDOC_ENGINE`、`SILICONFLOW_API_KEY`、`CONVERTX_WORKER_URL`、`CONVERTX_ENCRYPTION_KEY` 不再作为当前功能配置项使用。
+
+### Upstream Sync
+
+- 合并上游开发分支中的 Assimp 输出扩展映射、路径穿越修复思路、LibreOffice WPS 修复、结果下载文件名编码、Dasel v3 CLI、版本打印修复、LibreOffice Calc/Excel 支持、Calibre AZW3、FFmpeg buffer/格式补充、GraphicsMagick EXIF auto-orient、pdftops、认证跳转、ImageMagick PDF raster quality、MarkItDown 类型修复、Docker PUID/PGID 支持。
+- 对与 ConvertX-CN 架构冲突的上游旧调度器逻辑选择保留本地实现，避免削弱现有 job/artifact 安全边界和 TRA 多输出治理。
+
 ## [0.1.27](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.27) (2026-09-29)
 
 正式版安全與轉換流程加固發布。

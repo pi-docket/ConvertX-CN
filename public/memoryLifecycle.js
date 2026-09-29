@@ -6,7 +6,7 @@
  * 一、三個記憶體領域（Memory Domains）：
  *
  * 1. Conversion Engine Memory（轉換引擎記憶體）
- *    - 包含：Calibre、BabelDOC、其他轉檔引擎
+ *    - 包含：Calibre、PDFMathTranslate、其他轉檔引擎
  *    - 特性：任務執行期間【完全不受 GC 影響】
  *    - 原因：轉檔工具通常會在短時間內使用大量記憶體（例如 PDF 渲染）
  *           強制 GC 會導致任務失敗、CLI crash、PDF 生成中斷
@@ -68,7 +68,6 @@ const RENDERER_IDLE_THRESHOLD = 30 * 1000; // 30 秒
 const CONVERSION_ENGINE_TASK_TYPES = new Set([
   "convert", // 通用轉換任務
   "calibre", // Calibre 轉換
-  "babeldoc", // BabelDOC 轉換
   "pdfmathtranslate", // PDFMathTranslate
   "mineru", // MinerU
   "ocr", // OCR 處理

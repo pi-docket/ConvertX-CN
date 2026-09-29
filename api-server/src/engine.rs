@@ -332,31 +332,6 @@ impl EngineRegistry {
                     }
                 })),
             },
-            // -----------------------------------------------------------------
-            // BabelDOC - PDF 翻譯引擎
-            // -----------------------------------------------------------------
-            Engine {
-                engine_id: "babeldoc".to_string(),
-                engine_name: "BabelDOC".to_string(),
-                description: "PDF 翻譯引擎（支援多語言）".to_string(),
-                enabled: true,
-                input_formats: vec!["pdf"].into_iter().map(String::from).collect(),
-                output_formats: generate_translation_outputs("pdf"),
-                max_file_size_mb: 200,
-                requires_params: true,
-                params_schema: Some(serde_json::json!({
-                    "type": "object",
-                    "properties": {
-                        "target_lang": {
-                            "type": "string",
-                            "enum": ["en", "zh", "zh-TW", "ja", "ko", "de", "fr", "es", "it", "pt", "ru", "ar", "hi", "vi", "th"],
-                            "description": "目標語言"
-                        }
-                    },
-                    "required": ["target_lang"]
-                })),
-            },
-            // -----------------------------------------------------------------
             // PDFMathTranslate - PDF 數學公式翻譯引擎
             // -----------------------------------------------------------------
             Engine {

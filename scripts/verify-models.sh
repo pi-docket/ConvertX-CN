@@ -25,7 +25,7 @@ ARCH=$(uname -m)
 # 新的模型目錄結構
 MODELS_BASE_DIR="/opt/convertx/models"
 MINERU_MODELS_DIR="${MODELS_BASE_DIR}/mineru"
-BABELDOC_CACHE_DIR="/root/.cache/babeldoc"
+PDFMATHTRANSLATE_CACHE_DIR="${PDFMATHTRANSLATE_CACHE_PATH:-/root/.cache/babeldoc}"
 
 # 檢查函數
 check_file() {
@@ -63,11 +63,11 @@ check_dir() {
 }
 
 # ==============================================================================
-# 1. PDFMathTranslate / BabelDOC ONNX 模型
+# 1. PDFMathTranslate ONNX 模型
 # ==============================================================================
-echo "📦 PDFMathTranslate / BabelDOC 模型"
+echo "📦 PDFMathTranslate 模型"
 echo "----------------------------------------"
-check_file "${BABELDOC_CACHE_DIR}/models/doclayout_yolo_docstructbench_imgsz1024.onnx" "DocLayout-YOLO ONNX"
+check_file "${PDFMATHTRANSLATE_CACHE_DIR}/models/doclayout_yolo_docstructbench_imgsz1024.onnx" "DocLayout-YOLO ONNX"
 echo ""
 
 # ==============================================================================
@@ -101,13 +101,13 @@ fi
 echo ""
 
 # ==============================================================================
-# 4. BabelDOC 快取
+# 4. PDFMathTranslate 快取
 # ==============================================================================
-echo "📦 BabelDOC 快取"
+echo "📦 PDFMathTranslate 快取"
 echo "----------------------------------------"
-check_dir "${BABELDOC_CACHE_DIR}" "BabelDOC 快取"
-check_dir "${BABELDOC_CACHE_DIR}/models" "BabelDOC Models"
-check_dir "${BABELDOC_CACHE_DIR}/fonts" "BabelDOC Fonts"
+check_dir "${PDFMATHTRANSLATE_CACHE_DIR}" "PDFMathTranslate 快取"
+check_dir "${PDFMATHTRANSLATE_CACHE_DIR}/models" "PDFMathTranslate Models"
+check_dir "${PDFMATHTRANSLATE_CACHE_DIR}/fonts" "PDFMathTranslate Fonts"
 echo ""
 
 # ==============================================================================
@@ -119,7 +119,7 @@ echo "HF_HUB_OFFLINE: ${HF_HUB_OFFLINE:-未設定}"
 echo "TRANSFORMERS_OFFLINE: ${TRANSFORMERS_OFFLINE:-未設定}"
 echo "HF_HOME: ${HF_HOME:-未設定}"
 echo "MINERU_MODEL_SOURCE: ${MINERU_MODEL_SOURCE:-未設定}"
-echo "BABELDOC_OFFLINE: ${BABELDOC_OFFLINE:-未設定}"
+echo "PDFMATHTRANSLATE_CACHE_PATH: ${PDFMATHTRANSLATE_CACHE_PATH:-未設定}"
 echo "PIP_NO_INDEX: ${PIP_NO_INDEX:-未設定}"
 echo ""
 
@@ -146,7 +146,7 @@ echo ""
 # ==============================================================================
 echo "🔧 工具可執行性"
 echo "----------------------------------------"
-for cmd in mineru babeldoc pdf2zh markitdown convert ffmpeg pandoc; do
+for cmd in mineru pdf2zh markitdown convert ffmpeg pandoc; do
     if command -v "$cmd" >/dev/null 2>&1; then
         echo "✅ $cmd: $(which $cmd)"
         ((PASS++))

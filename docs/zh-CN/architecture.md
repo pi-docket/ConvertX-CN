@@ -123,7 +123,7 @@ API Server 是可选服务。它当前代理 Web UI backend，而不是完全独
 - `Dockerfile`：Standard，包含系统工具、Python 工具、模型与 OCR/PDF 相关准备。
 - `Dockerfile.full`：基于 Standard 扩展，实际启用内容需确认。
 
-`models/` 用于 MinerU / VLM / BabelDOC 相关模型缓存或复制。`scripts/` 包含安装、验证、模型下载、entrypoint 与 PDF 签名脚本。`tests/` 覆盖 converter、transfer 与 e2e。
+`models/` 用于 MinerU / VLM / PDFMathTranslate 相关模型缓存或复制。`scripts/` 包含安装、验证、模型下载、entrypoint 与 PDF 签名脚本。`tests/` 覆盖 converter、transfer 与 e2e。
 
 ## 安全边界
 

@@ -58,7 +58,7 @@ export const UNAUTHENTICATED_USER_SHARING =
 
 export const TIMEZONE = process.env.TZ || undefined;
 
-// ========== 新增：處理模式與翻譯服務設定 ==========
+// ========== 新增：處理模式設定 ==========
 
 /**
  * MinerU 處理模式
@@ -75,16 +75,6 @@ export const MINERU_MODE = ((): "pipeline" | "vlm" => {
   if (backend?.includes("vlm")) return "vlm";
   return "pipeline";
 })();
-
-/**
- * BabelDOC 翻譯引擎
- *
- * 支援的翻譯類型：
- * - siliconflow: BabelDOC 使用 SiliconFlow（需 SILICONFLOW_API_KEY）
- * - openai/deepseek/custom: 僅供文字翻譯管理器使用，BabelDOC 尚未支援
- * - placeholder: 不啟用翻譯（會拋出錯誤）
- */
-export const BABELDOC_ENGINE = process.env.BABELDOC_ENGINE?.toLowerCase() || "siliconflow";
 
 /**
  * API Keys（從環境變數讀取）

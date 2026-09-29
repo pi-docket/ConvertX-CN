@@ -22,7 +22,7 @@ log_error() { echo -e "${RED}❌ [ERROR]${NC} $1"; }
 
 # 目錄定義
 CUSTOM_FONTS_DIR="/usr/share/fonts/truetype/custom"
-BABELDOC_FONTS_DIR="/root/.cache/babeldoc/fonts"
+PDFMATHTRANSLATE_FONTS_DIR="/root/.cache/babeldoc/fonts"
 
 # ==============================================================================
 # 系統字型（APT）
@@ -52,7 +52,7 @@ install_custom_fonts() {
     
     # 創建目錄
     mkdir -p "${CUSTOM_FONTS_DIR}"
-    mkdir -p "${BABELDOC_FONTS_DIR}"
+    mkdir -p "${PDFMATHTRANSLATE_FONTS_DIR}"
     
     # 檢查並複製字型
     local FONTS_SRC="${1:-/app/fonts}"
@@ -77,14 +77,14 @@ install_custom_fonts() {
 }
 
 # ==============================================================================
-# 同步字型到 BabelDOC 目錄
+# 同步字型到 PDFMathTranslate cache 目錄
 # ==============================================================================
-sync_babeldoc_fonts() {
-    log_info "同步字型到 BabelDOC 目錄..."
+sync_pdfmathtranslate_fonts() {
+    log_info "同步字型到 PDFMathTranslate cache 目錄..."
     
-    mkdir -p "${BABELDOC_FONTS_DIR}"
+    mkdir -p "${PDFMATHTRANSLATE_FONTS_DIR}"
     
-    # 複製關鍵字型到 BabelDOC
+    # 複製關鍵字型到 PDFMathTranslate cache
     local fonts=(
         "GoNotoKurrent-Regular.ttf"
         "SourceHanSerifCN-Regular.ttf"
@@ -96,12 +96,12 @@ sync_babeldoc_fonts() {
     
     for font in "${fonts[@]}"; do
         if [ -f "${CUSTOM_FONTS_DIR}/${font}" ]; then
-            cp "${CUSTOM_FONTS_DIR}/${font}" "${BABELDOC_FONTS_DIR}/"
+            cp "${CUSTOM_FONTS_DIR}/${font}" "${PDFMATHTRANSLATE_FONTS_DIR}/"
             log_info "  已同步: ${font}"
         fi
     done
     
-    log_success "BabelDOC 字型同步完成"
+    log_success "PDFMathTranslate 字型同步完成"
 }
 
 # ==============================================================================
@@ -122,7 +122,7 @@ verify_fonts() {
     echo "系統字型目錄統計:"
     echo "  /usr/share/fonts: $(find /usr/share/fonts -type f \( -name '*.ttf' -o -name '*.otf' \) | wc -l) 個字型"
     echo "  ${CUSTOM_FONTS_DIR}: $(find "${CUSTOM_FONTS_DIR}" -type f 2>/dev/null | wc -l) 個字型"
-    echo "  ${BABELDOC_FONTS_DIR}: $(find "${BABELDOC_FONTS_DIR}" -type f 2>/dev/null | wc -l) 個字型"
+    echo "  ${PDFMATHTRANSLATE_FONTS_DIR}: $(find "${PDFMATHTRANSLATE_FONTS_DIR}" -type f 2>/dev/null | wc -l) 個字型"
     
     # 列出自訂字型
     if [ -d "${CUSTOM_FONTS_DIR}" ]; then
@@ -161,7 +161,7 @@ main() {
     
     install_system_fonts
     install_custom_fonts "${1:-/app/fonts}"
-    sync_babeldoc_fonts
+    sync_pdfmathtranslate_fonts
     update_font_cache
     verify_fonts
     

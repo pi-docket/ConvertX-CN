@@ -108,22 +108,6 @@ install_pdf2zh() {
 }
 
 # ==============================================================================
-# babeldoc
-# ==============================================================================
-install_babeldoc() {
-    log_info "安裝 babeldoc..."
-    uv pip install --system --break-system-packages --no-cache babeldoc || {
-        log_warn "babeldoc 安裝可能有警告，但繼續"
-    }
-    
-    if command -v babeldoc >/dev/null 2>&1; then
-        log_success "babeldoc 安裝完成"
-    else
-        log_warn "babeldoc 可能安裝到非標準路徑"
-    fi
-}
-
-# ==============================================================================
 # MinerU
 # ==============================================================================
 install_mineru() {
@@ -147,7 +131,7 @@ install_mineru() {
 }
 
 # ==============================================================================
-# tiktoken（BabelDOC 依賴）
+# tiktoken（PDFMathTranslate/pdf2zh 依賴）
 # ==============================================================================
 install_tiktoken() {
     log_info "安裝 tiktoken..."
@@ -167,7 +151,6 @@ verify_installations() {
         "uv:uv"
         "markitdown:markitdown"
         "pdf2zh:pdf2zh"
-        "babeldoc:babeldoc"
     )
     
     # MinerU 僅在 AMD64
@@ -205,7 +188,6 @@ main() {
     install_endesive
     install_markitdown
     install_pdf2zh
-    install_babeldoc
     install_mineru
     install_tiktoken
     verify_installations

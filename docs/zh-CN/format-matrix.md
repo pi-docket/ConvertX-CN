@@ -22,7 +22,7 @@
 
 ## 已验证 Web UI Engine 清单
 
-以下 26 个 engine 已从 `src/converters/main.ts` 的 `properties` registry 确认，并且每个对应 converter 文件都存在 `export const properties`。
+以下 25 个 engine 已从 `src/converters/main.ts` 的 `properties` registry 确认，并且每个对应 converter 文件都存在 `export const properties`。
 
 | Engine ID / Display Name | 类型          | Source File                          | Test File                                   | 格式来源                      | 备注                                                                 |
 | ------------------------ | ------------- | ------------------------------------ | ------------------------------------------- | ----------------------------- | -------------------------------------------------------------------- |
@@ -48,7 +48,6 @@
 | `markitDown`             | 文档          | `src/converters/markitdown.ts`       | `tests/converters/markitdown.test.ts`       | `properties.from/to`          | 多格式转 Markdown。                                                  |
 | `MinerU`                 | PDF/OCR       | `src/converters/mineru.ts`           | `tests/converters/mineru.test.ts`           | `properties.from/to`          | 模型、backend、VLM 支持需按镜像验证。                                |
 | `PDFMathTranslate`       | PDF 翻译      | `src/converters/pdfmathtranslate.ts` | `tests/converters/pdfmathtranslate.test.ts` | `properties.from/to`          | 输出格式由语言列表生成。                                             |
-| `BabelDOC`               | PDF 翻译      | `src/converters/babeldoc.ts`         | `tests/converters/babeldoc.test.ts`         | `generateLanguageMappings()`  | 输出格式由代码生成，不能只看静态表。                                 |
 | `OCRmyPDF`               | OCR           | `src/converters/ocrmypdf.ts`         | `tests/converters/ocrmypdf.test.ts`         | `properties.from/to`          | 依赖 Tesseract 与语言包。                                            |
 | `PDF Packager`           | PDF 处理      | `src/converters/pdfpackager.ts`      | `tests/converters/pdfpackager.test.ts`      | `ALL_CHIPS` / `properties.to` | 输出 chip 由代码生成，包含图片化、PDF/A、签名/保护等组合。           |
 | `deark`                  | 特殊格式/解包 | `src/converters/deark.ts`            | `tests/converters/deark.test.ts`            | `properties.from/to`          | 输出为归档类结果。                                                   |
@@ -68,17 +67,17 @@
 
 ## 当前矩阵摘要
 
-| 类型      | 引擎                                                           | 输入格式来源            | 输出格式来源            | Lite        | Standard | Full | amd64  | arm64       | 备注                                            |
-| --------- | -------------------------------------------------------------- | ----------------------- | ----------------------- | ----------- | -------- | ---- | ------ | ----------- | ----------------------------------------------- |
-| 影音      | FFmpeg                                                         | `ffmpeg.ts`             | `ffmpeg.ts`             | 支持        | 支持     | 支持 | 支持   | 待确认      | Standard 使用静态包下载逻辑；硬件加速另行验证。 |
-| 图片      | ImageMagick / GraphicsMagick / vips / libheif / libjxl         | 各 converter            | 各 converter            | 部分待确认  | 支持     | 支持 | 支持   | 待确认      | Lite 对 vips 等支持需按镜像验证。               |
-| 文档      | LibreOffice / Pandoc / MarkItDown                              | 各 converter            | 各 converter            | 部分支持    | 支持     | 支持 | 支持   | 待确认      | PDF 输出和字体依赖需验证。                      |
-| 电子书    | Calibre / Pandoc / LibreOffice                                 | 各 converter            | 各 converter            | 待确认      | 支持     | 支持 | 支持   | 待确认      | Calibre 在各镜像的安装状态需确认。              |
-| PDF / OCR | PDF Packager / PDFMathTranslate / BabelDOC / OCRmyPDF / MinerU | 各 converter / 代码生成 | 各 converter / 代码生成 | 多数待确认  | 支持     | 支持 | 待确认 | 待确认      | 依赖模型、语言包、Python 工具或外部 API。       |
-| 向量图    | Inkscape / resvg / Potrace / VTracer / dvisvgm / XeLaTeX       | 各 converter            | 各 converter            | 部分支持    | 支持     | 支持 | 支持   | 待确认      | resvg 在 arm64 有禁用逻辑。                     |
-| 3D 模型   | Assimp                                                         | `assimp.ts`             | `assimp.ts`             | 待确认      | 支持     | 支持 | 支持   | 待确认      | 需按 `assimp-utils` 安装状态验证。              |
-| 数据格式  | Dasel / VCF                                                    | 各 converter            | 各 converter            | 支持/待确认 | 支持     | 支持 | 支持   | 支持/待确认 | VCF 为内置逻辑；Dasel 依赖 binary。             |
-| 特殊格式  | deark                                                          | `deark.ts`              | `deark.ts`              | 待确认      | 支持     | 支持 | 支持   | 待确认      | Standard 从源码编译 deark。                     |
+| 类型      | 引擎                                                     | 输入格式来源            | 输出格式来源            | Lite        | Standard | Full | amd64  | arm64       | 备注                                            |
+| --------- | -------------------------------------------------------- | ----------------------- | ----------------------- | ----------- | -------- | ---- | ------ | ----------- | ----------------------------------------------- |
+| 影音      | FFmpeg                                                   | `ffmpeg.ts`             | `ffmpeg.ts`             | 支持        | 支持     | 支持 | 支持   | 待确认      | Standard 使用静态包下载逻辑；硬件加速另行验证。 |
+| 图片      | ImageMagick / GraphicsMagick / vips / libheif / libjxl   | 各 converter            | 各 converter            | 部分待确认  | 支持     | 支持 | 支持   | 待确认      | Lite 对 vips 等支持需按镜像验证。               |
+| 文档      | LibreOffice / Pandoc / MarkItDown                        | 各 converter            | 各 converter            | 部分支持    | 支持     | 支持 | 支持   | 待确认      | PDF 输出和字体依赖需验证。                      |
+| 电子书    | Calibre / Pandoc / LibreOffice                           | 各 converter            | 各 converter            | 待确认      | 支持     | 支持 | 支持   | 待确认      | Calibre 在各镜像的安装状态需确认。              |
+| PDF / OCR | PDF Packager / PDFMathTranslate / OCRmyPDF / MinerU      | 各 converter / 代码生成 | 各 converter / 代码生成 | 多数待确认  | 支持     | 支持 | 待确认 | 待确认      | 依赖模型、语言包、Python 工具或外部 API。       |
+| 向量图    | Inkscape / resvg / Potrace / VTracer / dvisvgm / XeLaTeX | 各 converter            | 各 converter            | 部分支持    | 支持     | 支持 | 支持   | 待确认      | resvg 在 arm64 有禁用逻辑。                     |
+| 3D 模型   | Assimp                                                   | `assimp.ts`             | `assimp.ts`             | 待确认      | 支持     | 支持 | 支持   | 待确认      | 需按 `assimp-utils` 安装状态验证。              |
+| 数据格式  | Dasel / VCF                                              | 各 converter            | 各 converter            | 支持/待确认 | 支持     | 支持 | 支持   | 支持/待确认 | VCF 为内置逻辑；Dasel 依赖 binary。             |
+| 特殊格式  | deark                                                    | `deark.ts`              | `deark.ts`              | 待确认      | 支持     | 支持 | 支持   | 待确认      | Standard 从源码编译 deark。                     |
 
 ## API Server 差异
 
@@ -95,4 +94,4 @@
 - 每个格式是否只有 metadata 支持，还是已有测试覆盖。
 - Lite / Standard / Full 每个 engine 的实际 binary 可用性。
 - 每个 engine 在 amd64 / arm64 的测试通过情况。
-- 代码生成格式，例如 BabelDOC、PDFMathTranslate、PDF Packager 的输出 chip/语言列表，需要由代码生成而不是手写。
+- 代码生成格式，例如 PDFMathTranslate、PDF Packager 的输出 chip/语言列表，需要由代码生成而不是手写。

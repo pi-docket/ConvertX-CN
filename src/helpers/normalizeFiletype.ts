@@ -55,9 +55,9 @@ export const normalizeOutputFiletype = (filetype: string): string => {
     case "assjson":
       return "json";
     default: {
-      // OCRmyPDF / PDFMathTranslate / BabelDOC 格式處理
+      // OCRmyPDF / PDFMathTranslate 格式處理
       // 格式：<format>-<lang> 或 <format>-ocr
-      // pdf-ocr, pdf-en, pdf-zh-tw, md-en, html-ja 等
+      // pdf-ocr, pdf-en, pdf-zh-tw 等
 
       // 翻譯/OCR 支援的所有語言（合併所有引擎支援的語言）
       const translationLanguages = [
@@ -84,22 +84,6 @@ export const normalizeOutputFiletype = (filetype: string): string => {
         const suffix = lowercaseFiletype.slice(4);
         if (translationLanguages.includes(suffix)) {
           return "pdf";
-        }
-      }
-
-      // Markdown 翻譯輸出 (BabelDOC) → .md
-      if (lowercaseFiletype.startsWith("md-")) {
-        const suffix = lowercaseFiletype.slice(3);
-        if (translationLanguages.includes(suffix)) {
-          return "md";
-        }
-      }
-
-      // HTML 翻譯輸出 (BabelDOC) → .html
-      if (lowercaseFiletype.startsWith("html-")) {
-        const suffix = lowercaseFiletype.slice(5);
-        if (translationLanguages.includes(suffix)) {
-          return "html";
         }
       }
 
