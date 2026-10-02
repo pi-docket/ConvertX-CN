@@ -10,6 +10,7 @@ on:
       - "src/**"
       - "tests/**"
       - "Dockerfile"
+      - "Dockerfile.lite"
       - ".github/workflows/docker-e2e-tests.yml"
   pull_request:
     branches: ["main"]
@@ -17,6 +18,8 @@ on:
       - "src/**"
       - "tests/**"
       - "Dockerfile"
+      - "Dockerfile.lite"
+      - ".github/workflows/docker-e2e-tests.yml"
   workflow_dispatch:
     inputs:
       run_translation_tests:
@@ -228,6 +231,9 @@ jobs:
           docker run --rm \
             --name convertx-e2e-test \
             -v "${{ github.workspace }}/tests:/app/tests" \
+            -v "${{ github.workspace }}/src:/app/src:ro" \
+            -v "${{ github.workspace }}/package.json:/app/package.json:ro" \
+            -v "${{ github.workspace }}/bun.lock:/app/bun.lock:ro" \
             -v "${{ github.workspace }}/test-results:/app/test-results" \
             -e CI=true \
             -e NODE_ENV=test \
@@ -255,7 +261,7 @@ jobs:
               echo ''
               echo '📦 安裝測試依賴 Installing test dependencies...'
               cd /app
-              bun install --frozen-lockfile || bun install
+              bun install --frozen-lockfile || exit 1
               
               echo ''
               echo '🧪 執行 E2E 測試 Running E2E tests...'
@@ -267,7 +273,7 @@ jobs:
               bun test tests/e2e/format-matrix.e2e.test.ts --timeout 300000 || echo '⚠️ 格式矩陣測試有部分失敗'
               
               # 執行基礎轉換器測試（允許失敗）
-              bun test tests/e2e/converters.e2e.test.ts --timeout 120000 || echo '⚠️ 轉換器測試有部分失敗'
+              bun test tests/e2e/converters.e2e.test.ts --timeout 120000 || exit 1
               
               echo ''
               echo '✅ E2E 測試完成！'
@@ -345,6 +351,9 @@ jobs:
           docker run --rm \
             --name convertx-translation-test \
             -v "${{ github.workspace }}/tests:/app/tests" \
+            -v "${{ github.workspace }}/src:/app/src:ro" \
+            -v "${{ github.workspace }}/package.json:/app/package.json:ro" \
+            -v "${{ github.workspace }}/bun.lock:/app/bun.lock:ro" \
             -v "${{ github.workspace }}/translation-results:/app/translation-results" \
             -e CI=true \
             -e PDFMATHTRANSLATE_SERVICE=google \
@@ -353,7 +362,7 @@ jobs:
             ${{ needs.build-test-image.outputs.image }} \
             -c "
               cd /app
-              bun install --frozen-lockfile || bun install
+              bun install --frozen-lockfile || exit 1
               
               echo '🌍 使用免費服務執行翻譯測試...'
               bun test tests/e2e/translation.e2e.test.ts --timeout 600000 || echo '⚠️ 翻譯測試有部分失敗'
