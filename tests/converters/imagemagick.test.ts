@@ -12,6 +12,28 @@ beforeEach(() => {
 
 runCommonTests(convert);
 
+test.each(["tiff", "tif", "gif", "ico", "pdf"])(
+  "%s first-page selection is attached to the filename, never a separate input",
+  async (format) => {
+    const mockExecFile: ExecFileFn = (_cmd, args, callback) => {
+      calls.push(args);
+      callback(null, "", "");
+    };
+    await convert(`input.${format}`, format, "png", "output.png", undefined, mockExecFile);
+    expect(calls[0]).toContain(`input.${format}[0]`);
+    expect(calls[0]).not.toContain("[0]");
+  },
+);
+
+test("explicit page selection is preserved", async () => {
+  const mockExecFile: ExecFileFn = (_cmd, args, callback) => {
+    calls.push(args);
+    callback(null, "", "");
+  };
+  await convert("input.tiff[2]", "tiff", "png", "output.png", undefined, mockExecFile);
+  expect(calls[0]).toEqual(["input.tiff[2]", "output.png"]);
+});
+
 test("convert respects ico conversion target type", async () => {
   const originalConsoleLog = console.log;
 
