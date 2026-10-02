@@ -6,6 +6,23 @@ const lite = readFileSync("Dockerfile.lite", "utf8");
 const entrypoint = readFileSync("scripts/entrypoint.sh", "utf8");
 
 describe("container runtime hardening", () => {
+  test("LibreOffice download failures stop the build instead of running dependency repair", () => {
+    const installation = standard.match(/RUN set -ex[^]*?(?=\n\n# 4\.12)/)?.[0];
+    const libreOffice = installation?.slice(installation.lastIndexOf("RUN set -ex"));
+    expect(libreOffice).toBeDefined();
+    const result = Bun.spawnSync([
+      "/bin/sh",
+      "-c",
+      `apt-get() { echo "APT $*"; }
+       rm() { :; }
+       curl() { return 22; }
+       ${libreOffice!.replace(/^RUN /, "")}`,
+    ]);
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stdout.toString()).not.toContain("APT -f install");
+    expect(result.stdout.toString()).not.toContain("安裝完成");
+  });
+
   test.each([
     ["standard", standard],
     ["lite", lite],

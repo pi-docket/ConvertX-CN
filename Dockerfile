@@ -521,7 +521,7 @@ RUN set -ex && \
 # 💡 v25.8 新功能：改進的 PDF 匯出、更好的 DOCX 相容性、新試算表函數
 # ⚠️ apt 版本為 7.x/24.x，落後多個大版本
 # 🔗 https://www.libreoffice.org/download/download-libreoffice/
-ARG LIBREOFFICE_VERSION=25.8.4
+ARG LIBREOFFICE_VERSION=25.8.4.2
 RUN set -ex && \
   apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
@@ -532,20 +532,23 @@ RUN set -ex && \
   ARCH=$(uname -m) && \
   if [ "$ARCH" = "aarch64" ]; then \
   LO_ARCH="aarch64"; \
-  LO_URL="https://download.documentfoundation.org/libreoffice/stable/${LIBREOFFICE_VERSION}/deb/aarch64/LibreOffice_${LIBREOFFICE_VERSION}_Linux_aarch64_deb.tar.gz"; \
+  LO_URL="https://downloadarchive.documentfoundation.org/libreoffice/old/${LIBREOFFICE_VERSION}/deb/aarch64/LibreOffice_${LIBREOFFICE_VERSION}_Linux_aarch64_deb.tar.gz"; \
   else \
   LO_ARCH="x86_64"; \
-  LO_URL="https://download.documentfoundation.org/libreoffice/stable/${LIBREOFFICE_VERSION}/deb/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_deb.tar.gz"; \
+  LO_URL="https://downloadarchive.documentfoundation.org/libreoffice/old/${LIBREOFFICE_VERSION}/deb/x86_64/LibreOffice_${LIBREOFFICE_VERSION}_Linux_x86-64_deb.tar.gz"; \
   fi && \
   echo "📦 下載 LibreOffice ${LIBREOFFICE_VERSION} (${LO_ARCH})..." && \
   curl -fsSL --retry 3 --retry-delay 5 "${LO_URL}" -o /tmp/libreoffice.tar.gz && \
   mkdir -p /tmp/libreoffice && \
   tar -xzf /tmp/libreoffice.tar.gz -C /tmp/libreoffice --strip-components=1 && \
-  dpkg -i /tmp/libreoffice/DEBS/*.deb || apt-get -f install -y && \
+  (dpkg -i /tmp/libreoffice/DEBS/*.deb || apt-get -f install -y) && \
   rm -rf /tmp/libreoffice* && \
-  ln -sf /opt/libreoffice*/program/soffice /usr/local/bin/soffice 2>/dev/null || true && \
-  ln -sf /opt/libreoffice*/program/soffice /usr/local/bin/libreoffice 2>/dev/null || true && \
-  echo "✅ LibreOffice $(soffice --version 2>&1 | head -1) 安裝完成"
+  set -- /opt/libreoffice*/program/soffice && \
+  test "$#" -eq 1 && test -x "$1" && \
+  ln -sf "$1" /usr/local/bin/soffice && \
+  ln -sf "$1" /usr/local/bin/libreoffice && \
+  soffice --version && \
+  echo "✅ LibreOffice 安裝完成"
 
 # 4.12 TexLive 基礎
 RUN apt-get update --fix-missing && \
