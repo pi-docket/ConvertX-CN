@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.30-lite] - Lite 正式版
+
+- Lite 版本更新为 0.1.30-lite，保留上游 0.19.0 的选择性修复与本地安全功能。
+- 所有 Lite 外部引擎按实际执行档判定可用性，包含 ARM64 的 resvg；停用引擎也不会被自动选择，大小写名称统一处理。
+- PDF Packager 补齐 img2pdf 与 endesive 2.19.3，支援图片型 PDF 与签章。
+- 修复 PDF Packager 等引擎输出 tar 时「全部下载」失败，打包仅排除下载归档自身并保留实际 tar 转换成果。
+- 每个原生架构在发布前执行健康、注册登录、实际转换、下载、PDF 签章验证与重启持久化检查；检查通过后才更新正式 manifest 与 latest-lite。
+
 ## [0.19.0] - 选择性同步上游
 
 - 对齐 C4illin/ConvertX v0.19.0，并审查上游 main 至 `49d1db8dd06134f4423d5c1a447cce9c920156bc` 的 50 个提交；逐项决定见 `docs/upstream-sync-0.19.0.md`。

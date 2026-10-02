@@ -204,7 +204,7 @@ function matchingTarget(
   requestedTarget: string,
 ): string | null {
   const converter = properties[converterName];
-  if (!converter || disabledEngines.includes(converterName)) return null;
+  if (!converter || disabledEngines.includes(converterName.toLowerCase())) return null;
 
   const fileType = normalizeFiletype(fileTypeOriginal);
   const target = normalizeFiletype(requestedTarget);
@@ -227,7 +227,7 @@ export function validateConversionSelection(
   if (fileNames.length === 0) {
     throw new ConversionSelectionError("At least one input file is required");
   }
-  if (!properties[converterName] || disabledEngines.includes(converterName)) {
+  if (!properties[converterName] || disabledEngines.includes(converterName.toLowerCase())) {
     throw new ConversionSelectionError(`Unknown or disabled converter: ${converterName}`);
   }
 
@@ -296,7 +296,7 @@ export async function mainConverter(
     converterSearch: for (const candidateName in properties) {
       const converterObj = properties[candidateName];
 
-      if (!converterObj) {
+      if (!converterObj || disabledEngines.includes(candidateName.toLowerCase())) {
         continue;
       }
 

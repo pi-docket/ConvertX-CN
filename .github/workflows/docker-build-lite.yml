@@ -39,6 +39,7 @@ jobs:
       id-token: write
 
     runs-on: ${{ matrix.platform == 'linux/amd64' && 'ubuntu-24.04' || matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' }}
+    timeout-minutes: 60
 
     name: Build Lite image for ${{ matrix.platform }}
 
@@ -175,7 +176,7 @@ jobs:
             ghcr.io/${{ env.REPO }}
             ${{ env.DOCKER_IMAGE }}
           tags: |
-            type=semver,pattern={{version}}-lite
+            type=raw,value=${{ steps.version.outputs.VERSION }}
             type=raw,value=latest-lite,enable={{is_default_branch}}
 
       - name: Set up Docker Buildx
@@ -219,6 +220,12 @@ jobs:
           cache-to: type=registry,ref=ghcr.io/${{ env.REPO }}:buildcache-lite-${{ env.PLATFORM_PAIR }},mode=max,compression=zstd
           build-args: |
             BUILDKIT_INLINE_CACHE=1
+
+      - name: Verify native Lite runtime and conversions before release
+        run: |
+          IMAGE="ghcr.io/${{ env.REPO }}@${{ steps.build.outputs.digest }}"
+          docker pull "$IMAGE"
+          sh scripts/lite-release-smoke.sh "$IMAGE" "${{ steps.version.outputs.VERSION }}"
 
       - name: Export digest
         run: |
@@ -381,7 +388,7 @@ jobs:
           echo "========================================"
 
           # 取得前一個 tag
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          PREVIOUS_TAG=$(git describe --tags --match 'v*-lite' --abbrev=0 HEAD^ 2>/dev/null || echo "")
 
           if [ -z "$PREVIOUS_TAG" ]; then
             echo "📋 無前一個 tag，取得所有 commits..."

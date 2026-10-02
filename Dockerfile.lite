@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN Lite 版 Docker Image
-# 版本：v0.1.24-lite
+# 版本：v0.1.30-lite
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -40,7 +40,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN Lite - 精簡版檔案轉換服務"
-LABEL org.opencontainers.image.version="v0.1.24-lite"
+LABEL org.opencontainers.image.version="v0.1.30-lite"
 WORKDIR /app
 
 # 配置 APT 重試機制
@@ -148,6 +148,7 @@ RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
 RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     pandoc \
     libemail-outlook-message-perl \
+    libemail-address-perl \
     && rm -rf /var/lib/apt/lists/*
 
 # ------------------------------------------------------------------------------
@@ -179,6 +180,14 @@ RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
 ENV PIPX_HOME=/opt/pipx
 ENV PIPX_BIN_DIR=/usr/local/bin
 RUN pipx install "markitdown[all]"
+
+# PDF Packager uses the system Python for signing, outside Markitdown's pipx environment.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    img2pdf build-essential swig libpcsclite-dev python3-dev \
+    && pip3 install --no-cache-dir --break-system-packages "endesive==2.19.3" \
+    && python3 -c "from endesive import pdf; from cryptography.hazmat.primitives.serialization import pkcs12" \
+    && apt-get remove -y build-essential swig libpcsclite-dev python3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # ------------------------------------------------------------------------------
 # 階段 9：Headless 支援
