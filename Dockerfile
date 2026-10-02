@@ -252,7 +252,7 @@ RUN set -ex && \
 # 4.8 FFmpeg 7.1.1 - 官方靜態編譯版
 # 📦 版本 7.1.1 - 2025-03 官方最新穩定版
 # 💡 v7.x 新功能：VVC (H.266) 解碼支援、改進 AV1 編碼、新濾鏡
-# ⚠️ apt 版本過舊（約 5.x），改用官方靜態編譯確保最新功能
+# 優先靜態版本；下載來源不可用時使用 Debian 簽名套件（版本依發行版）。
 # 🔗 https://ffmpeg.org/releases/
 ARG FFMPEG_VERSION=7.1.1
 RUN set -ex && \
@@ -290,20 +290,17 @@ RUN set -ex && \
   fi; \
   fi; \
   done && \
-  if [ "${STATIC_INSTALL_OK}" -ne 1 ] && [ "$ARCH" = "aarch64" ]; then \
-  echo "⚠️ ARM64 靜態 FFmpeg 多來源下載皆失敗，改用 apt 安裝 ffmpeg/ffprobe"; \
+  if [ "${STATIC_INSTALL_OK}" -ne 1 ]; then \
+  echo "⚠️ ${ARCH} 靜態 FFmpeg 來源不可用，改用 Debian 套件安裝 ffmpeg/ffprobe（版本可能較舊）"; \
   apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends ffmpeg && \
   rm -rf /var/lib/apt/lists/*; \
-  fi && \
-  if [ "${STATIC_INSTALL_OK}" -ne 1 ] && [ "$ARCH" != "aarch64" ]; then \
-  echo "❌ FFmpeg 靜態版本下載失敗（AMD64 不啟用 apt fallback）"; \
-  exit 1; \
   fi && \
   if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then \
   echo "❌ FFmpeg 或 FFprobe 安裝失敗"; \
   exit 1; \
   fi && \
+  ffmpeg -version && ffprobe -version && \
   rm -rf /tmp/ffmpeg* && \
   echo "✅ FFmpeg $(ffmpeg -version 2>&1 | head -1) 安裝完成"
 

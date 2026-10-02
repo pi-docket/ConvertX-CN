@@ -80,3 +80,9 @@
 - 用新生产依赖和编译产物替换此前已验证的 Lite 镜像应用层，实际注册登录、上传、转换、下载与 archive 均通过；覆盖 Pandoc、Dasel YAML/TOML、LibreOffice、FFmpeg、GraphicsMagick。
 - 重启后登录会话、JWT／签章密钥、转换历史与输出保留，未认证下载被拒绝；HTTP 响应确认品牌安全转义、应用 0.19.0 与 recipe 未列入输入格式，运行时 Elysia 确认为 1.4.30。
 - 本次没有重新执行完整 Standard／Full 工具与模型安装，也没有发布 GitHub Release 或 Docker 镜像；GitHub CI 以此次提交重新运行。
+
+## CI FFmpeg 下载失败修复
+
+此次同步的 Docker E2E 曾在映像建置阶段失败：AMD64 静态 FFmpeg 的唯一来源连续连接逾时。现在两种架构均可回退到 Debian 签名软件源，日志明确说明版本可能较旧，并执行 ffmpeg／ffprobe 版本指令验证。备用安装失败或执行档损坏仍会中止建置。
+
+新增 AMD64／ARM64 下载逾时、备用安装失败与执行档损坏四个回归测试；同时修正旧 LibreOffice shell 测试的 mock 函数名，使其确实验证下载失败退出码。实际容器模拟静态下载失败，重新安装 Debian FFmpeg 5.1.9 并完成 WAV→FLAC；不会宣称备用版本具备静态版所有新功能。
