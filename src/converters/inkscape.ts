@@ -1,4 +1,5 @@
 import { execFile as execFileOriginal } from "node:child_process";
+import { statSync } from "node:fs";
 import { extname } from "node:path";
 import { ExecFileFn } from "./types";
 
@@ -50,6 +51,15 @@ export function convert(
   execFile: ExecFileFn = execFileOriginal, // to make it mockable
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    try {
+      if (!statSync(filePath).isFile()) {
+        throw new Error("Inkscape input must be a regular file");
+      }
+    } catch (error) {
+      reject(`error: ${error}`);
+      return;
+    }
+
     // 從目標路徑取得輸出格式（移除開頭的點）
     const exportType = extname(targetPath).slice(1).toLowerCase();
 
@@ -79,6 +89,17 @@ export function convert(
       if (stderr) {
         // Inkscape 經常輸出警告到 stderr，但這不代表失敗
         console.log(`stderr: ${stderr}`);
+      }
+
+      // Inkscape can exit successfully without exporting a file (e.g. invalid SVG).
+      try {
+        const output = statSync(targetPath);
+        if (!output.isFile() || output.size === 0) {
+          throw new Error("Inkscape did not produce a nonempty output file");
+        }
+      } catch (error) {
+        reject(`error: ${error}`);
+        return;
       }
 
       resolve("Done");

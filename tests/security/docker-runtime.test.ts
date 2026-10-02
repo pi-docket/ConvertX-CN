@@ -18,7 +18,7 @@ describe("container runtime hardening", () => {
 
   test("entrypoint initializes only the data volume and then drops privileges", () => {
     expect(entrypoint).toContain('marker="$DATA_DIR/.permissions-v1"');
-    expect(entrypoint).toContain('chown -R 10001:10001 "$DATA_DIR"');
+    expect(entrypoint).toContain('chown -R "$runtime_uid:$runtime_gid" "$DATA_DIR"');
     expect(entrypoint).toContain('exec gosu "$APP_USER"');
   });
 
