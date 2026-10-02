@@ -11,6 +11,8 @@ ConvertX-CN 是一个以 Docker 为主要交付方式的文件转换服务，提
 
 [Docker Hub](https://hub.docker.com/r/convertx/convertx-cn) · [Releases](https://github.com/pi-docket/ConvertX-CN/releases) · [License](LICENSE)
 
+当前应用版本对齐上游 **v0.19.0**；采用选择性同步并保留中文分支功能。[逐项同步记录](docs/upstream-sync-0.19.0.md)列出已合入、已有等效实现与跳过的更新。
+
 ## 主要特色
 
 - 支持多类文件转换：影音、图片、文档、电子书、PDF、OCR、向量图、3D 模型与结构化数据。
@@ -121,6 +123,7 @@ API Server 是可选服务，不影响 Web UI 的基本使用。当前实现位�
 
 - 未设置 `JWT_SECRET` 时，服务会在数据目录原子生成并持久化随机密钥；请备份 `data/.secrets/`。也可用 `JWT_SECRET` 或 `JWT_SECRET_FILE` 明确管理密钥。
 - 公开部署时请使用 HTTPS，并正确配置反向代理相关环境变量。
+- 仅向可信用户开放文件转换；公开部署请关闭匿名转换和自助注册。Calibre recipe 文件可能执行代码，现已明确拒绝。
 - 不建议在公网开启未认证访问。
 - 上传和转换敏感文件前，请确认数据目录、备份策略和访问控制符合你的安全要求。
 

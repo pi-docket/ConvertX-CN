@@ -1,6 +1,6 @@
 {
   "name": "convertx-frontend",
-  "version": "0.1.28",
+  "version": "0.19.0",
   "scripts": {
     "dev": "bun run --watch src/index.tsx",
     "hot": "bun run --hot src/index.tsx",
@@ -23,14 +23,14 @@
     "test:e2e:comprehensive": "bun test tests/e2e/comprehensive.e2e.test.ts --timeout 600000"
   },
   "dependencies": {
-    "@elysiajs/html": "^1.4.0",
-    "@elysiajs/jwt": "^1.4.0",
-    "@elysiajs/static": "^1.4.7",
-    "@kitajs/html": "^4.2.11",
+    "@elysiajs/html": "^1.4.2",
+    "@elysiajs/jwt": "^1.4.2",
+    "@elysiajs/static": "^1.4.10",
+    "@kitajs/html": "^4.2.13",
     "@sinclair/typebox": "^0.34.48",
-    "elysia": "^1.4.22",
-    "sanitize-filename": "^1.6.3",
-    "tar": "^7.5.7"
+    "elysia": "1.4.30",
+    "sanitize-filename": "^1.6.4",
+    "tar": "^7.5.22"
   },
   "module": "src/index.tsx",
   "type": "module",

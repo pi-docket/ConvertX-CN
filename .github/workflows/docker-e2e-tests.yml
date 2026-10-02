@@ -266,11 +266,11 @@ jobs:
               echo ''
               echo '🧪 執行 E2E 測試 Running E2E tests...'
               
-              # 執行綜合測試（允許失敗）
-              bun test tests/e2e/comprehensive.e2e.test.ts --timeout 600000 || echo '⚠️ 綜合測試有部分失敗'
+              # 測試失敗必須回傳給 CI
+              bun test tests/e2e/comprehensive.e2e.test.ts --timeout 600000 || exit 1
               
-              # 執行格式矩陣測試（允許失敗）
-              bun test tests/e2e/format-matrix.e2e.test.ts --timeout 300000 || echo '⚠️ 格式矩陣測試有部分失敗'
+              # 格式矩陣測試
+              bun test tests/e2e/format-matrix.e2e.test.ts --timeout 300000 || exit 1
               
               # 執行基礎轉換器測試（允許失敗）
               bun test tests/e2e/converters.e2e.test.ts --timeout 120000 || exit 1
