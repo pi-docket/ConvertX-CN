@@ -31,7 +31,16 @@ test("explicit page selection is preserved", async () => {
     callback(null, "", "");
   };
   await convert("input.tiff[2]", "tiff", "png", "output.png", undefined, mockExecFile);
-  expect(calls[0]).toEqual(["input.tiff[2]", "output.png"]);
+  expect(calls[0]).toEqual(["input.tiff[2]", "-auto-orient", "output.png"]);
+});
+
+test("applies EXIF orientation after reading the input and before writing the output", async () => {
+  const mockExecFile: ExecFileFn = (_cmd, args, callback) => {
+    calls.push(args);
+    callback(null, "", "");
+  };
+  await convert("portrait.jpg", "jpg", "png", "output.png", undefined, mockExecFile);
+  expect(calls[0]).toEqual(["portrait.jpg", "-auto-orient", "output.png"]);
 });
 
 test("convert respects ico conversion target type", async () => {

@@ -79,7 +79,11 @@ const app = new Elysia({
   .use(enginesApi)
   .use(convertersApi)
   .use(memoryDiagnostics)
-  .onError(({ error }) => {
+  .onError(({ error, code, request }) => {
+    if (code === "NOT_FOUND") {
+      console.warn(`404: ${request.method} ${new URL(request.url).pathname}`);
+      return;
+    }
     console.error(error);
   });
 

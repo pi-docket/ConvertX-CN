@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.19.0] - 选择性同步上游
+
+- 对齐 C4illin/ConvertX v0.19.0，并审查上游 main 至 `49d1db8dd06134f4423d5c1a447cce9c920156bc` 的 50 个提交；逐项决定见 `docs/upstream-sync-0.19.0.md`。
+- 增加安全的自定义 BRANDING、登录邮箱自动聚焦、ImageMagick EXIF 自动旋转与简洁 404 日志。
+- 禁止 Calibre recipe／downloaded_recipe 输入，避免可执行脚本上传。
+- 对齐上游生产依赖版本，固定 Elysia 1.4.30；保留本地类型依赖、Bun 1.3.6 与现有开发工具链。
+- 修正 GitHub release 分类结构，CI 按 .bun-version 安装并使用 frozen lockfile，执行现有安全与单元测试。
+- 保留中文界面、Lite、持久化密钥、CSRF、schema v5 与多输出治理；包含前一 E2E 修复分支的 PNG 和多页 ImageMagick 修复。
+
 ## [0.1.28](https://github.com/pi-docket/ConvertX-CN/releases/tag/v0.1.28) (2026-09-29)
 
 正式版上游优化合并与 BabelDOC 引擎移除发布。

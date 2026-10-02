@@ -511,6 +511,9 @@ export function convert(
   }
 
   // 使用 magick（ImageMagick 7.x 官方建議）
+  // Apply EXIF orientation before the destination format drops the metadata.
+  outputArgs.push("-auto-orient");
+
   // ImageMagick 6.x 使用 convert，但 7.x 改用 magick
   const imCommand = process.env.IMAGEMAGICK_COMMAND || "magick";
 

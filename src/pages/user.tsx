@@ -331,6 +331,7 @@ export const user = new Elysia()
                         class="rounded-sm bg-neutral-800 p-3"
                         placeholder={t("auth", "email")}
                         autocomplete="email"
+                        autofocus
                         required
                       />
                     </label>

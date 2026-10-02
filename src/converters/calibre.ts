@@ -27,7 +27,6 @@ export const properties = {
       "pml",
       "rb",
       "rtf",
-      "recipe",
       "snb",
       "tcr",
       "txt",
@@ -78,6 +77,15 @@ export async function convert(
   options?: unknown,
   execFile: ExecFileFn = execFileOriginal, // to make it mockable
 ): Promise<string> {
+  const normalizedFileType = fileType.toLowerCase();
+  const fileExt = (filePath.split(".").pop() ?? "").toLowerCase();
+  if (
+    ["recipe", "downloaded_recipe"].includes(normalizedFileType) ||
+    ["recipe", "downloaded_recipe"].includes(fileExt)
+  ) {
+    throw new Error("Recipe files are not supported");
+  }
+
   return new Promise((resolve, reject) => {
     // 使用 xvfb-run 包裝 ebook-convert，確保在無 DISPLAY 環境下也能運作
     const args = [
