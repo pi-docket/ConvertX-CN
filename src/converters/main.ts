@@ -37,11 +37,12 @@ import {
   getOutputFileName as getPdfPackagerOutputFileName,
 } from "./pdfpackager";
 import { basename, dirname, parse } from "node:path";
+import { getMissingExecutableEngines } from "../helpers/engineAvailability";
 
 // This should probably be reconstructed so that the functions are not imported instead the functions hook into this to make the converters more modular
 
 // 🌍 跨架構引擎可用性檢查
-const disabledEngines: string[] = [];
+const disabledEngines: string[] = getMissingExecutableEngines();
 
 // 檢查 resvg 可用性（ARM64 可能禁用）
 if (!isResvgAvailable()) {
