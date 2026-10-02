@@ -218,8 +218,7 @@ describe("Dasel E2E Tests", () => {
   const daselDir = () => join(outputDir, "dasel");
   const isDaselAvailable = () => {
     try {
-      Bun.spawnSync(["dasel", "--version"]);
-      return true;
+      return Bun.spawnSync(["dasel", "--version"]).exitCode === 0;
     } catch {
       return false;
     }
@@ -229,12 +228,7 @@ describe("Dasel E2E Tests", () => {
     setupOutputDir("converters/dasel");
   });
 
-  test("JSON → YAML 轉換", async () => {
-    if (!isDaselAvailable()) {
-      console.log("⏭ Skipping: Dasel not available");
-      return;
-    }
-
+  test.skipIf(!isDaselAvailable())("JSON → YAML 轉換", async () => {
     const inputPath = join(daselDir(), "input.json");
     const outputPath = join(daselDir(), "output.yaml");
 
@@ -256,12 +250,7 @@ describe("Dasel E2E Tests", () => {
     console.log(`  ✓ JSON → YAML: ${stats.size} bytes`);
   });
 
-  test("JSON → TOML 轉換", async () => {
-    if (!isDaselAvailable()) {
-      console.log("⏭ Skipping: Dasel not available");
-      return;
-    }
-
+  test.skipIf(!isDaselAvailable())("JSON → TOML 轉換", async () => {
     const inputPath = join(daselDir(), "input.json");
     const outputPath = join(daselDir(), "output.toml");
 
@@ -361,13 +350,8 @@ describe("Error Handling E2E Tests", () => {
     // 建立無效的 SVG 檔案
     await Bun.write(inputPath, "This is not a valid SVG file");
 
-    // Inkscape 可能會產生錯誤或空輸出
-    try {
-      await convertInkscape(inputPath, "svg", "png", outputPath);
-      // 如果沒有拋出錯誤，檢查輸出是否存在（可能為空或無效）
-    } catch {
-      // 預期會有錯誤
-    }
+    await expect(convertInkscape(inputPath, "svg", "png", outputPath)).rejects.toBeDefined();
+    expect(existsSync(outputPath)).toBe(false);
 
     console.log("  ✓ Handled invalid SVG gracefully");
   });

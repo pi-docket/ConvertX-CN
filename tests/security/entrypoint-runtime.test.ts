@@ -1,6 +1,7 @@
 import { afterEach, beforeAll, describe, expect, test } from "bun:test";
 import {
   chmodSync,
+  copyFileSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -34,7 +35,7 @@ async function createFakeRuntime(root: string): Promise<string> {
   await writeExecutable(
     resolve(bin, "id"),
     `#!/bin/sh
-if [ "\${FAKE_NONROOT:-}" = "1" ]; then
+if [ "\${FAKE_NONROOT:-}" = "1" ] || [ "\${2:-}" = "convertx" ]; then
   printf '10001\\n'
 else
   printf '0\\n'
@@ -81,16 +82,19 @@ async function runEntrypoint(
   const capture = resolve(root, "runtime.txt");
   const chownCapture = resolve(root, "chown.txt");
   mkdirSync(data, { recursive: true });
+  // Docker marks the entrypoint executable; reproduce that on the test copy.
+  const runtimeEntrypoint = resolve(root, "entrypoint.sh");
+  copyFileSync(entrypoint, runtimeEntrypoint);
+  chmodSync(runtimeEntrypoint, 0o755);
   const child = Bun.spawn({
     cmd: [
       bash,
-      "--noprofile",
-      "--norc",
+      ...(process.platform === "win32" ? ["--noprofile", "--norc"] : []),
       "-c",
       'PATH="$1:$PATH"; export PATH; exec "$2"',
       "entrypoint-runtime-test",
       shellPath(bin),
-      shellPath(entrypoint),
+      shellPath(runtimeEntrypoint),
     ],
     cwd: process.cwd(),
     env: {
