@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import * as tar from "tar";
 import { ALLOWED_ARCHIVE_FORMAT, FORBIDDEN_ARCHIVE_FORMATS } from "./constants";
 
@@ -39,7 +39,8 @@ export async function createTarArchive(
   if (!existsSync(outputDir)) mkdirSync(outputDir, { recursive: true });
 
   const files = options.entries ?? readdirSync(sourceDir);
-  const filter = options.filter ?? ((path: string) => !path.match(/\.tar$/i));
+  const filter = (path: string) =>
+    resolve(sourceDir, path) !== resolve(finalOutputPath) && (options.filter?.(path) ?? true);
   await tar.create(
     {
       file: finalOutputPath,

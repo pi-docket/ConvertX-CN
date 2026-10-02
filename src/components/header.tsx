@@ -6,6 +6,7 @@ import {
 } from "../i18n/index";
 import { LanguageSelector } from "./languageSelector";
 import { ThemeToggle } from "./themeToggle";
+import { BRANDING } from "../helpers/env";
 
 export const Header = ({
   loggedIn,
@@ -16,6 +17,7 @@ export const Header = ({
   locale = defaultLocale,
   t = createTranslator(defaultLocale),
   csrfToken,
+  branding = BRANDING,
 }: {
   loggedIn?: boolean;
   accountRegistration?: boolean;
@@ -25,6 +27,7 @@ export const Header = ({
   locale?: SupportedLocale;
   t?: Translator;
   csrfToken?: string;
+  branding?: string;
 }) => {
   let rightNav: JSX.Element;
   if (loggedIn) {
@@ -134,8 +137,8 @@ export const Header = ({
         <ul class="flex items-center">
           <li>
             <strong>
-              <a href={`${webroot}/`} class="text-neutral-100">
-                ConvertX-CN
+              <a href={`${webroot}/`} class="text-neutral-100" safe>
+                {branding.slice(0, 26)}
               </a>
             </strong>
           </li>

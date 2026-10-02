@@ -2,6 +2,21 @@ import { describe, expect, test } from "bun:test";
 import { getMissingExecutableEngines } from "../../src/helpers/engineAvailability";
 
 describe("converter executable availability", () => {
+  test("Lite checks every external converter while retaining pure VCF support", () => {
+    const disabled = getMissingExecutableEngines(() => null, "magick", "lite");
+    for (const engine of [
+      "calibre",
+      "mineru",
+      "pdfmathtranslate",
+      "ocrmypdf",
+      "resvg",
+      "pdf packager",
+    ]) {
+      expect(disabled).toContain(engine);
+    }
+    expect(disabled).not.toContain("vcf");
+    expect(getMissingExecutableEngines((cmd) => `/bin/${cmd}`, "magick", "lite")).toEqual([]);
+  });
   const lookup =
     (...installed: string[]) =>
     (command: string) =>

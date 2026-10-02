@@ -9,8 +9,8 @@ test("missing executables propagate to engine status and conversion rejection", 
       process.execPath,
       "-e",
       `const { getDisabledEngines, validateConversionSelection } = await import(${JSON.stringify(registry)});
-       for (const engine of ["inkscape", "imagemagick"]) {
-         if (!getDisabledEngines().includes(engine)) throw new Error(engine + " falsely available");
+       for (const engine of ["inkscape", "imagemagick", "MinerU", "OCRmyPDF", "PDFMathTranslate", "PDF Packager"]) {
+         if (!getDisabledEngines().includes(engine.toLowerCase())) throw new Error(engine + " falsely available");
          let rejected = false;
          try { validateConversionSelection(["image.png"], "svg", engine); }
          catch (error) { rejected = error.message.includes("Unknown or disabled converter"); }

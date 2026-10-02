@@ -11,12 +11,13 @@
  */
 
 import { describe, test, expect, beforeAll, afterAll } from "bun:test";
-import { existsSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { convert as convertInkscape } from "../../src/converters/inkscape";
 import { convert as convertPandoc } from "../../src/converters/pandoc";
 import { convert as convertDasel } from "../../src/converters/dasel";
+import { convert as convertImagemagick } from "../../src/converters/imagemagick";
 
 import {
   AvailableTools,
@@ -41,6 +42,32 @@ afterAll(() => {
   // 保留輸出目錄以便檢查結果
   console.log(`\nE2E test outputs saved to: ${outputDir}`);
 });
+
+test.skipIf(!Bun.which(process.env.IMAGEMAGICK_COMMAND || "magick"))(
+  "ImageMagick multi-page TIFF converts the first page without waiting for stdin",
+  async () => {
+    const dir = setupOutputDir("converters/imagemagick");
+    const input = join(dir, "pages.tiff");
+    const output = join(dir, "first-page.png");
+    const created = Bun.spawnSync([
+      process.env.IMAGEMAGICK_COMMAND || "magick",
+      "-size",
+      "2x3",
+      "xc:red",
+      "-size",
+      "4x5",
+      "xc:blue",
+      input,
+    ]);
+    expect(created.exitCode, created.stderr.toString()).toBe(0);
+    await convertImagemagick(input, "tiff", "png", output);
+    const png = readFileSync(output);
+    expect(png.subarray(1, 4).toString()).toBe("PNG");
+    expect(png.readUInt32BE(16)).toBe(2);
+    expect(png.readUInt32BE(20)).toBe(3);
+  },
+  10_000,
+);
 
 // ============================================================================
 // Inkscape E2E 測試

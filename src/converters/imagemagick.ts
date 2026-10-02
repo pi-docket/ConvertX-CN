@@ -486,15 +486,6 @@ export function convert(
   // 多頁輸入（PDF、多頁 TIFF）的處理
   // 預設使用 -adjoin 保持單檔輸出，避免產生多檔
   const multiPageInputFormats = ["pdf", "tiff", "tif", "gif", "mng", "ico"];
-  if (multiPageInputFormats.includes(fileType.toLowerCase())) {
-    // 對於單頁輸出格式，只取第一頁
-    const singlePageOutputFormats = ["jpg", "jpeg", "png", "bmp", "webp"];
-    if (singlePageOutputFormats.includes(convertTo.toLowerCase())) {
-      // 只轉換第一頁，避免產生多檔
-      inputArgs.push("-[0]".replace("-", filePath.endsWith("]") ? "" : ""));
-      console.log("[ImageMagick Governance] Multi-page input detected, extracting first page only");
-    }
-  }
 
   // ========== 原有邏輯 ==========
 
@@ -520,6 +511,9 @@ export function convert(
   }
 
   // 使用 magick（ImageMagick 7.x 官方建議）
+  // Apply EXIF orientation before the destination format drops the metadata.
+  outputArgs.push("-auto-orient");
+
   // ImageMagick 6.x 使用 convert，但 7.x 改用 magick
   const imCommand = process.env.IMAGEMAGICK_COMMAND || "magick";
 
@@ -530,6 +524,7 @@ export function convert(
     const singlePageOutputFormats = ["jpg", "jpeg", "png", "bmp", "webp"];
     if (singlePageOutputFormats.includes(convertTo.toLowerCase())) {
       inputPath = `${filePath}[0]`;
+      console.log("[ImageMagick Governance] Multi-page input detected, extracting first page only");
     }
   }
 

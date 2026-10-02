@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN Lite 版 Docker Image
-# 版本：v0.1.24-lite
+# 版本：v0.1.30-lite
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -40,7 +40,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN Lite - 精簡版檔案轉換服務"
-LABEL org.opencontainers.image.version="v0.1.24-lite"
+LABEL org.opencontainers.image.version="v0.1.30-lite"
 WORKDIR /app
 
 # 配置 APT 重試機制
@@ -58,9 +58,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "aarch64" ]; then \
-    curl -fsSL -o bun-linux-aarch64.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.6/bun-linux-aarch64.zip; \
+    curl -fsSL --retry 8 --retry-all-errors --retry-delay 3 --connect-timeout 30 --max-time 300 -o bun-linux-aarch64.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.6/bun-linux-aarch64.zip; \
     else \
-    curl -fsSL -o bun-linux-x64-baseline.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.6/bun-linux-x64-baseline.zip; \
+    curl -fsSL --retry 8 --retry-all-errors --retry-delay 3 --connect-timeout 30 --max-time 300 -o bun-linux-x64-baseline.zip https://github.com/oven-sh/bun/releases/download/bun-v1.3.6/bun-linux-x64-baseline.zip; \
     fi
 
 RUN unzip -j bun-linux-*.zip -d /usr/local/bin && \
@@ -148,6 +148,7 @@ RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
 RUN apt-get update --fix-missing && apt-get install -y --no-install-recommends \
     pandoc \
     libemail-outlook-message-perl \
+    libemail-address-perl \
     && rm -rf /var/lib/apt/lists/*
 
 # ------------------------------------------------------------------------------
@@ -180,6 +181,14 @@ ENV PIPX_HOME=/opt/pipx
 ENV PIPX_BIN_DIR=/usr/local/bin
 RUN pipx install "markitdown[all]"
 
+# PDF Packager uses the system Python for signing, outside Markitdown's pipx environment.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    img2pdf build-essential swig libpcsclite-dev python3-dev \
+    && pip3 install --no-cache-dir --break-system-packages "endesive==2.19.3" \
+    && python3 -c "from endesive import pdf; from cryptography.hazmat.primitives.serialization import pkcs12" \
+    && apt-get remove -y build-essential swig libpcsclite-dev python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 # ------------------------------------------------------------------------------
 # 階段 9：Headless 支援
 # ------------------------------------------------------------------------------
@@ -197,7 +206,7 @@ RUN ARCH=$(uname -m) && \
     else \
     DASEL_ARCH="linux_amd64"; \
     fi && \
-    curl -sSLf "https://github.com/TomWright/dasel/releases/download/v2.8.1/dasel_${DASEL_ARCH}" -o /usr/local/bin/dasel && \
+    curl -fsSL --retry 8 --retry-all-errors --retry-delay 3 --connect-timeout 30 --max-time 300 "https://github.com/TomWright/dasel/releases/download/v2.8.1/dasel_${DASEL_ARCH}" -o /usr/local/bin/dasel && \
     chmod +x /usr/local/bin/dasel
 
 # ------------------------------------------------------------------------------
@@ -207,7 +216,7 @@ RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "aarch64" ]; then \
     echo "resvg 沒有 ARM64 預編譯版本，跳過安裝"; \
     else \
-    curl -sSLf "https://github.com/linebender/resvg/releases/download/v0.44.0/resvg-linux-x86_64.tar.gz" -o /tmp/resvg.tar.gz && \
+    curl -fsSL --retry 8 --retry-all-errors --retry-delay 3 --connect-timeout 30 --max-time 300 "https://github.com/linebender/resvg/releases/download/v0.44.0/resvg-linux-x86_64.tar.gz" -o /tmp/resvg.tar.gz && \
     tar -xzf /tmp/resvg.tar.gz -C /tmp/ && \
     mv /tmp/resvg /usr/local/bin/resvg && \
     chmod +x /usr/local/bin/resvg && \
@@ -223,7 +232,7 @@ RUN ARCH=$(uname -m) && \
     else \
     VTRACER_ASSET="vtracer-x86_64-unknown-linux-musl.tar.gz"; \
     fi && \
-    curl -L -o /tmp/vtracer.tar.gz "https://github.com/visioncortex/vtracer/releases/download/0.6.4/${VTRACER_ASSET}" && \
+    curl -fsSL --retry 8 --retry-all-errors --retry-delay 3 --connect-timeout 30 --max-time 300 -o /tmp/vtracer.tar.gz "https://github.com/visioncortex/vtracer/releases/download/0.6.4/${VTRACER_ASSET}" && \
     tar -xzf /tmp/vtracer.tar.gz -C /tmp/ && \
     mv /tmp/vtracer /usr/local/bin/vtracer && \
     chmod +x /usr/local/bin/vtracer && \
