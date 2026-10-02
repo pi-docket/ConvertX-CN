@@ -75,6 +75,55 @@ describe("convert", () => {
     expect(stdinEnded).toBe(true);
   });
 
+  test("falls back to the pinned v2 CLI and writes its converted output", async () => {
+    const calls: string[][] = [];
+    let written = "";
+    // @ts-expect-error: property __promisify__ is missing
+    fs.writeFile = (_path, data, cb) => {
+      written = String(data);
+      cb(null);
+    };
+    mockExecFile = (_cmd, args, callback) => {
+      calls.push(args);
+      if (calls.length === 1)
+        callback(new Error("unsupported flag"), "", "Error: unknown flag: --var");
+      else callback(null, '{"name":"converted"}', "");
+    };
+    const result = await convert(
+      "input with spaces.yaml",
+      "yaml",
+      "json",
+      "output.json",
+      undefined,
+      mockExecFile,
+    );
+    expect(result).toBe("Done");
+    expect(calls).toHaveLength(2);
+    expect(calls[1]).toEqual([
+      "--file",
+      "input with spaces.yaml",
+      "--read",
+      "yaml",
+      "--write",
+      "json",
+      ".",
+    ]);
+    expect(JSON.parse(written)).toEqual({ name: "converted" });
+  });
+
+  test("rejects errors from the v2 fallback without retrying again", async () => {
+    let attempts = 0;
+    mockExecFile = (_cmd, _args, callback) => {
+      attempts += 1;
+      if (attempts === 1) callback(new Error("unsupported flag"), "", "Error: unknown flag: --var");
+      else callback(new Error("input not found"), "", "input not found");
+    };
+    await expect(
+      convert("missing.yaml", "yaml", "json", "output.json", undefined, mockExecFile),
+    ).rejects.toMatch(/input not found/);
+    expect(attempts).toBe(2);
+  });
+
   test("should reject if execFile returns an error", async () => {
     mockExecFile = (cmd, args, callback) => callback(new Error("fail"), "", "");
     await expect(

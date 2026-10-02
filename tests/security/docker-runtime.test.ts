@@ -16,6 +16,18 @@ describe("container runtime hardening", () => {
     expect(dockerfile).not.toContain("/app/certs/default.p12");
   });
 
+  test.each([
+    ["standard", standard],
+    ["lite", lite],
+  ])("%s runtime PATH includes administrative tools needed during startup", (_name, dockerfile) => {
+    const runtimePath = [...dockerfile.matchAll(/^ENV PATH=(.+)$/gm)].at(-1)?.[1];
+    expect(runtimePath).toBeDefined();
+    const directories = runtimePath!.split(":");
+    expect(directories).toContain("/usr/sbin");
+    expect(directories).toContain("/usr/bin");
+    expect(directories).toContain("/usr/local/bin");
+  });
+
   test("entrypoint initializes only the data volume and then drops privileges", () => {
     expect(entrypoint).toContain('marker="$DATA_DIR/.permissions-v1"');
     expect(entrypoint).toContain('chown -R "$runtime_uid:$runtime_gid" "$DATA_DIR"');

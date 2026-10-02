@@ -754,7 +754,7 @@ COPY --from=models /root/.cache/babeldoc /opt/convertx/cache/babeldoc
 COPY --from=models /root/mineru.json /opt/convertx/config/mineru.json
 
 COPY scripts/entrypoint.sh /opt/convertx/entrypoint.sh
-RUN chmod +x /opt/convertx/entrypoint.sh
+RUN chmod 0755 /opt/convertx/entrypoint.sh
 COPY scripts/pdf_sign.py /app/scripts/pdf_sign.py
 
 # 8.2 複製應用程式
@@ -767,7 +767,8 @@ RUN mkdir -p /usr/share/fonts/truetype/custom
 COPY fonts/ /usr/share/fonts/truetype/custom/
 COPY models/ /opt/convertx/cache/babeldoc/models/
 
-RUN chown -R 10001:10001 /opt/convertx/cache /opt/convertx/config /app/data
+RUN chmod -R a+rX /app/node_modules /app/public /app/dist /app/scripts /usr/share/fonts/truetype/custom \
+  && chown -R 10001:10001 /opt/convertx/cache /opt/convertx/config /app/data
 # 8.4 更新字型快取
 RUN fc-cache -fv
 
@@ -797,7 +798,7 @@ RUN rm -rf /usr/share/doc/texlive* && \
 # 複製驗證腳本
 COPY scripts/verify-models.sh /app/scripts/verify-models.sh
 COPY scripts/verify-installation.sh /app/scripts/verify-installation.sh
-RUN chmod +x /app/scripts/*.sh
+RUN chmod 0755 /app/scripts/*.sh && chmod -R a+rX /app/scripts
 
 # 創建資料目錄
 RUN mkdir -p data
@@ -951,7 +952,7 @@ ENV PDF_SIGN_CONTACT="convertx-cn@localhost"
 ENV PANDOC_PDF_ENGINE=pdflatex
 ENV NODE_ENV=production
 ENV HOME=/home/convertx
-ENV PATH=/usr/local/bin:/usr/bin:/bin
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV DATA_DIR=/app/data
 
 # ==============================================================================

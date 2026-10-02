@@ -68,10 +68,10 @@ const tools = [
     formatter: (s: string) => s.split("\n")[0],
   },
   {
-    cmd: "dasel version",
+    cmd: "dasel --version",
     name: "dasel",
     errorMsg: "dasel is not installed.",
-    formatter: (s: string) => `dasel ${s.split("\n")[0]}`,
+    formatter: (s: string) => `dasel ${s.split("\n")[0]?.replace(/^dasel(?: version)?\s+/, "")}`,
   },
   {
     cmd: "xelatex -version",

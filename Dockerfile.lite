@@ -287,7 +287,8 @@ COPY --from=prerelease /app/dist /app/dist
 
 COPY scripts/entrypoint.sh /opt/convertx/entrypoint.sh
 COPY scripts/pdf_sign.py /app/scripts/pdf_sign.py
-RUN chmod +x /opt/convertx/entrypoint.sh
+RUN chmod 0755 /opt/convertx/entrypoint.sh \
+    && chmod -R a+rX /app/node_modules /app/public /app/dist /app/scripts /usr/share/fonts/truetype/custom
 RUN mkdir -p data && chown -R 10001:10001 data
 
 EXPOSE 3000/tcp
@@ -304,7 +305,7 @@ ENV CONVERTX_EDITION="lite"
 
 ENV HOME=/home/convertx
 ENV DATA_DIR=/app/data
-ENV PATH=/usr/local/bin:/usr/bin:/bin
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 # ==============================================================================
 # 啟動
 # ==============================================================================
