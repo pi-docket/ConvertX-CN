@@ -904,7 +904,8 @@ ENV QTWEBENGINE_CHROMIUM_FLAGS="--no-sandbox"
 ENV CALIBRE_USE_SYSTEM_THEME="0"
 
 # 3️⃣ 翻譯服務設定（這是唯一允許連網的服務）
-ENV PDFMATHTRANSLATE_SERVICE="google"
+# 未指定 PDFMATHTRANSLATE_SERVICE 時，自動依序嘗試 SiliconFlowFree、Google、Bing。
+# 部署時可設定此環境變數，只使用指定服務（例如 siliconflowfree 或 ollama）。
 
 # 4️⃣ 🔒 強制離線模式（禁止模型/資源下載）
 # HuggingFace 完全離線

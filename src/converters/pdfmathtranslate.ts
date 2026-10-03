@@ -6,7 +6,7 @@ import { ensureSearchablePdf, cleanupOcrTempFile } from "../helpers/pdfOcr";
 import type { ExecFileFn } from "./types";
 
 // 翻譯服務優先順序（自動 fallback）
-const TRANSLATION_SERVICES = ["google", "bing"] as const;
+const TRANSLATION_SERVICES = ["siliconflowfree", "google", "bing"] as const;
 type TranslationService = (typeof TRANSLATION_SERVICES)[number];
 
 /**
@@ -186,7 +186,7 @@ function removeDir(dirPath: string): void {
  * @param inputPath 輸入 PDF 路徑
  * @param outputDir 輸出目錄
  * @param targetLang 目標語言
- * @param service 翻譯服務（google, bing）
+ * @param service 翻譯服務（siliconflowfree, google, bing 等）
  * @param execFile execFile 函數（用於測試注入）
  */
 function runPdf2zhWithService(
@@ -255,8 +255,10 @@ function runPdf2zhWithService(
  * 執行 pdf2zh_next 命令進行 PDF 翻譯（自動 fallback）
  *
  * 嘗試順序：
- * 1. 環境變數 PDFMATHTRANSLATE_SERVICE（如果設定）
- * 2. Google Translate（免費，需要網路）
+ * 環境變數 PDFMATHTRANSLATE_SERVICE 若有設定，只使用指定服務。
+ * 未設定時依序嘗試：
+ * 1. SiliconFlowFree（免費，不需要 API 金鑰）
+ * 2. Google Translate（免費備援，需要網路）
  * 3. Bing Translate（免費備援）
  *
  * @param inputPath 輸入 PDF 路徑
