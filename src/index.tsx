@@ -29,6 +29,7 @@ import { outputDir, uploadsDir } from "./helpers/paths";
 import { CHUNK_THRESHOLD_BYTES } from "./transfer";
 import { webActor } from "./application/actor";
 import { artifactService } from "./application/artifactService";
+import { startJobCleanup } from "./helpers/jobCleanup";
 
 export { outputDir, uploadsDir };
 
@@ -79,7 +80,11 @@ const app = new Elysia({
   .use(enginesApi)
   .use(convertersApi)
   .use(memoryDiagnostics)
-  .onError(({ error }) => {
+  .onError(({ error, code, request }) => {
+    if (code === "NOT_FOUND") {
+      console.warn(`404: ${request.method} ${new URL(request.url).pathname}`);
+      return;
+    }
     console.error(error);
   });
 
@@ -124,10 +129,6 @@ const clearJobs = () => {
       console.error(`[Cleanup] Failed to delete job ${job.id}`, error);
     }
   }
-
-  setTimeout(clearJobs, AUTO_DELETE_EVERY_N_HOURS * 60 * 60 * 1000);
 };
 
-if (AUTO_DELETE_EVERY_N_HOURS > 0) {
-  clearJobs();
-}
+startJobCleanup({ intervalHours: AUTO_DELETE_EVERY_N_HOURS, cleanup: clearJobs });

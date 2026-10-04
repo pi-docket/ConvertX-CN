@@ -1,6 +1,6 @@
 # ==============================================================================
 # ConvertX-CN 官方 Docker Image
-# 版本：v0.1.28 - CPU-only 輕量版
+# 版本：v0.19.0 - CPU-only 輕量版
 # ==============================================================================
 #
 # 📦 Image 說明：
@@ -48,7 +48,7 @@
 FROM debian:bookworm-slim AS base
 LABEL org.opencontainers.image.source="https://github.com/pi-docket/ConvertX-CN"
 LABEL org.opencontainers.image.description="ConvertX-CN - 完全離線化檔案轉換服務"
-LABEL org.opencontainers.image.version="v0.1.28"
+LABEL org.opencontainers.image.version="v0.19.0"
 WORKDIR /app
 
 # 設定非互動模式
@@ -133,7 +133,7 @@ RUN apt-get update --fix-missing && \
 # 4.3 核心轉換工具（不包含 Ghostscript，稍後從源碼編譯）
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  assimp-utils dcraw dvisvgm graphicsmagick \
+  assimp-utils dcraw djvulibre-bin dvisvgm graphicsmagick \
   mupdf-tools poppler-utils potrace qpdf && \
   rm -rf /var/lib/apt/lists/*
 
@@ -252,7 +252,7 @@ RUN set -ex && \
 # 4.8 FFmpeg 7.1.1 - 官方靜態編譯版
 # 📦 版本 7.1.1 - 2025-03 官方最新穩定版
 # 💡 v7.x 新功能：VVC (H.266) 解碼支援、改進 AV1 編碼、新濾鏡
-# ⚠️ apt 版本過舊（約 5.x），改用官方靜態編譯確保最新功能
+# 優先靜態版本；下載來源不可用時使用 Debian 簽名套件（版本依發行版）。
 # 🔗 https://ffmpeg.org/releases/
 ARG FFMPEG_VERSION=7.1.1
 RUN set -ex && \
@@ -290,20 +290,17 @@ RUN set -ex && \
   fi; \
   fi; \
   done && \
-  if [ "${STATIC_INSTALL_OK}" -ne 1 ] && [ "$ARCH" = "aarch64" ]; then \
-  echo "⚠️ ARM64 靜態 FFmpeg 多來源下載皆失敗，改用 apt 安裝 ffmpeg/ffprobe"; \
+  if [ "${STATIC_INSTALL_OK}" -ne 1 ]; then \
+  echo "⚠️ ${ARCH} 靜態 FFmpeg 來源不可用，改用 Debian 套件安裝 ffmpeg/ffprobe（版本可能較舊）"; \
   apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends ffmpeg && \
   rm -rf /var/lib/apt/lists/*; \
-  fi && \
-  if [ "${STATIC_INSTALL_OK}" -ne 1 ] && [ "$ARCH" != "aarch64" ]; then \
-  echo "❌ FFmpeg 靜態版本下載失敗（AMD64 不啟用 apt fallback）"; \
-  exit 1; \
   fi && \
   if ! command -v ffmpeg >/dev/null 2>&1 || ! command -v ffprobe >/dev/null 2>&1; then \
   echo "❌ FFmpeg 或 FFprobe 安裝失敗"; \
   exit 1; \
   fi && \
+  ffmpeg -version && ffprobe -version && \
   rm -rf /tmp/ffmpeg* && \
   echo "✅ FFmpeg $(ffmpeg -version 2>&1 | head -1) 安裝完成"
 
@@ -907,7 +904,8 @@ ENV QTWEBENGINE_CHROMIUM_FLAGS="--no-sandbox"
 ENV CALIBRE_USE_SYSTEM_THEME="0"
 
 # 3️⃣ 翻譯服務設定（這是唯一允許連網的服務）
-ENV PDFMATHTRANSLATE_SERVICE="google"
+# 未指定 PDFMATHTRANSLATE_SERVICE 時，自動依序嘗試 SiliconFlowFree、Google、Bing。
+# 部署時可設定此環境變數，只使用指定服務（例如 siliconflowfree 或 ollama）。
 
 # 4️⃣ 🔒 強制離線模式（禁止模型/資源下載）
 # HuggingFace 完全離線

@@ -33,6 +33,8 @@
 
 ## Web UI 设置
 
+`BRANDING` 可设置导航栏名称，默认 `ConvertX-CN`，最多显示 26 个字符，作为纯文本安全输出。
+
 | 变量                  | 必填 | 默认值                           | 示例            | 影响功能       | 适用服务        | 来源文件                                  | 注意事项                                         |
 | --------------------- | ---- | -------------------------------- | --------------- | -------------- | --------------- | ----------------------------------------- | ------------------------------------------------ |
 | `PORT`                | 否   | `3000`                           | `3000`          | Web 监听端口   | Web UI          | `src/helpers/startupStatus.ts`            | Compose 默认映射 `3000:3000`。                   |
@@ -68,7 +70,7 @@
 | `FFMPEG_OUTPUT_ARGS`          | 否   | 空                                                | `-c:v h264_nvenc`                  | FFmpeg 输出参数       | Web UI          | `src/converters/ffmpeg.ts`                                     | 依赖宿主机与镜像支持。                                                   |
 | `IMAGEMAGICK_COMMAND`         | 否   | `magick`                                          | `convert`                          | ImageMagick 命令      | Web UI          | `src/converters/imagemagick.ts`                                | 用于兼容不同安装方式。                                                   |
 | `OCR_LANG`                    | 否   | `eng+chi_tra+chi_sim+jpn`                         | `eng+chi_sim`                      | OCR 语言              | Web UI          | `src/helpers/pdfOcr.ts`                                        | 需要容器内有对应 Tesseract 语言包。                                      |
-| `PDFMATHTRANSLATE_SERVICE`    | 否   | 代码内默认服务                                    | `google`                           | PDFMathTranslate 服务 | Web UI          | `src/converters/pdfmathtranslate.ts`                           | 可用服务需实测。                                                         |
+| `PDFMATHTRANSLATE_SERVICE`    | 否   | 空：依次尝试 SiliconFlowFree、Google、Bing        | `siliconflowfree`                  | PDFMathTranslate 服务 | Web UI          | `src/converters/pdfmathtranslate.ts`、`Dockerfile`             | 指定非空值时只使用该服务，不自动切换。                                   |
 | `PDFMATHTRANSLATE_CACHE_PATH` | 否   | Docker 为 `/opt/convertx/cache/babeldoc`          | `/cache/pdfmathtranslate`          | PDF 翻译模型缓存      | Web UI / Docker | `src/converters/pdfmathtranslate.ts`、`Dockerfile`             | 保留旧 cache 目录兼容 pdf2zh-next 内部资产布局。                         |
 | `MINERU_MODE`                 | 否   | `pipeline`                                        | `vlm`                              | MinerU 模式           | Web UI          | `src/helpers/env.ts`                                           | `MINERU_BACKEND` 包含 `vlm` 时也会切到 VLM。                             |
 | `MINERU_BACKEND`              | 否   | Dockerfile 中为 `pipeline`                        | `pipeline`                         | MinerU backend        | Web UI / Docker | `src/helpers/env.ts`、`src/converters/mineru.ts`、`Dockerfile` | VLM 支持需按镜像确认。                                                   |
@@ -84,6 +86,22 @@
 | `PDF_SIGN_P12_PASSWORD_FILE`  | 否   | 自动证书使用 `${DATA_DIR}/certs/signing.password` | `/run/secrets/signing-password`    | PKCS12 密码           | Web UI / Docker | `scripts/entrypoint.sh`、`scripts/pdf_sign.py`                 | 优先于 `PDF_SIGN_P12_PASSWORD`。                                         |
 | `PDF_SIGN_P12_PASSWORD`       | 否   | 空                                                | secret                             | PKCS12 密码           | Web UI / Docker | `scripts/entrypoint.sh`、`scripts/pdf_sign.py`                 | 建议改用密码文件。                                                       |
 | `PDF_SIGN_SCRIPT_PATH`        | 否   | `/app/scripts/pdf_sign.py`                        | `/app/scripts/pdf_sign.py`         | PDF 签名脚本          | Web UI          | `src/converters/pdfpackager.ts`                                | 依赖 Python 签名脚本。                                                   |
+
+### PDF 免费翻译
+
+安装了 `pdf2zh_next` 的版本默认先使用 SiliconFlowFree，无需 API 金钥，失败后再尝试 Google、Bing。引擎列表仍只显示 `PDFMathTranslate`，BabelDOC 保留为生成 PDF 所需的底层依赖。
+
+要启用自动备援，请不要设置 `PDFMATHTRANSLATE_SERVICE`，或将它设为空值。旧部署如果在 Compose、`.env` 或启动参数中明确指定了 `google`，需要移除该设置或留空；更新镜像不会覆盖部署者明确指定的环境变量。
+
+如只想使用 SiliconFlowFree，可设置：
+
+```env
+PDFMATHTRANSLATE_SERVICE=siliconflowfree
+```
+
+修改设置并更新镜像后，需要重新创建容器。公共免费服务需要网络连接，也可能限流；本地 Ollama 等其他服务需要单独部署并配置。
+
+Lite 版本不安装 `pdf2zh_next`，不会因为更换翻译服务而启用 PDFMathTranslate。
 
 ## API Server 设置
 

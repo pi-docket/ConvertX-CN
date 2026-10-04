@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import * as tar from "tar";
 import {
   ALLOWED_ARCHIVE_FORMAT,
   CHUNK_SIZE_BYTES,
@@ -45,6 +46,22 @@ describe("transfer policy", () => {
 });
 
 describe("download and archive flow", () => {
+  test("includes converted tar artifacts and excludes the archive itself on repeat downloads", async () => {
+    mkdirSync(testDir, { recursive: true });
+    writeFileSync(join(testDir, "pages.tar"), "converted pages archive");
+    const output = join(testDir, "converted_files.tar");
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await createTarArchive(testDir, output);
+      const entries: string[] = [];
+      await tar.list({
+        file: output,
+        onentry: (entry) => {
+          entries.push(entry.path);
+        },
+      });
+      expect(entries).toEqual(["pages.tar"]);
+    }
+  });
   test("reads deterministic download chunks", async () => {
     mkdirSync(testDir, { recursive: true });
     const path = join(testDir, "sample.txt");

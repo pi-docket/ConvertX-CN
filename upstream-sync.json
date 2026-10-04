@@ -1,0 +1,446 @@
+{
+  "upstream": "https://github.com/C4illin/ConvertX",
+  "branch": "main",
+  "version": "0.19.0",
+  "reviewedCommit": "49d1db8dd06134f4423d5c1a447cce9c920156bc",
+  "reviewBase": "0d201261c82508a78beb09bc1be913ce19a7b739",
+  "mode": "selective-port",
+  "decisions": [
+    {
+      "commit": "49d1db8",
+      "subject": "chore: allow bun in renovate again (#662)",
+      "decision": "跳过／暂缓",
+      "reason": "暂缓解除 Bun 自动更新限制；运行时继续固定并经单独验证后升级"
+    },
+    {
+      "commit": "8d4899c",
+      "subject": "chore(deps): lock file maintenance (#661)",
+      "decision": "选择性更新",
+      "reason": "生产依赖按上游最新清单更新并重建本地锁定文件；开发工具大版本保留"
+    },
+    {
+      "commit": "710bc7c",
+      "subject": "chore: prepare for release",
+      "decision": "本次合入",
+      "reason": "应用版本对齐 0.19.0"
+    },
+    {
+      "commit": "163b1b5",
+      "subject": "fix: markitdown filestypes and version printing (#657)",
+      "decision": "已有／本地适配",
+      "reason": "MarkItDown 类型与版本检测已移植"
+    },
+    {
+      "commit": "d5f3887",
+      "subject": "chore: bump packages (#658)",
+      "decision": "选择性更新",
+      "reason": "生产依赖按上游最新清单更新并重建本地锁定文件；开发工具大版本保留"
+    },
+    {
+      "commit": "4f0aa1b",
+      "subject": "fix: allow PUID and PGID to be unset (#656)",
+      "decision": "已有／本地适配",
+      "reason": "本地空 PUID/PGID 使用非 root 默认，行为已覆盖测试"
+    },
+    {
+      "commit": "cc3d256",
+      "subject": "docs: clear warning for only allowing users you trust",
+      "decision": "已有／本地适配",
+      "reason": "加入可信用户/关闭公开注册说明；保留本地密钥持久化文档"
+    },
+    {
+      "commit": "4750fdf",
+      "subject": "feature: support PUID/PGID to change user (#655)",
+      "decision": "已有／本地适配",
+      "reason": "已有 non-root UID 10001、PUID/PGID 验证及数据卷初始化，不替换为可回退 root 的上游入口"
+    },
+    {
+      "commit": "aac8dd6",
+      "subject": "fix(imagemagick): handle multi-page PDF outputs and improve rasterization quality (#593)",
+      "decision": "已有／本地适配",
+      "reason": "PDF 300 DPI 已有；保留本地 TRA/任务隔离多输出治理，不采用共享目录扫描；含 E2E 首页参数修复"
+    },
+    {
+      "commit": "6fdd24c",
+      "subject": "fix(deps): update dependency elysia to v1.4.30 (#651)",
+      "decision": "选择性更新",
+      "reason": "生产依赖按上游最新清单更新并重建本地锁定文件；开发工具大版本保留"
+    },
+    {
+      "commit": "75feea0",
+      "subject": "feat: add custom branding (#575)",
+      "decision": "本次合入",
+      "reason": "BRANDING 安全转义并保留中文默认名称"
+    },
+    {
+      "commit": "0ca17da",
+      "subject": "Merge commit from fork",
+      "decision": "本次合入",
+      "reason": "禁止 recipe／downloaded_recipe 文件与类型"
+    },
+    {
+      "commit": "3b37849",
+      "subject": "chore(deps): lock file maintenance (#649)",
+      "decision": "选择性更新",
+      "reason": "生产依赖按上游最新清单更新并重建本地锁定文件；开发工具大版本保留"
+    },
+    {
+      "commit": "8f72f08",
+      "subject": "fix(deps): update dependency elysia to v1.4.27 [security] (#648)",
+      "decision": "选择性更新",
+      "reason": "生产依赖按上游最新清单更新并重建本地锁定文件；开发工具大版本保留"
+    },
+    {
+      "commit": "34358e1",
+      "subject": "chore: update to bun 1.4.2 (#645)",
+      "decision": "跳过／暂缓",
+      "reason": "暂缓 Bun 1.4.2 大版本迁移；保留已验证的 1.3.6，并统一 CI 版本来源"
+    },
+    {
+      "commit": "d34c139",
+      "subject": "ci: add autofix.ci (#644)",
+      "decision": "跳过／暂缓",
+      "reason": "不引入自动改写 PR 的格式化服务；避免吞掉 ESLint 错误与未经审阅的写入"
+    },
+    {
+      "commit": "9d1c093",
+      "subject": "fix(auth): redirect unauthorized page requests (#628)",
+      "decision": "已有／本地适配",
+      "reason": "本地已实现 HTML 登录跳转/API 401；保留持久 JWT 和 CSRF"
+    },
+    {
+      "commit": "b9ee1f6",
+      "subject": "feat(pdftops): added pdftops converter (#611)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "2ea8e00",
+      "subject": "fix(graphicsmagick): apply EXIF auto-orient so portrait images don't convert sideways (#590) (#637)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "edb21f8",
+      "subject": "chore(deps): update docker/metadata-action action to v6 (#641)",
+      "decision": "跳过／暂缓",
+      "reason": "暂缓发布 Action 大版本升级；保留中文分支 Docker 发布权限、标签与构建设置"
+    },
+    {
+      "commit": "0dea046",
+      "subject": "chore(deps): update docker/setup-buildx-action action to v4 (#642)",
+      "decision": "跳过／暂缓",
+      "reason": "暂缓发布 Action 大版本升级；保留中文分支 Docker 发布权限、标签与构建设置"
+    },
+    {
+      "commit": "878876c",
+      "subject": "chore(deps): update docker/build-push-action action to v7 (#640)",
+      "decision": "跳过／暂缓",
+      "reason": "暂缓发布 Action 大版本升级；保留中文分支 Docker 发布权限、标签与构建设置"
+    },
+    {
+      "commit": "57ebd7f",
+      "subject": "chore(deps): update actions/checkout action to v7 (#639)",
+      "decision": "跳过／暂缓",
+      "reason": "暂缓发布 Action 大版本升级；保留中文分支 Docker 发布权限、标签与构建设置"
+    },
+    {
+      "commit": "5c96086",
+      "subject": "feat(ffmpeg): added m2ts, ts, vob, wmv input types, and mka output (#636)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "e94d037",
+      "subject": "fix(results): hide actions for failed conversions (#625)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "ce86373",
+      "subject": "fix(ffmpeg): raise execFile maxBuffer so long conversions don't overflow stderr (#629)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "acee10f",
+      "subject": "feat(auth): autofocus login email field (#627)",
+      "decision": "本次合入",
+      "reason": "登录邮箱 autofocus"
+    },
+    {
+      "commit": "f444d84",
+      "subject": "ci: add xss scan (#614)",
+      "decision": "跳过／暂缓",
+      "reason": "暂缓新增全仓库 xss-scan gate；本次品牌字符串加入实际转义回归，保留既有安全检查"
+    },
+    {
+      "commit": "126fd43",
+      "subject": "feat(calibre): add azw3 to supported input formats (#610)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "3f91d51",
+      "subject": "feat(soffice): add support for Excel and Calc spreadsheet conversions (#609)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "a7722c1",
+      "subject": "chore: add missing PORT environment variable to README (#576)",
+      "decision": "已有／本地适配",
+      "reason": "PORT 已在配置文档说明，保留本地部署文档"
+    },
+    {
+      "commit": "ddd782d",
+      "subject": "fix: version printing (#606)",
+      "decision": "已有／本地适配",
+      "reason": "版本检测已移植且有超时；保留 Dasel --version 相容性"
+    },
+    {
+      "commit": "c8551d9",
+      "subject": "chore: update deps (#605)",
+      "decision": "选择性更新",
+      "reason": "生产依赖按上游最新清单更新并重建本地锁定文件；开发工具大版本保留"
+    },
+    {
+      "commit": "85355c6",
+      "subject": "ci: change autolabeler to a custom built (#603)",
+      "decision": "跳过／暂缓",
+      "reason": "不采用 c4illin/autolabel@main；可变引用在 pull_request_target 下持写权限"
+    },
+    {
+      "commit": "84e9549",
+      "subject": "test: add unit tests for main and db and improve coverage (#596)",
+      "decision": "跳过／暂缓",
+      "reason": "上游测试绑定旧 schema/handleConvert，保留并执行本地 schema v5 与安全测试"
+    },
+    {
+      "commit": "5cf7703",
+      "subject": "fix: better 404 message in logs (#599)",
+      "decision": "本次合入",
+      "reason": "404 日志仅输出请求方法与路径"
+    },
+    {
+      "commit": "3602f12",
+      "subject": "fix(dasel): update converter for v3 CLI (#591)",
+      "decision": "已有／本地适配",
+      "reason": "保留已修复的 Dasel v2/v3 双兼容，不只采用 v3 CLI"
+    },
+    {
+      "commit": "15e4046",
+      "subject": "fix(results): encode download filenames (#587)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "7157d23",
+      "subject": "Apply EXIF orientation when converting images with ImageMagick (#577)",
+      "decision": "本次合入",
+      "reason": "ImageMagick EXIF auto-orient"
+    },
+    {
+      "commit": "dc61643",
+      "subject": "fix(libreoffice): don't force MS Word 97 infilter on .wps (#585)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "393441f",
+      "subject": "chore: fix release config",
+      "decision": "本次合入",
+      "reason": "修正 release 分类 YAML 层级"
+    },
+    {
+      "commit": "cc4de76",
+      "subject": "chore: refresh lockfile",
+      "decision": "选择性更新",
+      "reason": "生产依赖按上游最新清单更新并重建本地锁定文件；开发工具大版本保留"
+    },
+    {
+      "commit": "174877c",
+      "subject": "ci: remove bump version action",
+      "decision": "跳过／暂缓",
+      "reason": "保留中文分支独立发布流程，不照搬上游删除版本工作流程"
+    },
+    {
+      "commit": "eceb29c",
+      "subject": "chore: prepare for 0.18.0",
+      "decision": "跳过／暂缓",
+      "reason": "0.18.0 发布记录已被此次 0.19.0 对齐取代"
+    },
+    {
+      "commit": "4bdb643",
+      "subject": "chore(deps): bump deps",
+      "decision": "选择性更新",
+      "reason": "生产依赖按上游最新清单更新并重建本地锁定文件；开发工具大版本保留"
+    },
+    {
+      "commit": "e125326",
+      "subject": "Merge commit from fork",
+      "decision": "已有／本地适配",
+      "reason": "本地已实现 POST 删除与 CSRF；保留本地 DOM 文件名转义"
+    },
+    {
+      "commit": "0965928",
+      "subject": "security: fix path traversal vulnerability in conversion API (#532)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "1ba82cf",
+      "subject": "fix(assimp): pass -f<format> so non-extension targets work (#557)",
+      "decision": "已有等效实现",
+      "reason": "此前已移植；本次保留本地实现并运行对应回归"
+    },
+    {
+      "commit": "70fcc84",
+      "subject": "chore: downgrade elysia to 1.4.22 (#551)",
+      "decision": "跳过／暂缓",
+      "reason": "不回退 Elysia 1.4.22，使用上游后续安全升级 1.4.30"
+    },
+    {
+      "commit": "bee3f63",
+      "subject": "chore(deps): update docker/login-action action to v4 (#545)",
+      "decision": "跳过／暂缓",
+      "reason": "暂缓发布 Action 大版本升级；保留中文分支 Docker 发布权限、标签与构建设置"
+    }
+  ],
+  "latestCommitReview": {
+    "date": "2026-10-04",
+    "upstreamMain": "49d1db8dd06134f4423d5c1a447cce9c920156bc",
+    "newMainCommits": 0,
+    "strategy": "commit-based-selective-port",
+    "mainHistoryRewritten": false,
+    "report": "docs/upstream-commit-review-20261004.md",
+    "candidates": [
+      {
+        "pullRequest": 663,
+        "url": "https://github.com/C4illin/ConvertX/pull/663",
+        "head": "83960bec8249bfcddbdf6aafd54409631170e011",
+        "state": "open-at-review",
+        "commits": [
+          "bc021670ac7deedd1bd042cd7e91089b5dd35a24",
+          "2b94e1dc361da7b6ce373654da3028b3ceef3f73",
+          "84b7e8b043c3481779b6a4136879313a6449676e",
+          "83960bec8249bfcddbdf6aafd54409631170e011"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "修復 FFmpeg 空白參數、格式註冊表汙染、VCF 遺漏欄位；採用本地回歸測試，不移植 expected-failure 標記或全域測試資料庫"
+      },
+      {
+        "pullRequest": 567,
+        "url": "https://github.com/C4illin/ConvertX/pull/567",
+        "head": "de438e246fbd4201237744889d362d952010413e",
+        "state": "open-at-review",
+        "commits": [
+          "6e7d1c183cc4960ea9ca7c2eb898912b54357290",
+          "b536439be60ab114411a0e5b19f3131147b30300",
+          "53c67474e789cdbd690fabd868c1d6b56d61b56e",
+          "431d19bfe7b2a907dc44e93c19cb01594bb4e5ca",
+          "de438e246fbd4201237744889d362d952010413e"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "分離 Calc／Writer 匯入匯出篩選器，擴充試算表格式；明確指定 CSV／TSV 分隔符號與 UTF-8，修正 LibreOffice 7.4 中文亂碼"
+      },
+      {
+        "pullRequest": 626,
+        "url": "https://github.com/C4illin/ConvertX/pull/626",
+        "head": "a0910485ff4f2c2e9eb44a7f4466554c945046ba",
+        "state": "open-at-review",
+        "commits": [
+          "4cef855b825c6a92329f5d0a511e7c8f9ea93187",
+          "13eea486f3ab3c6a7aaae16cbfb1c2106300567f",
+          "a0910485ff4f2c2e9eb44a7f4466554c945046ba"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "剪貼簿檔案走現有安全分塊上傳，補充 MIME 副檔名與中文提示"
+      },
+      {
+        "pullRequest": 568,
+        "url": "https://github.com/C4illin/ConvertX/pull/568",
+        "head": "56cb6e4ede23292e56c0fb9bb2adc9b60eef5d73",
+        "state": "open-at-review",
+        "commits": [
+          "17a683186d2814b6d9baebe9991e4b26ac6f90b8",
+          "b9d82167dee7011779c755d67ed65f6fbea0c8ba",
+          "01553de75728923b3fd4416ccb237d4a6cd5626a",
+          "dc3d58abb47d516492d1f47cce7902b12a606464",
+          "56cb6e4ede23292e56c0fb9bb2adc9b60eef5d73"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "新增 3CX WAV 輸出與 URL 格式預選，防止自動推斷覆蓋選擇"
+      },
+      {
+        "pullRequest": 620,
+        "url": "https://github.com/C4illin/ConvertX/pull/620",
+        "head": "6f7989b5ee78b061440986db14c503c9da0f2ef6",
+        "state": "open-at-review",
+        "commits": [
+          "f4f7646d5ad69468064c20dc2788377636c17427",
+          "6f7989b5ee78b061440986db14c503c9da0f2ef6"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "所有頁面遵守 HIDE_HISTORY，保留中文與安全導覽"
+      },
+      {
+        "pullRequest": 612,
+        "url": "https://github.com/C4illin/ConvertX/pull/612",
+        "head": "b9f49f0d3472d6e95f42affaafd6751fe3851809",
+        "state": "open-at-review",
+        "commits": [
+          "8ae4b9ea1a40f997fd07d0c794b4c76e6077b871",
+          "453aa8fe8ba89fb1bf082daefe459d11d9967350",
+          "9bf5a8ad9c35d16f28c0737759904f648fbce64c",
+          "d12aaecffae9b3c2521a7462b5fb220217ab32d5",
+          "b9f49f0d3472d6e95f42affaafd6751fe3851809"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "新增 DjVu→PDF／TIFF，安裝完整版／Lite 所需工具並同步 Rust API；拒絕空輸出"
+      },
+      {
+        "pullRequest": 618,
+        "url": "https://github.com/C4illin/ConvertX/pull/618",
+        "head": "4daf77bd669ed1a56dfdd2ac8f76444b62cac284",
+        "state": "open-at-review",
+        "commits": ["4daf77bd669ed1a56dfdd2ac8f76444b62cac284"],
+        "decision": "adapted-selectively",
+        "reason": "採用有限重試刪除，適配任務所有權與刪除交易；清理錯誤後繼續排程"
+      },
+      {
+        "pullRequest": 607,
+        "url": "https://github.com/C4illin/ConvertX/pull/607",
+        "head": "4c56c519ac9f7d581299d4f0d60baaf162f00588",
+        "state": "open-at-review",
+        "commits": [
+          "5b6adccf4e26165e8ec5e3dda73011edd0117dff",
+          "c6ef0ce020f940d9a48d84251e4077cf49b3c2ae",
+          "4c56c519ac9f7d581299d4f0d60baaf162f00588"
+        ],
+        "decision": "deferred",
+        "reason": "暫緩封面圖片自動映射，需先驗證 Lite FFmpeg 與各輸出容器相容性"
+      },
+      {
+        "pullRequest": 594,
+        "url": "https://github.com/C4illin/ConvertX/pull/594",
+        "head": "aa3936842780c931bdb6466fa9aa9f72b126e877",
+        "state": "open-at-review",
+        "commits": [
+          "4e9c2b8c1428bb8f6e2f776c13ca659793eda46a",
+          "b4d36556c18a2d72f1cb2c23e3b2a0a03d6e288b",
+          "ffddc284f2825973789dbd709ad9f89c4a6beaa2",
+          "e0929b6fe9dd965efec83e64f96110019da976da",
+          "fd7841b3c28e92afad23cf57af1302a3139bff4d",
+          "23d405e7db34db961936772ddeacce01d411f0c5",
+          "cb8900b20aeb3831f6cce98358a0f89f8076c0df",
+          "83aefc26871a1760c4a526acd3aae4a4437d0687",
+          "9abc19f0aa493d0a5abe038fab40d050fc096244",
+          "aa3936842780c931bdb6466fa9aa9f72b126e877"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "按實際分類顯示支援來源，不引入新 API 或非同步競態"
+      }
+    ]
+  }
+}

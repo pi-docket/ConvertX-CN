@@ -40,7 +40,9 @@
     "convertButton": "Convert",
     "uploading": "Uploading...",
     "processing": "Processing...",
-    "selfSignedNotice": "(Self-signed certificate for this deployment; not a CA-verified identity)"
+    "selfSignedNotice": "(Self-signed certificate for this deployment; not a CA-verified identity)",
+    "orPasteHere": "or paste files here",
+    "supportedSources": "Supported source types: {sources}"
   },
   "results": {
     "title": "Results",

@@ -8,6 +8,19 @@ import { join } from "node:path";
 // Skip common tests as PDFMathTranslate has different behavior (archive output)
 test.skip("dummy - required to trigger test detection", () => {});
 
+let originalService: string | undefined;
+beforeEach(() => {
+  originalService = process.env.PDFMATHTRANSLATE_SERVICE;
+  delete process.env.PDFMATHTRANSLATE_SERVICE;
+});
+afterEach(() => {
+  if (originalService === undefined) {
+    delete process.env.PDFMATHTRANSLATE_SERVICE;
+  } else {
+    process.env.PDFMATHTRANSLATE_SERVICE = originalService;
+  }
+});
+
 describe("PDFMathTranslate converter properties", () => {
   test("should have correct input formats", () => {
     expect(properties.from.document).toContain("pdf");
@@ -93,7 +106,7 @@ describe("PDFMathTranslate converter - Chinese translation", () => {
     expect(pdf2zhArgs).toContain("--lang-out");
     expect(pdf2zhArgs).toContain("zh-CN"); // zh is normalized to zh-CN
     expect(pdf2zhArgs).toContain("--output");
-    expect(pdf2zhArgs).toContain("--google"); // Translation service
+    expect(pdf2zhArgs).toContain("--siliconflowfree");
   });
 });
 
@@ -442,5 +455,83 @@ describe("PDFMathTranslate converter - Error handling", () => {
     await expect(
       convert(testInputFile, "pdf", "pdf-zh", targetPath, undefined, mockExecFile),
     ).rejects.toThrow(/No.*PDF.*found|No translated PDF/);
+  });
+});
+
+describe("PDFMathTranslate converter - Translation services", () => {
+  const testDir = "./test-output-pdfmathtranslate-services";
+  const testInputFile = join(testDir, "input.pdf");
+
+  beforeEach(() => {
+    mkdirSync(testDir, { recursive: true });
+    writeFileSync(testInputFile, "%PDF-1.4\n%Test PDF content");
+  });
+
+  afterEach(() => {
+    rmSync(testDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+  });
+
+  function makeExecutor(failures: Record<string, "error" | "no-output"> = {}) {
+    const attempts: string[] = [];
+    const executor: ExecFileFn = (cmd, args, callback) => {
+      if (cmd === "pdftotext") {
+        callback(null, "Searchable English document with sufficient text. ".repeat(4), "");
+      } else if (cmd === "pdf2zh_next") {
+        const service = args[args.length - 1];
+        attempts.push(service);
+        if (failures[service] === "error") {
+          callback(new Error("Service unavailable") as ExecFileException, "", "HTTP 429");
+          return;
+        }
+        if (failures[service] !== "no-output") {
+          const outputDir = args[args.indexOf("--output") + 1];
+          writeFileSync(join(outputDir, "input-mono.pdf"), "%PDF-1.4\n%Translated");
+          writeFileSync(join(outputDir, "input-dual.pdf"), "%PDF-1.4\n%Bilingual");
+        }
+        callback(null, "Complete", "");
+      } else if (cmd === "tar") {
+        callback(null, "Archive created", "");
+      }
+    };
+    return { attempts, executor };
+  }
+
+  test("falls back when SiliconFlowFree produces no PDFs and Google fails", async () => {
+    const { attempts, executor } = makeExecutor({
+      "--siliconflowfree": "no-output",
+      "--google": "error",
+    });
+    await convert(
+      testInputFile,
+      "pdf",
+      "pdf-zh-TW",
+      join(testDir, "output.tar"),
+      undefined,
+      executor,
+    );
+    expect(attempts).toEqual(["--siliconflowfree", "--google", "--bing"]);
+  });
+
+  test("an empty service setting uses SiliconFlowFree without calling backups on success", async () => {
+    process.env.PDFMATHTRANSLATE_SERVICE = "";
+    const { attempts, executor } = makeExecutor();
+    await convert(
+      testInputFile,
+      "pdf",
+      "pdf-zh-TW",
+      join(testDir, "output.tar"),
+      undefined,
+      executor,
+    );
+    expect(attempts).toEqual(["--siliconflowfree"]);
+  });
+
+  test("an explicitly selected service fails without switching providers", async () => {
+    process.env.PDFMATHTRANSLATE_SERVICE = "ollama";
+    const { attempts, executor } = makeExecutor({ "--ollama": "error" });
+    await expect(
+      convert(testInputFile, "pdf", "pdf-zh-TW", join(testDir, "output.tar"), undefined, executor),
+    ).rejects.toThrow(/Service unavailable/);
+    expect(attempts).toEqual(["--ollama"]);
   });
 });
