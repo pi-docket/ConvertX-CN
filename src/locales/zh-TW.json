@@ -38,7 +38,9 @@
     "convertTo": "轉換為",
     "convertButton": "轉換",
     "uploading": "上傳中...",
-    "processing": "處理中..."
+    "processing": "處理中...",
+    "orPasteHere": "或在這裡貼上檔案",
+    "supportedSources": "支援的來源格式：{sources}"
   },
   "results": {
     "title": "結果",

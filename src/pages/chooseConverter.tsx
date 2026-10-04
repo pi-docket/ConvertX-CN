@@ -1,5 +1,5 @@
 import Elysia, { t } from "elysia";
-import { getPossibleTargets } from "../converters/main";
+import { getPossibleSources, getPossibleTargets } from "../converters/main";
 import { userService } from "./user";
 
 const selfSignedNotice = "（本部署自簽憑證，不代表 CA 身份認證）";
@@ -44,6 +44,7 @@ export const chooseConverter = new Elysia().use(userService).post(
                     `}
                     data-value={`${target},${converter}`}
                     data-target={target}
+                    data-sources={getPossibleSources(target)[converter]?.join(", ") ?? ""}
                     data-converter={converter}
                     type="button"
                     safe

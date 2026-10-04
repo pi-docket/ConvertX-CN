@@ -2,7 +2,7 @@ import Elysia from "elysia";
 import { BaseHtml } from "../components/base";
 import { Header } from "../components/header";
 import { getAllInputs, getAllTargets, getDisabledEngines } from "../converters/main";
-import { ALLOW_UNAUTHENTICATED, WEBROOT } from "../helpers/env";
+import { ALLOW_UNAUTHENTICATED, HIDE_HISTORY, WEBROOT } from "../helpers/env";
 import { ensureCsrfToken } from "../helpers/csrf";
 import { userService } from "./user";
 
@@ -17,6 +17,7 @@ export const listConverters = new Elysia().use(userService).get(
           <Header
             webroot={WEBROOT}
             allowUnauthenticated={ALLOW_UNAUTHENTICATED}
+            hideHistory={HIDE_HISTORY}
             loggedIn
             csrfToken={csrfToken}
           />

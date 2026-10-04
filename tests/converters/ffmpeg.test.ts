@@ -1,4 +1,4 @@
-import { beforeEach, expect, test } from "bun:test";
+import { afterEach, beforeEach, expect, test } from "bun:test";
 import { convert } from "../../src/converters/ffmpeg";
 import type { ExecFileOptions } from "node:child_process";
 
@@ -24,6 +24,36 @@ beforeEach(() => {
   calls = [];
   lastOptions = undefined;
   delete process.env.FFMPEG_ARGS;
+  delete process.env.FFMPEG_OUTPUT_ARGS;
+});
+
+afterEach(() => {
+  delete process.env.FFMPEG_ARGS;
+  delete process.env.FFMPEG_OUTPUT_ARGS;
+});
+
+test("ignores surrounding whitespace in FFmpeg input and output arguments", async () => {
+  process.env.FFMPEG_ARGS = "  -y\t ";
+  process.env.FFMPEG_OUTPUT_ARGS = "\n -preset veryfast  ";
+  await convert("in.mp4", "mp4", "mp4", "out.mp4", undefined, mockExecFile);
+  expect(calls[0]).toEqual(["-y", "-i", "in.mp4", "-preset", "veryfast", "out.mp4"]);
+});
+
+test("3CX WAV fixes the sample rate, channels and codec after user output arguments", async () => {
+  process.env.FFMPEG_OUTPUT_ARGS = " -ar 44100 -ac 2 -c:a pcm_f32le ";
+  await convert("in.mp3", "mp3", "wav-3cx", "out.wav", undefined, mockExecFile);
+  expect(calls[0]?.slice(-10)).toEqual([
+    "-vn",
+    "-ac",
+    "1",
+    "-ar",
+    "8000",
+    "-c:a",
+    "pcm_s16le",
+    "-f",
+    "wav",
+    "out.wav",
+  ]);
 });
 
 test("converts a normal file", async () => {

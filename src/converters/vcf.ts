@@ -46,9 +46,7 @@ export function parseVCF(data: string): Record<string, string>[] {
 
 export function toCSV(data: Record<string, string>[]): string {
   if (!data.length) return "";
-  const first = data[0];
-  if (!first) return "";
-  const headers = Object.keys(first);
+  const headers = [...new Set(data.flatMap((contact) => Object.keys(contact)))];
   const escape = (str: string) => `"${str.replace(/"/g, '""')}"`;
   const rows = data.map((row) => headers.map((h) => escape(row[h] || "")).join(","));
   return [headers.join(","), ...rows].join("\n");

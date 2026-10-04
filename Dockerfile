@@ -133,7 +133,7 @@ RUN apt-get update --fix-missing && \
 # 4.3 核心轉換工具（不包含 Ghostscript，稍後從源碼編譯）
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  assimp-utils dcraw dvisvgm graphicsmagick \
+  assimp-utils dcraw djvulibre-bin dvisvgm graphicsmagick \
   mupdf-tools poppler-utils potrace qpdf && \
   rm -rf /var/lib/apt/lists/*
 

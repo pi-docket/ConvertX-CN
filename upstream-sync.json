@@ -306,5 +306,141 @@
       "decision": "跳过／暂缓",
       "reason": "暂缓发布 Action 大版本升级；保留中文分支 Docker 发布权限、标签与构建设置"
     }
-  ]
+  ],
+  "latestCommitReview": {
+    "date": "2026-10-04",
+    "upstreamMain": "49d1db8dd06134f4423d5c1a447cce9c920156bc",
+    "newMainCommits": 0,
+    "strategy": "commit-based-selective-port",
+    "mainHistoryRewritten": false,
+    "report": "docs/upstream-commit-review-20261004.md",
+    "candidates": [
+      {
+        "pullRequest": 663,
+        "url": "https://github.com/C4illin/ConvertX/pull/663",
+        "head": "83960bec8249bfcddbdf6aafd54409631170e011",
+        "state": "open-at-review",
+        "commits": [
+          "bc021670ac7deedd1bd042cd7e91089b5dd35a24",
+          "2b94e1dc361da7b6ce373654da3028b3ceef3f73",
+          "84b7e8b043c3481779b6a4136879313a6449676e",
+          "83960bec8249bfcddbdf6aafd54409631170e011"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "修復 FFmpeg 空白參數、格式註冊表汙染、VCF 遺漏欄位；採用本地回歸測試，不移植 expected-failure 標記或全域測試資料庫"
+      },
+      {
+        "pullRequest": 567,
+        "url": "https://github.com/C4illin/ConvertX/pull/567",
+        "head": "de438e246fbd4201237744889d362d952010413e",
+        "state": "open-at-review",
+        "commits": [
+          "6e7d1c183cc4960ea9ca7c2eb898912b54357290",
+          "b536439be60ab114411a0e5b19f3131147b30300",
+          "53c67474e789cdbd690fabd868c1d6b56d61b56e",
+          "431d19bfe7b2a907dc44e93c19cb01594bb4e5ca",
+          "de438e246fbd4201237744889d362d952010413e"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "分離 Calc／Writer 匯入匯出篩選器，擴充試算表格式；另外確保 TSV 為 UTF-8 Tab 分隔"
+      },
+      {
+        "pullRequest": 626,
+        "url": "https://github.com/C4illin/ConvertX/pull/626",
+        "head": "a0910485ff4f2c2e9eb44a7f4466554c945046ba",
+        "state": "open-at-review",
+        "commits": [
+          "4cef855b825c6a92329f5d0a511e7c8f9ea93187",
+          "13eea486f3ab3c6a7aaae16cbfb1c2106300567f",
+          "a0910485ff4f2c2e9eb44a7f4466554c945046ba"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "剪貼簿檔案走現有安全分塊上傳，補充 MIME 副檔名與中文提示"
+      },
+      {
+        "pullRequest": 568,
+        "url": "https://github.com/C4illin/ConvertX/pull/568",
+        "head": "56cb6e4ede23292e56c0fb9bb2adc9b60eef5d73",
+        "state": "open-at-review",
+        "commits": [
+          "17a683186d2814b6d9baebe9991e4b26ac6f90b8",
+          "b9d82167dee7011779c755d67ed65f6fbea0c8ba",
+          "01553de75728923b3fd4416ccb237d4a6cd5626a",
+          "dc3d58abb47d516492d1f47cce7902b12a606464",
+          "56cb6e4ede23292e56c0fb9bb2adc9b60eef5d73"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "新增 3CX WAV 輸出與 URL 格式預選，防止自動推斷覆蓋選擇"
+      },
+      {
+        "pullRequest": 620,
+        "url": "https://github.com/C4illin/ConvertX/pull/620",
+        "head": "6f7989b5ee78b061440986db14c503c9da0f2ef6",
+        "state": "open-at-review",
+        "commits": [
+          "f4f7646d5ad69468064c20dc2788377636c17427",
+          "6f7989b5ee78b061440986db14c503c9da0f2ef6"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "所有頁面遵守 HIDE_HISTORY，保留中文與安全導覽"
+      },
+      {
+        "pullRequest": 612,
+        "url": "https://github.com/C4illin/ConvertX/pull/612",
+        "head": "b9f49f0d3472d6e95f42affaafd6751fe3851809",
+        "state": "open-at-review",
+        "commits": [
+          "8ae4b9ea1a40f997fd07d0c794b4c76e6077b871",
+          "453aa8fe8ba89fb1bf082daefe459d11d9967350",
+          "9bf5a8ad9c35d16f28c0737759904f648fbce64c",
+          "d12aaecffae9b3c2521a7462b5fb220217ab32d5",
+          "b9f49f0d3472d6e95f42affaafd6751fe3851809"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "新增 DjVu→PDF／TIFF，安裝完整版／Lite 所需工具並同步 Rust API；拒絕空輸出"
+      },
+      {
+        "pullRequest": 618,
+        "url": "https://github.com/C4illin/ConvertX/pull/618",
+        "head": "4daf77bd669ed1a56dfdd2ac8f76444b62cac284",
+        "state": "open-at-review",
+        "commits": ["4daf77bd669ed1a56dfdd2ac8f76444b62cac284"],
+        "decision": "adapted-selectively",
+        "reason": "採用有限重試刪除，適配任務所有權與刪除交易；清理錯誤後繼續排程"
+      },
+      {
+        "pullRequest": 607,
+        "url": "https://github.com/C4illin/ConvertX/pull/607",
+        "head": "4c56c519ac9f7d581299d4f0d60baaf162f00588",
+        "state": "open-at-review",
+        "commits": [
+          "5b6adccf4e26165e8ec5e3dda73011edd0117dff",
+          "c6ef0ce020f940d9a48d84251e4077cf49b3c2ae",
+          "4c56c519ac9f7d581299d4f0d60baaf162f00588"
+        ],
+        "decision": "deferred",
+        "reason": "暫緩封面圖片自動映射，需先驗證 Lite FFmpeg 與各輸出容器相容性"
+      },
+      {
+        "pullRequest": 594,
+        "url": "https://github.com/C4illin/ConvertX/pull/594",
+        "head": "aa3936842780c931bdb6466fa9aa9f72b126e877",
+        "state": "open-at-review",
+        "commits": [
+          "4e9c2b8c1428bb8f6e2f776c13ca659793eda46a",
+          "b4d36556c18a2d72f1cb2c23e3b2a0a03d6e288b",
+          "ffddc284f2825973789dbd709ad9f89c4a6beaa2",
+          "e0929b6fe9dd965efec83e64f96110019da976da",
+          "fd7841b3c28e92afad23cf57af1302a3139bff4d",
+          "23d405e7db34db961936772ddeacce01d411f0c5",
+          "cb8900b20aeb3831f6cce98358a0f89f8076c0df",
+          "83aefc26871a1760c4a526acd3aae4a4437d0687",
+          "9abc19f0aa493d0a5abe038fab40d050fc096244",
+          "aa3936842780c931bdb6466fa9aa9f72b126e877"
+        ],
+        "decision": "adapted-selectively",
+        "reason": "按實際分類顯示支援來源，不引入新 API 或非同步競態"
+      }
+    ]
+  }
 }

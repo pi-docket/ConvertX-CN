@@ -38,6 +38,7 @@ import {
 } from "./pdfpackager";
 import { basename, dirname, parse } from "node:path";
 import { getMissingExecutableEngines } from "../helpers/engineAvailability";
+import { convert as convertDjvu, properties as propertiesDjvu } from "./djvu";
 
 // This should probably be reconstructed so that the functions are not imported instead the functions hook into this to make the converters more modular
 
@@ -188,6 +189,10 @@ const properties: Record<
   deark: {
     properties: propertiesDeark,
     converter: convertDeark,
+  },
+  djvu: {
+    properties: propertiesDjvu,
+    converter: convertDjvu,
   },
 };
 
@@ -386,7 +391,9 @@ for (const converterName in properties) {
       const normalizedExtension = normalizeFiletype(ext);
       if (!possibleTargets[normalizedExtension]) possibleTargets[normalizedExtension] = {};
 
-      possibleTargets[normalizedExtension][converterName] = toList;
+      possibleTargets[normalizedExtension][converterName] = [
+        ...new Set([...(possibleTargets[normalizedExtension][converterName] ?? []), ...toList]),
+      ];
     }
   }
 }
@@ -394,8 +401,25 @@ for (const converterName in properties) {
 export const getPossibleTargets = (from: string): Record<string, string[]> => {
   const fromClean = normalizeFiletype(from);
 
-  return possibleTargets[fromClean] || {};
+  return Object.fromEntries(
+    Object.entries(possibleTargets[fromClean] ?? {}).map(([name, targets]) => [name, [...targets]]),
+  );
 };
+
+/** Target-specific input formats, preserving category boundaries and raw target IDs. */
+export function getPossibleSources(target: string): Record<string, string[]> {
+  const sources: Record<string, string[]> = {};
+  for (const [name, converter] of Object.entries(properties)) {
+    if (disabledEngines.includes(name.toLowerCase())) continue;
+    for (const [category, targets] of Object.entries(converter.properties.to)) {
+      if (!targets.includes(target)) continue;
+      sources[name] = [
+        ...new Set([...(sources[name] ?? []), ...(converter.properties.from[category] ?? [])]),
+      ];
+    }
+  }
+  return sources;
+}
 
 const possibleInputs: string[] = [];
 for (const converterName in properties) {
@@ -428,13 +452,15 @@ for (const converterName in properties) {
     if (allTargets[converterName]) {
       allTargets[converterName].push(...(converterProperties.to[key] || []));
     } else {
-      allTargets[converterName] = converterProperties.to[key] || [];
+      allTargets[converterName] = [...(converterProperties.to[key] || [])];
     }
   }
 }
 
 export const getAllTargets = () => {
-  return allTargets;
+  return Object.fromEntries(
+    Object.entries(allTargets).map(([name, targets]) => [name, [...new Set(targets)]]),
+  );
 };
 
 const allInputs: Record<string, string[]> = {};
@@ -449,11 +475,11 @@ for (const converterName in properties) {
     if (allInputs[converterName]) {
       allInputs[converterName].push(...(converterProperties.from[key] || []));
     } else {
-      allInputs[converterName] = converterProperties.from[key] || [];
+      allInputs[converterName] = [...(converterProperties.from[key] || [])];
     }
   }
 }
 
 export const getAllInputs = (converter: string) => {
-  return allInputs[converter] || [];
+  return [...new Set(allInputs[converter] ?? [])];
 };

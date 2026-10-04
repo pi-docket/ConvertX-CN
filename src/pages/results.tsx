@@ -7,7 +7,7 @@ import { webActor } from "../application/actor";
 import { jobService } from "../application/jobService";
 import { buildDownloadUrl } from "../helpers/buildDownloadUrl";
 import { ensureCsrfToken } from "../helpers/csrf";
-import { ALLOW_UNAUTHENTICATED, WEBROOT } from "../helpers/env";
+import { ALLOW_UNAUTHENTICATED, HIDE_HISTORY, WEBROOT } from "../helpers/env";
 import { DownloadIcon } from "../icons/download";
 import { DeleteIcon } from "../icons/delete";
 import { EyeIcon } from "../icons/eye";
@@ -166,6 +166,7 @@ export const results = new Elysia()
             <Header
               webroot={WEBROOT}
               allowUnauthenticated={ALLOW_UNAUTHENTICATED}
+              hideHistory={HIDE_HISTORY}
               loggedIn
               locale={locale}
               t={t}
