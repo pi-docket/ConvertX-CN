@@ -20,8 +20,14 @@ import { ensureCsrfToken } from "../helpers/csrf";
 import { jobService } from "../application/jobService";
 import { webActor } from "../application/actor";
 import { isFirstRun, userService } from "./user";
+import { sourceHintId } from "../helpers/sourceHintId";
 
 const scriptVersion = `${version}-${Bun.file("public/script.js").lastModified}`;
+const sourceHints = new Set(
+  Object.entries(getAllTargets()).flatMap(([converter, targets]) =>
+    targets.map((target) => getPossibleSources(target)[converter]?.join(", ") ?? ""),
+  ),
+);
 
 export const root = new Elysia()
   .use(userService)
@@ -247,7 +253,9 @@ export const root = new Elysia()
                               }}
                               data-value={`${target},${converter}`}
                               data-target={target}
-                              data-sources={getPossibleSources(target)[converter]?.join(", ") ?? ""}
+                              data-sources-id={sourceHintId(
+                                getPossibleSources(target)[converter]?.join(", ") ?? "",
+                              )}
                               data-converter={converter}
                               type="button"
                               safe
@@ -304,6 +312,11 @@ export const root = new Elysia()
                     disabled
                   />
                   <p id="supported-sources" role="status" class="mt-2 text-sm text-neutral-400" />
+                  <div hidden>
+                    {Array.from(sourceHints, (sources) => (
+                      <span id={sourceHintId(sources)} data-sources={sources} />
+                    ))}
+                  </div>
                 </div>
               </form>
             </main>

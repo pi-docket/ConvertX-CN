@@ -383,8 +383,9 @@ const updateSearchBar = () => {
         target.setAttribute("aria-selected", "true");
         const supportedSources = document.querySelector("#supported-sources");
         if (supportedSources) {
-          supportedSources.textContent = target.dataset.sources
-            ? getTranslation("convert", "supportedSources", { sources: target.dataset.sources })
+          const sources = document.getElementById(target.dataset.sourcesId)?.dataset.sources;
+          supportedSources.textContent = sources
+            ? getTranslation("convert", "supportedSources", { sources })
             : "";
         }
         formatSelected = true;
