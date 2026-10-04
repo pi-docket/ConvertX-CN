@@ -38,7 +38,9 @@
     "convertTo": "转换为",
     "convertButton": "转换",
     "uploading": "上传中...",
-    "processing": "处理中..."
+    "processing": "处理中...",
+    "orPasteHere": "或在这里粘贴文件",
+    "supportedSources": "支持的来源格式：{sources}"
   },
   "results": {
     "title": "结果",

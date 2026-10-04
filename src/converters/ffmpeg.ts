@@ -719,6 +719,7 @@ export const properties = {
       "vvc",
       "w64",
       "wav",
+      "wav-3cx",
       "wbmp",
       "webm",
       "webp",
@@ -753,6 +754,9 @@ export async function convert(
   // 1️⃣ 像素格式治理：禁止 deprecated yuvj420p
   // 對於圖片輸出，強制使用 yuv420p + color_range pc
   const outputExt = targetPath.split(".").pop()?.toLowerCase() ?? convertTo;
+  if (convertTo === "wav-3cx") {
+    extraArgs.push("-vn", "-ac", "1", "-ar", "8000", "-c:a", "pcm_s16le", "-f", "wav");
+  }
   if (isImageOutput(targetPath) || ["jpg", "jpeg", "png", "bmp", "webp"].includes(outputExt)) {
     const pixelFormatArgs = getPixelFormatArgs({
       outputFormat: outputExt,
@@ -807,10 +811,8 @@ export async function convert(
   }
 
   // Parse FFMPEG_ARGS environment variable into array
-  const ffmpegArgs = process.env.FFMPEG_ARGS ? process.env.FFMPEG_ARGS.split(/\s+/) : [];
-  const ffmpegOutputArgs = process.env.FFMPEG_OUTPUT_ARGS
-    ? process.env.FFMPEG_OUTPUT_ARGS.split(/\s+/)
-    : [];
+  const ffmpegArgs = (process.env.FFMPEG_ARGS ?? "").split(/\s+/).filter(Boolean);
+  const ffmpegOutputArgs = (process.env.FFMPEG_OUTPUT_ARGS ?? "").split(/\s+/).filter(Boolean);
 
   // 組合最終參數
   const finalArgs = [...ffmpegArgs, "-i", filePath, ...ffmpegOutputArgs, ...extraArgs, targetPath];

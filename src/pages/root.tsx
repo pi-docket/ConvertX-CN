@@ -4,7 +4,7 @@ import { JWTPayloadSpec } from "@elysiajs/jwt";
 import { Elysia, t } from "elysia";
 import { BaseHtml } from "../components/base";
 import { Header } from "../components/header";
-import { getAllTargets } from "../converters/main";
+import { getAllTargets, getPossibleSources } from "../converters/main";
 import db from "../db/db";
 import { User } from "../db/types";
 import {
@@ -20,8 +20,14 @@ import { ensureCsrfToken } from "../helpers/csrf";
 import { jobService } from "../application/jobService";
 import { webActor } from "../application/actor";
 import { isFirstRun, userService } from "./user";
+import { sourceHintId } from "../helpers/sourceHintId";
 
 const scriptVersion = `${version}-${Bun.file("public/script.js").lastModified}`;
+const sourceHints = new Set(
+  Object.entries(getAllTargets()).flatMap(([converter, targets]) =>
+    targets.map((target) => getPossibleSources(target)[converter]?.join(", ") ?? ""),
+  ),
+);
 
 export const root = new Elysia()
   .use(userService)
@@ -163,7 +169,8 @@ export const root = new Elysia()
                   `}
                 >
                   <span>
-                    <b>{t("convert", "chooseFile")}</b> {t("convert", "orDragHere")}
+                    <b>{t("convert", "chooseFile")}</b> {t("convert", "orDragHere")}{" "}
+                    {t("convert", "orPasteHere")}
                   </span>
                   <input
                     type="file"
@@ -246,6 +253,9 @@ export const root = new Elysia()
                               }}
                               data-value={`${target},${converter}`}
                               data-target={target}
+                              data-sources-id={sourceHintId(
+                                getPossibleSources(target)[converter]?.join(", ") ?? "",
+                              )}
                               data-converter={converter}
                               type="button"
                               safe
@@ -301,9 +311,16 @@ export const root = new Elysia()
                     value={t("convert", "convertButton")}
                     disabled
                   />
+                  <p id="supported-sources" role="status" class="mt-2 text-sm text-neutral-400" />
+                  <div hidden>
+                    {Array.from(sourceHints, (sources) => (
+                      <span id={sourceHintId(sources)} data-sources={sources} />
+                    ))}
+                  </div>
                 </div>
               </form>
             </main>
+            <script src={`${WEBROOT}/mime-types.js?v=${scriptVersion}`} defer />
             <script src={`${WEBROOT}/script.js?v=${scriptVersion}`} defer />
           </>
         </BaseHtml>

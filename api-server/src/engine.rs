@@ -120,7 +120,7 @@ impl EngineRegistry {
                     "ts", "webm", "wmv",
                     // 音訊輸出
                     "aac", "ac3", "aiff", "flac", "m4a", "mp3", "oga", "ogg", "opus",
-                    "wav", "wma",
+                    "wav", "wav-3cx", "wma",
                 ].into_iter().map(String::from).collect(),
                 max_file_size_mb: 4000,
                 requires_params: false,
@@ -623,6 +623,17 @@ impl EngineRegistry {
                 output_formats: vec![
                     "png", "bmp", "tiff", "gif",
                 ].into_iter().map(String::from).collect(),
+                max_file_size_mb: 200,
+                requires_params: false,
+                params_schema: None,
+            },
+            Engine {
+                engine_id: "djvu".to_string(),
+                engine_name: "DjVu".to_string(),
+                description: "DjVu 文件转 PDF / TIFF".to_string(),
+                enabled: true,
+                input_formats: vec!["djvu".to_string(), "djv".to_string()],
+                output_formats: vec!["pdf".to_string(), "tiff".to_string()],
                 max_file_size_mb: 200,
                 requires_params: false,
                 params_schema: None,

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { existsSync, lstatSync, realpathSync, renameSync, rmSync, statSync } from "node:fs";
+import { rmBounded } from "../helpers/rmBounded";
 import { basename, dirname, resolve } from "node:path";
 import { outputDirPath, uploadsDirPath, isPathInside } from "../helpers/paths";
 import { createTarArchive } from "../transfer/archiveManager";
@@ -193,7 +194,7 @@ export class ArtifactService {
       if (root === resolve(base) || !isPathInside(base, root)) {
         throw new ArtifactServiceError("INVALID_PATH", "Refusing to delete an unsafe path");
       }
-      rmSync(root, { recursive: true, force: true });
+      rmBounded(root);
     }
   }
 
@@ -231,7 +232,7 @@ export class ArtifactService {
     }
     for (const entry of staged) {
       try {
-        rmSync(entry.temporary, { recursive: true, force: true });
+        rmBounded(entry.temporary);
       } catch (error) {
         console.error(`[Artifacts] Failed to remove staged deletion ${entry.temporary}`, error);
       }

@@ -133,7 +133,7 @@ RUN apt-get update --fix-missing && \
 # 4.3 核心轉換工具（不包含 Ghostscript，稍後從源碼編譯）
 RUN apt-get update --fix-missing && \
   apt-get install -y --no-install-recommends \
-  assimp-utils dcraw dvisvgm graphicsmagick \
+  assimp-utils dcraw djvulibre-bin dvisvgm graphicsmagick \
   mupdf-tools poppler-utils potrace qpdf && \
   rm -rf /var/lib/apt/lists/*
 
@@ -904,7 +904,8 @@ ENV QTWEBENGINE_CHROMIUM_FLAGS="--no-sandbox"
 ENV CALIBRE_USE_SYSTEM_THEME="0"
 
 # 3️⃣ 翻譯服務設定（這是唯一允許連網的服務）
-ENV PDFMATHTRANSLATE_SERVICE="google"
+# 未指定 PDFMATHTRANSLATE_SERVICE 時，自動依序嘗試 SiliconFlowFree、Google、Bing。
+# 部署時可設定此環境變數，只使用指定服務（例如 siliconflowfree 或 ollama）。
 
 # 4️⃣ 🔒 強制離線模式（禁止模型/資源下載）
 # HuggingFace 完全離線

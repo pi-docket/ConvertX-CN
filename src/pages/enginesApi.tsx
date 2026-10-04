@@ -1,5 +1,5 @@
 import Elysia from "elysia";
-import { getDisabledEngines } from "../converters/main";
+import { getAllTargets, getDisabledEngines } from "../converters/main";
 import { userService } from "./user";
 import os from "node:os";
 
@@ -38,7 +38,18 @@ export const enginesApi = new Elysia()
   // 檢查特定引擎是否可用
   .get(
     "/api/engines/:name/available",
-    ({ params: { name } }) => {
+    ({ params: { name }, set }) => {
+      const registered = Object.keys(getAllTargets()).some(
+        (engine) => engine.toLowerCase() === name.toLowerCase(),
+      );
+      if (!registered) {
+        set.status = 404;
+        return {
+          engine: name,
+          available: false,
+          message: `Unknown engine: ${name}`,
+        };
+      }
       const disabled = getDisabledEngines();
       const isDisabled = disabled.includes(name.toLowerCase());
 

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { convert, type ExistsSyncFn } from "../../src/converters/libreoffice";
+import { convert, properties, type ExistsSyncFn } from "../../src/converters/libreoffice";
 import type { ExecFileFn } from "../../src/converters/types";
 
 function requireDefined<T>(value: T, msg: string): NonNullable<T> {
@@ -107,6 +107,43 @@ describe("PDF Import Pipeline", () => {
 // 一般轉換流程（Export Pipeline）測試
 // ==============================================================================
 describe("Export Pipeline", () => {
+  test("CSV uses Calc instead of the Writer filter", async () => {
+    await convert("in.csv", "csv", "xlsx", "out/in.xlsx", undefined, mockExecFile, mockExistsSync);
+    const { args } = requireDefined(calls[0], "Expected execFile call");
+    expect(args).toContain("--infilter=Text - txt - csv (StarCalc):44,34,76,1");
+    expect(args[args.indexOf("--convert-to") + 1]).toBe("xlsx:Calc MS Excel 2007 XML");
+    expect(properties.from.text).not.toContain("csv");
+    expect(properties.to.text).not.toContain("csv");
+  });
+
+  test("TSV export uses tabs and UTF-8 rather than CSV defaults", async () => {
+    await convert("in.xlsx", "xlsx", "tsv", "out/in.tsv", undefined, mockExecFile, mockExistsSync);
+    const { args } = requireDefined(calls[0], "Expected execFile call");
+    expect(args[args.indexOf("--convert-to") + 1]).toBe(
+      "tsv:Text - txt - csv (StarCalc):9,34,76,1",
+    );
+  });
+
+  test("TSV import specifies tabs and UTF-8 on older LibreOffice too", async () => {
+    await convert("in.tsv", "tsv", "xlsx", "out/in.xlsx", undefined, mockExecFile, mockExistsSync);
+    const { args } = requireDefined(calls[0], "Expected execFile call");
+    expect(args).toContain("--infilter=Text - txt - csv (StarCalc):9,34,76,1");
+  });
+
+  test("CSV export specifies commas and UTF-8 for Chinese text", async () => {
+    await convert("in.xlsx", "xlsx", "csv", "out/in.csv", undefined, mockExecFile, mockExistsSync);
+    const { args } = requireDefined(calls[0], "Expected execFile call");
+    expect(args[args.indexOf("--convert-to") + 1]).toBe(
+      "csv:Text - txt - csv (StarCalc):44,34,76,1",
+    );
+  });
+
+  test("macro-enabled sheets use the Calc VBA filter", async () => {
+    await convert("in.ods", "ods", "xlsm", "out/in.xlsm", undefined, mockExecFile, mockExistsSync);
+    const { args } = requireDefined(calls[0], "Expected execFile call");
+    expect(args[args.indexOf("--convert-to") + 1]).toBe("xlsm:Calc MS Excel 2007 VBA XML");
+  });
+
   test("DOCX → PDF uses normal export pipeline (no infilter)", async () => {
     await convert("in.docx", "docx", "pdf", "out/out.pdf", undefined, mockExecFile, mockExistsSync);
 
