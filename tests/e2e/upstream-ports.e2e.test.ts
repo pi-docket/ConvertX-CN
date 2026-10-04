@@ -92,6 +92,11 @@ test.skipIf(!available(["soffice"]))(
       ["小明", "臺北"],
       ["小美", "高雄"],
     ]);
+    // Remove the original first so stale input cannot satisfy output validation.
+    rmSync(input);
+    await convertLibreoffice(xlsx, "xlsx", "csv", input);
+    expect(readFileSync(input, "utf8")).toContain("臺北");
+    expect(readFileSync(input, "utf8")).toContain("高雄");
   },
   120_000,
 );

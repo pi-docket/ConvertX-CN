@@ -110,7 +110,7 @@ describe("Export Pipeline", () => {
   test("CSV uses Calc instead of the Writer filter", async () => {
     await convert("in.csv", "csv", "xlsx", "out/in.xlsx", undefined, mockExecFile, mockExistsSync);
     const { args } = requireDefined(calls[0], "Expected execFile call");
-    expect(args).toContain("--infilter=Text - txt - csv (StarCalc)");
+    expect(args).toContain("--infilter=Text - txt - csv (StarCalc):44,34,76,1");
     expect(args[args.indexOf("--convert-to") + 1]).toBe("xlsx:Calc MS Excel 2007 XML");
     expect(properties.from.text).not.toContain("csv");
     expect(properties.to.text).not.toContain("csv");
@@ -121,6 +121,20 @@ describe("Export Pipeline", () => {
     const { args } = requireDefined(calls[0], "Expected execFile call");
     expect(args[args.indexOf("--convert-to") + 1]).toBe(
       "tsv:Text - txt - csv (StarCalc):9,34,76,1",
+    );
+  });
+
+  test("TSV import specifies tabs and UTF-8 on older LibreOffice too", async () => {
+    await convert("in.tsv", "tsv", "xlsx", "out/in.xlsx", undefined, mockExecFile, mockExistsSync);
+    const { args } = requireDefined(calls[0], "Expected execFile call");
+    expect(args).toContain("--infilter=Text - txt - csv (StarCalc):9,34,76,1");
+  });
+
+  test("CSV export specifies commas and UTF-8 for Chinese text", async () => {
+    await convert("in.xlsx", "xlsx", "csv", "out/in.csv", undefined, mockExecFile, mockExistsSync);
+    const { args } = requireDefined(calls[0], "Expected execFile call");
+    expect(args[args.indexOf("--convert-to") + 1]).toBe(
+      "csv:Text - txt - csv (StarCalc):44,34,76,1",
     );
   });
 

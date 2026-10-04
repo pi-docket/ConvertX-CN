@@ -342,7 +342,7 @@
           "de438e246fbd4201237744889d362d952010413e"
         ],
         "decision": "adapted-selectively",
-        "reason": "分離 Calc／Writer 匯入匯出篩選器，擴充試算表格式；另外確保 TSV 為 UTF-8 Tab 分隔"
+        "reason": "分離 Calc／Writer 匯入匯出篩選器，擴充試算表格式；明確指定 CSV／TSV 分隔符號與 UTF-8，修正 LibreOffice 7.4 中文亂碼"
       },
       {
         "pullRequest": 626,

@@ -4,17 +4,17 @@
 
 另外逐項查看下列尚未合併 PR 的實際提交，提前移植有益內容。這些 PR 不代表上游已發布；完整頭部 SHA 與提交清單保存在 `upstream-sync.json.latestCommitReview.candidates`。主線檢查點不移動到 PR 頭部，Git 歷史仍採選擇性移植，沒有宣稱與上游逐檔相同。
 
-| 來源                                                                 | 審查頭部                                   | 本地採用／取捨                                                                                                                                             |
-| -------------------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [#663 測試與錯誤案例](https://github.com/C4illin/ConvertX/pull/663)  | `83960bec8249bfcddbdf6aafd54409631170e011` | 修復 FFmpeg 參數首尾空白、轉換格式陣列遭查詢汙染、VCF 後續聯絡人欄位遺漏。其他案例已有安全處理；新增本地回歸，不用 expected-failure 標記把錯誤包裝成通過。 |
-| [#567 Calc／CSV](https://github.com/C4illin/ConvertX/pull/567)       | `de438e246fbd4201237744889d362d952010413e` | 分離輸入／輸出 filter、擴充試算表來源，CSV 正確使用 Calc；額外修正 TSV 的 Tab 分隔與 UTF-8。保留 PDF→DOCX 的本地匯入流程與 Works 自動偵測。                |
-| [#618 FUSE 刪除](https://github.com/C4illin/ConvertX/pull/618)       | `4daf77bd669ed1a56dfdd2ac8f76444b62cac284` | 有限次重試避免 `.fuse_hidden` 無窮刪除；不追蹤符號連結，保留任務所有權、路徑檢查與分階段刪除。清理例外不會永久停止排程。                                   |
-| [#620 隱藏歷史](https://github.com/C4illin/ConvertX/pull/620)        | `6f7989b5ee78b061440986db14c503c9da0f2ef6` | 結果頁與引擎頁都遵守 `HIDE_HISTORY`。                                                                                                                      |
-| [#626 剪貼簿上傳](https://github.com/C4illin/ConvertX/pull/626)      | `a0910485ff4f2c2e9eb44a7f4466554c945046ba` | 走既有分塊上傳、取消與安全 DOM 流程；保留原始檔名，無副檔名或重名時推斷 MIME，避免干擾輸入框貼上。                                                         |
-| [#594 來源格式提示](https://github.com/C4illin/ConvertX/pull/594)    | `aa3936842780c931bdb6466fa9aa9f72b126e877` | 根據分類與可用引擎生成來源提示；採頁面資料，不新增重複 API 或競態。支援繁中、簡中與英文；共用來源資料，避免每個格式按鈕重複輸出相同清單。                  |
-| [#568 3CX 與 URL 預選](https://github.com/C4illin/ConvertX/pull/568) | `56cb6e4ede23292e56c0fb9bb2adc9b60eef5d73` | 3CX WAV 為單聲道、8 kHz、PCM16；URL 可预選既有格式，修正自動推斷覆蓋使用者／URL 選擇的問題。                                                               |
-| [#612 DjVu](https://github.com/C4illin/ConvertX/pull/612)            | `b9f49f0d3472d6e95f42affaafd6751fe3851809` | DjVu→PDF／TIFF；完整版與 Lite 安裝 `djvulibre-bin`，缺少 `ddjvu` 時不可誤標可用。同步 Rust 引擎清單；驗證輸出存在且非空。                                  |
-| [#607 嵌入封面](https://github.com/C4illin/ConvertX/pull/607)        | `4c56c519ac9f7d581299d4f0d60baaf162f00588` | 暫緩：需先驗證 Lite FFmpeg 與不同容器的封面映射相容性。                                                                                                    |
+| 來源                                                                 | 審查頭部                                   | 本地採用／取捨                                                                                                                                                                             |
+| -------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [#663 測試與錯誤案例](https://github.com/C4illin/ConvertX/pull/663)  | `83960bec8249bfcddbdf6aafd54409631170e011` | 修復 FFmpeg 參數首尾空白、轉換格式陣列遭查詢汙染、VCF 後續聯絡人欄位遺漏。其他案例已有安全處理；新增本地回歸，不用 expected-failure 標記把錯誤包裝成通過。                                 |
+| [#567 Calc／CSV](https://github.com/C4illin/ConvertX/pull/567)       | `de438e246fbd4201237744889d362d952010413e` | 分離輸入／輸出 filter、擴充試算表來源，CSV 正確使用 Calc；額外明確指定 CSV／TSV 匯入與匯出分隔符號及 UTF-8，避免舊版 LibreOffice 中文亂碼。保留 PDF→DOCX 的本地匯入流程與 Works 自動偵測。 |
+| [#618 FUSE 刪除](https://github.com/C4illin/ConvertX/pull/618)       | `4daf77bd669ed1a56dfdd2ac8f76444b62cac284` | 有限次重試避免 `.fuse_hidden` 無窮刪除；不追蹤符號連結，保留任務所有權、路徑檢查與分階段刪除。清理例外不會永久停止排程。                                                                   |
+| [#620 隱藏歷史](https://github.com/C4illin/ConvertX/pull/620)        | `6f7989b5ee78b061440986db14c503c9da0f2ef6` | 結果頁與引擎頁都遵守 `HIDE_HISTORY`。                                                                                                                                                      |
+| [#626 剪貼簿上傳](https://github.com/C4illin/ConvertX/pull/626)      | `a0910485ff4f2c2e9eb44a7f4466554c945046ba` | 走既有分塊上傳、取消與安全 DOM 流程；保留原始檔名，無副檔名或重名時推斷 MIME，避免干擾輸入框貼上。                                                                                         |
+| [#594 來源格式提示](https://github.com/C4illin/ConvertX/pull/594)    | `aa3936842780c931bdb6466fa9aa9f72b126e877` | 根據分類與可用引擎生成來源提示；採頁面資料，不新增重複 API 或競態。支援繁中、簡中與英文；共用來源資料，避免每個格式按鈕重複輸出相同清單。                                                  |
+| [#568 3CX 與 URL 預選](https://github.com/C4illin/ConvertX/pull/568) | `56cb6e4ede23292e56c0fb9bb2adc9b60eef5d73` | 3CX WAV 為單聲道、8 kHz、PCM16；URL 可预選既有格式，修正自動推斷覆蓋使用者／URL 選擇的問題。                                                                                               |
+| [#612 DjVu](https://github.com/C4illin/ConvertX/pull/612)            | `b9f49f0d3472d6e95f42affaafd6751fe3851809` | DjVu→PDF／TIFF；完整版與 Lite 安裝 `djvulibre-bin`，缺少 `ddjvu` 時不可誤標可用。同步 Rust 引擎清單；驗證輸出存在且非空。                                                                  |
+| [#607 嵌入封面](https://github.com/C4illin/ConvertX/pull/607)        | `4c56c519ac9f7d581299d4f0d60baaf162f00588` | 暫緩：需先驗證 Lite FFmpeg 與不同容器的封面映射相容性。                                                                                                                                    |
 
 ## 保留與暫緩
 
@@ -30,8 +30,9 @@
 
 ## 驗證與限制
 
-- 本地 Bun 回歸 **544 通過、10 個既有 placeholder 跳過、0 失敗**；實際轉換 E2E 另有 **15 通過、0 失敗**。TypeScript、ESLint、Knip、Prettier 及前端建構通過。
+- 本地 Bun 回歸 **546 通過、10 個既有 placeholder 跳過、0 失敗**；實際轉換 E2E 另有 **15 通過、0 失敗**。TypeScript、ESLint、Knip、Prettier 及前端建構通過。
 - 實際 CLI 驗證中文 CSV→XLSX→TSV、3CX WAV 參數與輸出、DjVu→PDF／TIFF，檢查產物而非只檢查命令退出碼。主機 LibreOffice 為 26.8 開發版，FFmpeg 7.1.5；這些結果不能代替 Docker 各版本驗證。
+- 現有 Lite 映像掛載本次程式碼並安裝 DjVu 套件後，3 項真實工具 E2E 全部通過：LibreOffice 7.4.7、FFmpeg 5.1.9、DjVuLibre 3.5.28。發現並修正舊 LibreOffice CSV 預設編碼問題，確認中文 CSV／TSV 匯入匯出。此為現有映像的相容性驗證，未冒稱全新 Lite 發布映像。
 - Chromium 在 WEBROOT 下完成 URL 預選、剪貼簿檔案上傳、真實 VCF 轉換及帶登入 cookie 下載，確認繁中來源提示、隐藏歷史與引擎列表。
 - 重新執行 PDFMathTranslate 預設服務，SiliconFlowFree 成功產生繁中單語／雙語 PDF 與 TAR，未設定服務覆寫或 API key。
 - Rust `cargo test --locked --lib --bins` 可編譯，但目前沒有內建單元測試；另對真實 API 執行 JWT 驗證的 DjVu、FFmpeg／3CX、PDFMathTranslate 引擎查詢。

@@ -188,7 +188,7 @@ const inputFilters: Record<FileCategories, Record<string, string | null>> = {
     zabw: "AbiWord",
   },
   calc: {
-    csv: "Text - txt - csv (StarCalc)",
+    csv: "Text - txt - csv (StarCalc):44,34,76,1",
     dbf: "dBase",
     dif: "DIF",
     fods: "OpenDocument Spreadsheet Flat XML",
@@ -199,8 +199,8 @@ const inputFilters: Record<FileCategories, Record<string, string | null>> = {
     sxc: "StarOffice XML (Calc)",
     stc: "calc_StarOffice_XML_Calc_Template",
     slk: "SYLK",
-    tab: "Text - txt - csv (StarCalc)",
-    tsv: "Text - txt - csv (StarCalc)",
+    tab: "Text - txt - csv (StarCalc):9,34,76,1",
+    tsv: "Text - txt - csv (StarCalc):9,34,76,1",
     xls: "MS Excel 97",
     xlsx: "Calc MS Excel 2007 XML",
     xlsb: "Calc MS Excel 2007 Binary",
@@ -236,7 +236,7 @@ const outputFilters: Record<FileCategories, Record<string, string | null>> = {
     xml: "OpenDocument Text Flat XML",
   },
   calc: {
-    csv: "Text - txt - csv (StarCalc)",
+    csv: "Text - txt - csv (StarCalc):44,34,76,1",
     fods: "OpenDocument Spreadsheet Flat XML",
     html: "HTML (StarCalc)",
     ods: "calc8",
