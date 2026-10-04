@@ -272,7 +272,10 @@ jobs:
               # 格式矩陣測試
               bun test tests/e2e/format-matrix.e2e.test.ts --timeout 300000 || exit 1
               
-              # 執行基礎轉換器測試（允許失敗）
+              # 上游移植的真實工具回歸：缺工具必須失敗
+              REQUIRE_UPSTREAM_TOOLS=true bun test tests/e2e/upstream-ports.e2e.test.ts --timeout 120000 || exit 1
+              
+              # 執行基礎轉換器測試
               bun test tests/e2e/converters.e2e.test.ts --timeout 120000 || exit 1
               
               echo ''

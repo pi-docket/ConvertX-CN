@@ -30,10 +30,10 @@
 
 ## 驗證與限制
 
-- 本地 Bun 回歸 **544 通過、10 個既有 placeholder 跳過、0 失敗**；實際轉換 E2E 另有 **12 通過、0 失敗**。TypeScript、ESLint、Knip、Prettier 及前端建構通過。
+- 本地 Bun 回歸 **544 通過、10 個既有 placeholder 跳過、0 失敗**；實際轉換 E2E 另有 **15 通過、0 失敗**。TypeScript、ESLint、Knip、Prettier 及前端建構通過。
 - 實際 CLI 驗證中文 CSV→XLSX→TSV、3CX WAV 參數與輸出、DjVu→PDF／TIFF，檢查產物而非只檢查命令退出碼。主機 LibreOffice 為 26.8 開發版，FFmpeg 7.1.5；這些結果不能代替 Docker 各版本驗證。
 - Chromium 在 WEBROOT 下完成 URL 預選、剪貼簿檔案上傳、真實 VCF 轉換及帶登入 cookie 下載，確認繁中來源提示、隐藏歷史與引擎列表。
 - 重新執行 PDFMathTranslate 預設服務，SiliconFlowFree 成功產生繁中單語／雙語 PDF 與 TAR，未設定服務覆寫或 API key。
 - Rust `cargo test --locked --lib --bins` 可編譯，但目前沒有內建單元測試；另對真實 API 執行 JWT 驗證的 DjVu、FFmpeg／3CX、PDFMathTranslate 引擎查詢。
 - **既有 Rust 整合測試仍無法編譯**：測試引用未宣告的 `axum_test`／`base64`，以及已不存在的 `build_router`／`Config` 介面與舊路由；這不是本次新增引擎造成。本次只校正 Cargo.lock 根套件版本與 Cargo.toml 一致，不擴大為 Rust 整合測試架構重寫。完整 `cargo test --locked` 不宣稱通過。
-- 新分支的 Docker E2E 結果以 GitHub CI 實際結果為準，尚未發版或重新部署。
+- 新增 3 項真實工具回歸納入 Docker E2E；Docker 必須具備 DjVu、FFmpeg、LibreOffice 工具，不能以工具缺失跳過。新分支的 Docker E2E 結果以 GitHub CI 實際結果為準，尚未發版或重新部署。
