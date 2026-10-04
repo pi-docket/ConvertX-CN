@@ -7,6 +7,7 @@ export function getMissingExecutableEngines(
   const requirements: Record<string, string[]> = {
     inkscape: ["inkscape", "xvfb-run"],
     imagemagick: [imageMagickCommand],
+    djvu: ["ddjvu"],
   };
   if (edition === "lite") {
     Object.assign(requirements, {

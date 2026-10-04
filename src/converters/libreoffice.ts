@@ -87,7 +87,26 @@ export const properties = {
       "xml",
       "zabw",
     ],
-    calc: ["csv", "ods", "tsv", "xls", "xlsx"],
+    calc: [
+      "csv",
+      "dbf",
+      "dif",
+      "fods",
+      "ods",
+      "ots",
+      "sxc",
+      "stc",
+      "slk",
+      "tab",
+      "tsv",
+      "xls",
+      "xlsb",
+      "xlsm",
+      "xlsx",
+      "xlt",
+      "xltm",
+      "xltx",
+    ],
   },
   to: {
     text: [
@@ -112,13 +131,13 @@ export const properties = {
       "xhtml",
       "xml",
     ],
-    calc: ["csv", "ods", "pdf", "tsv", "xls", "xlsx", "ots", "xlsm", "xlt", "xltm"],
+    calc: ["csv", "fods", "html", "ods", "pdf", "tsv", "xls", "xlsx", "ots", "xlsm", "xlt", "xltm"],
   },
 };
 
 type FileCategories = "text" | "calc";
 
-const filters: Record<FileCategories, Record<string, string | null>> = {
+const inputFilters: Record<FileCategories, Record<string, string | null>> = {
   text: {
     "602": "T602Document",
     abw: "AbiWord",
@@ -159,14 +178,8 @@ const filters: Record<FileCategories, Record<string, string | null>> = {
     // could not be loaded", even though it converts the same file fine with
     // no --infilter at all (LibreOffice auto-detects it correctly).
 
-    // null is deliberate for BOTH directions here, not just the import side:
-    // this map feeds both --infilter (import) and the --convert-to suffix
-    // (export). On import, null lets LibreOffice auto-detect - its Works
-    // import filter (MS_Works, libwps-backed) is import-only, so it can only
-    // be reached via auto-detection anyway. On export, LibreOffice has no
-    // Works export filter at all; bare `--convert-to wps` falls back to its
-    // default export filter for the extension, which is "MS Word 97" - the
-    // exact filter this map pinned before, so export output is unchanged.
+    // Auto-detect Works on import. The separate output map keeps the existing
+    // bare --convert-to wps behavior, since Works has no native export filter.
     wps: null,
     wpt: "MS Word 97 Vorlage",
     wri: "MS_Write",
@@ -175,14 +188,64 @@ const filters: Record<FileCategories, Record<string, string | null>> = {
     zabw: "AbiWord",
   },
   calc: {
-    csv: "Text - txt - csv (StarCalc)",
+    csv: "Text - txt - csv (StarCalc):44,34,76,1",
+    dbf: "dBase",
+    dif: "DIF",
+    fods: "OpenDocument Spreadsheet Flat XML",
+    html: "HTML (StarCalc)",
     ods: "calc8",
     ots: "calc8_template",
     pdf: "calc_pdf_Export",
-    tsv: "Text - txt - csv (StarCalc)",
+    sxc: "StarOffice XML (Calc)",
+    stc: "calc_StarOffice_XML_Calc_Template",
+    slk: "SYLK",
+    tab: "Text - txt - csv (StarCalc):9,34,76,1",
+    tsv: "Text - txt - csv (StarCalc):9,34,76,1",
     xls: "MS Excel 97",
     xlsx: "Calc MS Excel 2007 XML",
-    xlsm: "Calc MS Excel 2007 XML VBA",
+    xlsb: "Calc MS Excel 2007 Binary",
+    xlsm: "Calc MS Excel 2007 VBA XML",
+    xlt: "MS Excel 97 Vorlage",
+    xltm: "Calc MS Excel 2007 XML Template",
+    xltx: "Calc MS Excel 2007 XML Template",
+  },
+};
+
+// Import-only formats must not become export filters or advertised output paths.
+const outputFilters: Record<FileCategories, Record<string, string | null>> = {
+  text: {
+    doc: "MS Word 97",
+    docm: "MS Word 2007 XML VBA",
+    docx: "MS Word 2007 XML",
+    dot: "MS Word 97 Vorlage",
+    dotx: "MS Word 2007 XML Template",
+    dotm: "MS Word 2007 XML Template",
+    epub: "EPUB",
+    fodt: "OpenDocument Text Flat XML",
+    htm: "HTML (StarWriter)",
+    html: "HTML (StarWriter)",
+    odt: "writer8",
+    ott: "writer8_template",
+    pdf: "writer_pdf_Export",
+    rtf: "Rich Text Format",
+    tab: "Text",
+    txt: "Text",
+    wps: null,
+    wpt: "MS Word 97 Vorlage",
+    xhtml: "HTML (StarWriter)",
+    xml: "OpenDocument Text Flat XML",
+  },
+  calc: {
+    csv: "Text - txt - csv (StarCalc):44,34,76,1",
+    fods: "OpenDocument Spreadsheet Flat XML",
+    html: "HTML (StarCalc)",
+    ods: "calc8",
+    ots: "calc8_template",
+    pdf: "calc_pdf_Export",
+    tsv: "Text - txt - csv (StarCalc):9,34,76,1",
+    xls: "MS Excel 97",
+    xlsm: "Calc MS Excel 2007 VBA XML",
+    xlsx: "Calc MS Excel 2007 XML",
     xlt: "MS Excel 97 Vorlage",
     xltm: "Calc MS Excel 2007 XML Template",
   },
@@ -199,10 +262,10 @@ function needsPdfImportPipeline(inputExt: string, outputExt: string): boolean {
 }
 
 const getFilters = (fileType: string, converto: string) => {
-  if (fileType in filters.text && converto in filters.text) {
-    return [filters.text[fileType], filters.text[converto]];
-  } else if (fileType in filters.calc && converto in filters.calc) {
-    return [filters.calc[fileType], filters.calc[converto]];
+  if (properties.from.text.includes(fileType) && converto in outputFilters.text) {
+    return [inputFilters.text[fileType], outputFilters.text[converto]];
+  } else if (properties.from.calc.includes(fileType) && converto in outputFilters.calc) {
+    return [inputFilters.calc[fileType], outputFilters.calc[converto]];
   }
   return [null, null];
 };
@@ -234,7 +297,7 @@ export function convert(
     args.push(`--infilter=${PDF_IMPORT_FILTER}`);
 
     // 輸出格式仍需指定 filter
-    const outFilter = filters.text[convertTo];
+    const outFilter = outputFilters.text[convertTo];
     if (outFilter && convertTo !== "pdf") {
       args.push("--convert-to", `${convertTo}:${outFilter}`);
     } else {

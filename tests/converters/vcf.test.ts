@@ -89,6 +89,18 @@ describe("toCSV", () => {
     const result = toCSV([]);
     expect(result).toBe("");
   });
+
+  test("preserves fields that appear only in later contacts", () => {
+    expect(
+      toCSV([
+        { "Full Name": "甲" },
+        { "Full Name": "乙", Email: "b@example.invalid", Phone: "+123" },
+        { Organization: "研究所" },
+      ]),
+    ).toBe(
+      'Full Name,Email,Phone,Organization\n"甲","","",""\n"乙","b@example.invalid","+123",""\n"","","","研究所"',
+    );
+  });
 });
 
 describe("convert", () => {

@@ -169,6 +169,22 @@ document.addEventListener("drop", (e) => {
 });
 // ===== 全頁拖曳上傳支援結束 =====
 
+// Reuse the same upload, chunking, cancellation and safe filename rendering for pasted files.
+document.addEventListener("paste", (event) => {
+  if (event.target?.closest?.("input, textarea, [contenteditable]")) return;
+  const files = Array.from(event.clipboardData?.files ?? []);
+  if (files.length === 0) return;
+  event.preventDefault();
+  for (const [index, file] of files.entries()) {
+    let name = file.name;
+    if (!name || !name.includes(".") || uploadStates.has(name)) {
+      const extension = window.inferExtensionFromMimeType(file.type);
+      name = `clipboard-${Date.now()}-${index}.${extension}`;
+    }
+    handleFile(new File([file], name, { type: file.type, lastModified: file.lastModified }));
+  }
+});
+
 // Extracted handleFile function for reusability in drag-and-drop and file input
 // 🧠 記憶體管理：File 物件參考只在上傳期間保持
 function handleFile(file) {
@@ -285,6 +301,8 @@ const updateSearchBar = () => {
   const clearFormatSelection = () => {
     convertToElement.value = "";
     formatSelected = false;
+    const supportedSources = document.querySelector("#supported-sources");
+    if (supportedSources) supportedSources.textContent = "";
     for (const candidate of document.querySelectorAll(".target[aria-selected='true']")) {
       candidate.setAttribute("aria-selected", "false");
     }
@@ -363,6 +381,13 @@ const updateSearchBar = () => {
         convertToElement.value = target.dataset.value;
         convertToInput.value = `${target.dataset.target} using ${target.dataset.converter}`;
         target.setAttribute("aria-selected", "true");
+        const supportedSources = document.querySelector("#supported-sources");
+        if (supportedSources) {
+          const sources = document.getElementById(target.dataset.sourcesId)?.dataset.sources;
+          supportedSources.textContent = sources
+            ? getTranslation("convert", "supportedSources", { sources })
+            : "";
+        }
         formatSelected = true;
         refreshConvertButton();
         showMatching("");
@@ -403,6 +428,18 @@ const updateSearchBar = () => {
     convertToPopup.classList.remove("hidden");
     convertToPopup.classList.add("flex");
   });
+
+  const defaults = new URLSearchParams(window.location.search);
+  const defaultTarget = defaults.get("to");
+  const defaultConverter = defaults.get("converter");
+  if (defaultTarget && !convertToElement.value) {
+    const match = Array.from(document.querySelectorAll(".target")).find(
+      (target) =>
+        target.dataset.target === defaultTarget &&
+        (!defaultConverter || target.dataset.converter === defaultConverter),
+    );
+    match?.click();
+  }
 };
 
 // Add a 'change' event listener to the file input element
@@ -673,6 +710,7 @@ updateSearchBar();
  * @param {number} fileSize - 檔案大小 (bytes)
  */
 async function triggerFormatInference(ext, fileSize) {
+  if (formatSelected) return;
   // 檢查推斷模組是否可用
   if (!window.inferenceModule) {
     console.warn("Inference module not loaded");
@@ -683,6 +721,7 @@ async function triggerFormatInference(ext, fileSize) {
 
   try {
     const result = await window.inferenceModule.requestFormatInference(ext, fileSizeKb);
+    if (formatSelected) return;
 
     if (result && result.should_auto_fill && result.format) {
       // 自動填入推斷的 search token (模擬使用者輸入)
