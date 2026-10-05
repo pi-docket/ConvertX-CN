@@ -11,7 +11,7 @@ ConvertX-CN 是一个以 Docker 为主要交付方式的文件转换服务，提
 
 [Docker Hub](https://hub.docker.com/r/convertx/convertx-cn) · [Releases](https://github.com/pi-docket/ConvertX-CN/releases) · [License](LICENSE)
 
-Lite 正式版本为 **0.1.30-lite**，应用已选择性同步上游 **v0.19.0**；采用选择性同步并保留中文分支功能。[逐项同步记录](docs/upstream-sync-0.19.0.md)列出已合入、已有等效实现与跳过的更新。
+当前应用版本对齐上游 **v0.19.0**；采用选择性同步并保留中文分支功能。[逐项同步记录](docs/upstream-sync-0.19.0.md)列出已合入、已有等效实现与跳过的更新。
 
 ## 主要特色
 
