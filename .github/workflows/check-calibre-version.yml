@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Get latest Calibre version
         id: calibre
@@ -81,11 +83,13 @@ jobs:
         if: |
           steps.calibre.outputs.needs_update == 'true' &&
           steps.verify.outputs.available == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
           # 與 Docker Pulls History 共用已配置的 PAT，避免 GITHUB_TOKEN 的建立 PR 限制。
           token: ${{ secrets.PAT_TOKEN }}
           branch-token: ${{ secrets.PAT_TOKEN }}
+          base: main
+          add-paths: Dockerfile
           commit-message: "chore(docker): update Calibre to v${{ steps.calibre.outputs.latest }}"
           title: "⬆️ Update Calibre to v${{ steps.calibre.outputs.latest }}"
           body: |
