@@ -83,7 +83,9 @@ jobs:
           steps.verify.outputs.available == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # 與 Docker Pulls History 共用已配置的 PAT，避免 GITHUB_TOKEN 的建立 PR 限制。
+          token: ${{ secrets.PAT_TOKEN }}
+          branch-token: ${{ secrets.PAT_TOKEN }}
           commit-message: "chore(docker): update Calibre to v${{ steps.calibre.outputs.latest }}"
           title: "⬆️ Update Calibre to v${{ steps.calibre.outputs.latest }}"
           body: |
