@@ -8,6 +8,7 @@
 - 修复 PDF Packager 等引擎输出 tar 时「全部下载」失败，打包仅排除下载归档自身并保留实际 tar 转换成果。
 - 修复 GitHub 执行档下载未检查 HTTP 错误的问题，Bun、Dasel、resvg 与 VTracer 加入超时及重试。
 - 每个原生架构在发布前执行健康、注册登录、实际转换、下载、PDF 签章验证与重启持久化检查；检查通过后才更新正式 manifest 与 latest-lite。
+
 ## [0.19.0] - 选择性同步上游
 
 - 对齐 C4illin/ConvertX v0.19.0，并审查上游 main 至 `49d1db8dd06134f4423d5c1a447cce9c920156bc` 的 50 个提交；逐项决定见 `docs/upstream-sync-0.19.0.md`。
